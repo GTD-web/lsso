@@ -1,0 +1,69 @@
+"use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.AppModule = void 0;
+const common_1 = require("@nestjs/common");
+const config_1 = require("@nestjs/config");
+const typeorm_1 = require("@nestjs/typeorm");
+const core_1 = require("@nestjs/core");
+const auth_module_1 = require("./auth/auth.module");
+const http_exception_filter_1 = require("./common/filters/http-exception.filter");
+const roles_guard_1 = require("./common/guards/roles.guard");
+const transform_interceptor_1 = require("./common/interceptors/transform.interceptor");
+const api_doc_service_1 = require("./common/utils/api-doc.service");
+const db_doc_service_1 = require("./common/utils/db-doc.service");
+const systems_module_1 = require("./systems/systems.module");
+const users_module_1 = require("./users/users.module");
+const tokens_module_1 = require("./tokens/tokens.module");
+const logs_module_1 = require("./logs/logs.module");
+let AppModule = class AppModule {
+};
+exports.AppModule = AppModule;
+exports.AppModule = AppModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            config_1.ConfigModule.forRoot({
+                isGlobal: true,
+            }),
+            typeorm_1.TypeOrmModule.forRoot({
+                type: 'postgres',
+                host: process.env.POSTGRES_HOST,
+                port: parseInt(process.env.POSTGRES_PORT, 10),
+                username: process.env.POSTGRES_USER,
+                password: process.env.POSTGRES_PASSWORD,
+                database: process.env.POSTGRES_DATABASE,
+                entities: [__dirname + '/**/*.entity{.ts,.js}'],
+                synchronize: process.env.NODE_ENV !== 'production',
+                schema: 'public',
+                logging: true,
+            }),
+            auth_module_1.AuthModule,
+            systems_module_1.SystemsModule,
+            users_module_1.UsersModule,
+            tokens_module_1.TokensModule,
+            logs_module_1.LogsModule,
+        ],
+        providers: [
+            api_doc_service_1.ApiDocService,
+            db_doc_service_1.DbDocService,
+            {
+                provide: core_1.APP_FILTER,
+                useClass: http_exception_filter_1.HttpExceptionFilter,
+            },
+            {
+                provide: core_1.APP_GUARD,
+                useClass: roles_guard_1.RolesGuard,
+            },
+            {
+                provide: core_1.APP_INTERCEPTOR,
+                useClass: transform_interceptor_1.TransformInterceptor,
+            },
+        ],
+    })
+], AppModule);
+//# sourceMappingURL=app.module.js.map
