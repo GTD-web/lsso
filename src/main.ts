@@ -27,11 +27,6 @@ async function bootstrap() {
     // Swagger setup
     setupSwagger(app, [...Object.values(dtos)]);
 
-    // View 엔진 설정
-    app.useStaticAssets(join(__dirname, '..', 'public'));
-    app.setBaseViewsDir(join(__dirname, '..', 'src/views'));
-    app.setViewEngine('hbs');
-
     // CORS setup
     app.enableCors();
 
