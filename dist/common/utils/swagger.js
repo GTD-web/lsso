@@ -14,8 +14,14 @@ function setupSwagger(app, dtos) {
     });
     swagger_1.SwaggerModule.setup('api-docs', app, document, {
         jsonDocumentUrl: '/api-docs-json',
-        customJs: [],
-        customCssUrl: [],
+        customJs: [
+            'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-bundle.min.js',
+            'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-standalone-preset.min.js',
+        ],
+        customCssUrl: [
+            'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css',
+            'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-standalone-preset.min.css',
+        ],
         swaggerOptions: {
             tagsSorter: (a, b) => {
                 const isAEnglish = /^[A-Za-z]/.test(a);
