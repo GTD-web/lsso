@@ -61,6 +61,7 @@
         "hbs": "^4.2.0"
     },
     "devDependencies": {
+        "@nestjs/cli": "^10.0.0",
         "@nestjs/axios": "^3.0.2",
         "@nestjs/common": "^10.0.0",
         "@nestjs/config": "^3.0.0",
