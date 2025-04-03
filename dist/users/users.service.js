@@ -35,7 +35,18 @@ let UsersService = class UsersService {
     }
     async syncEmployees() {
         const employees = await this.getEmployees();
-        await this.bulkSave(employees.map((employee) => this.create(employee)));
+        for (const employee of employees) {
+            const user = await this.findByEmployeeNumber(employee.employee_number);
+            if (user) {
+                user.name = employee.name;
+                user.email = employee.email;
+                user.employeeNumber = employee.employee_number;
+                await this.save(user);
+            }
+            else {
+                await this.save(this.create(employee));
+            }
+        }
     }
     async findAll() {
         return this.usersRepository.find();

@@ -30,7 +30,10 @@ export class UsersService {
         for (const employee of employees) {
             const user = await this.findByEmployeeNumber(employee.employee_number);
             if (user) {
-                await this.update(user.id, employee);
+                user.name = employee.name;
+                user.email = employee.email;
+                user.employeeNumber = employee.employee_number;
+                await this.save(user);
             } else {
                 await this.save(this.create(employee));
             }
