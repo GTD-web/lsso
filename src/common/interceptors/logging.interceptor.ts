@@ -14,7 +14,10 @@ export class LoggingInterceptor implements NestInterceptor {
         const ctx = context.switchToHttp();
         const request = ctx.getRequest<Request>();
 
-        let ip = request.headers['x-forwarded-for'] || request.connection.remoteAddress;
+        let ip: string = Array.isArray(request.headers['x-forwarded-for'])
+            ? request.headers['x-forwarded-for'][0]
+            : (request.headers['x-forwarded-for'] as string) || request.socket.remoteAddress || '';
+
         if (ip.includes(',')) {
             ip = ip.split(',')[0];
         }
