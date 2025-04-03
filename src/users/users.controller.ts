@@ -8,20 +8,20 @@ export class UsersController {
     constructor(private readonly usersService: UsersService) {}
 
     @Post('webhook/create')
-    webhookCreate(@Body() body: any) {
+    async webhookCreate(@Body() body: any) {
         console.log('created employee', body);
-        console.log(this.usersService.getEmployees());
+        console.log(await this.usersService.getEmployees());
     }
 
     @Post('webhook/update')
-    webhookUpdate(@Body() body: any) {
+    async webhookUpdate(@Body() body: any) {
         console.log('updated employee', body);
-        console.log(this.usersService.getEmployees());
+        console.log(await this.usersService.getEmployees());
     }
 
     @Post('webhook/delete')
-    webhookDelete(@Body() body: any) {
+    async webhookDelete(@Body() body: any) {
         console.log('deleted employee', body);
-        console.log(this.usersService.getEmployees());
+        console.log(await this.usersService.getEmployees());
     }
 }

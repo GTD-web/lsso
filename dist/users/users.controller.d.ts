@@ -2,7 +2,7 @@ import { UsersService } from './users.service';
 export declare class UsersController {
     private readonly usersService;
     constructor(usersService: UsersService);
-    webhookCreate(body: any): void;
-    webhookUpdate(body: any): void;
-    webhookDelete(body: any): void;
+    webhookCreate(body: any): Promise<void>;
+    webhookUpdate(body: any): Promise<void>;
+    webhookDelete(body: any): Promise<void>;
 }
