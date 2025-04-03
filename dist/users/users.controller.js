@@ -35,21 +35,21 @@ let UsersController = class UsersController {
 };
 exports.UsersController = UsersController;
 __decorate([
-    (0, common_1.Get)('webhook/create'),
+    (0, common_1.Post)('webhook/create'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "webhookCreate", null);
 __decorate([
-    (0, common_1.Get)('webhook/update'),
+    (0, common_1.Post)('webhook/update'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "webhookUpdate", null);
 __decorate([
-    (0, common_1.Get)('webhook/delete'),
+    (0, common_1.Post)('webhook/delete'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),

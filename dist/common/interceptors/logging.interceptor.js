@@ -23,7 +23,9 @@ let LoggingInterceptor = class LoggingInterceptor {
         const startTime = Date.now();
         const ctx = context.switchToHttp();
         const request = ctx.getRequest();
-        let ip = request.headers['x-forwarded-for'] || request.connection.remoteAddress;
+        let ip = Array.isArray(request.headers['x-forwarded-for'])
+            ? request.headers['x-forwarded-for'][0]
+            : request.headers['x-forwarded-for'] || request.socket.remoteAddress || '';
         if (ip.includes(',')) {
             ip = ip.split(',')[0];
         }
