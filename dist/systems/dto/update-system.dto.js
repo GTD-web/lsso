@@ -44,7 +44,6 @@ __decorate([
     }),
     (0, class_validator_1.IsArray)(),
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)({ each: true }),
     (0, class_validator_1.IsUrl)({}, { each: true }),
     __metadata("design:type", Array)
 ], UpdateSystemDto.prototype, "allowedOrigin", void 0);

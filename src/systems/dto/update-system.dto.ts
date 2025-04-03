@@ -28,7 +28,6 @@ export class UpdateSystemDto {
     })
     @IsArray()
     @IsOptional()
-    @IsString({ each: true })
     @IsUrl({}, { each: true })
     allowedOrigin: string[];
 
