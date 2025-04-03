@@ -41,4 +41,36 @@ __decorate([
     (0, swagger_1.ApiProperty)({ description: '사용자 사번', example: '24020' }),
     __metadata("design:type", String)
 ], LoginResponseDto.prototype, "employeeNumber", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '사용자 전화번호', example: '010-1234-5678' }),
+    __metadata("design:type", String)
+], LoginResponseDto.prototype, "phoneNumber", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '사용자 생년월일', example: '1980-07-04T00:00:00.000Z' }),
+    __metadata("design:type", Date)
+], LoginResponseDto.prototype, "dateOfBirth", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '사용자 성별', example: 'MALE' }),
+    __metadata("design:type", String)
+], LoginResponseDto.prototype, "gender", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '사용자 입사일', example: '2024-05-21T00:00:00.000Z' }),
+    __metadata("design:type", Date)
+], LoginResponseDto.prototype, "hireDate", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '사용자 재직 상태', example: '재직중' }),
+    __metadata("design:type", String)
+], LoginResponseDto.prototype, "status", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '사용자 부서', example: '대표이사' }),
+    __metadata("design:type", String)
+], LoginResponseDto.prototype, "department", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '사용자 직위', example: '대표이사' }),
+    __metadata("design:type", String)
+], LoginResponseDto.prototype, "position", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '사용자 직급', example: '대표이사' }),
+    __metadata("design:type", String)
+], LoginResponseDto.prototype, "rank", void 0);
 //# sourceMappingURL=login-response.dto.js.map

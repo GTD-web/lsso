@@ -44,7 +44,7 @@ __decorate([
     }),
     (0, class_validator_1.IsArray)(),
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsUrl)({}, { each: true }),
+    (0, class_validator_1.IsString)({ each: true }),
     __metadata("design:type", Array)
 ], UpdateSystemDto.prototype, "allowedOrigin", void 0);
 __decorate([
@@ -54,7 +54,6 @@ __decorate([
         required: false,
     }),
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsUrl)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], UpdateSystemDto.prototype, "healthCheckUrl", void 0);

@@ -54,6 +54,7 @@ export class SystemsController {
         type: ResponseSystemDto,
     })
     update(@Param('id') id: string, @Body() updateSystemDto: UpdateSystemDto): Promise<ResponseSystemDto> {
+        console.log(updateSystemDto);
         return this.systemsService.update(id, updateSystemDto);
     }
 

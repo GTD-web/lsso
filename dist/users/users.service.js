@@ -19,6 +19,7 @@ const typeorm_2 = require("typeorm");
 const user_entity_1 = require("./entities/user.entity");
 const bcrypt = require("bcrypt");
 const axios_1 = require("axios");
+const employee_response_dto_1 = require("./dto/employee-response.dto");
 let UsersService = class UsersService {
     constructor(usersRepository) {
         this.usersRepository = usersRepository;
@@ -30,8 +31,13 @@ let UsersService = class UsersService {
         }
     }
     async getEmployees() {
-        const employees = await axios_1.default.get(`${process.env.METADATA_MANAGER_URL}/api/employees`);
-        return employees.data;
+        const employees = await axios_1.default.get(`${process.env.METADATA_MANAGER_URL}/api/employees?detailed=true`);
+        const result = [];
+        employees.data.forEach((employee) => {
+            console.log(employee);
+            result.push(new employee_response_dto_1.EmployeeResponseDto(employee));
+        });
+        return result;
     }
     async syncEmployees() {
         const employees = await this.getEmployees();
@@ -41,6 +47,14 @@ let UsersService = class UsersService {
                 user.name = employee.name;
                 user.email = employee.email;
                 user.employeeNumber = employee.employee_number;
+                user.phoneNumber = employee.phone_number;
+                user.dateOfBirth = employee.date_of_birth;
+                user.gender = employee.gender;
+                user.hireDate = employee.hire_date;
+                user.status = employee.status;
+                user.department = employee.department;
+                user.position = employee.position;
+                user.rank = employee.rank;
                 await this.save(user);
             }
             else {
@@ -53,23 +67,14 @@ let UsersService = class UsersService {
     }
     async findOne(id) {
         const user = await this.usersRepository.findOne({ where: { id } });
-        if (!user) {
-            throw new common_1.NotFoundException(`User with ID ${id} not found`);
-        }
         return user;
     }
     async findByEmployeeNumber(employeeNumber) {
         const user = await this.usersRepository.findOne({ where: { employeeNumber } });
-        if (!user) {
-            throw new common_1.NotFoundException(`User with employeeNumber ${employeeNumber} not found`);
-        }
         return user;
     }
     async findByEmail(email, relations) {
         const user = await this.usersRepository.findOne({ where: { email }, relations });
-        if (!user) {
-            throw new common_1.NotFoundException(`User with email ${email} not found`);
-        }
         return user;
     }
     hashPassword(password = '1234') {
@@ -81,6 +86,14 @@ let UsersService = class UsersService {
             email: employee.email,
             employeeNumber: employee.employee_number,
             password: this.hashPassword(),
+            phoneNumber: employee.phone_number,
+            dateOfBirth: employee.date_of_birth,
+            gender: employee.gender,
+            hireDate: employee.hire_date,
+            status: employee.status,
+            department: employee.department,
+            position: employee.position,
+            rank: employee.rank,
         };
         const user = this.usersRepository.create(userData);
         return user;

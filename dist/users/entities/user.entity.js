@@ -20,21 +20,53 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ unique: true }),
+    (0, typeorm_1.Column)({ unique: true, comment: '사번' }),
     __metadata("design:type", String)
-], User.prototype, "email", void 0);
+], User.prototype, "employeeNumber", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], User.prototype, "password", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ comment: '이름' }),
     __metadata("design:type", String)
 ], User.prototype, "name", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ unique: true, comment: '이메일' }),
     __metadata("design:type", String)
-], User.prototype, "employeeNumber", void 0);
+], User.prototype, "email", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '비밀번호' }),
+    __metadata("design:type", String)
+], User.prototype, "password", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '전화번호', nullable: true }),
+    __metadata("design:type", String)
+], User.prototype, "phoneNumber", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '생년월일', nullable: true }),
+    __metadata("design:type", Date)
+], User.prototype, "dateOfBirth", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '성별', nullable: true }),
+    __metadata("design:type", String)
+], User.prototype, "gender", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '입사일', nullable: true }),
+    __metadata("design:type", Date)
+], User.prototype, "hireDate", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '재직 상태', nullable: true }),
+    __metadata("design:type", String)
+], User.prototype, "status", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '부서', nullable: true }),
+    __metadata("design:type", String)
+], User.prototype, "department", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '직위', nullable: true }),
+    __metadata("design:type", String)
+], User.prototype, "position", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '직급', nullable: true }),
+    __metadata("design:type", String)
+], User.prototype, "rank", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)(() => token_entity_1.Token, (token) => token.user),
     __metadata("design:type", Array)

@@ -27,7 +27,7 @@ let AuthService = class AuthService {
         if (!system) {
             throw new common_1.NotFoundException('존재하지 않는 시스템입니다.');
         }
-        const user = await this.userService.findByEmail(email, ['userRoles']);
+        const user = await this.userService.findByEmail(email);
         if (!user) {
             throw new common_1.NotFoundException('존재하지 않는 사용자입니다.');
         }
@@ -50,9 +50,17 @@ let AuthService = class AuthService {
             accessToken: newToken.accessToken,
             secret: newToken.secret,
             expiresAt: newToken.tokenExpiresAt,
-            email: user.email,
             name: user.name,
+            email: user.email,
             employeeNumber: user.employeeNumber,
+            phoneNumber: user.phoneNumber,
+            dateOfBirth: user.dateOfBirth,
+            gender: user.gender,
+            hireDate: user.hireDate,
+            status: user.status,
+            department: user.department,
+            position: user.position,
+            rank: user.rank,
         };
     }
     async verifyToken(token) {

@@ -14,6 +14,7 @@ export class UsersService {
     ) {}
 
     async onModuleInit() {
+        // await this.syncEmployees();
         const users = await this.findAll();
         if (users.length === 0) {
             await this.syncEmployees();
@@ -21,8 +22,13 @@ export class UsersService {
     }
 
     async getEmployees(): Promise<EmployeeResponseDto[]> {
-        const employees = await axios.get(`${process.env.METADATA_MANAGER_URL}/api/employees`);
-        return employees.data;
+        const employees = await axios.get(`${process.env.METADATA_MANAGER_URL}/api/employees?detailed=true`);
+        const result: EmployeeResponseDto[] = [];
+        employees.data.forEach((employee) => {
+            console.log(employee);
+            result.push(new EmployeeResponseDto(employee));
+        });
+        return result;
     }
 
     async syncEmployees() {
@@ -33,6 +39,14 @@ export class UsersService {
                 user.name = employee.name;
                 user.email = employee.email;
                 user.employeeNumber = employee.employee_number;
+                user.phoneNumber = employee.phone_number;
+                user.dateOfBirth = employee.date_of_birth;
+                user.gender = employee.gender;
+                user.hireDate = employee.hire_date;
+                user.status = employee.status;
+                user.department = employee.department;
+                user.position = employee.position;
+                user.rank = employee.rank;
                 await this.save(user);
             } else {
                 await this.save(this.create(employee));
@@ -46,25 +60,16 @@ export class UsersService {
 
     async findOne(id: string): Promise<User> {
         const user = await this.usersRepository.findOne({ where: { id } });
-        if (!user) {
-            throw new NotFoundException(`User with ID ${id} not found`);
-        }
         return user;
     }
 
     async findByEmployeeNumber(employeeNumber: string): Promise<User> {
         const user = await this.usersRepository.findOne({ where: { employeeNumber } });
-        if (!user) {
-            throw new NotFoundException(`User with employeeNumber ${employeeNumber} not found`);
-        }
         return user;
     }
 
     async findByEmail(email: string, relations?: string[]): Promise<User> {
         const user = await this.usersRepository.findOne({ where: { email }, relations });
-        if (!user) {
-            throw new NotFoundException(`User with email ${email} not found`);
-        }
         return user;
     }
 
@@ -78,6 +83,14 @@ export class UsersService {
             email: employee.email,
             employeeNumber: employee.employee_number,
             password: this.hashPassword(),
+            phoneNumber: employee.phone_number,
+            dateOfBirth: employee.date_of_birth,
+            gender: employee.gender,
+            hireDate: employee.hire_date,
+            status: employee.status,
+            department: employee.department,
+            position: employee.position,
+            rank: employee.rank,
         };
         const user = this.usersRepository.create(userData);
         return user;

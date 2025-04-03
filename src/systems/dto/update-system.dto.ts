@@ -28,7 +28,7 @@ export class UpdateSystemDto {
     })
     @IsArray()
     @IsOptional()
-    @IsUrl({}, { each: true })
+    @IsString({ each: true })
     allowedOrigin: string[];
 
     @ApiProperty({
@@ -37,7 +37,6 @@ export class UpdateSystemDto {
         required: false,
     })
     @IsString()
-    @IsUrl()
     @IsOptional()
     healthCheckUrl: string;
 }

@@ -5,4 +5,12 @@ export declare class LoginResponseDto {
     name: string;
     email: string;
     employeeNumber: string;
+    phoneNumber: string;
+    dateOfBirth: Date;
+    gender: string;
+    hireDate: Date;
+    status: string;
+    department: string;
+    position: string;
+    rank: string;
 }

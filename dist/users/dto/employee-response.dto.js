@@ -12,6 +12,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.EmployeeResponseDto = void 0;
 const swagger_1 = require("@nestjs/swagger");
 class EmployeeResponseDto {
+    constructor(employee) {
+        this._id = employee._id;
+        this.employee_number = employee.employee_number;
+        this.name = employee.name;
+        this.email = employee.email;
+        this.phone_number = employee.phone_number;
+        this.date_of_birth = employee.date_of_birth;
+        this.gender = employee.gender;
+        this.hire_date = employee.hire_date;
+        this.status = employee.status;
+        this.department = employee.department?.department_name;
+        this.position = employee.position?.position_title;
+        this.rank = employee.rank?.rank_name;
+    }
 }
 exports.EmployeeResponseDto = EmployeeResponseDto;
 __decorate([
@@ -47,47 +61,19 @@ __decorate([
     __metadata("design:type", Date)
 ], EmployeeResponseDto.prototype, "hire_date", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ description: '관리자 ID', example: null }),
-    __metadata("design:type", String)
-], EmployeeResponseDto.prototype, "manager_id", void 0);
-__decorate([
     (0, swagger_1.ApiProperty)({ description: '재직 상태', example: '재직중' }),
     __metadata("design:type", String)
 ], EmployeeResponseDto.prototype, "status", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ description: '부서 이력', example: [] }),
-    __metadata("design:type", Array)
-], EmployeeResponseDto.prototype, "department_history", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '직위 이력', example: [] }),
-    __metadata("design:type", Array)
-], EmployeeResponseDto.prototype, "position_history", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '직급 이력', example: [] }),
-    __metadata("design:type", Array)
-], EmployeeResponseDto.prototype, "rank_history", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '생성일', example: '2025-03-12T05:08:05.546Z' }),
-    __metadata("design:type", Date)
-], EmployeeResponseDto.prototype, "created_at", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '수정일', example: '2025-03-12T09:06:22.778Z' }),
-    __metadata("design:type", Date)
-], EmployeeResponseDto.prototype, "updated_at", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '버전', example: 0 }),
-    __metadata("design:type", Number)
-], EmployeeResponseDto.prototype, "__v", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '부서 ID', example: '67d0f2e49af04fc1b2f65b14' }),
+    (0, swagger_1.ApiProperty)({ description: '부서', example: '대표이사' }),
     __metadata("design:type", String)
-], EmployeeResponseDto.prototype, "department_id", void 0);
+], EmployeeResponseDto.prototype, "department", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ description: '직위 ID', example: '67d1436e91e5366c32791be3' }),
+    (0, swagger_1.ApiProperty)({ description: '직위', example: '대표이사' }),
     __metadata("design:type", String)
-], EmployeeResponseDto.prototype, "position_id", void 0);
+], EmployeeResponseDto.prototype, "position", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ description: '직급 ID', example: '67d108129af04fc1b2f65c19' }),
+    (0, swagger_1.ApiProperty)({ description: '직급', example: '대표이사' }),
     __metadata("design:type", String)
-], EmployeeResponseDto.prototype, "rank_id", void 0);
+], EmployeeResponseDto.prototype, "rank", void 0);
 //# sourceMappingURL=employee-response.dto.js.map

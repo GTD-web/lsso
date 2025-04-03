@@ -13,10 +13,7 @@ const typeorm_1 = require("@nestjs/typeorm");
 const core_1 = require("@nestjs/core");
 const auth_module_1 = require("./auth/auth.module");
 const http_exception_filter_1 = require("./common/filters/http-exception.filter");
-const roles_guard_1 = require("./common/guards/roles.guard");
 const transform_interceptor_1 = require("./common/interceptors/transform.interceptor");
-const api_doc_service_1 = require("./common/utils/api-doc.service");
-const db_doc_service_1 = require("./common/utils/db-doc.service");
 const systems_module_1 = require("./systems/systems.module");
 const users_module_1 = require("./users/users.module");
 const tokens_module_1 = require("./tokens/tokens.module");
@@ -49,15 +46,9 @@ exports.AppModule = AppModule = __decorate([
             logs_module_1.LogsModule,
         ],
         providers: [
-            api_doc_service_1.ApiDocService,
-            db_doc_service_1.DbDocService,
             {
                 provide: core_1.APP_FILTER,
                 useClass: http_exception_filter_1.HttpExceptionFilter,
-            },
-            {
-                provide: core_1.APP_GUARD,
-                useClass: roles_guard_1.RolesGuard,
             },
             {
                 provide: core_1.APP_INTERCEPTOR,

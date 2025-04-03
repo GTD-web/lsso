@@ -1,6 +1,21 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class EmployeeResponseDto {
+    constructor(employee: any) {
+        this._id = employee._id;
+        this.employee_number = employee.employee_number;
+        this.name = employee.name;
+        this.email = employee.email;
+        this.phone_number = employee.phone_number;
+        this.date_of_birth = employee.date_of_birth;
+        this.gender = employee.gender;
+        this.hire_date = employee.hire_date;
+        this.status = employee.status;
+        this.department = employee.department?.department_name;
+        this.position = employee.position?.position_title;
+        this.rank = employee.rank?.rank_name;
+    }
+
     @ApiProperty({ description: '직원 ID', example: '67d116b591e5366c327915d2' })
     _id: string;
 
@@ -25,36 +40,15 @@ export class EmployeeResponseDto {
     @ApiProperty({ description: '입사일', example: '2024-05-21T00:00:00.000Z' })
     hire_date: Date;
 
-    @ApiProperty({ description: '관리자 ID', example: null })
-    manager_id: string | null;
-
     @ApiProperty({ description: '재직 상태', example: '재직중' })
     status: string;
 
-    @ApiProperty({ description: '부서 이력', example: [] })
-    department_history: string[];
+    @ApiProperty({ description: '부서', example: '대표이사' })
+    department: string;
 
-    @ApiProperty({ description: '직위 이력', example: [] })
-    position_history: string[];
+    @ApiProperty({ description: '직위', example: '대표이사' })
+    position: string;
 
-    @ApiProperty({ description: '직급 이력', example: [] })
-    rank_history: string[];
-
-    @ApiProperty({ description: '생성일', example: '2025-03-12T05:08:05.546Z' })
-    created_at: Date;
-
-    @ApiProperty({ description: '수정일', example: '2025-03-12T09:06:22.778Z' })
-    updated_at: Date;
-
-    @ApiProperty({ description: '버전', example: 0 })
-    __v: number;
-
-    @ApiProperty({ description: '부서 ID', example: '67d0f2e49af04fc1b2f65b14' })
-    department_id: string;
-
-    @ApiProperty({ description: '직위 ID', example: '67d1436e91e5366c32791be3' })
-    position_id: string;
-
-    @ApiProperty({ description: '직급 ID', example: '67d108129af04fc1b2f65c19' })
-    rank_id: string;
+    @ApiProperty({ description: '직급', example: '대표이사' })
+    rank: string;
 }

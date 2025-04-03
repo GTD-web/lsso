@@ -33,6 +33,7 @@ let SystemsController = class SystemsController {
         return this.systemsService.create(createSystemDto);
     }
     update(id, updateSystemDto) {
+        console.log(updateSystemDto);
         return this.systemsService.update(id, updateSystemDto);
     }
     remove(id) {

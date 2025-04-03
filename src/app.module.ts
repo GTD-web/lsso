@@ -4,7 +4,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { AuthModule } from './auth/auth.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
-import { RolesGuard } from './common/guards/roles.guard';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { ApiDocService } from './common/utils/api-doc.service';
 import { DbDocService } from './common/utils/db-doc.service';
@@ -37,16 +36,16 @@ import { LogsModule } from './logs/logs.module';
         LogsModule,
     ],
     providers: [
-        ApiDocService,
-        DbDocService,
+        // ApiDocService,
+        // DbDocService,
         {
             provide: APP_FILTER,
             useClass: HttpExceptionFilter,
         },
-        {
-            provide: APP_GUARD,
-            useClass: RolesGuard,
-        },
+        // {
+        //     provide: APP_GUARD,
+        //     useClass: RolesGuard,
+        // },
         {
             provide: APP_INTERCEPTOR,
             useClass: TransformInterceptor,
