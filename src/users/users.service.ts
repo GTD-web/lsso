@@ -27,7 +27,14 @@ export class UsersService {
 
     async syncEmployees() {
         const employees = await this.getEmployees();
-        await this.bulkSave(employees.map((employee) => this.create(employee)));
+        for (const employee of employees) {
+            const user = await this.findByEmployeeNumber(employee.employee_number);
+            if (user) {
+                await this.update(user.id, employee);
+            } else {
+                await this.save(this.create(employee));
+            }
+        }
     }
 
     async findAll(): Promise<User[]> {

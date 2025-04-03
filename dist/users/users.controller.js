@@ -20,6 +20,9 @@ let UsersController = class UsersController {
     constructor(usersService) {
         this.usersService = usersService;
     }
+    async syncEmployees() {
+        return await this.usersService.syncEmployees();
+    }
     async webhookCreate(body) {
         console.log('created employee', body);
         console.log(await this.usersService.getEmployees());
@@ -34,6 +37,12 @@ let UsersController = class UsersController {
     }
 };
 exports.UsersController = UsersController;
+__decorate([
+    (0, common_1.Get)('sync'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "syncEmployees", null);
 __decorate([
     (0, common_1.Post)('webhook/create'),
     __param(0, (0, common_1.Body)()),

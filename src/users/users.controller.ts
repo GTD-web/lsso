@@ -7,6 +7,11 @@ import { ApiExcludeController } from '@nestjs/swagger';
 export class UsersController {
     constructor(private readonly usersService: UsersService) {}
 
+    @Get('sync')
+    async syncEmployees() {
+        return await this.usersService.syncEmployees();
+    }
+
     @Post('webhook/create')
     async webhookCreate(@Body() body: any) {
         console.log('created employee', body);
