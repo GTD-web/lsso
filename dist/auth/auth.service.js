@@ -52,6 +52,7 @@ let AuthService = class AuthService {
             expiresAt: newToken.tokenExpiresAt,
             name: user.name,
             email: user.email,
+            password: user.password,
             employeeNumber: user.employeeNumber,
             phoneNumber: user.phoneNumber,
             dateOfBirth: user.dateOfBirth,

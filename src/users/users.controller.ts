@@ -15,18 +15,30 @@ export class UsersController {
     @Post('webhook/create')
     async webhookCreate(@Body() body: any) {
         console.log('created employee', body);
-        console.log(await this.usersService.getEmployees());
+        await this.usersService.syncEmployees();
     }
 
     @Post('webhook/update')
     async webhookUpdate(@Body() body: any) {
         console.log('updated employee', body);
-        console.log(await this.usersService.getEmployees());
+        await this.usersService.syncEmployees();
+    }
+
+    @Post('webhook/position_changed')
+    async webhookPositionChanged(@Body() body: any) {
+        console.log('position changed', body);
+        await this.usersService.syncEmployees();
+    }
+
+    @Post('webhook/department_changed')
+    async webhookDepartmentChanged(@Body() body: any) {
+        console.log('department changed', body);
+        await this.usersService.syncEmployees();
     }
 
     @Post('webhook/delete')
     async webhookDelete(@Body() body: any) {
         console.log('deleted employee', body);
-        console.log(await this.usersService.getEmployees());
+        await this.usersService.syncEmployees();
     }
 }

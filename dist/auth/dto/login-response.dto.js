@@ -38,6 +38,10 @@ __decorate([
     __metadata("design:type", String)
 ], LoginResponseDto.prototype, "email", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({ description: '사용자 비밀번호', example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' }),
+    __metadata("design:type", String)
+], LoginResponseDto.prototype, "password", void 0);
+__decorate([
     (0, swagger_1.ApiProperty)({ description: '사용자 사번', example: '24020' }),
     __metadata("design:type", String)
 ], LoginResponseDto.prototype, "employeeNumber", void 0);

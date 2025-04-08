@@ -5,7 +5,6 @@ import * as bcrypt from 'bcrypt';
 import { SystemsService } from 'src/systems/systems.service';
 import { UsersService } from 'src/users/users.service';
 import { TokensService } from 'src/tokens/tokens.service';
-import { Token } from 'src/tokens/entities/token.entity';
 
 @Injectable()
 export class AuthService {
@@ -50,6 +49,7 @@ export class AuthService {
             expiresAt: newToken.tokenExpiresAt,
             name: user.name,
             email: user.email,
+            password: user.password,
             employeeNumber: user.employeeNumber,
             phoneNumber: user.phoneNumber,
             dateOfBirth: user.dateOfBirth,

@@ -4,6 +4,7 @@ export declare class LoginResponseDto {
     expiresAt: Date;
     name: string;
     email: string;
+    password: string;
     employeeNumber: string;
     phoneNumber: string;
     dateOfBirth: Date;

@@ -5,5 +5,7 @@ export declare class UsersController {
     syncEmployees(): Promise<void>;
     webhookCreate(body: any): Promise<void>;
     webhookUpdate(body: any): Promise<void>;
+    webhookPositionChanged(body: any): Promise<void>;
+    webhookDepartmentChanged(body: any): Promise<void>;
     webhookDelete(body: any): Promise<void>;
 }

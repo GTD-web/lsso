@@ -19,6 +19,9 @@ export class LoginResponseDto {
     @ApiProperty({ description: '사용자 이메일', example: 'koo.sukhyun@lumir.space' })
     email: string;
 
+    @ApiProperty({ description: '사용자 비밀번호', example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' })
+    password: string;
+
     @ApiProperty({ description: '사용자 사번', example: '24020' })
     employeeNumber: string;
 

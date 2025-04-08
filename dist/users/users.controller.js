@@ -25,15 +25,23 @@ let UsersController = class UsersController {
     }
     async webhookCreate(body) {
         console.log('created employee', body);
-        console.log(await this.usersService.getEmployees());
+        await this.usersService.syncEmployees();
     }
     async webhookUpdate(body) {
         console.log('updated employee', body);
-        console.log(await this.usersService.getEmployees());
+        await this.usersService.syncEmployees();
+    }
+    async webhookPositionChanged(body) {
+        console.log('position changed', body);
+        await this.usersService.syncEmployees();
+    }
+    async webhookDepartmentChanged(body) {
+        console.log('department changed', body);
+        await this.usersService.syncEmployees();
     }
     async webhookDelete(body) {
         console.log('deleted employee', body);
-        console.log(await this.usersService.getEmployees());
+        await this.usersService.syncEmployees();
     }
 };
 exports.UsersController = UsersController;
@@ -57,6 +65,20 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "webhookUpdate", null);
+__decorate([
+    (0, common_1.Post)('webhook/position_changed'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "webhookPositionChanged", null);
+__decorate([
+    (0, common_1.Post)('webhook/department_changed'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "webhookDepartmentChanged", null);
 __decorate([
     (0, common_1.Post)('webhook/delete'),
     __param(0, (0, common_1.Body)()),
