@@ -7,7 +7,6 @@ export declare class LogFilterDto {
     limit?: number;
     startDate?: Date;
     endDate?: Date;
-    search?: string;
     method?: string;
     url?: string;
     statusCode?: number;

@@ -32,11 +32,6 @@ export class LogFilterDto {
     @IsOptional()
     endDate?: Date;
 
-    @ApiProperty({ description: 'Search term (searches in URL)', required: false })
-    @IsString()
-    @IsOptional()
-    search?: string;
-
     @ApiProperty({ description: 'HTTP method filter', required: false })
     @IsString()
     @IsOptional()
