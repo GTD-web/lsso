@@ -18,6 +18,9 @@ const dataSources = new Map<string, DataSource>();
 // PostgreSQL의 기본 포트
 const POSTGRESQL_DEFAULT_PORT = 5432;
 
+// 테스트용 'userAgent' 문자열 정의 - 테스트에서 로그를 생성할 경우 기본값으로 사용
+export const TEST_USER_AGENT = 'E2E Test Runner';
+
 export async function getTestDbConfig(testId: string): Promise<TypeOrmModuleOptions> {
     if (!containers.has(testId)) {
         // 컨테이너 생성 - 내부 포트는 PostgreSQL 기본 포트 사용
@@ -101,17 +104,25 @@ export async function seedTestData(testId: string) {
     const dataSource = dataSources.get(testId);
     if (!dataSource) return;
 
-    // 사용자 데이터 시드
+    // 관리자 사용자 데이터 시드
     const userRepository = dataSource.getRepository(User);
-    const hashedPassword = await bcrypt.hash('password123', 10);
+    const hashedPassword = await bcrypt.hash('adminpassword', 10);
     await userRepository.save({
-        username: 'testuser',
+        email: 'admin@example.com',
         password: hashedPassword,
-        email: 'test@example.com',
-        name: 'Test User',
-        employeeNumber: 'EMP001',
-        isActive: true,
+        name: 'Admin User',
+        employeeNumber: 'ADMIN001',
         role: 'admin',
+    });
+
+    // 일반 사용자 데이터 시드 (필요한 경우)
+    const regularUserPass = await bcrypt.hash('password123', 10);
+    await userRepository.save({
+        email: 'user@example.com',
+        password: regularUserPass,
+        name: 'Regular User',
+        employeeNumber: 'EMP000',
+        role: 'user',
     });
 
     // 시스템 데이터 시드

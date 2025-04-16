@@ -7,6 +7,11 @@ import { ApiExcludeController } from '@nestjs/swagger';
 export class UsersController {
     constructor(private readonly usersService: UsersService) {}
 
+    @Get()
+    async findAll() {
+        return await this.usersService.findAll();
+    }
+
     @Get('sync')
     async syncEmployees() {
         return await this.usersService.syncEmployees();

@@ -12,6 +12,7 @@ const typeorm_1 = require("@nestjs/typeorm");
 const system_entity_1 = require("./entities/system.entity");
 const systems_service_1 = require("./systems.service");
 const systems_controller_1 = require("./systems.controller");
+const admin_systems_controller_1 = require("./admin-systems.controller");
 let SystemsModule = class SystemsModule {
 };
 exports.SystemsModule = SystemsModule;
@@ -19,7 +20,7 @@ exports.SystemsModule = SystemsModule = __decorate([
     (0, common_1.Module)({
         imports: [typeorm_1.TypeOrmModule.forFeature([system_entity_1.System])],
         providers: [systems_service_1.SystemsService],
-        controllers: [systems_controller_1.SystemsController],
+        controllers: [systems_controller_1.SystemsController, admin_systems_controller_1.AdminSystemsController],
         exports: [systems_service_1.SystemsService],
     })
 ], SystemsModule);

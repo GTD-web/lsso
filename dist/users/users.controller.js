@@ -20,6 +20,9 @@ let UsersController = class UsersController {
     constructor(usersService) {
         this.usersService = usersService;
     }
+    async findAll() {
+        return await this.usersService.findAll();
+    }
     async syncEmployees() {
         return await this.usersService.syncEmployees();
     }
@@ -45,6 +48,12 @@ let UsersController = class UsersController {
     }
 };
 exports.UsersController = UsersController;
+__decorate([
+    (0, common_1.Get)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)('sync'),
     __metadata("design:type", Function),

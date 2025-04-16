@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Like, ILike } from 'typeorm';
 import { System } from './entities/system.entity';
 import { randomBytes } from 'crypto';
 import { v4 as uuidv4 } from 'uuid';
@@ -54,9 +54,26 @@ export class SystemsService {
     }
 
     async remove(id: string): Promise<void> {
-        const result = await this.systemsRepository.delete(id);
+        const result = await this.systemsRepository.softDelete(id);
         if (result.affected === 0) {
             throw new NotFoundException(`System with ID ${id} not found`);
         }
+    }
+
+    async searchSystems(query: string): Promise<System[]> {
+        if (!query || query.trim() === '') {
+            return this.findAll();
+        }
+
+        const searchQuery = `%${query}%`;
+
+        return this.systemsRepository.find({
+            where: [
+                { name: ILike(searchQuery) },
+                { description: ILike(searchQuery) },
+                { clientId: ILike(searchQuery) },
+                { allowedOrigin: ILike(searchQuery) },
+            ],
+        });
     }
 }

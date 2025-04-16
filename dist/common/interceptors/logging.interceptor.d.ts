@@ -6,5 +6,6 @@ export declare class LoggingInterceptor implements NestInterceptor {
     private readonly logsService;
     private readonly systemService;
     constructor(logsService: LogsService, systemService: SystemsService);
+    queue: any[];
     intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>>;
 }

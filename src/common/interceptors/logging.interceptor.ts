@@ -1,18 +1,32 @@
 import { Injectable, NestInterceptor, ExecutionContext, CallHandler, UnauthorizedException } from '@nestjs/common';
 import { async, Observable, OperatorFunction } from 'rxjs';
-import { tap, catchError } from 'rxjs/operators';
+import { tap, catchError, finalize } from 'rxjs/operators';
 import { LogsService } from '../../logs/logs.service';
 import { Request, Response } from 'express';
 import { SystemsService } from '../../systems/systems.service';
 
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
-    constructor(private readonly logsService: LogsService, private readonly systemService: SystemsService) {}
+    constructor(private readonly logsService: LogsService, private readonly systemService: SystemsService) {
+        setInterval(() => {
+            if (this.queue.length > 0) {
+                console.log('queue', this.queue);
+                this.logsService.createMany(this.queue);
+                this.queue = [];
+            }
+        }, 3000);
+    }
+
+    queue: any[] = [];
 
     async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
         const startTime = Date.now();
         const ctx = context.switchToHttp();
         const request = ctx.getRequest<Request>();
+
+        if (request.url.startsWith('/api/admin')) {
+            return next.handle();
+        }
 
         let ip: string = Array.isArray(request.headers['x-forwarded-for'])
             ? request.headers['x-forwarded-for'][0]
@@ -53,9 +67,7 @@ export class LoggingInterceptor implements NestInterceptor {
                 logData.responseTimestamp = new Date();
                 logData.responseTime = Date.now() - startTime;
                 logData.statusCode = context.switchToHttp().getResponse<Response>().statusCode;
-                logData.response = response;
-
-                await this.logsService.createLog(logData);
+                logData.response = request.method !== 'GET' ? response : null;
             }),
             catchError(async (error) => {
                 // 에러 정보 추가
@@ -64,12 +76,17 @@ export class LoggingInterceptor implements NestInterceptor {
                 logData.statusCode = error.status || 500;
                 logData.error = {
                     message: error.message,
-                    stack: error.stack,
+                    // stack: error.stack,
                 };
                 logData.isError = true;
-
-                await this.logsService.createLog(logData);
                 throw error;
+            }),
+            finalize(() => {
+                if (this.queue.length < 1000) {
+                    this.queue.push(logData);
+                } else {
+                    console.warn('queue is full');
+                }
             }),
         );
     }

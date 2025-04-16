@@ -11,6 +11,7 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const logs_service_1 = require("./logs.service");
 const log_entity_1 = require("./entities/log.entity");
+const admin_logs_controller_1 = require("./admin-logs.controller");
 let LogsModule = class LogsModule {
 };
 exports.LogsModule = LogsModule;
@@ -18,6 +19,7 @@ exports.LogsModule = LogsModule = __decorate([
     (0, common_1.Module)({
         imports: [typeorm_1.TypeOrmModule.forFeature([log_entity_1.Log])],
         providers: [logs_service_1.LogsService],
+        controllers: [admin_logs_controller_1.AdminLogsController],
         exports: [logs_service_1.LogsService],
     })
 ], LogsModule);

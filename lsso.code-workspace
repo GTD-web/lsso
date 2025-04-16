@@ -1,11 +1,17 @@
 {
-  "folders": [
-    {
-      "path": ".",
-    },
-    {
-      "path": "../sso-documents",
-    },
-  ],
-  "settings": {},
+    "folders": [
+        {
+            "name": "lsso",
+            "path": "."
+        },
+        {
+            "name": "front-lsso",
+            "path": "../front-lsso"
+        },
+        {
+            "name": "sso-documents",
+            "path": "../sso-documents"
+        }
+    ],
+    "settings": {}
 }

@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Like, FindOptionsWhere } from 'typeorm';
 import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import axios from 'axios';
@@ -25,7 +25,6 @@ export class UsersService {
         const employees = await axios.get(`${process.env.METADATA_MANAGER_URL}/api/employees?detailed=true`);
         const result: EmployeeResponseDto[] = [];
         employees.data.forEach((employee) => {
-            console.log(employee);
             result.push(new EmployeeResponseDto(employee));
         });
         return result;
@@ -118,5 +117,30 @@ export class UsersService {
         if (result.affected === 0) {
             throw new NotFoundException(`User with ID ${id} not found`);
         }
+    }
+
+    /**
+     * 검색 조건에 맞는 사용자를 조회합니다.
+     * @param query 검색어 (이름, 이메일, 직원번호, 부서, 직책 등)
+     * @returns 검색 조건에 맞는 사용자 목록
+     */
+    async searchUsers(query: string): Promise<User[]> {
+        if (!query) {
+            return this.findAll();
+        }
+
+        // 검색 조건 설정
+        const searchConditions: FindOptionsWhere<User>[] = [
+            { name: Like(`%${query}%`) },
+            { email: Like(`%${query}%`) },
+            { employeeNumber: Like(`%${query}%`) },
+            { department: Like(`%${query}%`) },
+            { position: Like(`%${query}%`) },
+            { rank: Like(`%${query}%`) },
+        ];
+
+        return this.usersRepository.find({
+            where: searchConditions,
+        });
     }
 }

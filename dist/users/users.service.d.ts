@@ -17,4 +17,5 @@ export declare class UsersService {
     bulkSave(users: User[]): Promise<User[]>;
     update(id: string, userData: Partial<User>): Promise<User>;
     remove(id: string): Promise<void>;
+    searchUsers(query: string): Promise<User[]>;
 }

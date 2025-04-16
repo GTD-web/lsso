@@ -11,10 +11,13 @@ const common_1 = require("@nestjs/common");
 const operators_1 = require("rxjs/operators");
 let TransformInterceptor = class TransformInterceptor {
     intercept(context, next) {
-        return next.handle().pipe((0, operators_1.map)((data) => ({
-            data,
-            timestamp: new Date().toISOString(),
-        })));
+        return next.handle().pipe((0, operators_1.map)((data) => {
+            console.log(data);
+            return {
+                data,
+                timestamp: new Date().toISOString(),
+            };
+        }));
     }
 };
 exports.TransformInterceptor = TransformInterceptor;

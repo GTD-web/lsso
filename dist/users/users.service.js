@@ -34,7 +34,6 @@ let UsersService = class UsersService {
         const employees = await axios_1.default.get(`${process.env.METADATA_MANAGER_URL}/api/employees?detailed=true`);
         const result = [];
         employees.data.forEach((employee) => {
-            console.log(employee);
             result.push(new employee_response_dto_1.EmployeeResponseDto(employee));
         });
         return result;
@@ -117,6 +116,22 @@ let UsersService = class UsersService {
         if (result.affected === 0) {
             throw new common_1.NotFoundException(`User with ID ${id} not found`);
         }
+    }
+    async searchUsers(query) {
+        if (!query) {
+            return this.findAll();
+        }
+        const searchConditions = [
+            { name: (0, typeorm_2.Like)(`%${query}%`) },
+            { email: (0, typeorm_2.Like)(`%${query}%`) },
+            { employeeNumber: (0, typeorm_2.Like)(`%${query}%`) },
+            { department: (0, typeorm_2.Like)(`%${query}%`) },
+            { position: (0, typeorm_2.Like)(`%${query}%`) },
+            { rank: (0, typeorm_2.Like)(`%${query}%`) },
+        ];
+        return this.usersRepository.find({
+            where: searchConditions,
+        });
     }
 };
 exports.UsersService = UsersService;

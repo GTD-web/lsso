@@ -18,11 +18,22 @@ let LoggingInterceptor = class LoggingInterceptor {
     constructor(logsService, systemService) {
         this.logsService = logsService;
         this.systemService = systemService;
+        this.queue = [];
+        setInterval(() => {
+            if (this.queue.length > 0) {
+                console.log('queue', this.queue);
+                this.logsService.createMany(this.queue);
+                this.queue = [];
+            }
+        }, 3000);
     }
     async intercept(context, next) {
         const startTime = Date.now();
         const ctx = context.switchToHttp();
         const request = ctx.getRequest();
+        if (request.url.startsWith('/api/admin')) {
+            return next.handle();
+        }
         let ip = Array.isArray(request.headers['x-forwarded-for'])
             ? request.headers['x-forwarded-for'][0]
             : request.headers['x-forwarded-for'] || request.socket.remoteAddress || '';
@@ -54,19 +65,23 @@ let LoggingInterceptor = class LoggingInterceptor {
             logData.responseTimestamp = new Date();
             logData.responseTime = Date.now() - startTime;
             logData.statusCode = context.switchToHttp().getResponse().statusCode;
-            logData.response = response;
-            await this.logsService.createLog(logData);
+            logData.response = request.method !== 'GET' ? response : null;
         }), (0, operators_1.catchError)(async (error) => {
             logData.responseTimestamp = new Date();
             logData.responseTime = Date.now() - startTime;
             logData.statusCode = error.status || 500;
             logData.error = {
                 message: error.message,
-                stack: error.stack,
             };
             logData.isError = true;
-            await this.logsService.createLog(logData);
             throw error;
+        }), (0, operators_1.finalize)(() => {
+            if (this.queue.length < 1000) {
+                this.queue.push(logData);
+            }
+            else {
+                console.warn('queue is full');
+            }
         }));
     }
 };

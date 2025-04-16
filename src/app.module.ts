@@ -27,7 +27,8 @@ import { LogsModule } from './logs/logs.module';
             entities: [__dirname + '/**/*.entity{.ts,.js}'],
             synchronize: process.env.NODE_ENV !== 'production',
             schema: 'public',
-            logging: true,
+            ssl: { rejectUnauthorized: false },
+            // logging: true,
         }),
         AuthModule,
         SystemsModule,
@@ -46,10 +47,10 @@ import { LogsModule } from './logs/logs.module';
         //     provide: APP_GUARD,
         //     useClass: RolesGuard,
         // },
-        {
-            provide: APP_INTERCEPTOR,
-            useClass: TransformInterceptor,
-        },
+        // {
+        //     provide: APP_INTERCEPTOR,
+        //     useClass: TransformInterceptor,
+        // },
     ],
 })
 export class AppModule {}

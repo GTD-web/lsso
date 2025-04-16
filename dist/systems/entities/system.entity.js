@@ -59,6 +59,10 @@ __decorate([
     (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", Date)
 ], System.prototype, "updatedAt", void 0);
+__decorate([
+    (0, typeorm_1.DeleteDateColumn)(),
+    __metadata("design:type", Date)
+], System.prototype, "deletedAt", void 0);
 exports.System = System = __decorate([
     (0, typeorm_1.Entity)('systems')
 ], System);

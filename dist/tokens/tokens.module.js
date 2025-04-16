@@ -15,6 +15,7 @@ const tokens_controller_1 = require("./tokens.controller");
 const users_module_1 = require("../users/users.module");
 const systems_module_1 = require("../systems/systems.module");
 const jwt_1 = require("@nestjs/jwt");
+const admin_tokens_controller_1 = require("./admin-tokens.controller");
 let TokensModule = class TokensModule {
 };
 exports.TokensModule = TokensModule;
@@ -22,7 +23,7 @@ exports.TokensModule = TokensModule = __decorate([
     (0, common_1.Module)({
         imports: [typeorm_1.TypeOrmModule.forFeature([token_entity_1.Token]), users_module_1.UsersModule, systems_module_1.SystemsModule, jwt_1.JwtModule.register({})],
         providers: [tokens_service_1.TokensService],
-        controllers: [tokens_controller_1.TokensController],
+        controllers: [tokens_controller_1.TokensController, admin_tokens_controller_1.AdminTokensController],
         exports: [tokens_service_1.TokensService, users_module_1.UsersModule, systems_module_1.SystemsModule],
     })
 ], TokensModule);

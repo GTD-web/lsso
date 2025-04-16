@@ -58,10 +58,24 @@ let SystemsService = class SystemsService {
         return this.systemsRepository.save(system);
     }
     async remove(id) {
-        const result = await this.systemsRepository.delete(id);
+        const result = await this.systemsRepository.softDelete(id);
         if (result.affected === 0) {
             throw new common_1.NotFoundException(`System with ID ${id} not found`);
         }
+    }
+    async searchSystems(query) {
+        if (!query || query.trim() === '') {
+            return this.findAll();
+        }
+        const searchQuery = `%${query}%`;
+        return this.systemsRepository.find({
+            where: [
+                { name: (0, typeorm_2.ILike)(searchQuery) },
+                { description: (0, typeorm_2.ILike)(searchQuery) },
+                { clientId: (0, typeorm_2.ILike)(searchQuery) },
+                { allowedOrigin: (0, typeorm_2.ILike)(searchQuery) },
+            ],
+        });
     }
 };
 exports.SystemsService = SystemsService;

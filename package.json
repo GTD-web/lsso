@@ -18,7 +18,7 @@
         "test:cov": "pnpm jest --coverage",
         "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
         "test:e2e": "pnpm jest --config ./test/jest-e2e.json",
-        "test:e2e:auth": "pnpm jest --config ./test/jest-e2e.json -t \"Auth\""
+        "test:e2e:workflow": "pnpm jest --config ./test/jest-e2e.json -t \"Complete Application Workflow\""
     },
     "dependencies": {
         "@nestjs/axios": "^3.0.2",

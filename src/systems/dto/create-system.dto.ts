@@ -28,7 +28,7 @@ export class CreateSystemDto {
     })
     @IsArray()
     @IsString({ each: true })
-    @IsUrl({}, { each: true })
+    // @IsUrl({}, { each: true })
     allowedOrigin: string[];
 
     @ApiProperty({
@@ -37,7 +37,7 @@ export class CreateSystemDto {
         required: false,
     })
     @IsString()
-    @IsUrl()
+    // @IsUrl()
     @IsOptional()
     healthCheckUrl: string;
 }

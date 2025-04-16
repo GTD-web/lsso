@@ -12,4 +12,5 @@ export declare class SystemsService {
     create(systemData: CreateSystemDto): Promise<System>;
     update(id: string, systemData: Partial<System>): Promise<System>;
     remove(id: string): Promise<void>;
+    searchSystems(query: string): Promise<System[]>;
 }

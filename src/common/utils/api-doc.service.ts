@@ -23,7 +23,7 @@ export class ApiDocService {
         await new Promise((resolve) => setTimeout(resolve, this.RETRY_DELAY));
         try {
             const response = await axios.get('http://localhost:3030/api-docs-json');
-            // console.log(response.data);
+            console.log(response.data);
             this.data = response.data;
         } catch (error) {
             console.log(retries);
@@ -37,7 +37,8 @@ export class ApiDocService {
     private getControllers() {
         return Object.entries(this.data.paths)
             .map(([path, routes]) => {
-                const controller = path.split('/')[2];
+                const pathArray = path.split('/');
+                const controller = pathArray[2] !== 'admin' ? pathArray[2] : pathArray[3];
                 const apis = Object.entries(routes).map(([method, metadata]) => {
                     return {
                         method,

@@ -11,4 +11,5 @@ export declare class System {
     tokens: Token[];
     createdAt: Date;
     updatedAt: Date;
+    deletedAt: Date;
 }

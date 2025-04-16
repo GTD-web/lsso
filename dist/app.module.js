@@ -13,7 +13,6 @@ const typeorm_1 = require("@nestjs/typeorm");
 const core_1 = require("@nestjs/core");
 const auth_module_1 = require("./auth/auth.module");
 const http_exception_filter_1 = require("./common/filters/http-exception.filter");
-const transform_interceptor_1 = require("./common/interceptors/transform.interceptor");
 const systems_module_1 = require("./systems/systems.module");
 const users_module_1 = require("./users/users.module");
 const tokens_module_1 = require("./tokens/tokens.module");
@@ -37,7 +36,7 @@ exports.AppModule = AppModule = __decorate([
                 entities: [__dirname + '/**/*.entity{.ts,.js}'],
                 synchronize: process.env.NODE_ENV !== 'production',
                 schema: 'public',
-                logging: true,
+                ssl: { rejectUnauthorized: false },
             }),
             auth_module_1.AuthModule,
             systems_module_1.SystemsModule,
@@ -49,10 +48,6 @@ exports.AppModule = AppModule = __decorate([
             {
                 provide: core_1.APP_FILTER,
                 useClass: http_exception_filter_1.HttpExceptionFilter,
-            },
-            {
-                provide: core_1.APP_INTERCEPTOR,
-                useClass: transform_interceptor_1.TransformInterceptor,
             },
         ],
     })

@@ -6,11 +6,12 @@ import { TokensController } from './tokens.controller';
 import { UsersModule } from '../users/users.module';
 import { SystemsModule } from '../systems/systems.module';
 import { JwtModule } from '@nestjs/jwt';
+import { AdminTokensController } from './admin-tokens.controller';
 
 @Module({
     imports: [TypeOrmModule.forFeature([Token]), UsersModule, SystemsModule, JwtModule.register({})],
     providers: [TokensService],
-    controllers: [TokensController],
+    controllers: [TokensController, AdminTokensController],
     exports: [TokensService, UsersModule, SystemsModule],
 })
 export class TokensModule {}
