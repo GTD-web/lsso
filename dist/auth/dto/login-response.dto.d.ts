@@ -1,4 +1,4 @@
-export declare class LoginResponseDto {
+export declare class UserAuthDataDto {
     accessToken: string;
     secret: string;
     expiresAt: Date;
@@ -14,4 +14,13 @@ export declare class LoginResponseDto {
     department: string;
     position: string;
     rank: string;
+}
+export declare class UserErrorDto {
+    code: string;
+    message: string;
+}
+export declare class LoginResponseDto {
+    success: boolean;
+    data?: UserAuthDataDto;
+    error?: UserErrorDto;
 }

@@ -24,7 +24,19 @@ let AuthController = class AuthController {
         this.authService = authService;
     }
     async login(loginDto) {
-        return this.authService.login(loginDto);
+        try {
+            const result = await this.authService.login(loginDto);
+            return result;
+        }
+        catch (error) {
+            return {
+                success: false,
+                error: {
+                    code: 'AUTH_INVALID_TOKEN',
+                    message: error.message,
+                },
+            };
+        }
     }
     async verify(token) {
         return this.authService.verifyToken(token);

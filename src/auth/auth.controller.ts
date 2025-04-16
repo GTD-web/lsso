@@ -30,7 +30,18 @@ export class AuthController {
         description: '서버 오류',
     })
     async login(@Body() loginDto: LoginDto): Promise<LoginResponseDto> {
-        return this.authService.login(loginDto);
+        try {
+            const result = await this.authService.login(loginDto);
+            return result;
+        } catch (error) {
+            return {
+                success: false,
+                error: {
+                    code: 'AUTH_INVALID_TOKEN',
+                    message: error.message,
+                },
+            };
+        }
     }
 
     @Post('verify')

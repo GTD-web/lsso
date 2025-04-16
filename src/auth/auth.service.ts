@@ -44,21 +44,24 @@ export class AuthService {
         }
         const newToken = await this.tokenService.save(token);
         return {
-            accessToken: newToken.accessToken,
-            secret: newToken.secret,
-            expiresAt: newToken.tokenExpiresAt,
-            name: user.name,
-            email: user.email,
-            password: user.password,
-            employeeNumber: user.employeeNumber,
-            phoneNumber: user.phoneNumber,
-            dateOfBirth: user.dateOfBirth,
-            gender: user.gender,
-            hireDate: user.hireDate,
-            status: user.status,
-            department: user.department,
-            position: user.position,
-            rank: user.rank,
+            success: true,
+            data: {
+                accessToken: newToken.accessToken,
+                secret: newToken.secret,
+                expiresAt: newToken.tokenExpiresAt,
+                name: user.name,
+                email: user.email,
+                password: user.password,
+                employeeNumber: user.employeeNumber,
+                phoneNumber: user.phoneNumber,
+                dateOfBirth: user.dateOfBirth,
+                gender: user.gender,
+                hireDate: user.hireDate,
+                status: user.status,
+                department: user.department,
+                position: user.position,
+                rank: user.rank,
+            },
         };
     }
 

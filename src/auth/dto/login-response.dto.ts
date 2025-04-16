@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class LoginResponseDto {
+export class UserAuthDataDto {
     @ApiProperty({ description: '액세스 토큰', example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOi...' })
     accessToken: string;
 
@@ -48,4 +48,40 @@ export class LoginResponseDto {
 
     @ApiProperty({ description: '사용자 직급', example: '대표이사' })
     rank: string;
+}
+
+export class UserErrorDto {
+    @ApiProperty({
+        description: '오류 코드',
+        example: 'AUTH_INVALID_CREDENTIALS',
+    })
+    code: string;
+
+    @ApiProperty({
+        description: '오류 메시지',
+        example: '이메일 또는 비밀번호가 올바르지 않습니다.',
+    })
+    message: string;
+}
+
+export class LoginResponseDto {
+    @ApiProperty({
+        description: '응답 성공 여부',
+        example: true,
+    })
+    success: boolean;
+
+    @ApiProperty({
+        description: '응답 데이터',
+        nullable: true,
+        type: UserAuthDataDto,
+    })
+    data?: UserAuthDataDto;
+
+    @ApiProperty({
+        description: '오류 정보',
+        nullable: true,
+        type: UserErrorDto,
+    })
+    error?: UserErrorDto;
 }
