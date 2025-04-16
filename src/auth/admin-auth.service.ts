@@ -106,7 +106,7 @@ export class AdminAuthService {
             const admin = await this.adminRepository.findOne({ where: { id: payload.sub } });
             if (!admin) {
                 throw new NotFoundException('존재하지 않는 관리자입니다.');
-            }
+            } 
 
             return {
                 id: admin.id,

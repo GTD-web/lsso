@@ -14,6 +14,7 @@ const common_1 = require("@nestjs/common");
 const operators_1 = require("rxjs/operators");
 const logs_service_1 = require("../../logs/logs.service");
 const systems_service_1 = require("../../systems/systems.service");
+const date_util_1 = require("../utils/date.util");
 let LoggingInterceptor = class LoggingInterceptor {
     constructor(logsService, systemService) {
         this.logsService = logsService;
@@ -53,7 +54,7 @@ let LoggingInterceptor = class LoggingInterceptor {
             body: request.body,
             ip: ip,
             userAgent: request.get('user-agent'),
-            requestTimestamp: new Date(),
+            requestTimestamp: date_util_1.DateUtil.now().toDate(),
             responseTimestamp: null,
             responseTime: null,
             statusCode: null,
@@ -62,13 +63,13 @@ let LoggingInterceptor = class LoggingInterceptor {
             isError: false,
         };
         return next.handle().pipe((0, operators_1.tap)(async (response) => {
-            logData.responseTimestamp = new Date();
-            logData.responseTime = Date.now() - startTime;
+            logData.responseTimestamp = date_util_1.DateUtil.now().toDate();
+            logData.responseTime = logData.responseTimestamp - startTime;
             logData.statusCode = context.switchToHttp().getResponse().statusCode;
             logData.response = request.method !== 'GET' ? response : null;
         }), (0, operators_1.catchError)(async (error) => {
-            logData.responseTimestamp = new Date();
-            logData.responseTime = Date.now() - startTime;
+            logData.responseTimestamp = date_util_1.DateUtil.now().toDate();
+            logData.responseTime = logData.responseTimestamp - startTime;
             logData.statusCode = error.status || 500;
             logData.error = {
                 message: error.message,

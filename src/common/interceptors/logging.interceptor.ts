@@ -1,10 +1,10 @@
-import { Injectable, NestInterceptor, ExecutionContext, CallHandler, UnauthorizedException } from '@nestjs/common';
-import { async, Observable, OperatorFunction } from 'rxjs';
+import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
+import { Observable } from 'rxjs';
 import { tap, catchError, finalize } from 'rxjs/operators';
 import { LogsService } from '../../logs/logs.service';
 import { Request, Response } from 'express';
 import { SystemsService } from '../../systems/systems.service';
-
+import { DateUtil } from '../utils/date.util';
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
     constructor(private readonly logsService: LogsService, private readonly systemService: SystemsService) {
@@ -51,7 +51,7 @@ export class LoggingInterceptor implements NestInterceptor {
             body: request.body,
             ip: ip,
             userAgent: request.get('user-agent'),
-            requestTimestamp: new Date(),
+            requestTimestamp: DateUtil.now().toDate(),
             // 응답 정보는 나중에 채워질 예정
             responseTimestamp: null,
             responseTime: null,
@@ -64,15 +64,15 @@ export class LoggingInterceptor implements NestInterceptor {
         return next.handle().pipe(
             tap(async (response) => {
                 // 성공 응답 정보 추가
-                logData.responseTimestamp = new Date();
-                logData.responseTime = Date.now() - startTime;
+                logData.responseTimestamp = DateUtil.now().toDate();
+                logData.responseTime = logData.responseTimestamp - startTime;
                 logData.statusCode = context.switchToHttp().getResponse<Response>().statusCode;
                 logData.response = request.method !== 'GET' ? response : null;
             }),
             catchError(async (error) => {
                 // 에러 정보 추가
-                logData.responseTimestamp = new Date();
-                logData.responseTime = Date.now() - startTime;
+                logData.responseTimestamp = DateUtil.now().toDate();
+                logData.responseTime = logData.responseTimestamp - startTime;
                 logData.statusCode = error.status || 500;
                 logData.error = {
                     message: error.message,
