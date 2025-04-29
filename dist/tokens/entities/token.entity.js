@@ -43,13 +43,21 @@ __decorate([
     __metadata("design:type", String)
 ], Token.prototype, "accessToken", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
-], Token.prototype, "secret", void 0);
+], Token.prototype, "refreshToken", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Token.prototype, "tokenFingerprint", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", Date)
 ], Token.prototype, "tokenExpiresAt", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", Date)
+], Token.prototype, "refreshTokenExpiresAt", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", Date)

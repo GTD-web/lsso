@@ -20,11 +20,11 @@ export class System {
     @Column({ nullable: true })
     description: string;
 
-    @Column({ unique: true })
-    clientId: string;
+    // @Column({ unique: true })
+    // publicKey: string;
 
-    @Column({ unique: true })
-    clientSecret: string;
+    // @Column({ unique: true })
+    // secretKey: string;
 
     @Column({ type: 'jsonb', default: [] })
     allowedOrigin: string[];

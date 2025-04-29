@@ -43,6 +43,12 @@ __decorate([
     __metadata("design:type", String)
 ], TokenResponseDto.prototype, "accessToken", void 0);
 __decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        description: '리프레시 토큰',
+    }),
+    __metadata("design:type", String)
+], TokenResponseDto.prototype, "refreshToken", void 0);
+__decorate([
     (0, swagger_1.ApiProperty)({
         description: '토큰 시크릿',
         example: 'a1b2c3d4e5f6g7h8i9j0...',
@@ -57,7 +63,13 @@ __decorate([
     __metadata("design:type", Date)
 ], TokenResponseDto.prototype, "tokenExpiresAt", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({
+    (0, swagger_1.ApiPropertyOptional)({
+        description: '리프레시 토큰 만료일',
+    }),
+    __metadata("design:type", Date)
+], TokenResponseDto.prototype, "refreshTokenExpiresAt", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
         description: '마지막 접근 일자',
         example: '2023-06-15T14:30:00Z',
         required: false,

@@ -32,6 +32,7 @@ let LoggingInterceptor = class LoggingInterceptor {
         const startTime = Date.now();
         const ctx = context.switchToHttp();
         const request = ctx.getRequest();
+        console.log('request.url', request.url);
         if (request.url.startsWith('/api/admin')) {
             return next.handle();
         }

@@ -11,6 +11,7 @@ export declare class AdminTokensController {
     create(createTokenDto: CreateTokenDto): Promise<ApiResponseDto<TokenResponseDto>>;
     updateStatus(id: string, updateTokenStatusDto: UpdateTokenStatusDto): Promise<ApiResponseDto<TokenResponseDto>>;
     renewToken(id: string, renewTokenDto: RenewTokenDto): Promise<ApiResponseDto<TokenResponseDto>>;
+    refreshToken(id: string): Promise<ApiResponseDto<TokenResponseDto>>;
     remove(id: string): Promise<ApiResponseDto<boolean>>;
     private mapTokenToDto;
 }

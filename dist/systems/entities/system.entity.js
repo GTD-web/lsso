@@ -28,14 +28,6 @@ __decorate([
     __metadata("design:type", String)
 ], System.prototype, "description", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ unique: true }),
-    __metadata("design:type", String)
-], System.prototype, "clientId", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ unique: true }),
-    __metadata("design:type", String)
-], System.prototype, "clientSecret", void 0);
-__decorate([
     (0, typeorm_1.Column)({ type: 'jsonb', default: [] }),
     __metadata("design:type", Array)
 ], System.prototype, "allowedOrigin", void 0);

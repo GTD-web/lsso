@@ -20,16 +20,17 @@ export class ResponseSystemDto {
     description: string;
 
     @ApiProperty({
-        description: '클라이언트 ID',
-        example: '987fcdeb-51a2-43b7-89cd-321654987000',
+        description: '공개키 (RSA Public Key)',
+        example:
+            '-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA...\n-----END PUBLIC KEY-----',
     })
-    clientId: string;
+    publicKey: string;
 
     @ApiProperty({
-        description: '클라이언트 시크릿',
-        example: 'a1b2c3d4e5f6g7h8i9j0...',
+        description: '비밀키 (RSA Private Key)',
+        example: '-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAA...\n-----END PRIVATE KEY-----',
     })
-    clientSecret: string;
+    secretKey: string;
 
     @ApiProperty({
         description: '허용된 출처 URL 목록',

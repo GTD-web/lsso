@@ -24,11 +24,25 @@ __decorate([
         example: '08c9124e08661f87e893544360d86d84de0154902fde79802d81ba7f0ec794a5',
     }),
     __metadata("design:type", String)
-], UserAuthDataDto.prototype, "secret", void 0);
+], UserAuthDataDto.prototype, "tokenFingerprint", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '토큰 만료 시간', example: '2025-03-26T00:00:00.000Z' }),
     __metadata("design:type", Date)
 ], UserAuthDataDto.prototype, "expiresAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '리프레시 토큰',
+        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOi...',
+    }),
+    __metadata("design:type", String)
+], UserAuthDataDto.prototype, "refreshToken", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '리프레시 토큰 만료 시간',
+        example: '2025-06-26T00:00:00.000Z',
+    }),
+    __metadata("design:type", Date)
+], UserAuthDataDto.prototype, "refreshTokenExpiresAt", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '사용자 이름', example: '구석현' }),
     __metadata("design:type", String)

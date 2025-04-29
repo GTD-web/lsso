@@ -92,6 +92,16 @@ let AdminTokensController = class AdminTokensController {
             return api_response_dto_1.ApiResponseDto.error('TOKEN_RENEW_ERROR', `토큰 갱신 중 오류가 발생했습니다: ${error.message}`);
         }
     }
+    async refreshToken(id) {
+        try {
+            const token = await this.tokensService.refreshTokens(id);
+            const tokenResponseDto = this.mapTokenToDto(token);
+            return api_response_dto_1.ApiResponseDto.success(tokenResponseDto);
+        }
+        catch (error) {
+            return api_response_dto_1.ApiResponseDto.error('TOKEN_REFRESH_ERROR', `리프레시 토큰을 사용한 액세스 토큰 갱신 중 오류가 발생했습니다: ${error.message}`);
+        }
+    }
     async remove(id) {
         try {
             await this.tokensService.remove(id);
@@ -107,8 +117,10 @@ let AdminTokensController = class AdminTokensController {
         responseDto.userId = token.userId;
         responseDto.systemId = token.systemId;
         responseDto.accessToken = token.accessToken;
+        responseDto.refreshToken = token.refreshToken;
         responseDto.secret = token.secret;
         responseDto.tokenExpiresAt = token.tokenExpiresAt;
+        responseDto.refreshTokenExpiresAt = token.refreshTokenExpiresAt;
         responseDto.lastAccess = token.lastAccess;
         responseDto.isActive = token.isActive;
         responseDto.createdAt = token.createdAt;
@@ -224,6 +236,20 @@ __decorate([
     __metadata("design:paramtypes", [String, dto_1.RenewTokenDto]),
     __metadata("design:returntype", Promise)
 ], AdminTokensController.prototype, "renewToken", null);
+__decorate([
+    (0, common_1.Put)(':id/refresh'),
+    (0, swagger_1.ApiOperation)({ summary: '리프레시 토큰으로 액세스 토큰 갱신' }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: '토큰 ID' }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: '액세스 토큰 갱신 성공',
+        type: api_response_dto_1.ApiResponseDto,
+    }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], AdminTokensController.prototype, "refreshToken", null);
 __decorate([
     (0, common_1.Delete)(':id'),
     (0, swagger_1.ApiOperation)({ summary: '토큰 삭제' }),

@@ -145,6 +145,27 @@ export class AdminTokensController {
         }
     }
 
+    @Put(':id/refresh')
+    @ApiOperation({ summary: '리프레시 토큰으로 액세스 토큰 갱신' })
+    @ApiParam({ name: 'id', description: '토큰 ID' })
+    @ApiResponse({
+        status: 200,
+        description: '액세스 토큰 갱신 성공',
+        type: ApiResponseDto,
+    })
+    async refreshToken(@Param('id') id: string): Promise<ApiResponseDto<TokenResponseDto>> {
+        try {
+            const token = await this.tokensService.refreshTokens(id);
+            const tokenResponseDto = this.mapTokenToDto(token);
+            return ApiResponseDto.success(tokenResponseDto);
+        } catch (error) {
+            return ApiResponseDto.error(
+                'TOKEN_REFRESH_ERROR',
+                `리프레시 토큰을 사용한 액세스 토큰 갱신 중 오류가 발생했습니다: ${error.message}`,
+            );
+        }
+    }
+
     @Delete(':id')
     @ApiOperation({ summary: '토큰 삭제' })
     @ApiParam({ name: 'id', description: '토큰 ID' })
@@ -169,8 +190,10 @@ export class AdminTokensController {
         responseDto.userId = token.userId;
         responseDto.systemId = token.systemId;
         responseDto.accessToken = token.accessToken;
+        responseDto.refreshToken = token.refreshToken;
         responseDto.secret = token.secret;
         responseDto.tokenExpiresAt = token.tokenExpiresAt;
+        responseDto.refreshTokenExpiresAt = token.refreshTokenExpiresAt;
         responseDto.lastAccess = token.lastAccess;
         responseDto.isActive = token.isActive;
         responseDto.createdAt = token.createdAt;

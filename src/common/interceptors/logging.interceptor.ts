@@ -23,7 +23,7 @@ export class LoggingInterceptor implements NestInterceptor {
         const startTime = Date.now();
         const ctx = context.switchToHttp();
         const request = ctx.getRequest<Request>();
-
+        console.log('request.url', request.url);
         if (request.url.startsWith('/api/admin')) {
             return next.handle();
         }

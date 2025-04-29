@@ -1,8 +1,8 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
 import { SystemsService } from './systems.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
+import { ResponseSystemDto } from './dto';
 
-@ApiTags('시스템')
 @Controller('systems')
 export class SystemsController {
     constructor(private readonly systemsService: SystemsService) {}

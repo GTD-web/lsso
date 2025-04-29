@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsArray, IsUrl, IsOptional } from 'class-validator';
+import { IsString, IsNotEmpty, IsArray, IsUrl, IsOptional, IsBoolean } from 'class-validator';
 
 export class UpdateSystemDto {
     @ApiProperty({
@@ -39,4 +39,13 @@ export class UpdateSystemDto {
     @IsString()
     @IsOptional()
     healthCheckUrl: string;
+
+    @ApiProperty({
+        description: '공개키/비밀키 쌍 재생성 여부 (주의: true로 설정 시 기존 키는 즉시 무효화됩니다)',
+        example: false,
+        required: false,
+    })
+    @IsBoolean()
+    @IsOptional()
+    regenerateKeys: boolean;
 }

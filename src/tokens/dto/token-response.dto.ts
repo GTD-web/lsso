@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class TokenResponseDto {
     @ApiProperty({
@@ -25,6 +25,11 @@ export class TokenResponseDto {
     })
     accessToken: string;
 
+    @ApiPropertyOptional({
+        description: '리프레시 토큰',
+    })
+    refreshToken: string;
+
     @ApiProperty({
         description: '토큰 시크릿',
         example: 'a1b2c3d4e5f6g7h8i9j0...',
@@ -37,7 +42,12 @@ export class TokenResponseDto {
     })
     tokenExpiresAt: Date;
 
-    @ApiProperty({
+    @ApiPropertyOptional({
+        description: '리프레시 토큰 만료일',
+    })
+    refreshTokenExpiresAt: Date;
+
+    @ApiPropertyOptional({
         description: '마지막 접근 일자',
         example: '2023-06-15T14:30:00Z',
         required: false,

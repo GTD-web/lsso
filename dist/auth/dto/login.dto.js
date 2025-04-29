@@ -16,19 +16,19 @@ class LoginDto {
 }
 exports.LoginDto = LoginDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({ description: '사용자 이메일' }),
+    (0, swagger_1.ApiProperty)({ description: '사용자 이메일', example: 'kim.kyuhyun@lumir.space' }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], LoginDto.prototype, "email", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ description: '비밀번호' }),
+    (0, swagger_1.ApiProperty)({ description: '비밀번호', example: '1234' }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], LoginDto.prototype, "password", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ description: '클라이언트 ID' }),
+    (0, swagger_1.ApiProperty)({ description: '클라이언트 ID', example: '457ea161-a0ae-4f2e-9b40-e7ac89285537' }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)

@@ -3,8 +3,10 @@ export declare class TokenResponseDto {
     userId: string;
     systemId: string;
     accessToken: string;
+    refreshToken: string;
     secret: string;
     tokenExpiresAt: Date;
+    refreshTokenExpiresAt: Date;
     lastAccess?: Date | null;
     isActive: boolean;
     createdAt: Date;

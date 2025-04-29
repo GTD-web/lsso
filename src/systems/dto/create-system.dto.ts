@@ -40,4 +40,6 @@ export class CreateSystemDto {
     // @IsUrl()
     @IsOptional()
     healthCheckUrl: string;
+
+    // 참고: 공개키(publicKey)와 비밀키(secretKey)는 시스템 생성 시 자동으로 생성되므로 입력받지 않습니다.
 }

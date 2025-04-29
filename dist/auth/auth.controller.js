@@ -15,8 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
 const common_1 = require("@nestjs/common");
 const auth_service_1 = require("./auth.service");
-const login_dto_1 = require("./dto/login.dto");
-const login_response_dto_1 = require("./dto/login-response.dto");
+const dto_1 = require("./dto");
 const swagger_1 = require("@nestjs/swagger");
 const auth_decorator_1 = require("../common/decorators/auth.decorator");
 let AuthController = class AuthController {
@@ -29,6 +28,7 @@ let AuthController = class AuthController {
             return result;
         }
         catch (error) {
+            console.log('error', error);
             return {
                 success: false,
                 error: {
@@ -41,6 +41,9 @@ let AuthController = class AuthController {
     async verify(token) {
         return this.authService.verifyToken(token);
     }
+    async refresh(refreshTokenDto) {
+        return this.authService.refreshAccessToken(refreshTokenDto);
+    }
 };
 exports.AuthController = AuthController;
 __decorate([
@@ -48,7 +51,7 @@ __decorate([
     (0, swagger_1.ApiResponse)({
         status: 200,
         description: '로그인 성공',
-        type: login_response_dto_1.LoginResponseDto,
+        type: dto_1.LoginResponseDto,
     }),
     (0, swagger_1.ApiResponse)({
         status: 401,
@@ -64,7 +67,7 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [login_dto_1.LoginDto]),
+    __metadata("design:paramtypes", [dto_1.LoginDto]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
 __decorate([
@@ -86,15 +89,41 @@ __decorate([
         status: 500,
         description: '서버 오류',
     }),
+    (0, swagger_1.ApiBearerAuth)(),
     __param(0, (0, auth_decorator_1.Token)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "verify", null);
+__decorate([
+    (0, common_1.Post)('refresh'),
+    (0, swagger_1.ApiBody)({ type: dto_1.RefreshTokenDto }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: '액세스 토큰 갱신 성공',
+        type: dto_1.RefreshTokenResponseDto,
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 401,
+        description: '리프레시 토큰이 유효하지 않습니다.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 404,
+        description: '존재하지 않는 토큰입니다.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 500,
+        description: '서버 오류',
+    }),
+    (0, swagger_1.ApiBearerAuth)(),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [dto_1.RefreshTokenDto]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "refresh", null);
 exports.AuthController = AuthController = __decorate([
     (0, swagger_1.ApiTags)('인증'),
     (0, common_1.Controller)('auth'),
-    (0, swagger_1.ApiBearerAuth)(),
     __metadata("design:paramtypes", [auth_service_1.AuthService])
 ], AuthController);
 //# sourceMappingURL=auth.controller.js.map

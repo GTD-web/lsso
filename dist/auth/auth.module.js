@@ -30,17 +30,12 @@ exports.AuthModule = AuthModule = __decorate([
             systems_module_1.SystemsModule,
             users_module_1.UsersModule,
             tokens_module_1.TokensModule,
-            jwt_1.JwtModule.register({
-                global: true,
-                secret: process.env.JWT_SECRET || 'admin-secret-key',
-                signOptions: { expiresIn: '1h' },
-            }),
             typeorm_1.TypeOrmModule.forFeature([admin_entity_1.Admin, refresh_token_entity_1.RefreshToken]),
             jwt_1.JwtModule.registerAsync({
                 imports: [config_1.ConfigModule],
                 inject: [config_1.ConfigService],
                 useFactory: (configService) => ({
-                    secret: configService.get('JWT_SECRET') || 'admin-secret-key',
+                    secretOrPrivateKey: configService.get('JWT_SECRET') || 'admin-secret-key',
                     signOptions: { expiresIn: '1h' },
                 }),
             }),

@@ -9,46 +9,28 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateTokenDto = void 0;
+exports.RefreshTokenDto = void 0;
 const swagger_1 = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
-class CreateTokenDto {
+class RefreshTokenDto {
 }
-exports.CreateTokenDto = CreateTokenDto;
+exports.RefreshTokenDto = RefreshTokenDto;
 __decorate([
     (0, swagger_1.ApiProperty)({
-        description: '사용자 ID',
-        example: '987fcdeb-51a2-43b7-89cd-321654987000',
+        description: '리프레시 토큰',
+        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
     }),
     (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsUUID)(),
     __metadata("design:type", String)
-], CreateTokenDto.prototype, "userId", void 0);
+], RefreshTokenDto.prototype, "refreshToken", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: '시스템 ID',
-        example: '456fcdeb-51a2-43b7-89cd-321654987123',
+        example: '01998b82-e415-4446-b35a-435a8697fbc2',
     }),
     (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsUUID)(),
     __metadata("design:type", String)
-], CreateTokenDto.prototype, "systemId", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: '액세스 토큰 만료 일수', default: 30, minimum: 1, maximum: 365 }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsInt)(),
-    (0, class_validator_1.Min)(1),
-    (0, class_validator_1.Max)(365),
-    __metadata("design:type", Number)
-], CreateTokenDto.prototype, "expiresInDays", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: '리프레시 토큰 만료 일수', default: 90, minimum: 30, maximum: 730 }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsInt)(),
-    (0, class_validator_1.Min)(30),
-    (0, class_validator_1.Max)(730),
-    __metadata("design:type", Number)
-], CreateTokenDto.prototype, "refreshExpiresInDays", void 0);
-//# sourceMappingURL=create-token.dto.js.map
+], RefreshTokenDto.prototype, "systemId", void 0);
+//# sourceMappingURL=refresh-token.dto.js.map

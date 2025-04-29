@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SystemsController = void 0;
 const common_1 = require("@nestjs/common");
 const systems_service_1 = require("./systems.service");
-const swagger_1 = require("@nestjs/swagger");
 let SystemsController = class SystemsController {
     constructor(systemsService) {
         this.systemsService = systemsService;
@@ -20,7 +19,6 @@ let SystemsController = class SystemsController {
 };
 exports.SystemsController = SystemsController;
 exports.SystemsController = SystemsController = __decorate([
-    (0, swagger_1.ApiTags)('시스템'),
     (0, common_1.Controller)('systems'),
     __metadata("design:paramtypes", [systems_service_1.SystemsService])
 ], SystemsController);

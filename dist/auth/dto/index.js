@@ -20,4 +20,6 @@ __exportStar(require("./admin-token-verify.dto"), exports);
 __exportStar(require("./admin-token-refresh.dto"), exports);
 __exportStar(require("./login.dto"), exports);
 __exportStar(require("./login-response.dto"), exports);
+__exportStar(require("./refresh-token.dto"), exports);
+__exportStar(require("./refresh-token-response.dto"), exports);
 //# sourceMappingURL=index.js.map

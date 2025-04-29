@@ -23,9 +23,15 @@ let AdminSystemsController = class AdminSystemsController {
     constructor(systemsService) {
         this.systemsService = systemsService;
     }
-    async findAll() {
+    async findAll(search) {
         try {
-            const systems = await this.systemsService.findAll();
+            let systems;
+            if (search) {
+                systems = await this.systemsService.searchSystems(search);
+            }
+            else {
+                systems = await this.systemsService.findAll();
+            }
             return api_response_dto_1.ApiResponseDto.success(systems);
         }
         catch (error) {
@@ -61,7 +67,42 @@ let AdminSystemsController = class AdminSystemsController {
     }
     async update(id, updateSystemDto) {
         try {
-            const system = await this.systemsService.update(id, updateSystemDto);
+            let system;
+            if (updateSystemDto.regenerateKeys) {
+                await this.systemsService.regenerateApiKeys(id);
+                const { regenerateKeys, ...updateData } = updateSystemDto;
+                if (Object.keys(updateData).length > 0) {
+                    system = await this.systemsService.update(id, updateData);
+                }
+                else {
+                    system = await this.systemsService.findOne(id);
+                }
+            }
+            else {
+                system = await this.systemsService.update(id, updateSystemDto);
+            }
+            return api_response_dto_1.ApiResponseDto.success(system);
+        }
+        catch (error) {
+            return api_response_dto_1.ApiResponseDto.error('SYSTEM_UPDATE_ERROR', `시스템 수정 중 오류가 발생했습니다: ${error.message}`);
+        }
+    }
+    async partialUpdate(id, updateSystemDto) {
+        try {
+            let system;
+            if (updateSystemDto.regenerateKeys) {
+                await this.systemsService.regenerateApiKeys(id);
+                const { regenerateKeys, ...updateData } = updateSystemDto;
+                if (Object.keys(updateData).length > 0) {
+                    system = await this.systemsService.update(id, updateData);
+                }
+                else {
+                    system = await this.systemsService.findOne(id);
+                }
+            }
+            else {
+                system = await this.systemsService.update(id, updateSystemDto);
+            }
             return api_response_dto_1.ApiResponseDto.success(system);
         }
         catch (error) {
@@ -77,6 +118,15 @@ let AdminSystemsController = class AdminSystemsController {
             return api_response_dto_1.ApiResponseDto.error('SYSTEM_DELETE_ERROR', `시스템 삭제 중 오류가 발생했습니다: ${error.message}`);
         }
     }
+    async regenerateApiKeys(id) {
+        try {
+            const system = await this.systemsService.regenerateApiKeys(id);
+            return api_response_dto_1.ApiResponseDto.success(system);
+        }
+        catch (error) {
+            return api_response_dto_1.ApiResponseDto.error('KEY_REGENERATION_ERROR', `키 재생성 중 오류가 발생했습니다: ${error.message}`);
+        }
+    }
 };
 exports.AdminSystemsController = AdminSystemsController;
 __decorate([
@@ -87,8 +137,10 @@ __decorate([
         description: '시스템 목록 조회 성공',
         type: api_response_dto_1.ApiResponseDto,
     }),
+    (0, swagger_1.ApiQuery)({ name: 'search', required: false, description: '검색어 (이름, 설명, 공개키, 허용된 출처)' }),
+    __param(0, (0, common_1.Query)('search')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], AdminSystemsController.prototype, "findAll", null);
 __decorate([
@@ -112,6 +164,7 @@ __decorate([
         description: '시스템 상세 조회 성공',
         type: api_response_dto_1.ApiResponseDto,
     }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: '시스템 ID' }),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -119,7 +172,7 @@ __decorate([
 ], AdminSystemsController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Post)(),
-    (0, swagger_1.ApiOperation)({ summary: '시스템 생성' }),
+    (0, swagger_1.ApiOperation)({ summary: '시스템 생성', description: '새로운 시스템을 등록하고 공개키/비밀키 쌍을 생성합니다.' }),
     (0, swagger_1.ApiBody)({ type: create_system_dto_1.CreateSystemDto }),
     (0, swagger_1.ApiResponse)({
         status: 201,
@@ -132,8 +185,24 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AdminSystemsController.prototype, "create", null);
 __decorate([
+    (0, common_1.Put)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: '시스템 정보 수정', description: '시스템 정보를 수정합니다.' }),
+    (0, swagger_1.ApiBody)({ type: update_system_dto_1.UpdateSystemDto }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: '시스템 수정 성공',
+        type: api_response_dto_1.ApiResponseDto,
+    }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: '시스템 ID' }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, update_system_dto_1.UpdateSystemDto]),
+    __metadata("design:returntype", Promise)
+], AdminSystemsController.prototype, "update", null);
+__decorate([
     (0, common_1.Patch)(':id'),
-    (0, swagger_1.ApiOperation)({ summary: '시스템 수정' }),
+    (0, swagger_1.ApiOperation)({ summary: '시스템 부분 수정' }),
     (0, swagger_1.ApiBody)({ type: update_system_dto_1.UpdateSystemDto }),
     (0, swagger_1.ApiResponse)({
         status: 200,
@@ -145,7 +214,7 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, update_system_dto_1.UpdateSystemDto]),
     __metadata("design:returntype", Promise)
-], AdminSystemsController.prototype, "update", null);
+], AdminSystemsController.prototype, "partialUpdate", null);
 __decorate([
     (0, common_1.Delete)(':id'),
     (0, swagger_1.ApiOperation)({ summary: '시스템 삭제' }),
@@ -154,11 +223,26 @@ __decorate([
         description: '시스템 삭제 성공',
         type: api_response_dto_1.ApiResponseDto,
     }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: '시스템 ID' }),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], AdminSystemsController.prototype, "remove", null);
+__decorate([
+    (0, common_1.Post)(':id/regenerate-keys'),
+    (0, swagger_1.ApiOperation)({ summary: 'API 키 재생성', description: '공개키/비밀키 쌍을 새로 생성합니다.' }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: '키가 재생성되었습니다.',
+        type: api_response_dto_1.ApiResponseDto,
+    }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: '시스템 ID' }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], AdminSystemsController.prototype, "regenerateApiKeys", null);
 exports.AdminSystemsController = AdminSystemsController = __decorate([
     (0, swagger_1.ApiTags)('관리자 시스템 API'),
     (0, common_1.Controller)('admin/systems'),

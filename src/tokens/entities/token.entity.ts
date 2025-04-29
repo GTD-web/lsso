@@ -32,11 +32,17 @@ export class Token {
     @Column()
     accessToken: string;
 
-    @Column()
-    secret: string;
+    @Column({ nullable: true })
+    refreshToken: string;
+
+    @Column({ nullable: true })
+    tokenFingerprint: string;
 
     @Column()
     tokenExpiresAt: Date;
+
+    @Column({ nullable: true })
+    refreshTokenExpiresAt: Date;
 
     @Column({ nullable: true })
     lastAccess: Date;

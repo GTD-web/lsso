@@ -7,28 +7,36 @@ import { CreateTokenDto } from './dto/create-token.dto';
 import { UsersService } from 'src/users/users.service';
 import { SystemsService } from 'src/systems/systems.service';
 import { RenewTokenDto } from './dto/renew-token.dto';
+import { ConfigService } from '@nestjs/config';
 export declare class TokensService {
     private tokensRepository;
     private jwtService;
     private usersService;
     private systemsService;
-    constructor(tokensRepository: Repository<Token>, jwtService: JwtService, usersService: UsersService, systemsService: SystemsService);
-    generateToken(user: User, system: System, expiresInDays?: number): Promise<{
-        secret: string;
+    private configService;
+    private readonly jwtSecret;
+    constructor(tokensRepository: Repository<Token>, jwtService: JwtService, usersService: UsersService, systemsService: SystemsService, configService: ConfigService);
+    private generateTokenFingerprint;
+    generateToken(user: User, system: System, expiresInDays?: number, refreshExpiresInDays?: number): Promise<{
+        fingerprint: string;
         accessToken: string;
+        refreshToken: string;
         tokenExpiresAt: Date;
+        refreshTokenExpiresAt: Date;
     }>;
-    verifyToken(token: string, secret: string): Promise<boolean>;
+    verifyToken(token: string, tokenFingerprint: string): Promise<boolean>;
+    createTokenForUserAndSystem(user: User, system: System, expiresInDays?: number, refreshExpiresInDays?: number): Promise<Token>;
     findAll(): Promise<Token[]>;
     findOne(id: string): Promise<Token>;
     findBySystemId(systemId: string): Promise<Token[]>;
     findByUserId(userId: string): Promise<Token[]>;
-    createToken(createTokenDto: CreateTokenDto): Promise<Token>;
-    updateStatus(id: string, isActive: boolean): Promise<Token>;
-    renewToken(id: string, renewTokenDto: RenewTokenDto): Promise<Token>;
-    remove(id: string): Promise<void>;
-    create(user: User, system: System): Promise<Token>;
-    save(token: Token): Promise<Token>;
     findByUserAndSystem(user: User, system: System): Promise<Token>;
     findByAccessToken(accessToken: string): Promise<Token>;
+    findByRefreshToken(refreshToken: string): Promise<Token>;
+    createToken(createTokenDto: CreateTokenDto): Promise<Token>;
+    save(token: Token): Promise<Token>;
+    updateStatus(id: string, isActive: boolean): Promise<Token>;
+    refreshTokens(id: string): Promise<Token>;
+    renewToken(id: string, renewTokenDto: RenewTokenDto): Promise<Token>;
+    remove(id: string): Promise<void>;
 }

@@ -18,11 +18,11 @@ import { TokensModule } from 'src/tokens/tokens.module';
         SystemsModule,
         UsersModule,
         TokensModule,
-        JwtModule.register({
-            global: true,
-            secret: process.env.JWT_SECRET || 'admin-secret-key',
-            signOptions: { expiresIn: '1h' },
-        }),
+        // JwtModule.register({
+        //     global: true,
+        //     secretOrPrivateKey: process.env.JWT_SECRET || 'admin-secret-key',
+        //     signOptions: { expiresIn: '1h' },
+        // }),
         TypeOrmModule.forFeature([Admin, RefreshToken]),
 
         // JWT 모듈 설정
@@ -30,7 +30,7 @@ import { TokensModule } from 'src/tokens/tokens.module';
             imports: [ConfigModule],
             inject: [ConfigService],
             useFactory: (configService: ConfigService) => ({
-                secret: configService.get<string>('JWT_SECRET') || 'admin-secret-key',
+                secretOrPrivateKey: configService.get<string>('JWT_SECRET') || 'admin-secret-key',
                 signOptions: { expiresIn: '1h' },
             }),
         }),

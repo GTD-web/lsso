@@ -3,4 +3,5 @@ export declare class UpdateSystemDto {
     description: string;
     allowedOrigin: string[];
     healthCheckUrl: string;
+    regenerateKeys: boolean;
 }

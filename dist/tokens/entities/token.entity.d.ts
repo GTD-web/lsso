@@ -7,8 +7,10 @@ export declare class Token {
     user: User;
     system: System;
     accessToken: string;
-    secret: string;
+    refreshToken: string;
+    tokenFingerprint: string;
     tokenExpiresAt: Date;
+    refreshTokenExpiresAt: Date;
     lastAccess: Date;
     isActive: boolean;
     createdAt: Date;

@@ -57,4 +57,14 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], UpdateSystemDto.prototype, "healthCheckUrl", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '공개키/비밀키 쌍 재생성 여부 (주의: true로 설정 시 기존 키는 즉시 무효화됩니다)',
+        example: false,
+        required: false,
+    }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], UpdateSystemDto.prototype, "regenerateKeys", void 0);
 //# sourceMappingURL=update-system.dto.js.map

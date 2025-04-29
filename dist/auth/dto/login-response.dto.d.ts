@@ -1,7 +1,9 @@
 export declare class UserAuthDataDto {
     accessToken: string;
-    secret: string;
+    tokenFingerprint: string;
     expiresAt: Date;
+    refreshToken: string;
+    refreshTokenExpiresAt: Date;
     name: string;
     email: string;
     password: string;

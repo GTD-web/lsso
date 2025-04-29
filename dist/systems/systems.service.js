@@ -18,16 +18,26 @@ const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const system_entity_1 = require("./entities/system.entity");
 const crypto_1 = require("crypto");
-const uuid_1 = require("uuid");
 let SystemsService = class SystemsService {
     constructor(systemsRepository) {
         this.systemsRepository = systemsRepository;
     }
-    generateClientId() {
-        return (0, uuid_1.v4)();
-    }
-    generateClientSecret() {
-        return (0, crypto_1.randomBytes)(32).toString('hex');
+    generateKeyPair() {
+        const { publicKey, privateKey } = (0, crypto_1.generateKeyPairSync)('rsa', {
+            modulusLength: 2048,
+            publicKeyEncoding: {
+                type: 'spki',
+                format: 'pem',
+            },
+            privateKeyEncoding: {
+                type: 'pkcs8',
+                format: 'pem',
+            },
+        });
+        return {
+            publicKey,
+            privateKey,
+        };
     }
     async findAll() {
         return this.systemsRepository.find();
@@ -39,17 +49,18 @@ let SystemsService = class SystemsService {
         }
         return system;
     }
-    async findByClientId(clientId) {
-        const system = await this.systemsRepository.findOne({ where: { clientId } });
+    async findByPublicKey(publicKey) {
+        const system = await this.systemsRepository.findOne({ where: { publicKey } });
         if (!system) {
-            throw new common_1.NotFoundException(`System with client ID ${clientId} not found`);
+            throw new common_1.NotFoundException(`System with public key ${publicKey} not found`);
         }
         return system;
     }
     async create(systemData) {
         const system = this.systemsRepository.create(systemData);
-        system.clientId = this.generateClientId();
-        system.clientSecret = this.generateClientSecret();
+        const keyPair = this.generateKeyPair();
+        system.publicKey = keyPair.publicKey;
+        system.secretKey = keyPair.privateKey;
         return this.systemsRepository.save(system);
     }
     async update(id, systemData) {
@@ -72,10 +83,16 @@ let SystemsService = class SystemsService {
             where: [
                 { name: (0, typeorm_2.ILike)(searchQuery) },
                 { description: (0, typeorm_2.ILike)(searchQuery) },
-                { clientId: (0, typeorm_2.ILike)(searchQuery) },
                 { allowedOrigin: (0, typeorm_2.ILike)(searchQuery) },
             ],
         });
+    }
+    async regenerateApiKeys(id) {
+        const system = await this.findOne(id);
+        const keyPair = this.generateKeyPair();
+        system.publicKey = keyPair.publicKey;
+        system.secretKey = keyPair.privateKey;
+        return this.systemsRepository.save(system);
     }
 };
 exports.SystemsService = SystemsService;

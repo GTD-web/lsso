@@ -16,13 +16,19 @@ class RenewTokenDto {
 }
 exports.RenewTokenDto = RenewTokenDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '토큰 만료 일수 (기본값 30일)',
-        example: 90,
-        required: false,
-    }),
+    (0, swagger_1.ApiPropertyOptional)({ description: '액세스 토큰 만료 일수', default: 30, minimum: 1, maximum: 365 }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.Min)(1),
+    (0, class_validator_1.Max)(365),
     __metadata("design:type", Number)
 ], RenewTokenDto.prototype, "expiresInDays", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '리프레시 토큰 만료 일수', default: 90, minimum: 30, maximum: 730 }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.Min)(30),
+    (0, class_validator_1.Max)(730),
+    __metadata("design:type", Number)
+], RenewTokenDto.prototype, "refreshExpiresInDays", void 0);
 //# sourceMappingURL=renew-token.dto.js.map
