@@ -14,12 +14,6 @@ export class TokenResponseDto {
     userId: string;
 
     @ApiProperty({
-        description: '시스템 ID',
-        example: '456fcdeb-51a2-43b7-89cd-321654987123',
-    })
-    systemId: string;
-
-    @ApiProperty({
         description: '액세스 토큰',
         example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
     })
@@ -29,12 +23,6 @@ export class TokenResponseDto {
         description: '리프레시 토큰',
     })
     refreshToken: string;
-
-    @ApiProperty({
-        description: '토큰 시크릿',
-        example: 'a1b2c3d4e5f6g7h8i9j0...',
-    })
-    secret: string;
 
     @ApiProperty({
         description: '토큰 만료 일자',
@@ -85,11 +73,4 @@ export class TokenResponseDto {
         required: false,
     })
     userEmail?: string;
-
-    @ApiProperty({
-        description: '시스템 이름',
-        example: 'HR 시스템',
-        required: false,
-    })
-    systemName?: string;
 }

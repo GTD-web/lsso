@@ -1,10 +1,8 @@
 export declare class TokenResponseDto {
     id: string;
     userId: string;
-    systemId: string;
     accessToken: string;
     refreshToken: string;
-    secret: string;
     tokenExpiresAt: Date;
     refreshTokenExpiresAt: Date;
     lastAccess?: Date | null;
@@ -13,5 +11,4 @@ export declare class TokenResponseDto {
     updatedAt: Date;
     userName?: string;
     userEmail?: string;
-    systemName?: string;
 }

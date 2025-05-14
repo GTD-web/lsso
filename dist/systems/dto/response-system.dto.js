@@ -37,18 +37,11 @@ __decorate([
 ], ResponseSystemDto.prototype, "description", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
-        description: '공개키 (RSA Public Key)',
-        example: '-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA...\n-----END PUBLIC KEY-----',
+        description: '시스템 도메인',
+        example: 'sample-system.com',
     }),
     __metadata("design:type", String)
-], ResponseSystemDto.prototype, "publicKey", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '비밀키 (RSA Private Key)',
-        example: '-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAA...\n-----END PRIVATE KEY-----',
-    }),
-    __metadata("design:type", String)
-], ResponseSystemDto.prototype, "secretKey", void 0);
+], ResponseSystemDto.prototype, "domain", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: '허용된 출처 URL 목록',
@@ -71,6 +64,20 @@ __decorate([
     }),
     __metadata("design:type", Boolean)
 ], ResponseSystemDto.prototype, "isActive", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '클라이언트 ID',
+        example: '123e4567-e89b-12d3-a456-426614174000',
+    }),
+    __metadata("design:type", String)
+], ResponseSystemDto.prototype, "clientId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '클라이언트 시크릿',
+        example: 'c891e70e62fc104e7d92c30b920cfb9e4cd39fa2c117fd2cb6e1e05c4054c204',
+    }),
+    __metadata("design:type", String)
+], ResponseSystemDto.prototype, "clientSecret", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: '생성일',

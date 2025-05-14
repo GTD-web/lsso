@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { System } from './entities/system.entity';
-import { SystemsService } from './systems.service';
-import { SystemsController } from './systems.controller';
-import { AdminSystemsController } from './admin-systems.controller';
-
+import { SystemsService } from './services/systems.service';
+import { AdminSystemsController } from './controllers/admin.controller';
+import { DomainSystemsController } from './controllers/domain.controller';
+import { AdminUsecase } from './usecases/admin.usecase';
 @Module({
     imports: [TypeOrmModule.forFeature([System])],
-    providers: [SystemsService],
-    controllers: [SystemsController, AdminSystemsController],
-    exports: [SystemsService],
+    providers: [SystemsService, AdminUsecase],
+    controllers: [AdminSystemsController, DomainSystemsController],
+    exports: [SystemsService, AdminUsecase],
 })
 export class SystemsModule {}

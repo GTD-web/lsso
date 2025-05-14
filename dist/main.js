@@ -7,7 +7,7 @@ const swagger_1 = require("./common/utils/swagger");
 const dtos = require("./dtos.index");
 const logging_interceptor_1 = require("./common/interceptors/logging.interceptor");
 const logs_service_1 = require("./logs/logs.service");
-const systems_service_1 = require("./systems/systems.service");
+const systems_service_1 = require("./systems/services/systems.service");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     app.useGlobalPipes(new common_1.ValidationPipe({

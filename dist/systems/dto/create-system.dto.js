@@ -37,6 +37,16 @@ __decorate([
 ], CreateSystemDto.prototype, "description", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
+        description: '시스템 도메인',
+        example: 'example.com',
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateSystemDto.prototype, "domain", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
         description: '허용된 출처 URL 목록',
         example: ['https://sample-system.com'],
         type: [String],
@@ -56,4 +66,35 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], CreateSystemDto.prototype, "healthCheckUrl", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '클라이언트 ID (입력하지 않으면 자동 생성)',
+        example: 'client-a1b2c3d4',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateSystemDto.prototype, "clientId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '클라이언트 시크릿 (입력하지 않으면 자동 생성)',
+        example: 'secret-a1b2c3d4e5f6',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateSystemDto.prototype, "clientSecret", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '활성 여부',
+        example: true,
+        required: false,
+        default: true,
+    }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], CreateSystemDto.prototype, "isActive", void 0);
 //# sourceMappingURL=create-system.dto.js.map

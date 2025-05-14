@@ -30,13 +30,6 @@ __decorate([
 ], TokenResponseDto.prototype, "userId", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
-        description: '시스템 ID',
-        example: '456fcdeb-51a2-43b7-89cd-321654987123',
-    }),
-    __metadata("design:type", String)
-], TokenResponseDto.prototype, "systemId", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
         description: '액세스 토큰',
         example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
     }),
@@ -48,13 +41,6 @@ __decorate([
     }),
     __metadata("design:type", String)
 ], TokenResponseDto.prototype, "refreshToken", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '토큰 시크릿',
-        example: 'a1b2c3d4e5f6g7h8i9j0...',
-    }),
-    __metadata("design:type", String)
-], TokenResponseDto.prototype, "secret", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: '토큰 만료 일자',
@@ -113,12 +99,4 @@ __decorate([
     }),
     __metadata("design:type", String)
 ], TokenResponseDto.prototype, "userEmail", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '시스템 이름',
-        example: 'HR 시스템',
-        required: false,
-    }),
-    __metadata("design:type", String)
-], TokenResponseDto.prototype, "systemName", void 0);
 //# sourceMappingURL=token-response.dto.js.map

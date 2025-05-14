@@ -8,7 +8,7 @@ import { join } from 'path';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { LogsService } from './logs/logs.service';
-import { SystemsService } from './systems/systems.service';
+import { SystemsService } from './systems/services/systems.service';
 
 async function bootstrap() {
     const app = await NestFactory.create<NestExpressApplication>(AppModule);

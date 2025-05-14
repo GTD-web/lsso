@@ -2,11 +2,12 @@ export declare class ResponseSystemDto {
     id: string;
     name: string;
     description: string;
-    publicKey: string;
-    secretKey: string;
+    domain: string;
     allowedOrigin: string[];
     healthCheckUrl: string;
     isActive: boolean;
+    clientId: string;
+    clientSecret: string;
     createdAt: Date;
     updatedAt: Date;
 }

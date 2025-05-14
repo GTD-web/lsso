@@ -11,12 +11,12 @@ const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const typeorm_1 = require("@nestjs/typeorm");
 const core_1 = require("@nestjs/core");
-const auth_module_1 = require("./auth/auth.module");
 const http_exception_filter_1 = require("./common/filters/http-exception.filter");
-const systems_module_1 = require("./systems/systems.module");
 const users_module_1 = require("./users/users.module");
-const tokens_module_1 = require("./tokens/tokens.module");
+const systems_module_1 = require("./systems/systems.module");
 const logs_module_1 = require("./logs/logs.module");
+const tokens_module_1 = require("./tokens/tokens.module");
+const auth_module_1 = require("./auth/auth.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -34,14 +34,15 @@ exports.AppModule = AppModule = __decorate([
                 password: process.env.POSTGRES_PASSWORD,
                 database: process.env.POSTGRES_DATABASE,
                 entities: [__dirname + '/**/*.entity{.ts,.js}'],
-                synchronize: process.env.NODE_ENV !== 'production',
+                synchronize: true || process.env.NODE_ENV !== 'production',
                 schema: 'public',
                 ssl: { rejectUnauthorized: false },
+                logging: true,
             }),
-            auth_module_1.AuthModule,
-            systems_module_1.SystemsModule,
             users_module_1.UsersModule,
+            systems_module_1.SystemsModule,
             tokens_module_1.TokensModule,
+            auth_module_1.AuthModule,
             logs_module_1.LogsModule,
         ],
         providers: [

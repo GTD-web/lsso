@@ -14,13 +14,13 @@ export class Log {
     @Column()
     url: string;
 
-    @Column('json')
+    @Column('jsonb', { nullable: true })
     params: any;
 
-    @Column('json')
+    @Column('jsonb', { nullable: true })
     query: any;
 
-    @Column('json')
+    @Column('jsonb', { nullable: true })
     body: any;
 
     @Column()
@@ -41,10 +41,10 @@ export class Log {
     @Column({ nullable: true })
     statusCode: number;
 
-    @Column('json', { nullable: true })
+    @Column('jsonb', { nullable: true })
     response: any;
 
-    @Column('json', { nullable: true })
+    @Column('jsonb', { nullable: true })
     error: any;
 
     @Column({ default: false })

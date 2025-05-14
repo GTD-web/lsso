@@ -11,7 +11,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.System = void 0;
 const typeorm_1 = require("typeorm");
-const token_entity_1 = require("../../tokens/entities/token.entity");
 let System = class System {
 };
 exports.System = System;
@@ -22,11 +21,23 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)({ unique: true }),
     __metadata("design:type", String)
+], System.prototype, "clientId", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], System.prototype, "clientSecret", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ unique: true }),
+    __metadata("design:type", String)
 ], System.prototype, "name", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], System.prototype, "description", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], System.prototype, "domain", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'jsonb', default: [] }),
     __metadata("design:type", Array)
@@ -39,10 +50,6 @@ __decorate([
     (0, typeorm_1.Column)({ default: true }),
     __metadata("design:type", Boolean)
 ], System.prototype, "isActive", void 0);
-__decorate([
-    (0, typeorm_1.OneToMany)(() => token_entity_1.Token, (token) => token.system),
-    __metadata("design:type", Array)
-], System.prototype, "tokens", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)

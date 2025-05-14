@@ -10,17 +10,20 @@ exports.UsersModule = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const user_entity_1 = require("./entities/user.entity");
-const users_service_1 = require("./users.service");
-const users_controller_1 = require("./users.controller");
-const admin_users_controller_1 = require("./admin-users.controller");
+const users_service_1 = require("./services/users.service");
+const webhook_controller_1 = require("./controllers/webhook.controller");
+const admin_controller_1 = require("./controllers/admin.controller");
+const domain_controller_1 = require("./controllers/domain.controller");
+const admin_usecase_1 = require("./usecases/admin.usecase");
+const webhook_usecase_1 = require("./usecases/webhook.usecase");
 let UsersModule = class UsersModule {
 };
 exports.UsersModule = UsersModule;
 exports.UsersModule = UsersModule = __decorate([
     (0, common_1.Module)({
         imports: [typeorm_1.TypeOrmModule.forFeature([user_entity_1.User])],
-        providers: [users_service_1.UsersService],
-        controllers: [users_controller_1.UsersController, admin_users_controller_1.AdminUsersController],
+        providers: [users_service_1.UsersService, admin_usecase_1.AdminUsecase, webhook_usecase_1.WebhookUsecase],
+        controllers: [webhook_controller_1.WebhookUsersController, admin_controller_1.AdminUsersController, domain_controller_1.DomainUsersController],
         exports: [users_service_1.UsersService],
     })
 ], UsersModule);

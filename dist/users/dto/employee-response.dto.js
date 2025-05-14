@@ -22,7 +22,7 @@ class EmployeeResponseDto {
         this.gender = employee.gender;
         this.hire_date = employee.hire_date;
         this.status = employee.status;
-        this.department = employee.department?.department_name;
+        this.department = employee.department?.department_code;
         this.position = employee.position?.position_title;
         this.rank = employee.rank?.rank_name;
     }

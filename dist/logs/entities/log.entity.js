@@ -31,15 +31,15 @@ __decorate([
     __metadata("design:type", String)
 ], Log.prototype, "url", void 0);
 __decorate([
-    (0, typeorm_1.Column)('json'),
+    (0, typeorm_1.Column)('jsonb', { nullable: true }),
     __metadata("design:type", Object)
 ], Log.prototype, "params", void 0);
 __decorate([
-    (0, typeorm_1.Column)('json'),
+    (0, typeorm_1.Column)('jsonb', { nullable: true }),
     __metadata("design:type", Object)
 ], Log.prototype, "query", void 0);
 __decorate([
-    (0, typeorm_1.Column)('json'),
+    (0, typeorm_1.Column)('jsonb', { nullable: true }),
     __metadata("design:type", Object)
 ], Log.prototype, "body", void 0);
 __decorate([
@@ -67,11 +67,11 @@ __decorate([
     __metadata("design:type", Number)
 ], Log.prototype, "statusCode", void 0);
 __decorate([
-    (0, typeorm_1.Column)('json', { nullable: true }),
+    (0, typeorm_1.Column)('jsonb', { nullable: true }),
     __metadata("design:type", Object)
 ], Log.prototype, "response", void 0);
 __decorate([
-    (0, typeorm_1.Column)('json', { nullable: true }),
+    (0, typeorm_1.Column)('jsonb', { nullable: true }),
     __metadata("design:type", Object)
 ], Log.prototype, "error", void 0);
 __decorate([

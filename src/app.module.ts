@@ -2,15 +2,16 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
-import { AuthModule } from './auth/auth.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { ApiDocService } from './common/utils/api-doc.service';
 import { DbDocService } from './common/utils/db-doc.service';
-import { SystemsModule } from './systems/systems.module';
+
 import { UsersModule } from './users/users.module';
-import { TokensModule } from './tokens/tokens.module';
+import { SystemsModule } from './systems/systems.module';
 import { LogsModule } from './logs/logs.module';
+import { TokensModule } from './tokens/tokens.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
     imports: [
@@ -25,15 +26,15 @@ import { LogsModule } from './logs/logs.module';
             password: process.env.POSTGRES_PASSWORD,
             database: process.env.POSTGRES_DATABASE,
             entities: [__dirname + '/**/*.entity{.ts,.js}'],
-            synchronize: process.env.NODE_ENV !== 'production',
+            synchronize: true || process.env.NODE_ENV !== 'production',
             schema: 'public',
             ssl: { rejectUnauthorized: false },
-            // logging: true,
+            logging: true,
         }),
-        AuthModule,
-        SystemsModule,
         UsersModule,
+        SystemsModule,
         TokensModule,
+        AuthModule,
         LogsModule,
     ],
     providers: [

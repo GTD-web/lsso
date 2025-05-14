@@ -20,17 +20,10 @@ export class ResponseSystemDto {
     description: string;
 
     @ApiProperty({
-        description: '공개키 (RSA Public Key)',
-        example:
-            '-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA...\n-----END PUBLIC KEY-----',
+        description: '시스템 도메인',
+        example: 'sample-system.com',
     })
-    publicKey: string;
-
-    @ApiProperty({
-        description: '비밀키 (RSA Private Key)',
-        example: '-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAA...\n-----END PRIVATE KEY-----',
-    })
-    secretKey: string;
+    domain: string;
 
     @ApiProperty({
         description: '허용된 출처 URL 목록',
@@ -50,6 +43,20 @@ export class ResponseSystemDto {
         example: true,
     })
     isActive: boolean;
+
+    // uuid 예시
+    @ApiProperty({
+        description: '클라이언트 ID',
+        example: '123e4567-e89b-12d3-a456-426614174000',
+    })
+    clientId: string;
+
+    // randomBytes(32).toString('hex') 예시
+    @ApiProperty({
+        description: '클라이언트 시크릿',
+        example: 'c891e70e62fc104e7d92c30b920cfb9e4cd39fa2c117fd2cb6e1e05c4054c204',
+    })
+    clientSecret: string;
 
     @ApiProperty({
         description: '생성일',

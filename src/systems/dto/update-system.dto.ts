@@ -21,6 +21,15 @@ export class UpdateSystemDto {
     description: string;
 
     @ApiProperty({
+        description: '시스템 도메인',
+        example: 'example.com',
+        required: false,
+    })
+    @IsString()
+    @IsOptional()
+    domain: string;
+
+    @ApiProperty({
         description: '허용된 출처 URL 목록',
         example: ['https://sample-system.com'],
         type: [String],
@@ -41,11 +50,29 @@ export class UpdateSystemDto {
     healthCheckUrl: string;
 
     @ApiProperty({
-        description: '공개키/비밀키 쌍 재생성 여부 (주의: true로 설정 시 기존 키는 즉시 무효화됩니다)',
-        example: false,
+        description: '클라이언트 ID',
+        example: 'client-a1b2c3d4',
+        required: false,
+    })
+    @IsString()
+    @IsOptional()
+    clientId?: string;
+
+    @ApiProperty({
+        description: '클라이언트 시크릿',
+        example: 'secret-a1b2c3d4e5f6',
+        required: false,
+    })
+    @IsString()
+    @IsOptional()
+    clientSecret?: string;
+
+    @ApiProperty({
+        description: '활성 여부',
+        example: true,
         required: false,
     })
     @IsBoolean()
     @IsOptional()
-    regenerateKeys: boolean;
+    isActive?: boolean;
 }

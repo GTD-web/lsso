@@ -37,6 +37,16 @@ __decorate([
 ], UpdateSystemDto.prototype, "description", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
+        description: '시스템 도메인',
+        example: 'example.com',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateSystemDto.prototype, "domain", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
         description: '허용된 출처 URL 목록',
         example: ['https://sample-system.com'],
         type: [String],
@@ -59,12 +69,32 @@ __decorate([
 ], UpdateSystemDto.prototype, "healthCheckUrl", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
-        description: '공개키/비밀키 쌍 재생성 여부 (주의: true로 설정 시 기존 키는 즉시 무효화됩니다)',
-        example: false,
+        description: '클라이언트 ID',
+        example: 'client-a1b2c3d4',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateSystemDto.prototype, "clientId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '클라이언트 시크릿',
+        example: 'secret-a1b2c3d4e5f6',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateSystemDto.prototype, "clientSecret", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '활성 여부',
+        example: true,
         required: false,
     }),
     (0, class_validator_1.IsBoolean)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Boolean)
-], UpdateSystemDto.prototype, "regenerateKeys", void 0);
+], UpdateSystemDto.prototype, "isActive", void 0);
 //# sourceMappingURL=update-system.dto.js.map

@@ -10,18 +10,19 @@ exports.SystemsModule = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const system_entity_1 = require("./entities/system.entity");
-const systems_service_1 = require("./systems.service");
-const systems_controller_1 = require("./systems.controller");
-const admin_systems_controller_1 = require("./admin-systems.controller");
+const systems_service_1 = require("./services/systems.service");
+const admin_controller_1 = require("./controllers/admin.controller");
+const domain_controller_1 = require("./controllers/domain.controller");
+const admin_usecase_1 = require("./usecases/admin.usecase");
 let SystemsModule = class SystemsModule {
 };
 exports.SystemsModule = SystemsModule;
 exports.SystemsModule = SystemsModule = __decorate([
     (0, common_1.Module)({
         imports: [typeorm_1.TypeOrmModule.forFeature([system_entity_1.System])],
-        providers: [systems_service_1.SystemsService],
-        controllers: [systems_controller_1.SystemsController, admin_systems_controller_1.AdminSystemsController],
-        exports: [systems_service_1.SystemsService],
+        providers: [systems_service_1.SystemsService, admin_usecase_1.AdminUsecase],
+        controllers: [admin_controller_1.AdminSystemsController, domain_controller_1.DomainSystemsController],
+        exports: [systems_service_1.SystemsService, admin_usecase_1.AdminUsecase],
     })
 ], SystemsModule);
 //# sourceMappingURL=systems.module.js.map

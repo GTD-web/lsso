@@ -4,12 +4,6 @@ export class UserAuthDataDto {
     @ApiProperty({ description: '액세스 토큰', example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOi...' })
     accessToken: string;
 
-    @ApiProperty({
-        description: '시크릿 키',
-        example: '08c9124e08661f87e893544360d86d84de0154902fde79802d81ba7f0ec794a5',
-    })
-    tokenFingerprint: string;
-
     @ApiProperty({ description: '토큰 만료 시간', example: '2025-03-26T00:00:00.000Z' })
     expiresAt: Date;
 

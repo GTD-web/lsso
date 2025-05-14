@@ -8,7 +8,6 @@ import {
     JoinColumn,
 } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
-import { System } from 'src/systems/entities/system.entity';
 
 @Entity('tokens')
 export class Token {
@@ -18,25 +17,15 @@ export class Token {
     @Column()
     userId: string;
 
-    @Column()
-    systemId: string;
-
-    @ManyToOne(() => User, (user) => user.tokens)
+    @ManyToOne(() => User, (user) => user.tokens, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'userId' })
     user: User;
-
-    @ManyToOne(() => System, (system) => system.tokens)
-    @JoinColumn({ name: 'systemId' })
-    system: System;
 
     @Column()
     accessToken: string;
 
     @Column({ nullable: true })
     refreshToken: string;
-
-    @Column({ nullable: true })
-    tokenFingerprint: string;
 
     @Column()
     tokenExpiresAt: Date;

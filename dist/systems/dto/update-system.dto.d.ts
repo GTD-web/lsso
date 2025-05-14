@@ -1,7 +1,10 @@
 export declare class UpdateSystemDto {
     name: string;
     description: string;
+    domain: string;
     allowedOrigin: string[];
     healthCheckUrl: string;
-    regenerateKeys: boolean;
+    clientId?: string;
+    clientSecret?: string;
+    isActive?: boolean;
 }

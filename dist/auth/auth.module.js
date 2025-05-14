@@ -8,19 +8,21 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthModule = void 0;
 const common_1 = require("@nestjs/common");
-const auth_service_1 = require("./auth.service");
-const auth_controller_1 = require("./auth.controller");
+const auth_service_1 = require("./services/auth.service");
+const client_controller_1 = require("./controllers/client.controller");
 const config_1 = require("@nestjs/config");
 const jwt_1 = require("@nestjs/jwt");
 const passport_1 = require("@nestjs/passport");
-const admin_auth_service_1 = require("./admin-auth.service");
-const admin_auth_controller_1 = require("./admin-auth.controller");
 const typeorm_1 = require("@nestjs/typeorm");
 const admin_entity_1 = require("./entities/admin.entity");
-const refresh_token_entity_1 = require("./entities/refresh-token.entity");
 const users_module_1 = require("../users/users.module");
 const systems_module_1 = require("../systems/systems.module");
 const tokens_module_1 = require("../tokens/tokens.module");
+const domain_controller_1 = require("./controllers/domain.controller");
+const admin_controller_1 = require("./controllers/admin.controller");
+const admin_usecase_1 = require("./usecases/admin.usecase");
+const jwt_auth_guard_1 = require("./guards/jwt-auth.guard");
+const client_usecase_1 = require("./usecases/client.usecase");
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
@@ -30,20 +32,20 @@ exports.AuthModule = AuthModule = __decorate([
             systems_module_1.SystemsModule,
             users_module_1.UsersModule,
             tokens_module_1.TokensModule,
-            typeorm_1.TypeOrmModule.forFeature([admin_entity_1.Admin, refresh_token_entity_1.RefreshToken]),
+            typeorm_1.TypeOrmModule.forFeature([admin_entity_1.Admin]),
             jwt_1.JwtModule.registerAsync({
                 imports: [config_1.ConfigModule],
                 inject: [config_1.ConfigService],
                 useFactory: (configService) => ({
-                    secretOrPrivateKey: configService.get('JWT_SECRET') || 'admin-secret-key',
+                    secret: configService.get('JWT_SECRET') || 'admin-secret-key',
                     signOptions: { expiresIn: '1h' },
                 }),
             }),
             passport_1.PassportModule.register({ defaultStrategy: 'jwt' }),
         ],
-        controllers: [auth_controller_1.AuthController, admin_auth_controller_1.AdminAuthController],
-        providers: [auth_service_1.AuthService, admin_auth_service_1.AdminAuthService],
-        exports: [auth_service_1.AuthService, admin_auth_service_1.AdminAuthService],
+        controllers: [client_controller_1.ClientAuthController, domain_controller_1.DomainAuthController, admin_controller_1.AdminAuthController],
+        providers: [auth_service_1.AuthService, admin_usecase_1.AdminUseCase, jwt_auth_guard_1.JwtAuthGuard, client_usecase_1.ClientUseCase],
+        exports: [auth_service_1.AuthService],
     })
 ], AuthModule);
 //# sourceMappingURL=auth.module.js.map

@@ -8,6 +8,7 @@ function setupSwagger(app, dtos) {
         .setDescription('LSSO(Login SSO) API')
         .setVersion('1.0')
         .addBearerAuth()
+        .addBasicAuth()
         .build();
     const extraModels = [...dtos];
     const document = swagger_1.SwaggerModule.createDocument(app, config, {
@@ -22,6 +23,9 @@ function setupSwagger(app, dtos) {
             'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css',
             'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-standalone-preset.min.css',
         ],
+        swaggerOptions: {
+            docExpansion: 'none',
+        },
     });
 }
 //# sourceMappingURL=swagger.js.map

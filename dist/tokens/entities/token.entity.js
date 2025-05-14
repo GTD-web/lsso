@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Token = void 0;
 const typeorm_1 = require("typeorm");
 const user_entity_1 = require("../../users/entities/user.entity");
-const system_entity_1 = require("../../systems/entities/system.entity");
 let Token = class Token {
 };
 exports.Token = Token;
@@ -25,19 +24,10 @@ __decorate([
     __metadata("design:type", String)
 ], Token.prototype, "userId", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], Token.prototype, "systemId", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)(() => user_entity_1.User, (user) => user.tokens),
+    (0, typeorm_1.ManyToOne)(() => user_entity_1.User, (user) => user.tokens, { onDelete: 'CASCADE' }),
     (0, typeorm_1.JoinColumn)({ name: 'userId' }),
     __metadata("design:type", user_entity_1.User)
 ], Token.prototype, "user", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)(() => system_entity_1.System, (system) => system.tokens),
-    (0, typeorm_1.JoinColumn)({ name: 'systemId' }),
-    __metadata("design:type", system_entity_1.System)
-], Token.prototype, "system", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
@@ -46,10 +36,6 @@ __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Token.prototype, "refreshToken", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", String)
-], Token.prototype, "tokenFingerprint", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", Date)

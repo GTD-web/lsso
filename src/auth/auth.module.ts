@@ -1,44 +1,42 @@
 import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { AuthController } from './auth.controller';
+import { AuthService } from './services/auth.service';
+import { ClientAuthController } from './controllers/client.controller';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { AdminAuthService } from './admin-auth.service';
-import { AdminAuthController } from './admin-auth.controller';
+
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Admin } from './entities/admin.entity';
-import { RefreshToken } from './entities/refresh-token.entity';
 import { UsersModule } from 'src/users/users.module';
 import { SystemsModule } from 'src/systems/systems.module';
 import { TokensModule } from 'src/tokens/tokens.module';
+import { DomainAuthController } from './controllers/domain.controller';
+import { AdminAuthController } from './controllers/admin.controller';
+import { AdminUseCase } from './usecases/admin.usecase';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { ClientUseCase } from './usecases/client.usecase';
 
 @Module({
     imports: [
         SystemsModule,
         UsersModule,
         TokensModule,
-        // JwtModule.register({
-        //     global: true,
-        //     secretOrPrivateKey: process.env.JWT_SECRET || 'admin-secret-key',
-        //     signOptions: { expiresIn: '1h' },
-        // }),
-        TypeOrmModule.forFeature([Admin, RefreshToken]),
+        TypeOrmModule.forFeature([Admin]),
 
         // JWT 모듈 설정
         JwtModule.registerAsync({
             imports: [ConfigModule],
             inject: [ConfigService],
             useFactory: (configService: ConfigService) => ({
-                secretOrPrivateKey: configService.get<string>('JWT_SECRET') || 'admin-secret-key',
+                secret: configService.get<string>('JWT_SECRET') || 'admin-secret-key',
                 signOptions: { expiresIn: '1h' },
             }),
         }),
 
         PassportModule.register({ defaultStrategy: 'jwt' }),
     ],
-    controllers: [AuthController, AdminAuthController],
-    providers: [AuthService, AdminAuthService],
-    exports: [AuthService, AdminAuthService],
+    controllers: [ClientAuthController, DomainAuthController, AdminAuthController],
+    providers: [AuthService, AdminUseCase, JwtAuthGuard, ClientUseCase],
+    exports: [AuthService],
 })
 export class AuthModule {}
