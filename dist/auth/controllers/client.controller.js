@@ -42,7 +42,7 @@ let ClientAuthController = class ClientAuthController {
 exports.ClientAuthController = ClientAuthController;
 __decorate([
     (0, swagger_1.ApiBasicAuth)(),
-    (0, common_1.Post)('token'),
+    (0, common_1.Post)('login'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     (0, swagger_1.ApiOperation)({
         summary: '로그인 및 토큰 발급',
