@@ -11,6 +11,7 @@ import {
     Headers,
     BadRequestException,
     HttpStatus,
+    UnauthorizedException,
 } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
 // import { LoginDto, LoginResponseDto, RefreshTokenDto, RefreshTokenResponseDto } from '../dto';
@@ -106,7 +107,6 @@ export class ClientAuthController {
     @ApiResponse({ status: 401, description: '시스템 인증 실패 또는 사용자 로그인 실패' })
     @ApiResponse({ status: 404, description: '사용자 또는 시스템을 찾을 수 없음' })
     async tokenRoute(@Headers('Authorization') authHeader: string, @Body() body: any) {
-        console.log('authHeader', authHeader, body);
         if (!authHeader) {
             throw new BadRequestException('인증 헤더가 필요합니다.');
         }
@@ -115,7 +115,11 @@ export class ClientAuthController {
         const system = await this.clientUseCase.authenticateSystem(authHeader);
 
         // 토큰 요청 처리 (사용자 로그인 또는 리프레시 토큰 처리)
-        return this.clientUseCase.handleTokenRequest(system, body);
+        try {
+            return { ...(await this.clientUseCase.handleTokenRequest(system, body)), system: system.name };
+        } catch (error) {
+            throw new UnauthorizedException({ message: error.message, system: system?.name || null });
+        }
     }
 
     @ApiBearerAuth()

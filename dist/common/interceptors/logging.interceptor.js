@@ -60,6 +60,7 @@ let LoggingInterceptor = class LoggingInterceptor {
             responseTime: null,
             statusCode: null,
             response: null,
+            system: null,
             error: null,
             isError: false,
         };
@@ -68,10 +69,12 @@ let LoggingInterceptor = class LoggingInterceptor {
             logData.responseTime = logData.responseTimestamp - startTime;
             logData.statusCode = context.switchToHttp().getResponse().statusCode;
             logData.response = request.method !== 'GET' ? response : null;
+            logData.system = response.system;
         }), (0, operators_1.catchError)(async (error) => {
             logData.responseTimestamp = date_util_1.DateUtil.now().toDate();
             logData.responseTime = logData.responseTimestamp - startTime;
             logData.statusCode = error.status || 500;
+            logData.system = error.response.system;
             logData.error = {
                 message: error.message,
             };

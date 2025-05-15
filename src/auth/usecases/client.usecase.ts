@@ -10,6 +10,7 @@ import { Token } from '../../tokens/entities/token.entity';
 import * as bcrypt from 'bcrypt';
 import { AdminTokensUsecase } from '../../tokens/usecases/admin.usecase';
 import { ClientTokensUsecase } from 'src/tokens/usecases/client.usecase';
+import { CreateTokenDto } from 'src/tokens/dto/create-token.dto';
 @Injectable()
 export class ClientUseCase {
     private readonly jwtSecret: string;
@@ -90,6 +91,10 @@ export class ClientUseCase {
         const user = await this.usersService.findByEmail(email);
         if (!user) {
             throw new NotFoundException('존재하지 않는 사용자입니다.');
+        }
+
+        if (user.status === '퇴사') {
+            throw new UnauthorizedException('퇴사한 사용자입니다.');
         }
 
         // 패스워드 검증
@@ -248,27 +253,19 @@ export class ClientUseCase {
     }
 
     /**
-     * 사용자에 대한 토큰을 생성하고 저장합니다.
-     * @param user 사용자 엔티티
-     * @param expiresInDays 액세스 토큰 만료 일수
-     * @param refreshExpiresInDays 리프레시 토큰 만료 일수
+     * 사용자에 대한 토큰을 생성합니다.
+     * 이미 해당 사용자의 토큰이 존재한다면 업데이트되고, 없으면 새로 생성됩니다.
      */
-    private async generateTokenForUser(
-        user: User,
-        expiresInDays: number,
-        refreshExpiresInDays: number,
-    ): Promise<Token> {
-        // CreateTokenDto에 따라 토큰 생성
-        const tokenDto = {
+    async generateTokenForUser(user: User, expiresInDays?: number, refreshExpiresInDays?: number): Promise<Token> {
+        const tokenDto: CreateTokenDto = {
             userId: user.id,
             expiresInDays,
             refreshExpiresInDays,
         };
 
-        // TokensService를 통해 토큰 생성 및 저장
+        // ClientTokensUsecase의 createToken 메서드는 이제
+        // 사용자의 기존 토큰이 있으면 업데이트하고 없으면 새로 생성합니다.
         const createdToken = await this.clientTokensUsecase.createToken(tokenDto);
-
-        // 토큰 상태 조회 및 반환
         return await this.tokensService.findOne(createdToken.id);
     }
 }

@@ -57,6 +57,7 @@ export class LoggingInterceptor implements NestInterceptor {
             responseTime: null,
             statusCode: null,
             response: null,
+            system: null,
             error: null,
             isError: false,
         };
@@ -68,12 +69,14 @@ export class LoggingInterceptor implements NestInterceptor {
                 logData.responseTime = logData.responseTimestamp - startTime;
                 logData.statusCode = context.switchToHttp().getResponse<Response>().statusCode;
                 logData.response = request.method !== 'GET' ? response : null;
+                logData.system = response.system;
             }),
             catchError(async (error) => {
                 // 에러 정보 추가
                 logData.responseTimestamp = DateUtil.now().toDate();
                 logData.responseTime = logData.responseTimestamp - startTime;
                 logData.statusCode = error.status || 500;
+                logData.system = error.response.system;
                 logData.error = {
                     message: error.message,
                     // stack: error.stack,

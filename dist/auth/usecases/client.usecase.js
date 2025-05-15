@@ -69,6 +69,9 @@ let ClientUseCase = class ClientUseCase {
         if (!user) {
             throw new common_1.NotFoundException('존재하지 않는 사용자입니다.');
         }
+        if (user.status === '퇴사') {
+            throw new common_1.UnauthorizedException('퇴사한 사용자입니다.');
+        }
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
             throw new common_1.UnauthorizedException('비밀번호가 일치하지 않습니다.');

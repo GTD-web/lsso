@@ -44,6 +44,9 @@ export class Log {
     @Column('jsonb', { nullable: true })
     response: any;
 
+    @Column({ nullable: true })
+    system: string;
+
     @Column('jsonb', { nullable: true })
     error: any;
 

@@ -71,6 +71,10 @@ __decorate([
     __metadata("design:type", Object)
 ], Log.prototype, "response", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Log.prototype, "system", void 0);
+__decorate([
     (0, typeorm_1.Column)('jsonb', { nullable: true }),
     __metadata("design:type", Object)
 ], Log.prototype, "error", void 0);

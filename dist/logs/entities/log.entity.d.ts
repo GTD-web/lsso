@@ -13,6 +13,7 @@ export declare class Log {
     responseTime: number;
     statusCode: number;
     response: any;
+    system: string;
     error: any;
     isError: boolean;
 }

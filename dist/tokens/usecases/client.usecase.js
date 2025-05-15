@@ -47,7 +47,6 @@ let ClientTokensUsecase = class ClientTokensUsecase {
             expiresIn: `${expiresInDays}d`,
             secret: this.configService.get('JWT_SECRET'),
         });
-        console.log('accessToken', accessToken);
         const refreshPayload = {
             ...payload,
             type: 'refresh',
@@ -56,10 +55,28 @@ let ClientTokensUsecase = class ClientTokensUsecase {
             expiresIn: `${refreshExpiresInDays}d`,
             secret: this.configService.get('JWT_SECRET'),
         });
-        console.log('refreshToken', refreshToken);
         const now = new Date();
         const tokenExpiresAt = this.addDays(now, expiresInDays);
         const refreshTokenExpiresAt = this.addDays(now, refreshExpiresInDays);
+        try {
+            const existingTokens = await this.tokensService.findByUserId(userId);
+            if (existingTokens && existingTokens.length > 0) {
+                const existingToken = existingTokens[0];
+                console.log(`User ${userId} already has a token, updating existing token ${existingToken.id}`);
+                return this.tokensService.update(existingToken.id, {
+                    accessToken,
+                    refreshToken,
+                    tokenExpiresAt,
+                    refreshTokenExpiresAt,
+                    lastAccess: now,
+                    isActive: true,
+                });
+            }
+        }
+        catch (error) {
+            console.log(`Error checking existing tokens for user ${userId}: ${error.message}`);
+        }
+        console.log(`Creating new token for user ${userId}`);
         return this.tokensService.create({
             userId,
             accessToken,

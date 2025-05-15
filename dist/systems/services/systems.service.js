@@ -42,7 +42,7 @@ let SystemsService = class SystemsService {
         return this.systemsRepository.save(system);
     }
     async remove(id) {
-        const result = await this.systemsRepository.softDelete(id);
+        const result = await this.systemsRepository.delete(id);
         if (result.affected === 0) {
             throw new common_1.NotFoundException(`System with ID ${id} not found`);
         }

@@ -23,12 +23,16 @@ let ClientAuthController = class ClientAuthController {
         this.clientUseCase = clientUseCase;
     }
     async tokenRoute(authHeader, body) {
-        console.log('authHeader', authHeader, body);
         if (!authHeader) {
             throw new common_1.BadRequestException('인증 헤더가 필요합니다.');
         }
         const system = await this.clientUseCase.authenticateSystem(authHeader);
-        return this.clientUseCase.handleTokenRequest(system, body);
+        try {
+            return { ...(await this.clientUseCase.handleTokenRequest(system, body)), system: system.name };
+        }
+        catch (error) {
+            throw new common_1.UnauthorizedException({ message: error.message, system: system?.name || null });
+        }
     }
     async verifyToken(authHeader) {
         console.log('authHeader', authHeader);

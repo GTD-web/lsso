@@ -46,6 +46,7 @@ export class ClientTokensUsecase {
 
     /**
      * 새 토큰을 생성합니다.
+     * 이미 해당 사용자의 토큰이 존재한다면 업데이트하고, 없으면 새로 생성합니다.
      */
     async createToken(createTokenDto: CreateTokenDto): Promise<Token> {
         const {
@@ -65,7 +66,7 @@ export class ClientTokensUsecase {
             expiresIn: `${expiresInDays}d`,
             secret: this.configService.get<string>('JWT_SECRET'),
         });
-        console.log('accessToken', accessToken);
+
         // 리프레시 토큰 생성
         const refreshPayload = {
             ...payload,
@@ -75,14 +76,39 @@ export class ClientTokensUsecase {
             expiresIn: `${refreshExpiresInDays}d`,
             secret: this.configService.get<string>('JWT_SECRET'),
         });
-        console.log('refreshToken', refreshToken);
 
         // 만료일 계산
         const now = new Date();
         const tokenExpiresAt = this.addDays(now, expiresInDays);
         const refreshTokenExpiresAt = this.addDays(now, refreshExpiresInDays);
 
-        // 토큰 엔티티 생성 및 저장
+        // 사용자의 기존 토큰 확인
+        try {
+            // 사용자의 토큰 목록 조회
+            const existingTokens = await this.tokensService.findByUserId(userId);
+
+            // 토큰이 있으면 첫 번째 토큰을 업데이트
+            if (existingTokens && existingTokens.length > 0) {
+                const existingToken = existingTokens[0];
+
+                console.log(`User ${userId} already has a token, updating existing token ${existingToken.id}`);
+
+                return this.tokensService.update(existingToken.id, {
+                    accessToken,
+                    refreshToken,
+                    tokenExpiresAt,
+                    refreshTokenExpiresAt,
+                    lastAccess: now,
+                    isActive: true,
+                });
+            }
+        } catch (error) {
+            console.log(`Error checking existing tokens for user ${userId}: ${error.message}`);
+            // 오류 발생시 새 토큰 생성 진행
+        }
+
+        // 기존 토큰이 없으면 새로 생성
+        console.log(`Creating new token for user ${userId}`);
         return this.tokensService.create({
             userId,
             accessToken,

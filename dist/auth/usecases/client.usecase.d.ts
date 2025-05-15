@@ -26,5 +26,5 @@ export declare class ClientUseCase {
     private formatTokenResponse;
     private calculateExpiresIn;
     private generateJwtToken;
-    private generateTokenForUser;
+    generateTokenForUser(user: User, expiresInDays?: number, refreshExpiresInDays?: number): Promise<Token>;
 }
