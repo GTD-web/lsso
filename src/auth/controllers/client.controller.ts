@@ -35,7 +35,7 @@ export class ClientAuthController {
     constructor(private readonly authService: AuthService, private readonly clientUseCase: ClientUseCase) {}
 
     @ApiBasicAuth()
-    @Post('token')
+    @Post('login')
     @HttpCode(HttpStatus.OK)
     @ApiOperation({
         summary: '로그인 및 토큰 발급',
