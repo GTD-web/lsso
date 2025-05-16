@@ -19,21 +19,13 @@ let LoggingInterceptor = class LoggingInterceptor {
     constructor(logsService, systemService) {
         this.logsService = logsService;
         this.systemService = systemService;
-        this.queue = [];
-        setInterval(() => {
-            if (this.queue.length > 0) {
-                console.log('queue', this.queue);
-                this.logsService.createMany(this.queue);
-                this.queue = [];
-            }
-        }, 3000);
     }
     async intercept(context, next) {
         const startTime = Date.now();
         const ctx = context.switchToHttp();
         const request = ctx.getRequest();
-        if (request.url.startsWith('/api/admin') || request.url.startsWith('/api/domain')) {
-            console.log('admin or domain', request.url, request.query);
+        const passUrl = ['/api/admin', '/api/domain', '/api/webhook'];
+        if (passUrl.some((url) => request.url.startsWith(url))) {
             return next.handle();
         }
         let ip = Array.isArray(request.headers['x-forwarded-for'])
@@ -65,14 +57,12 @@ let LoggingInterceptor = class LoggingInterceptor {
             isError: false,
         };
         return next.handle().pipe((0, operators_1.tap)(async (response) => {
-            console.log('api response success', response);
             logData.responseTimestamp = date_util_1.DateUtil.now().toDate();
             logData.responseTime = logData.responseTimestamp - startTime;
             logData.statusCode = context.switchToHttp().getResponse().statusCode;
             logData.response = request.method !== 'GET' ? response : null;
             logData.system = response?.system || null;
         }), (0, operators_1.catchError)(async (error) => {
-            console.log('api response error', error);
             logData.responseTimestamp = date_util_1.DateUtil.now().toDate();
             logData.responseTime = logData.responseTimestamp - startTime;
             logData.statusCode = error.status || 500;
@@ -83,13 +73,7 @@ let LoggingInterceptor = class LoggingInterceptor {
             logData.isError = true;
             throw error;
         }), (0, operators_1.finalize)(() => {
-            console.log('api response finalize', logData);
-            if (this.queue.length < 1000) {
-                this.queue.push(logData);
-            }
-            else {
-                console.warn('queue is full');
-            }
+            this.logsService.create(logData);
         }));
     }
 };

@@ -7,24 +7,15 @@ import { SystemsService } from '../../systems/services/systems.service';
 import { DateUtil } from '../utils/date.util';
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
-    constructor(private readonly logsService: LogsService, private readonly systemService: SystemsService) {
-        setInterval(() => {
-            if (this.queue.length > 0) {
-                console.log('queue', this.queue);
-                this.logsService.createMany(this.queue);
-                this.queue = [];
-            }
-        }, 3000);
-    }
-
-    queue: any[] = [];
+    constructor(private readonly logsService: LogsService, private readonly systemService: SystemsService) {}
 
     async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
         const startTime = Date.now();
         const ctx = context.switchToHttp();
         const request = ctx.getRequest<Request>();
-        if (request.url.startsWith('/api/admin') || request.url.startsWith('/api/domain')) {
-            console.log('admin or domain', request.url, request.query);
+
+        const passUrl = ['/api/admin', '/api/domain', '/api/webhook'];
+        if (passUrl.some((url) => request.url.startsWith(url))) {
             return next.handle();
         }
 
@@ -64,7 +55,6 @@ export class LoggingInterceptor implements NestInterceptor {
 
         return next.handle().pipe(
             tap(async (response) => {
-                console.log('api response success', response);
                 // 성공 응답 정보 추가
                 logData.responseTimestamp = DateUtil.now().toDate();
                 logData.responseTime = logData.responseTimestamp - startTime;
@@ -73,7 +63,6 @@ export class LoggingInterceptor implements NestInterceptor {
                 logData.system = response?.system || null;
             }),
             catchError(async (error) => {
-                console.log('api response error', error);
                 // 에러 정보 추가
                 logData.responseTimestamp = DateUtil.now().toDate();
                 logData.responseTime = logData.responseTimestamp - startTime;
@@ -87,12 +76,7 @@ export class LoggingInterceptor implements NestInterceptor {
                 throw error;
             }),
             finalize(() => {
-                console.log('api response finalize', logData);
-                if (this.queue.length < 1000) {
-                    this.queue.push(logData);
-                } else {
-                    console.warn('queue is full');
-                }
+                this.logsService.create(logData);
             }),
         );
     }
