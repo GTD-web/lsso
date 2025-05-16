@@ -70,4 +70,8 @@ __decorate([
     (0, swagger_1.ApiProperty)({ description: 'User agent of the requester', required: false }),
     __metadata("design:type", String)
 ], LogResponseDto.prototype, "userAgent", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'System name', required: false }),
+    __metadata("design:type", String)
+], LogResponseDto.prototype, "system", void 0);
 //# sourceMappingURL=log-response.dto.js.map

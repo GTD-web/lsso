@@ -13,4 +13,5 @@ export declare class LogResponseDto {
     ip: string;
     host: string;
     userAgent?: string;
+    system?: string;
 }

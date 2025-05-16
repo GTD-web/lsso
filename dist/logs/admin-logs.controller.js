@@ -77,6 +77,7 @@ let AdminLogsController = class AdminLogsController {
         responseDto.ip = log.ip;
         responseDto.host = log.host;
         responseDto.userAgent = log.userAgent;
+        responseDto.system = log.system;
         return responseDto;
     }
 };

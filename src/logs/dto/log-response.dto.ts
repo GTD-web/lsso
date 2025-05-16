@@ -42,4 +42,7 @@ export class LogResponseDto {
 
     @ApiProperty({ description: 'User agent of the requester', required: false })
     userAgent?: string;
+
+    @ApiProperty({ description: 'System name', required: false })
+    system?: string;
 }
