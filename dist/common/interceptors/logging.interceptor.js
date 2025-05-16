@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.LoggingInterceptor = void 0;
 const common_1 = require("@nestjs/common");
 const operators_1 = require("rxjs/operators");
-const logs_service_1 = require("../../logs/logs.service");
+const logs_service_1 = require("../../logs/services/logs.service");
 const systems_service_1 = require("../../systems/services/systems.service");
 const date_util_1 = require("../utils/date.util");
 let LoggingInterceptor = class LoggingInterceptor {
@@ -32,8 +32,8 @@ let LoggingInterceptor = class LoggingInterceptor {
         const startTime = Date.now();
         const ctx = context.switchToHttp();
         const request = ctx.getRequest();
-        console.log('request.url', request.url, request.headers);
         if (request.url.startsWith('/api/admin') || request.url.startsWith('/api/domain')) {
+            console.log('admin or domain', request.url, request.query);
             return next.handle();
         }
         let ip = Array.isArray(request.headers['x-forwarded-for'])

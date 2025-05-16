@@ -12,6 +12,7 @@ import { SystemsModule } from './systems/systems.module';
 import { LogsModule } from './logs/logs.module';
 import { TokensModule } from './tokens/tokens.module';
 import { AuthModule } from './auth/auth.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
     imports: [
@@ -36,6 +37,7 @@ import { AuthModule } from './auth/auth.module';
         TokensModule,
         AuthModule,
         LogsModule,
+        DashboardModule,
     ],
     providers: [
         // ApiDocService,

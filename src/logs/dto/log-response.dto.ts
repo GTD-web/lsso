@@ -5,7 +5,7 @@ export class LogResponseDto {
     id: string;
 
     @ApiProperty({ description: 'Timestamp when the log was created' })
-    timestamp: Date;
+    requestTimestamp: Date;
 
     @ApiProperty({ description: 'HTTP method of the request' })
     method: string;

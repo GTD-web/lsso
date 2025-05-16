@@ -9,18 +9,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.LogsModule = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
-const logs_service_1 = require("./logs.service");
+const logs_service_1 = require("./services/logs.service");
 const log_entity_1 = require("./entities/log.entity");
-const admin_logs_controller_1 = require("./admin-logs.controller");
+const admin_controller_1 = require("./controllers/admin.controller");
+const admin_usecase_1 = require("./usecases/admin.usecase");
 let LogsModule = class LogsModule {
 };
 exports.LogsModule = LogsModule;
 exports.LogsModule = LogsModule = __decorate([
     (0, common_1.Module)({
         imports: [typeorm_1.TypeOrmModule.forFeature([log_entity_1.Log])],
-        providers: [logs_service_1.LogsService],
-        controllers: [admin_logs_controller_1.AdminLogsController],
-        exports: [logs_service_1.LogsService],
+        providers: [logs_service_1.LogsService, admin_usecase_1.LogsAdminUseCase],
+        controllers: [admin_controller_1.AdminLogsController],
+        exports: [logs_service_1.LogsService, admin_usecase_1.LogsAdminUseCase],
     })
 ], LogsModule);
 //# sourceMappingURL=logs.module.js.map

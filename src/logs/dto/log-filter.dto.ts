@@ -58,6 +58,11 @@ export class LogFilterDto {
     @IsOptional()
     ip?: string;
 
+    @ApiProperty({ description: 'System filter', required: false })
+    @IsString()
+    @IsOptional()
+    system?: string;
+
     @ApiProperty({ description: 'Show only errors (status >= 400)', required: false, default: false })
     @Type(() => Boolean)
     @IsBoolean()

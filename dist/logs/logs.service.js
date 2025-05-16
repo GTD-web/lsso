@@ -62,7 +62,7 @@ let LogsService = LogsService_1 = class LogsService {
         }
     }
     async filterLogs(filterDto) {
-        const { page = 1, limit = 10, startDate, endDate, method, url, statusCode, host, ip, errorsOnly, sortBy = 'requestTimestamp', sortDirection = log_filter_dto_1.SortDirection.DESC, } = filterDto;
+        const { page = 1, limit = 10, startDate, endDate, method, url, statusCode, host, ip, system, errorsOnly, sortBy = 'requestTimestamp', sortDirection = log_filter_dto_1.SortDirection.DESC, } = filterDto;
         try {
             const where = {};
             if (startDate && endDate) {
@@ -91,6 +91,9 @@ let LogsService = LogsService_1 = class LogsService {
             }
             if (errorsOnly) {
                 where.isError = true;
+            }
+            if (system) {
+                where.system = (0, typeorm_2.ILike)(`%${system}%`);
             }
             const order = {};
             order[sortBy] = sortDirection;

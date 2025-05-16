@@ -1,7 +1,7 @@
 import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { tap, catchError, finalize } from 'rxjs/operators';
-import { LogsService } from '../../logs/logs.service';
+import { LogsService } from '../../logs/services/logs.service';
 import { Request, Response } from 'express';
 import { SystemsService } from '../../systems/services/systems.service';
 import { DateUtil } from '../utils/date.util';
@@ -23,8 +23,8 @@ export class LoggingInterceptor implements NestInterceptor {
         const startTime = Date.now();
         const ctx = context.switchToHttp();
         const request = ctx.getRequest<Request>();
-        console.log('request.url', request.url, request.headers);
         if (request.url.startsWith('/api/admin') || request.url.startsWith('/api/domain')) {
+            console.log('admin or domain', request.url, request.query);
             return next.handle();
         }
 

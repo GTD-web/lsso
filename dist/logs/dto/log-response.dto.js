@@ -21,7 +21,7 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)({ description: 'Timestamp when the log was created' }),
     __metadata("design:type", Date)
-], LogResponseDto.prototype, "timestamp", void 0);
+], LogResponseDto.prototype, "requestTimestamp", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: 'HTTP method of the request' }),
     __metadata("design:type", String)

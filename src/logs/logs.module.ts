@@ -1,13 +1,14 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { LogsService } from './logs.service';
+import { LogsService } from './services/logs.service';
 import { Log } from './entities/log.entity';
-import { AdminLogsController } from './admin-logs.controller';
+import { AdminLogsController } from './controllers/admin.controller';
+import { LogsAdminUseCase } from './usecases/admin.usecase';
 
 @Module({
     imports: [TypeOrmModule.forFeature([Log])],
-    providers: [LogsService],
+    providers: [LogsService, LogsAdminUseCase],
     controllers: [AdminLogsController],
-    exports: [LogsService],
+    exports: [LogsService, LogsAdminUseCase],
 })
 export class LogsModule {}

@@ -17,6 +17,7 @@ const systems_module_1 = require("./systems/systems.module");
 const logs_module_1 = require("./logs/logs.module");
 const tokens_module_1 = require("./tokens/tokens.module");
 const auth_module_1 = require("./auth/auth.module");
+const dashboard_module_1 = require("./dashboard/dashboard.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -43,6 +44,7 @@ exports.AppModule = AppModule = __decorate([
             tokens_module_1.TokensModule,
             auth_module_1.AuthModule,
             logs_module_1.LogsModule,
+            dashboard_module_1.DashboardModule,
         ],
         providers: [
             {

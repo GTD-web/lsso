@@ -1,6 +1,6 @@
 export declare class LogResponseDto {
     id: string;
-    timestamp: Date;
+    requestTimestamp: Date;
     method: string;
     url: string;
     query?: Record<string, any>;

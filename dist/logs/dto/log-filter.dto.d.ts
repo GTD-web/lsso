@@ -12,6 +12,7 @@ export declare class LogFilterDto {
     statusCode?: number;
     host?: string;
     ip?: string;
+    system?: string;
     errorsOnly?: boolean;
     sortBy?: string;
     sortDirection?: SortDirection;

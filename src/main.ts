@@ -7,7 +7,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
-import { LogsService } from './logs/logs.service';
+import { LogsService } from './logs/services/logs.service';
 import { SystemsService } from './systems/services/systems.service';
 
 async function bootstrap() {
