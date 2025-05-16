@@ -83,6 +83,7 @@ let LoggingInterceptor = class LoggingInterceptor {
             logData.isError = true;
             throw error;
         }), (0, operators_1.finalize)(() => {
+            console.log('api response finalize', logData);
             if (this.queue.length < 1000) {
                 this.queue.push(logData);
             }

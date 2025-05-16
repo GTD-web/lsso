@@ -87,6 +87,7 @@ export class LoggingInterceptor implements NestInterceptor {
                 throw error;
             }),
             finalize(() => {
+                console.log('api response finalize', logData);
                 if (this.queue.length < 1000) {
                     this.queue.push(logData);
                 } else {
