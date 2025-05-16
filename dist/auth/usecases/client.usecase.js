@@ -82,7 +82,6 @@ let ClientUseCase = class ClientUseCase {
         const expiresInDays = 1;
         const refreshExpiresInDays = 30;
         const token = await this.generateTokenForUser(user, expiresInDays, refreshExpiresInDays);
-        console.log('token', token);
         return { user, token };
     }
     async handleTokenRequest(system, requestBody) {

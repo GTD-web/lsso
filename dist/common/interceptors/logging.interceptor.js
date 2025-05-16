@@ -65,16 +65,18 @@ let LoggingInterceptor = class LoggingInterceptor {
             isError: false,
         };
         return next.handle().pipe((0, operators_1.tap)(async (response) => {
+            console.log('api response success', response);
             logData.responseTimestamp = date_util_1.DateUtil.now().toDate();
             logData.responseTime = logData.responseTimestamp - startTime;
             logData.statusCode = context.switchToHttp().getResponse().statusCode;
             logData.response = request.method !== 'GET' ? response : null;
-            logData.system = response.system;
+            logData.system = response?.system || null;
         }), (0, operators_1.catchError)(async (error) => {
+            console.log('api response error', error);
             logData.responseTimestamp = date_util_1.DateUtil.now().toDate();
             logData.responseTime = logData.responseTimestamp - startTime;
             logData.statusCode = error.status || 500;
-            logData.system = error.response.system;
+            logData.system = error?.response?.system || null;
             logData.error = {
                 message: error.message,
             };

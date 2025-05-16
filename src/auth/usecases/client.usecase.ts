@@ -112,7 +112,6 @@ export class ClientUseCase {
 
         // 토큰 생성 및 저장
         const token = await this.generateTokenForUser(user, expiresInDays, refreshExpiresInDays);
-        console.log('token', token);
 
         return { user, token };
     }

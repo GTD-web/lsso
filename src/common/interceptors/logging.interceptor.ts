@@ -64,19 +64,21 @@ export class LoggingInterceptor implements NestInterceptor {
 
         return next.handle().pipe(
             tap(async (response) => {
+                console.log('api response success', response);
                 // 성공 응답 정보 추가
                 logData.responseTimestamp = DateUtil.now().toDate();
                 logData.responseTime = logData.responseTimestamp - startTime;
                 logData.statusCode = context.switchToHttp().getResponse<Response>().statusCode;
                 logData.response = request.method !== 'GET' ? response : null;
-                logData.system = response.system;
+                logData.system = response?.system || null;
             }),
             catchError(async (error) => {
+                console.log('api response error', error);
                 // 에러 정보 추가
                 logData.responseTimestamp = DateUtil.now().toDate();
                 logData.responseTime = logData.responseTimestamp - startTime;
                 logData.statusCode = error.status || 500;
-                logData.system = error.response.system;
+                logData.system = error?.response?.system || null;
                 logData.error = {
                     message: error.message,
                     // stack: error.stack,
