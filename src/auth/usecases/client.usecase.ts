@@ -57,7 +57,7 @@ export class ClientUseCase {
 
             // 시스템이 활성화 상태인지 확인
             if (!system.isActive) {
-                throw new UnauthorizedException('비활성화된 시스템입니다.');
+                throw new UnauthorizedException({ message: '비활성화된 시스템입니다.', system: system.name });
             }
 
             // 클라이언트 시크릿 검증t
@@ -65,7 +65,10 @@ export class ClientUseCase {
             // bcrypt로 비교 해야함!(await bcrpompare(c,system.))            if (
 
             if (!(await bcrypt.compare(clientSecret, system.clientSecret))) {
-                throw new UnauthorizedException('유효하지 않은 클라이언트 시크릿입니다.');
+                throw new UnauthorizedException({
+                    message: '유효하지 않은 클라이언트 시크릿입니다.',
+                    system: system.name,
+                });
             }
 
             return system;

@@ -107,10 +107,6 @@ export class ClientAuthController {
     @ApiResponse({ status: 401, description: '시스템 인증 실패 또는 사용자 로그인 실패' })
     @ApiResponse({ status: 404, description: '사용자 또는 시스템을 찾을 수 없음' })
     async tokenRoute(@Headers('Authorization') authHeader: string, @Body() body: any) {
-        if (!authHeader) {
-            throw new BadRequestException('인증 헤더가 필요합니다.');
-        }
-
         // 시스템 인증
         const system = await this.clientUseCase.authenticateSystem(authHeader);
 

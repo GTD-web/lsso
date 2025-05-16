@@ -23,9 +23,6 @@ let ClientAuthController = class ClientAuthController {
         this.clientUseCase = clientUseCase;
     }
     async tokenRoute(authHeader, body) {
-        if (!authHeader) {
-            throw new common_1.BadRequestException('인증 헤더가 필요합니다.');
-        }
         const system = await this.clientUseCase.authenticateSystem(authHeader);
         try {
             return { ...(await this.clientUseCase.handleTokenRequest(system, body)), system: system.name };

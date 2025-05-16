@@ -27,7 +27,9 @@ export class AdminTokensUsecase {
      * 모든 토큰을 조회합니다.
      */
     async findAll(): Promise<Token[]> {
-        return this.tokensService.findAll();
+        return this.tokensService.findAll({
+            relations: ['user'],
+        });
     }
 
     /**

@@ -37,7 +37,7 @@ let TokensService = class TokensService {
         return this.tokensRepository.find(options);
     }
     async findOne(id) {
-        const token = await this.tokensRepository.findOne({ where: { id } });
+        const token = await this.tokensRepository.findOne({ where: { id }, relations: ['user'] });
         if (!token) {
             throw new common_1.NotFoundException(`Token with ID ${id} not found`);
         }

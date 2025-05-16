@@ -47,10 +47,13 @@ let ClientUseCase = class ClientUseCase {
             }
             const system = systems[0];
             if (!system.isActive) {
-                throw new common_1.UnauthorizedException('비활성화된 시스템입니다.');
+                throw new common_1.UnauthorizedException({ message: '비활성화된 시스템입니다.', system: system.name });
             }
             if (!(await bcrypt.compare(clientSecret, system.clientSecret))) {
-                throw new common_1.UnauthorizedException('유효하지 않은 클라이언트 시크릿입니다.');
+                throw new common_1.UnauthorizedException({
+                    message: '유효하지 않은 클라이언트 시크릿입니다.',
+                    system: system.name,
+                });
             }
             return system;
         }

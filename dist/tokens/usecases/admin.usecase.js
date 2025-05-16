@@ -29,7 +29,9 @@ let AdminTokensUsecase = class AdminTokensUsecase {
         this.configService = configService;
     }
     async findAll() {
-        return this.tokensService.findAll();
+        return this.tokensService.findAll({
+            relations: ['user'],
+        });
     }
     async findOne(id) {
         return this.tokensService.findOne(id);

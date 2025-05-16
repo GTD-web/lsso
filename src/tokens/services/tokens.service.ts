@@ -42,7 +42,7 @@ export class TokensService {
      * ID로 특정 토큰을 조회합니다.
      */
     async findOne(id: string): Promise<Token> {
-        const token = await this.tokensRepository.findOne({ where: { id } });
+        const token = await this.tokensRepository.findOne({ where: { id }, relations: ['user'] });
         if (!token) {
             throw new NotFoundException(`Token with ID ${id} not found`);
         }
