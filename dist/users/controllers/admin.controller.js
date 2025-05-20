@@ -26,7 +26,9 @@ let AdminUsersController = class AdminUsersController {
     }
     async findAll() {
         try {
-            const users = await this.usersService.findAll();
+            const users = await this.usersService.findAll({
+                relations: ['tokens'],
+            });
             const userDtos = users.map((user) => new user_response_dto_1.UserResponseDto(user));
             return api_response_dto_1.ApiResponseDto.success(userDtos);
         }

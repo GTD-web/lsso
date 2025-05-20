@@ -19,7 +19,9 @@ export class AdminUsersController {
     })
     async findAll(): Promise<ApiResponseDto<UserResponseDto[]>> {
         try {
-            const users = await this.usersService.findAll();
+            const users = await this.usersService.findAll({
+                relations: ['tokens'],
+            });
             const userDtos = users.map((user) => new UserResponseDto(user));
             return ApiResponseDto.success(userDtos);
         } catch (error) {
