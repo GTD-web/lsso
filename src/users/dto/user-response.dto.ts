@@ -44,6 +44,9 @@ export class UserResponseDto {
     @ApiProperty({ description: '수정일' })
     updatedAt: string;
 
+    @ApiProperty({ description: '토큰 정보', required: false })
+    hasToken?: boolean;
+
     constructor(user: User) {
         this.id = user.id;
         this.employeeNumber = user.employeeNumber;
@@ -59,5 +62,6 @@ export class UserResponseDto {
         this.rank = user.rank;
         this.createdAt = user.createdAt.toISOString();
         this.updatedAt = user.updatedAt.toISOString();
+        this.hasToken = user.tokens.length > 0;
     }
 }

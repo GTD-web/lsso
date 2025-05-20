@@ -27,6 +27,7 @@ export class AdminUsecase {
                 { position: Like(`%${query}%`) },
                 { rank: Like(`%${query}%`) },
             ],
+            relations: ['tokens'],
         };
 
         return this.usersService.findAll(searchConditions);

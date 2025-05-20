@@ -30,6 +30,7 @@ let AdminUsecase = class AdminUsecase {
                 { position: (0, typeorm_1.Like)(`%${query}%`) },
                 { rank: (0, typeorm_1.Like)(`%${query}%`) },
             ],
+            relations: ['tokens'],
         };
         return this.usersService.findAll(searchConditions);
     }

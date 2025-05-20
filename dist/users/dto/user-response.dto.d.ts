@@ -14,5 +14,6 @@ export declare class UserResponseDto {
     rank?: string;
     createdAt: string;
     updatedAt: string;
+    hasToken?: boolean;
     constructor(user: User);
 }

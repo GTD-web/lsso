@@ -27,6 +27,7 @@ class UserResponseDto {
         this.rank = user.rank;
         this.createdAt = user.createdAt.toISOString();
         this.updatedAt = user.updatedAt.toISOString();
+        this.hasToken = user.tokens.length > 0;
     }
 }
 exports.UserResponseDto = UserResponseDto;
@@ -86,4 +87,8 @@ __decorate([
     (0, swagger_1.ApiProperty)({ description: '수정일' }),
     __metadata("design:type", String)
 ], UserResponseDto.prototype, "updatedAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '토큰 정보', required: false }),
+    __metadata("design:type", Boolean)
+], UserResponseDto.prototype, "hasToken", void 0);
 //# sourceMappingURL=user-response.dto.js.map
