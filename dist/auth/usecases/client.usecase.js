@@ -183,6 +183,27 @@ let ClientUseCase = class ClientUseCase {
         const createdToken = await this.clientTokensUsecase.createToken(tokenDto);
         return await this.tokensService.findOne(createdToken.id);
     }
+    async changePassword(token, currentPassword, newPassword) {
+        try {
+            const payload = this.jwtService.verify(token, { secret: this.jwtSecret });
+            const user = await this.usersService.findOne(payload.sub);
+            if (!user) {
+                throw new common_1.NotFoundException('사용자를 찾을 수 없습니다.');
+            }
+            const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+            if (!isPasswordValid) {
+                throw new common_1.UnauthorizedException('현재 비밀번호가 일치하지 않습니다.');
+            }
+            const hashedPassword = await bcrypt.hash(newPassword, 10);
+            await this.usersService.update(user.id, { password: hashedPassword });
+        }
+        catch (error) {
+            if (error instanceof common_1.UnauthorizedException || error instanceof common_1.NotFoundException) {
+                throw error;
+            }
+            throw new common_1.UnauthorizedException('비밀번호 변경 중 오류가 발생했습니다.');
+        }
+    }
 };
 exports.ClientUseCase = ClientUseCase;
 exports.ClientUseCase = ClientUseCase = __decorate([

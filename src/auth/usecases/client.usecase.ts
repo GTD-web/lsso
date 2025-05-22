@@ -250,7 +250,7 @@ export class ClientUseCase {
 
         return this.jwtService.sign(payload, {
             secret: this.jwtSecret,
-            expiresIn: '1d', // 1일 후 만료
+            expiresIn: '1d',
         });
     }
 
@@ -269,5 +269,40 @@ export class ClientUseCase {
         // 사용자의 기존 토큰이 있으면 업데이트하고 없으면 새로 생성합니다.
         const createdToken = await this.clientTokensUsecase.createToken(tokenDto);
         return await this.tokensService.findOne(createdToken.id);
+    }
+
+    /**
+     * 사용자의 비밀번호를 변경합니다.
+     * @param token JWT 토큰
+     * @param currentPassword 현재 비밀번호
+     * @param newPassword 새 비밀번호
+     */
+    async changePassword(token: string, currentPassword: string, newPassword: string): Promise<void> {
+        try {
+            // 토큰 검증 및 사용자 정보 추출
+            const payload = this.jwtService.verify(token, { secret: this.jwtSecret });
+            const user = await this.usersService.findOne(payload.sub);
+
+            if (!user) {
+                throw new NotFoundException('사용자를 찾을 수 없습니다.');
+            }
+
+            // 현재 비밀번호 검증
+            const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+            if (!isPasswordValid) {
+                throw new UnauthorizedException('현재 비밀번호가 일치하지 않습니다.');
+            }
+
+            // 새 비밀번호 해싱
+            const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+            // 비밀번호 업데이트
+            await this.usersService.update(user.id, { password: hashedPassword });
+        } catch (error) {
+            if (error instanceof UnauthorizedException || error instanceof NotFoundException) {
+                throw error;
+            }
+            throw new UnauthorizedException('비밀번호 변경 중 오류가 발생했습니다.');
+        }
     }
 }

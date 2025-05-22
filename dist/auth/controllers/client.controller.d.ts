@@ -9,4 +9,10 @@ export declare class ClientAuthController {
         valid: boolean;
         message: string;
     }>;
+    changePassword(authHeader: string, body: {
+        currentPassword: string;
+        newPassword: string;
+    }): Promise<{
+        message: string;
+    }>;
 }
