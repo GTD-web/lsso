@@ -8,7 +8,7 @@ import { ConfigService } from '@nestjs/config';
 // JWT 토큰 관련 상수
 const JWT_CONSTANTS = {
     DEFAULT_ACCESS_TOKEN_EXPIRES_DAYS: 1, // 액세스 토큰 기본 만료 일수
-    DEFAULT_REFRESH_TOKEN_EXPIRES_DAYS: 30, // 리프레시 토큰 기본 만료 일수
+    DEFAULT_REFRESH_TOKEN_EXPIRES_DAYS: 7, // 리프레시 토큰 기본 만료 일수
     MIN_ACCESS_TOKEN_EXPIRES_DAYS: 1, // 액세스 토큰 최소 만료 일수
     MAX_ACCESS_TOKEN_EXPIRES_DAYS: 365, // 액세스 토큰 최대 만료 일수
     MIN_REFRESH_TOKEN_EXPIRES_DAYS: 30, // 리프레시 토큰 최소 만료 일수
