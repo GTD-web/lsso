@@ -29,8 +29,6 @@ let TokensService = class TokensService {
         this.systemsService = systemsService;
         this.configService = configService;
         this.jwtSecret = this.configService.get('JWT_SECRET') || 'defaultJwtSecret123!@#';
-        const testenv = this.configService.get('GLOBAL_SECRET');
-        console.log(this.jwtSecret, testenv);
         if (!this.jwtSecret) {
             console.warn('JWT_SECRET 환경 변수가 설정되지 않았습니다. 기본값이 사용됩니다.');
         }
