@@ -40,10 +40,11 @@ let AdminTokensUsecase = class AdminTokensUsecase {
         return this.tokensService.findByUserId(userId);
     }
     async createToken(createTokenDto) {
-        const { userId, employeeNumber, expiresInDays = JWT_CONSTANTS.DEFAULT_ACCESS_TOKEN_EXPIRES_DAYS, refreshExpiresInDays = JWT_CONSTANTS.DEFAULT_REFRESH_TOKEN_EXPIRES_DAYS, } = createTokenDto;
+        const { userId, expiresInDays = JWT_CONSTANTS.DEFAULT_ACCESS_TOKEN_EXPIRES_DAYS, refreshExpiresInDays = JWT_CONSTANTS.DEFAULT_REFRESH_TOKEN_EXPIRES_DAYS, } = createTokenDto;
+        const user = await this.usersService.findOne(userId);
         const payload = {
             sub: userId,
-            employeeNumber,
+            employeeNumber: user.employeeNumber,
             type: 'access',
         };
         const accessToken = this.jwtService.sign(payload, {

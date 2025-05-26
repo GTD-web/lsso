@@ -51,15 +51,15 @@ export class AdminTokensUsecase {
     async createToken(createTokenDto: CreateTokenDto): Promise<Token> {
         const {
             userId,
-            employeeNumber,
             expiresInDays = JWT_CONSTANTS.DEFAULT_ACCESS_TOKEN_EXPIRES_DAYS,
             refreshExpiresInDays = JWT_CONSTANTS.DEFAULT_REFRESH_TOKEN_EXPIRES_DAYS,
         } = createTokenDto;
 
+        const user = await this.usersService.findOne(userId);
         // JWT 페이로드 생성
         const payload = {
             sub: userId,
-            employeeNumber,
+            employeeNumber: user.employeeNumber,
             type: 'access',
         };
 
