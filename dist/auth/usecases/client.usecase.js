@@ -140,9 +140,9 @@ let ClientUseCase = class ClientUseCase {
         return {
             tokenType: 'Bearer',
             accessToken: token.accessToken,
-            expiresIn: this.calculateExpiresIn(token.tokenExpiresAt),
+            expiresAt: token.tokenExpiresAt,
             refreshToken: token.refreshToken,
-            refreshTokenExpiresIn: this.calculateExpiresIn(token.refreshTokenExpiresAt),
+            refreshTokenExpiresAt: token.refreshTokenExpiresAt,
             id: user.id,
             name: user.name,
             email: user.email,
