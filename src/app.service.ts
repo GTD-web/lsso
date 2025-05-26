@@ -5,7 +5,6 @@ export class AppService {
     constructor(private configService: ConfigService) {}
     getHello(): string {
         const testenv = this.configService.get<string>('GLOBAL_SECRET');
-        console.log(testenv);
-        return 'Hello World!';
+        return testenv || 'Hello World!';
     }
 }

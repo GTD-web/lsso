@@ -13,6 +13,8 @@ import { LogsModule } from './logs/logs.module';
 import { TokensModule } from './tokens/tokens.module';
 import { AuthModule } from './auth/auth.module';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 
 @Module({
     imports: [
@@ -39,7 +41,9 @@ import { DashboardModule } from './dashboard/dashboard.module';
         LogsModule,
         DashboardModule,
     ],
+    controllers: [AppController],
     providers: [
+        AppService,
         // ApiDocService,
         // DbDocService,
         {
