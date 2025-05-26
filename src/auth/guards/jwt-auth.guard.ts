@@ -9,7 +9,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
     constructor(private jwtService: JwtService, private configService: ConfigService) {
         super();
-        this.jwtSecret = this.configService.get<string>('JWT_SECRET') || 'admin-secret-key';
+        this.jwtSecret = this.configService.get<string>('GLOBAL_SECRET');
     }
 
     canActivate(context: ExecutionContext) {

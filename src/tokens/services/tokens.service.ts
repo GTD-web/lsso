@@ -2,30 +2,22 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, FindManyOptions } from 'typeorm';
 import { Token } from '../entities/token.entity';
-import { JwtService } from '@nestjs/jwt';
-import { randomBytes, createHmac } from 'crypto';
-import { User } from 'src/users/entities/user.entity';
-import { System } from 'src/systems/entities/system.entity';
 import { CreateTokenDto } from '../dto/create-token.dto';
 import { UsersService } from 'src/users/services/users.service';
-import { SystemsService } from 'src/systems/services/systems.service';
-import { RenewTokenDto } from '../dto/renew-token.dto';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class TokensService {
-    private readonly jwtSecret: string;
+    readonly jwtSecret: string;
 
     constructor(
         @InjectRepository(Token)
         private tokensRepository: Repository<Token>,
-        private jwtService: JwtService,
         private usersService: UsersService,
-        private systemsService: SystemsService,
         private configService: ConfigService,
     ) {
         // 환경 변수에서 JWT 시크릿을 불러옵니다.
-        this.jwtSecret = this.configService.get<string>('JWT_SECRET') || 'defaultJwtSecret123!@#';
+        this.jwtSecret = this.configService.get<string>('GLOBAL_SECRET');
         if (!this.jwtSecret) {
             console.warn('JWT_SECRET 환경 변수가 설정되지 않았습니다. 기본값이 사용됩니다.');
         }

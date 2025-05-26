@@ -13,7 +13,7 @@ export class AdminUseCase {
         private readonly jwtService: JwtService,
         private readonly configService: ConfigService,
     ) {
-        this.jwtSecret = this.configService.get<string>('JWT_SECRET') || 'admin-secret-key';
+        this.jwtSecret = this.configService.get<string>('GLOBAL_SECRET');
     }
 
     /**

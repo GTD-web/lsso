@@ -2,12 +2,10 @@ import { TokensService } from '../services/tokens.service';
 import { Token } from '../entities/token.entity';
 import { CreateTokenDto, RenewTokenDto } from '../dto';
 import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
 export declare class AdminTokensUsecase {
     private readonly tokensService;
     private jwtService;
-    private configService;
-    constructor(tokensService: TokensService, jwtService: JwtService, configService: ConfigService);
+    constructor(tokensService: TokensService, jwtService: JwtService);
     findAll(): Promise<Token[]>;
     findOne(id: string): Promise<Token>;
     findByUserId(userId: string): Promise<Token[]>;

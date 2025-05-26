@@ -28,7 +28,7 @@ import { ClientUseCase } from './usecases/client.usecase';
             imports: [ConfigModule],
             inject: [ConfigService],
             useFactory: (configService: ConfigService) => ({
-                secret: configService.get<string>('JWT_SECRET') || 'admin-secret-key',
+                secret: configService.get<string>('GLOBAL_SECRET'),
                 signOptions: { expiresIn: '1h' },
             }),
         }),

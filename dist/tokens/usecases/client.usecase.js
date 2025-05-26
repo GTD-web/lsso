@@ -45,7 +45,7 @@ let ClientTokensUsecase = class ClientTokensUsecase {
         };
         const accessToken = this.jwtService.sign(payload, {
             expiresIn: `${expiresInDays}d`,
-            secret: this.configService.get('JWT_SECRET'),
+            secret: this.tokensService.jwtSecret,
         });
         const refreshPayload = {
             ...payload,
@@ -53,7 +53,7 @@ let ClientTokensUsecase = class ClientTokensUsecase {
         };
         const refreshToken = this.jwtService.sign(refreshPayload, {
             expiresIn: `${refreshExpiresInDays}d`,
-            secret: this.configService.get('JWT_SECRET'),
+            secret: this.tokensService.jwtSecret,
         });
         const now = new Date();
         const tokenExpiresAt = this.addDays(now, expiresInDays);
@@ -102,7 +102,7 @@ let ClientTokensUsecase = class ClientTokensUsecase {
         };
         const accessToken = this.jwtService.sign(payload, {
             expiresIn: `${expiresInDays}d`,
-            secret: this.configService.get('JWT_SECRET'),
+            secret: this.tokensService.jwtSecret,
         });
         const refreshPayload = {
             ...payload,
@@ -110,7 +110,7 @@ let ClientTokensUsecase = class ClientTokensUsecase {
         };
         const refreshToken = this.jwtService.sign(refreshPayload, {
             expiresIn: `${refreshExpiresInDays}d`,
-            secret: this.configService.get('JWT_SECRET'),
+            secret: this.tokensService.jwtSecret,
         });
         const now = new Date();
         const tokenExpiresAt = this.addDays(now, expiresInDays);
@@ -138,7 +138,7 @@ let ClientTokensUsecase = class ClientTokensUsecase {
         };
         const accessToken = this.jwtService.sign(payload, {
             expiresIn: `${JWT_CONSTANTS.DEFAULT_ACCESS_TOKEN_EXPIRES_DAYS}d`,
-            secret: this.configService.get('JWT_SECRET'),
+            secret: this.tokensService.jwtSecret,
         });
         const now = new Date();
         const tokenExpiresAt = this.addDays(now, JWT_CONSTANTS.DEFAULT_ACCESS_TOKEN_EXPIRES_DAYS);

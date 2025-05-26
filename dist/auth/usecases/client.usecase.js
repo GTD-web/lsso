@@ -26,7 +26,7 @@ let ClientUseCase = class ClientUseCase {
         this.jwtService = jwtService;
         this.configService = configService;
         this.clientTokensUsecase = clientTokensUsecase;
-        this.jwtSecret = this.configService.get('JWT_SECRET') || 'jwt-secret-key';
+        this.jwtSecret = this.configService.get('GLOBAL_SECRET');
     }
     async authenticateSystem(authHeader) {
         if (!authHeader || !authHeader.startsWith('Basic ')) {

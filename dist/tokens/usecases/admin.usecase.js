@@ -13,7 +13,6 @@ exports.AdminTokensUsecase = void 0;
 const common_1 = require("@nestjs/common");
 const tokens_service_1 = require("../services/tokens.service");
 const jwt_1 = require("@nestjs/jwt");
-const config_1 = require("@nestjs/config");
 const JWT_CONSTANTS = {
     DEFAULT_ACCESS_TOKEN_EXPIRES_DAYS: 1,
     DEFAULT_REFRESH_TOKEN_EXPIRES_DAYS: 7,
@@ -23,10 +22,9 @@ const JWT_CONSTANTS = {
     MAX_REFRESH_TOKEN_EXPIRES_DAYS: 730,
 };
 let AdminTokensUsecase = class AdminTokensUsecase {
-    constructor(tokensService, jwtService, configService) {
+    constructor(tokensService, jwtService) {
         this.tokensService = tokensService;
         this.jwtService = jwtService;
-        this.configService = configService;
     }
     async findAll() {
         return this.tokensService.findAll({
@@ -47,7 +45,7 @@ let AdminTokensUsecase = class AdminTokensUsecase {
         };
         const accessToken = this.jwtService.sign(payload, {
             expiresIn: `${expiresInDays}d`,
-            secret: this.configService.get('JWT_SECRET'),
+            secret: this.tokensService.jwtSecret,
         });
         const refreshPayload = {
             ...payload,
@@ -55,7 +53,7 @@ let AdminTokensUsecase = class AdminTokensUsecase {
         };
         const refreshToken = this.jwtService.sign(refreshPayload, {
             expiresIn: `${refreshExpiresInDays}d`,
-            secret: this.configService.get('JWT_SECRET'),
+            secret: this.tokensService.jwtSecret,
         });
         const now = new Date();
         const tokenExpiresAt = this.addDays(now, expiresInDays);
@@ -85,7 +83,7 @@ let AdminTokensUsecase = class AdminTokensUsecase {
         };
         const accessToken = this.jwtService.sign(payload, {
             expiresIn: `${expiresInDays}d`,
-            secret: this.configService.get('JWT_SECRET'),
+            secret: this.tokensService.jwtSecret,
         });
         const refreshPayload = {
             ...payload,
@@ -93,7 +91,7 @@ let AdminTokensUsecase = class AdminTokensUsecase {
         };
         const refreshToken = this.jwtService.sign(refreshPayload, {
             expiresIn: `${refreshExpiresInDays}d`,
-            secret: this.configService.get('JWT_SECRET'),
+            secret: this.tokensService.jwtSecret,
         });
         const now = new Date();
         const tokenExpiresAt = this.addDays(now, expiresInDays);
@@ -121,7 +119,7 @@ let AdminTokensUsecase = class AdminTokensUsecase {
         };
         const accessToken = this.jwtService.sign(payload, {
             expiresIn: `${JWT_CONSTANTS.DEFAULT_ACCESS_TOKEN_EXPIRES_DAYS}d`,
-            secret: this.configService.get('JWT_SECRET'),
+            secret: this.tokensService.jwtSecret,
         });
         const now = new Date();
         const tokenExpiresAt = this.addDays(now, JWT_CONSTANTS.DEFAULT_ACCESS_TOKEN_EXPIRES_DAYS);
@@ -143,8 +141,6 @@ let AdminTokensUsecase = class AdminTokensUsecase {
 exports.AdminTokensUsecase = AdminTokensUsecase;
 exports.AdminTokensUsecase = AdminTokensUsecase = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [tokens_service_1.TokensService,
-        jwt_1.JwtService,
-        config_1.ConfigService])
+    __metadata("design:paramtypes", [tokens_service_1.TokensService, jwt_1.JwtService])
 ], AdminTokensUsecase);
 //# sourceMappingURL=admin.usecase.js.map

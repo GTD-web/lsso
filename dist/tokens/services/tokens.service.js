@@ -17,18 +17,14 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const token_entity_1 = require("../entities/token.entity");
-const jwt_1 = require("@nestjs/jwt");
 const users_service_1 = require("../../users/services/users.service");
-const systems_service_1 = require("../../systems/services/systems.service");
 const config_1 = require("@nestjs/config");
 let TokensService = class TokensService {
-    constructor(tokensRepository, jwtService, usersService, systemsService, configService) {
+    constructor(tokensRepository, usersService, configService) {
         this.tokensRepository = tokensRepository;
-        this.jwtService = jwtService;
         this.usersService = usersService;
-        this.systemsService = systemsService;
         this.configService = configService;
-        this.jwtSecret = this.configService.get('JWT_SECRET') || 'defaultJwtSecret123!@#';
+        this.jwtSecret = this.configService.get('GLOBAL_SECRET');
         if (!this.jwtSecret) {
             console.warn('JWT_SECRET 환경 변수가 설정되지 않았습니다. 기본값이 사용됩니다.');
         }
@@ -98,9 +94,7 @@ exports.TokensService = TokensService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(token_entity_1.Token)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
-        jwt_1.JwtService,
         users_service_1.UsersService,
-        systems_service_1.SystemsService,
         config_1.ConfigService])
 ], TokensService);
 //# sourceMappingURL=tokens.service.js.map

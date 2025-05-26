@@ -41,9 +41,7 @@ import { AppService } from './app.service';
         LogsModule,
         DashboardModule,
     ],
-    controllers: [AppController],
     providers: [
-        AppService,
         // ApiDocService,
         // DbDocService,
         {

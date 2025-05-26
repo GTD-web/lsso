@@ -23,7 +23,7 @@ export class ClientUseCase {
         private configService: ConfigService,
         private clientTokensUsecase: ClientTokensUsecase,
     ) {
-        this.jwtSecret = this.configService.get<string>('JWT_SECRET') || 'jwt-secret-key';
+        this.jwtSecret = this.configService.get<string>('GLOBAL_SECRET');
     }
 
     /**

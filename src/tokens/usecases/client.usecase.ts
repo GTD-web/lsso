@@ -64,7 +64,7 @@ export class ClientTokensUsecase {
         // 액세스 토큰 생성
         const accessToken = this.jwtService.sign(payload, {
             expiresIn: `${expiresInDays}d`,
-            secret: this.configService.get<string>('JWT_SECRET'),
+            secret: this.tokensService.jwtSecret,
         });
 
         // 리프레시 토큰 생성
@@ -74,7 +74,7 @@ export class ClientTokensUsecase {
         };
         const refreshToken = this.jwtService.sign(refreshPayload, {
             expiresIn: `${refreshExpiresInDays}d`,
-            secret: this.configService.get<string>('JWT_SECRET'),
+            secret: this.tokensService.jwtSecret,
         });
 
         // 만료일 계산
@@ -151,7 +151,7 @@ export class ClientTokensUsecase {
         // 액세스 토큰 생성
         const accessToken = this.jwtService.sign(payload, {
             expiresIn: `${expiresInDays}d`,
-            secret: this.configService.get<string>('JWT_SECRET'),
+            secret: this.tokensService.jwtSecret,
         });
 
         // 리프레시 토큰 생성
@@ -161,7 +161,7 @@ export class ClientTokensUsecase {
         };
         const refreshToken = this.jwtService.sign(refreshPayload, {
             expiresIn: `${refreshExpiresInDays}d`,
-            secret: this.configService.get<string>('JWT_SECRET'),
+            secret: this.tokensService.jwtSecret,
         });
 
         // 만료일 계산
@@ -204,7 +204,7 @@ export class ClientTokensUsecase {
         // 액세스 토큰 생성 (기본 30일)
         const accessToken = this.jwtService.sign(payload, {
             expiresIn: `${JWT_CONSTANTS.DEFAULT_ACCESS_TOKEN_EXPIRES_DAYS}d`,
-            secret: this.configService.get<string>('JWT_SECRET'),
+            secret: this.tokensService.jwtSecret,
         });
 
         // 만료일 계산

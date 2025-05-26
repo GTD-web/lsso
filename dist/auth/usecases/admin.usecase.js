@@ -19,7 +19,7 @@ let AdminUseCase = class AdminUseCase {
         this.authService = authService;
         this.jwtService = jwtService;
         this.configService = configService;
-        this.jwtSecret = this.configService.get('JWT_SECRET') || 'admin-secret-key';
+        this.jwtSecret = this.configService.get('GLOBAL_SECRET');
     }
     async login(email, password) {
         const admin = await this.authService.findByEmail(email);
