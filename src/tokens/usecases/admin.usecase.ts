@@ -3,7 +3,7 @@ import { TokensService } from '../services/tokens.service';
 import { Token } from '../entities/token.entity';
 import { CreateTokenDto, RenewTokenDto } from '../dto';
 import { JwtService } from '@nestjs/jwt';
-
+import { UsersService } from 'src/users/services/users.service';
 // JWT 토큰 관련 상수
 const JWT_CONSTANTS = {
     DEFAULT_ACCESS_TOKEN_EXPIRES_DAYS: 1, // 액세스 토큰 기본 만료 일수
@@ -16,7 +16,11 @@ const JWT_CONSTANTS = {
 
 @Injectable()
 export class AdminTokensUsecase {
-    constructor(private readonly tokensService: TokensService, private jwtService: JwtService) {}
+    constructor(
+        private readonly tokensService: TokensService,
+        private jwtService: JwtService,
+        private usersService: UsersService,
+    ) {}
 
     /**
      * 모든 토큰을 조회합니다.
@@ -47,6 +51,7 @@ export class AdminTokensUsecase {
     async createToken(createTokenDto: CreateTokenDto): Promise<Token> {
         const {
             userId,
+            employeeNumber,
             expiresInDays = JWT_CONSTANTS.DEFAULT_ACCESS_TOKEN_EXPIRES_DAYS,
             refreshExpiresInDays = JWT_CONSTANTS.DEFAULT_REFRESH_TOKEN_EXPIRES_DAYS,
         } = createTokenDto;
@@ -54,6 +59,7 @@ export class AdminTokensUsecase {
         // JWT 페이로드 생성
         const payload = {
             sub: userId,
+            employeeNumber,
             type: 'access',
         };
 
@@ -107,6 +113,7 @@ export class AdminTokensUsecase {
      */
     async renewToken(id: string, renewTokenDto: RenewTokenDto): Promise<Token> {
         const token = await this.tokensService.findOne(id);
+        const user = await this.usersService.findOne(token.userId);
         const {
             expiresInDays = JWT_CONSTANTS.DEFAULT_ACCESS_TOKEN_EXPIRES_DAYS,
             refreshExpiresInDays = JWT_CONSTANTS.DEFAULT_REFRESH_TOKEN_EXPIRES_DAYS,
@@ -115,6 +122,7 @@ export class AdminTokensUsecase {
         // JWT 페이로드 생성
         const payload = {
             sub: token.userId,
+            employeeNumber: user.employeeNumber,
             type: 'access',
         };
 
@@ -155,7 +163,7 @@ export class AdminTokensUsecase {
      */
     async refreshTokens(id: string): Promise<Token> {
         const token = await this.tokensService.findOne(id);
-
+        const user = await this.usersService.findOne(token.userId);
         // 리프레시 토큰이 만료되었는지 확인
         if (!token.refreshToken || new Date() > token.refreshTokenExpiresAt) {
             throw new Error('리프레시 토큰이 만료되었습니다.');
@@ -168,6 +176,7 @@ export class AdminTokensUsecase {
         // JWT 페이로드 생성
         const payload = {
             sub: token.userId,
+            employeeNumber: user.employeeNumber,
             type: 'access',
         };
 
