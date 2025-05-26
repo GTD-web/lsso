@@ -4,7 +4,7 @@ import { Token } from '../entities/token.entity';
 import { CreateTokenDto, RenewTokenDto } from '../dto';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-
+import { UsersService } from 'src/users/services/users.service';
 // JWT 토큰 관련 상수
 const JWT_CONSTANTS = {
     DEFAULT_ACCESS_TOKEN_EXPIRES_DAYS: 1, // 액세스 토큰 기본 만료 일수
@@ -21,6 +21,7 @@ export class ClientTokensUsecase {
         private readonly tokensService: TokensService,
         private jwtService: JwtService,
         private configService: ConfigService,
+        private usersService: UsersService,
     ) {}
 
     /**
@@ -51,6 +52,7 @@ export class ClientTokensUsecase {
     async createToken(createTokenDto: CreateTokenDto): Promise<Token> {
         const {
             userId,
+            employeeNumber,
             expiresInDays = JWT_CONSTANTS.DEFAULT_ACCESS_TOKEN_EXPIRES_DAYS,
             refreshExpiresInDays = JWT_CONSTANTS.DEFAULT_REFRESH_TOKEN_EXPIRES_DAYS,
         } = createTokenDto;
@@ -58,6 +60,7 @@ export class ClientTokensUsecase {
         // JWT 페이로드 생성
         const payload = {
             sub: userId,
+            employeeNumber,
             type: 'access',
         };
 
@@ -142,9 +145,11 @@ export class ClientTokensUsecase {
             refreshExpiresInDays = JWT_CONSTANTS.DEFAULT_REFRESH_TOKEN_EXPIRES_DAYS,
         } = renewTokenDto;
 
+        const user = await this.usersService.findOne(token.userId);
         // JWT 페이로드 생성
         const payload = {
             sub: token.userId,
+            employeeNumber: user.employeeNumber,
             type: 'access',
         };
 
@@ -185,6 +190,7 @@ export class ClientTokensUsecase {
      */
     async refreshTokens(id: string): Promise<Token> {
         const token = await this.tokensService.findOne(id);
+        const user = await this.usersService.findOne(token.userId);
 
         // 리프레시 토큰이 만료되었는지 확인
         if (!token.refreshToken || new Date() > token.refreshTokenExpiresAt) {
@@ -198,6 +204,7 @@ export class ClientTokensUsecase {
         // JWT 페이로드 생성
         const payload = {
             sub: token.userId,
+            employeeNumber: user.employeeNumber,
             type: 'access',
         };
 

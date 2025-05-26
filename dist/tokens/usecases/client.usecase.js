@@ -14,6 +14,7 @@ const common_1 = require("@nestjs/common");
 const tokens_service_1 = require("../services/tokens.service");
 const jwt_1 = require("@nestjs/jwt");
 const config_1 = require("@nestjs/config");
+const users_service_1 = require("../../users/services/users.service");
 const JWT_CONSTANTS = {
     DEFAULT_ACCESS_TOKEN_EXPIRES_DAYS: 1,
     DEFAULT_REFRESH_TOKEN_EXPIRES_DAYS: 7,
@@ -23,10 +24,11 @@ const JWT_CONSTANTS = {
     MAX_REFRESH_TOKEN_EXPIRES_DAYS: 730,
 };
 let ClientTokensUsecase = class ClientTokensUsecase {
-    constructor(tokensService, jwtService, configService) {
+    constructor(tokensService, jwtService, configService, usersService) {
         this.tokensService = tokensService;
         this.jwtService = jwtService;
         this.configService = configService;
+        this.usersService = usersService;
     }
     async findAll() {
         return this.tokensService.findAll();
@@ -38,9 +40,10 @@ let ClientTokensUsecase = class ClientTokensUsecase {
         return this.tokensService.findByUserId(userId);
     }
     async createToken(createTokenDto) {
-        const { userId, expiresInDays = JWT_CONSTANTS.DEFAULT_ACCESS_TOKEN_EXPIRES_DAYS, refreshExpiresInDays = JWT_CONSTANTS.DEFAULT_REFRESH_TOKEN_EXPIRES_DAYS, } = createTokenDto;
+        const { userId, employeeNumber, expiresInDays = JWT_CONSTANTS.DEFAULT_ACCESS_TOKEN_EXPIRES_DAYS, refreshExpiresInDays = JWT_CONSTANTS.DEFAULT_REFRESH_TOKEN_EXPIRES_DAYS, } = createTokenDto;
         const payload = {
             sub: userId,
+            employeeNumber,
             type: 'access',
         };
         const accessToken = this.jwtService.sign(payload, {
@@ -96,8 +99,10 @@ let ClientTokensUsecase = class ClientTokensUsecase {
     async renewToken(id, renewTokenDto) {
         const token = await this.tokensService.findOne(id);
         const { expiresInDays = JWT_CONSTANTS.DEFAULT_ACCESS_TOKEN_EXPIRES_DAYS, refreshExpiresInDays = JWT_CONSTANTS.DEFAULT_REFRESH_TOKEN_EXPIRES_DAYS, } = renewTokenDto;
+        const user = await this.usersService.findOne(token.userId);
         const payload = {
             sub: token.userId,
+            employeeNumber: user.employeeNumber,
             type: 'access',
         };
         const accessToken = this.jwtService.sign(payload, {
@@ -126,6 +131,7 @@ let ClientTokensUsecase = class ClientTokensUsecase {
     }
     async refreshTokens(id) {
         const token = await this.tokensService.findOne(id);
+        const user = await this.usersService.findOne(token.userId);
         if (!token.refreshToken || new Date() > token.refreshTokenExpiresAt) {
             throw new Error('리프레시 토큰이 만료되었습니다.');
         }
@@ -134,6 +140,7 @@ let ClientTokensUsecase = class ClientTokensUsecase {
         }
         const payload = {
             sub: token.userId,
+            employeeNumber: user.employeeNumber,
             type: 'access',
         };
         const accessToken = this.jwtService.sign(payload, {
@@ -162,6 +169,7 @@ exports.ClientTokensUsecase = ClientTokensUsecase = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [tokens_service_1.TokensService,
         jwt_1.JwtService,
-        config_1.ConfigService])
+        config_1.ConfigService,
+        users_service_1.UsersService])
 ], ClientTokensUsecase);
 //# sourceMappingURL=client.usecase.js.map

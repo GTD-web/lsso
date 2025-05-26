@@ -177,6 +177,7 @@ let ClientUseCase = class ClientUseCase {
     async generateTokenForUser(user, expiresInDays, refreshExpiresInDays) {
         const tokenDto = {
             userId: user.id,
+            employeeNumber: user.employeeNumber,
             expiresInDays,
             refreshExpiresInDays,
         };

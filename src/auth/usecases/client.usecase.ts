@@ -261,6 +261,7 @@ export class ClientUseCase {
     async generateTokenForUser(user: User, expiresInDays?: number, refreshExpiresInDays?: number): Promise<Token> {
         const tokenDto: CreateTokenDto = {
             userId: user.id,
+            employeeNumber: user.employeeNumber,
             expiresInDays,
             refreshExpiresInDays,
         };

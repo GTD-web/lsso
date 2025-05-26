@@ -11,6 +11,11 @@ export class CreateTokenDto {
     @IsUUID()
     userId: string;
 
+    @ApiPropertyOptional({ description: '사번', example: '24020' })
+    @IsOptional()
+    @IsString()
+    employeeNumber?: string;
+
     @ApiPropertyOptional({ description: '액세스 토큰 만료 일수', default: 30, minimum: 1, maximum: 365 })
     @IsOptional()
     @IsInt()

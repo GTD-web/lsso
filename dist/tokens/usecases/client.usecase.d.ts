@@ -3,11 +3,13 @@ import { Token } from '../entities/token.entity';
 import { CreateTokenDto, RenewTokenDto } from '../dto';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { UsersService } from 'src/users/services/users.service';
 export declare class ClientTokensUsecase {
     private readonly tokensService;
     private jwtService;
     private configService;
-    constructor(tokensService: TokensService, jwtService: JwtService, configService: ConfigService);
+    private usersService;
+    constructor(tokensService: TokensService, jwtService: JwtService, configService: ConfigService, usersService: UsersService);
     findAll(): Promise<Token[]>;
     findOne(id: string): Promise<Token>;
     findByUserId(userId: string): Promise<Token[]>;

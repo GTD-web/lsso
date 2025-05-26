@@ -26,6 +26,12 @@ __decorate([
     __metadata("design:type", String)
 ], CreateTokenDto.prototype, "userId", void 0);
 __decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '사번', example: '24020' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateTokenDto.prototype, "employeeNumber", void 0);
+__decorate([
     (0, swagger_1.ApiPropertyOptional)({ description: '액세스 토큰 만료 일수', default: 30, minimum: 1, maximum: 365 }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsInt)(),
