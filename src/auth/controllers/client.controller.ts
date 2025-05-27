@@ -57,7 +57,7 @@ export class ClientAuthController {
                     enum: ['password', 'refresh_token'],
                     description: 'password: 사용자 인증 방식, refresh_token: 리프레시 토큰 방식',
                 },
-                username: {
+                email: {
                     type: 'string',
                     description: '사용자 이메일 (grant_type이 password인 경우에만 필요)',
                 },
@@ -73,7 +73,7 @@ export class ClientAuthController {
             required: ['grant_type'],
             example: {
                 grant_type: 'password',
-                username: 'user@example.com',
+                email: 'user@example.com',
                 password: 'password123',
             },
         },
