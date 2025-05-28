@@ -32,21 +32,30 @@ let ClientAuthController = class ClientAuthController {
         }
     }
     async verifyToken(authHeader) {
-        console.log('authHeader', authHeader);
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
             throw new common_1.BadRequestException('유효한 Bearer 토큰이 필요합니다.');
         }
         const token = authHeader.split(' ')[1];
-        return { valid: true, message: '토큰 검증 기능은 아직 구현되지 않았습니다.' };
+        return this.clientUseCase.verifyToken(token);
     }
     async changePassword(authHeader, body) {
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
             throw new common_1.UnauthorizedException('유효한 Bearer 토큰이 필요합니다.');
         }
         const token = authHeader.split(' ')[1];
-        await this.clientUseCase.changePassword(token, body.currentPassword, body.newPassword);
+        await this.clientUseCase.changePassword(token, body.newPassword);
         return {
             message: '비밀번호가 성공적으로 변경되었습니다.',
+        };
+    }
+    async checkPassword(authHeader, body) {
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            throw new common_1.UnauthorizedException('유효한 Bearer 토큰이 필요합니다.');
+        }
+        const token = authHeader.split(' ')[1];
+        const isValid = await this.clientUseCase.checkPassword(token, body.currentPassword);
+        return {
+            isValid,
         };
     }
 };
@@ -171,7 +180,50 @@ __decorate([
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     (0, swagger_1.ApiOperation)({
         summary: '비밀번호 변경',
-        description: '사용자의 비밀번호를 변경합니다. 현재 비밀번호와 새 비밀번호가 필요합니다.',
+        description: '사용자의 비밀번호를 변경합니다.',
+    }),
+    (0, swagger_1.ApiHeader)({
+        name: 'Authorization',
+        description: 'Bearer 토큰, 형식: Bearer {access_token}',
+        required: true,
+    }),
+    (0, swagger_1.ApiBody)({
+        schema: {
+            type: 'object',
+            properties: {
+                newPassword: {
+                    type: 'string',
+                    description: '새 비밀번호',
+                },
+            },
+            required: ['newPassword'],
+        },
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: '비밀번호 변경 성공',
+        schema: {
+            type: 'object',
+            properties: {
+                message: { type: 'string', example: '비밀번호가 성공적으로 변경되었습니다.' },
+            },
+        },
+    }),
+    (0, swagger_1.ApiResponse)({ status: 400, description: '잘못된 요청 형식' }),
+    (0, swagger_1.ApiResponse)({ status: 401, description: '인증 실패' }),
+    __param(0, (0, common_1.Headers)('Authorization')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], ClientAuthController.prototype, "changePassword", null);
+__decorate([
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, common_1.Post)('check-password'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, swagger_1.ApiOperation)({
+        summary: '비밀번호 확인',
+        description: '현재 비밀번호가 일치하는지 확인합니다.',
     }),
     (0, swagger_1.ApiHeader)({
         name: 'Authorization',
@@ -186,32 +238,28 @@ __decorate([
                     type: 'string',
                     description: '현재 비밀번호',
                 },
-                newPassword: {
-                    type: 'string',
-                    description: '새 비밀번호',
-                },
             },
-            required: ['currentPassword', 'newPassword'],
+            required: ['currentPassword'],
         },
     }),
     (0, swagger_1.ApiResponse)({
         status: 200,
-        description: '비밀번호 변경 성공',
+        description: '비밀번호 확인 성공',
         schema: {
             type: 'object',
             properties: {
-                message: { type: 'string', example: '비밀번호가 성공적으로 변경되었습니다.' },
+                isValid: { type: 'boolean', example: true },
             },
         },
     }),
     (0, swagger_1.ApiResponse)({ status: 400, description: '잘못된 요청 형식' }),
-    (0, swagger_1.ApiResponse)({ status: 401, description: '인증 실패 또는 현재 비밀번호가 일치하지 않음' }),
+    (0, swagger_1.ApiResponse)({ status: 401, description: '인증 실패' }),
     __param(0, (0, common_1.Headers)('Authorization')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
-], ClientAuthController.prototype, "changePassword", null);
+], ClientAuthController.prototype, "checkPassword", null);
 exports.ClientAuthController = ClientAuthController = __decorate([
     (0, swagger_1.ApiTags)('외부 시스템 인증 API'),
     (0, common_1.Controller)('auth'),

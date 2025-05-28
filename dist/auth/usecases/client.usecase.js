@@ -184,16 +184,12 @@ let ClientUseCase = class ClientUseCase {
         const createdToken = await this.clientTokensUsecase.createToken(tokenDto);
         return await this.tokensService.findOne(createdToken.id);
     }
-    async changePassword(token, currentPassword, newPassword) {
+    async changePassword(token, newPassword) {
         try {
             const payload = this.jwtService.verify(token, { secret: this.jwtSecret });
             const user = await this.usersService.findOne(payload.sub);
             if (!user) {
                 throw new common_1.NotFoundException('사용자를 찾을 수 없습니다.');
-            }
-            const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
-            if (!isPasswordValid) {
-                throw new common_1.UnauthorizedException('현재 비밀번호가 일치하지 않습니다.');
             }
             const hashedPassword = await bcrypt.hash(newPassword, 10);
             await this.usersService.update(user.id, { password: hashedPassword });
@@ -203,6 +199,51 @@ let ClientUseCase = class ClientUseCase {
                 throw error;
             }
             throw new common_1.UnauthorizedException('비밀번호 변경 중 오류가 발생했습니다.');
+        }
+    }
+    async checkPassword(token, password) {
+        try {
+            const payload = this.jwtService.verify(token, { secret: this.jwtSecret });
+            const user = await this.usersService.findOne(payload.sub);
+            if (!user) {
+                throw new common_1.NotFoundException('사용자를 찾을 수 없습니다.');
+            }
+            return await bcrypt.compare(password, user.password);
+        }
+        catch (error) {
+            if (error instanceof common_1.UnauthorizedException || error instanceof common_1.NotFoundException) {
+                throw error;
+            }
+            throw new common_1.UnauthorizedException('비밀번호 확인 중 오류가 발생했습니다.');
+        }
+    }
+    async verifyToken(token) {
+        try {
+            const payload = this.jwtService.verify(token, { secret: this.jwtSecret });
+            const user = await this.usersService.findOne(payload.sub);
+            if (!user) {
+                return { valid: false };
+            }
+            if (user.status === '퇴사') {
+                return { valid: false };
+            }
+            const tokenInfo = await this.tokensService.findByAccessToken(token);
+            if (!tokenInfo || !tokenInfo.isActive || new Date() > tokenInfo.tokenExpiresAt) {
+                return { valid: false };
+            }
+            return {
+                valid: true,
+                user_info: {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    employee_number: user.employeeNumber,
+                },
+                expires_in: this.calculateExpiresIn(tokenInfo.tokenExpiresAt),
+            };
+        }
+        catch (error) {
+            return { valid: false };
         }
     }
 };

@@ -7,12 +7,17 @@ export declare class ClientAuthController {
     tokenRoute(authHeader: string, body: any): Promise<any>;
     verifyToken(authHeader: string): Promise<{
         valid: boolean;
-        message: string;
+        user_info?: any;
+        expires_in?: number;
     }>;
     changePassword(authHeader: string, body: {
-        currentPassword: string;
         newPassword: string;
     }): Promise<{
         message: string;
+    }>;
+    checkPassword(authHeader: string, body: {
+        currentPassword: string;
+    }): Promise<{
+        isValid: boolean;
     }>;
 }

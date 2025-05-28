@@ -150,17 +150,12 @@ export class ClientAuthController {
     })
     @ApiResponse({ status: 401, description: '유효하지 않은 토큰' })
     async verifyToken(@Headers('Authorization') authHeader: string) {
-        console.log('authHeader', authHeader);
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
             throw new BadRequestException('유효한 Bearer 토큰이 필요합니다.');
         }
 
         const token = authHeader.split(' ')[1];
-        // 토큰 검증 로직은 추후 구현
-        // return this.clientUseCase.verifyToken(token);
-
-        // 임시 응답
-        return { valid: true, message: '토큰 검증 기능은 아직 구현되지 않았습니다.' };
+        return this.clientUseCase.verifyToken(token);
     }
 
     @ApiBearerAuth()
@@ -168,7 +163,56 @@ export class ClientAuthController {
     @HttpCode(HttpStatus.OK)
     @ApiOperation({
         summary: '비밀번호 변경',
-        description: '사용자의 비밀번호를 변경합니다. 현재 비밀번호와 새 비밀번호가 필요합니다.',
+        description: '사용자의 비밀번호를 변경합니다.',
+    })
+    @ApiHeader({
+        name: 'Authorization',
+        description: 'Bearer 토큰, 형식: Bearer {access_token}',
+        required: true,
+    })
+    @ApiBody({
+        schema: {
+            type: 'object',
+            properties: {
+                newPassword: {
+                    type: 'string',
+                    description: '새 비밀번호',
+                },
+            },
+            required: ['newPassword'],
+        },
+    })
+    @ApiResponse({
+        status: 200,
+        description: '비밀번호 변경 성공',
+        schema: {
+            type: 'object',
+            properties: {
+                message: { type: 'string', example: '비밀번호가 성공적으로 변경되었습니다.' },
+            },
+        },
+    })
+    @ApiResponse({ status: 400, description: '잘못된 요청 형식' })
+    @ApiResponse({ status: 401, description: '인증 실패' })
+    async changePassword(@Headers('Authorization') authHeader: string, @Body() body: { newPassword: string }) {
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            throw new UnauthorizedException('유효한 Bearer 토큰이 필요합니다.');
+        }
+
+        const token = authHeader.split(' ')[1];
+        await this.clientUseCase.changePassword(token, body.newPassword);
+
+        return {
+            message: '비밀번호가 성공적으로 변경되었습니다.',
+        };
+    }
+
+    @ApiBearerAuth()
+    @Post('check-password')
+    @HttpCode(HttpStatus.OK)
+    @ApiOperation({
+        summary: '비밀번호 확인',
+        description: '현재 비밀번호가 일치하는지 확인합니다.',
     })
     @ApiHeader({
         name: 'Authorization',
@@ -183,39 +227,32 @@ export class ClientAuthController {
                     type: 'string',
                     description: '현재 비밀번호',
                 },
-                newPassword: {
-                    type: 'string',
-                    description: '새 비밀번호',
-                },
             },
-            required: ['currentPassword', 'newPassword'],
+            required: ['currentPassword'],
         },
     })
     @ApiResponse({
         status: 200,
-        description: '비밀번호 변경 성공',
+        description: '비밀번호 확인 성공',
         schema: {
             type: 'object',
             properties: {
-                message: { type: 'string', example: '비밀번호가 성공적으로 변경되었습니다.' },
+                isValid: { type: 'boolean', example: true },
             },
         },
     })
     @ApiResponse({ status: 400, description: '잘못된 요청 형식' })
-    @ApiResponse({ status: 401, description: '인증 실패 또는 현재 비밀번호가 일치하지 않음' })
-    async changePassword(
-        @Headers('Authorization') authHeader: string,
-        @Body() body: { currentPassword: string; newPassword: string },
-    ) {
+    @ApiResponse({ status: 401, description: '인증 실패' })
+    async checkPassword(@Headers('Authorization') authHeader: string, @Body() body: { currentPassword: string }) {
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
             throw new UnauthorizedException('유효한 Bearer 토큰이 필요합니다.');
         }
 
         const token = authHeader.split(' ')[1];
-        await this.clientUseCase.changePassword(token, body.currentPassword, body.newPassword);
+        const isValid = await this.clientUseCase.checkPassword(token, body.currentPassword);
 
         return {
-            message: '비밀번호가 성공적으로 변경되었습니다.',
+            isValid,
         };
     }
 }

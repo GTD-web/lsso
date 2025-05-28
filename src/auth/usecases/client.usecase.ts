@@ -275,10 +275,9 @@ export class ClientUseCase {
     /**
      * 사용자의 비밀번호를 변경합니다.
      * @param token JWT 토큰
-     * @param currentPassword 현재 비밀번호
      * @param newPassword 새 비밀번호
      */
-    async changePassword(token: string, currentPassword: string, newPassword: string): Promise<void> {
+    async changePassword(token: string, newPassword: string): Promise<void> {
         try {
             // 토큰 검증 및 사용자 정보 추출
             const payload = this.jwtService.verify(token, { secret: this.jwtSecret });
@@ -286,12 +285,6 @@ export class ClientUseCase {
 
             if (!user) {
                 throw new NotFoundException('사용자를 찾을 수 없습니다.');
-            }
-
-            // 현재 비밀번호 검증
-            const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
-            if (!isPasswordValid) {
-                throw new UnauthorizedException('현재 비밀번호가 일치하지 않습니다.');
             }
 
             // 새 비밀번호 해싱
@@ -304,6 +297,71 @@ export class ClientUseCase {
                 throw error;
             }
             throw new UnauthorizedException('비밀번호 변경 중 오류가 발생했습니다.');
+        }
+    }
+
+    /**
+     * 사용자의 현재 비밀번호가 일치하는지 확인합니다.
+     * @param token JWT 토큰
+     * @param password 확인할 비밀번호
+     */
+    async checkPassword(token: string, password: string): Promise<boolean> {
+        try {
+            // 토큰 검증 및 사용자 정보 추출
+            const payload = this.jwtService.verify(token, { secret: this.jwtSecret });
+            const user = await this.usersService.findOne(payload.sub);
+
+            if (!user) {
+                throw new NotFoundException('사용자를 찾을 수 없습니다.');
+            }
+
+            // 비밀번호 검증
+            return await bcrypt.compare(password, user.password);
+        } catch (error) {
+            if (error instanceof UnauthorizedException || error instanceof NotFoundException) {
+                throw error;
+            }
+            throw new UnauthorizedException('비밀번호 확인 중 오류가 발생했습니다.');
+        }
+    }
+
+    /**
+     * 토큰의 유효성을 검증합니다.
+     * @param token JWT 토큰
+     */
+    async verifyToken(token: string): Promise<{ valid: boolean; user_info?: any; expires_in?: number }> {
+        try {
+            // 토큰 검증 및 사용자 정보 추출
+            const payload = this.jwtService.verify(token, { secret: this.jwtSecret });
+            const user = await this.usersService.findOne(payload.sub);
+
+            if (!user) {
+                return { valid: false };
+            }
+
+            // 사용자 상태 확인
+            if (user.status === '퇴사') {
+                return { valid: false };
+            }
+
+            // 토큰 정보 조회
+            const tokenInfo = await this.tokensService.findByAccessToken(token);
+            if (!tokenInfo || !tokenInfo.isActive || new Date() > tokenInfo.tokenExpiresAt) {
+                return { valid: false };
+            }
+
+            return {
+                valid: true,
+                user_info: {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    employee_number: user.employeeNumber,
+                },
+                expires_in: this.calculateExpiresIn(tokenInfo.tokenExpiresAt),
+            };
+        } catch (error) {
+            return { valid: false };
         }
     }
 }
