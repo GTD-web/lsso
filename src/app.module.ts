@@ -6,6 +6,8 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { ApiDocService } from './common/utils/api-doc.service';
 import { DbDocService } from './common/utils/db-doc.service';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 import { UsersModule } from './users/users.module';
 import { SystemsModule } from './systems/systems.module';
@@ -15,6 +17,7 @@ import { AuthModule } from './auth/auth.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { MailModule } from './mail/mail.module';
 
 @Module({
     imports: [
@@ -40,7 +43,9 @@ import { AppService } from './app.service';
         AuthModule,
         LogsModule,
         DashboardModule,
+        MailModule,
     ],
+    controllers: [AppController],
     providers: [
         // ApiDocService,
         // DbDocService,
@@ -56,6 +61,7 @@ import { AppService } from './app.service';
         //     provide: APP_INTERCEPTOR,
         //     useClass: TransformInterceptor,
         // },
+        AppService,
     ],
 })
 export class AppModule {}

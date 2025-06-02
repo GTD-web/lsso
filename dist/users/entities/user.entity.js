@@ -68,6 +68,10 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "rank", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ comment: '초기 비밀번호 설정 여부', default: false }),
+    __metadata("design:type", Boolean)
+], User.prototype, "isInitialPasswordSet", void 0);
+__decorate([
     (0, typeorm_1.OneToMany)(() => token_entity_1.Token, (token) => token.user),
     __metadata("design:type", Array)
 ], User.prototype, "tokens", void 0);

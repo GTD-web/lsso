@@ -21,6 +21,7 @@
         "test:e2e:workflow": "pnpm jest --config ./test/jest-e2e.json -t \"Complete Application Workflow\""
     },
     "dependencies": {
+        "@nestjs-modules/mailer": "^2.0.2",
         "@nestjs/axios": "^3.0.2",
         "@nestjs/cache-manager": "^3.0.0",
         "@nestjs/common": "^10.0.0",
@@ -36,6 +37,7 @@
         "@nestjs/swagger": "^7.3.1",
         "@nestjs/typeorm": "^10.0.2",
         "@types/cron": "2.4.3",
+        "@types/handlebars": "^4.1.0",
         "@types/multer": "^1.4.7",
         "@types/node": "^22.13.11",
         "@types/uuid": "^10.0.0",
@@ -48,6 +50,7 @@
         "dayjs": "^1.11.11",
         "dotenv": "^16.4.5",
         "express": "^4.21.2",
+        "handlebars": "^4.7.8",
         "hbs": "^4.2.0",
         "ioredis": "^5.3.2",
         "keyv": "^5.0.0",

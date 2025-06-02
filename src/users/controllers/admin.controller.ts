@@ -1,5 +1,5 @@
-import { Controller, Get, Param, Query, UseGuards, NotFoundException } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam, ApiQuery } from '@nestjs/swagger';
+import { Controller, Get, Param, Query, UseGuards, NotFoundException, Post, Body } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam, ApiQuery, ApiBody } from '@nestjs/swagger';
 import { UsersService } from '../services/users.service';
 import { UserResponseDto } from '../dto/user-response.dto';
 import { ApiResponseDto } from '../../common/dto/api-response.dto';
@@ -76,5 +76,21 @@ export class AdminUsersController {
             console.error(`Error fetching user with ID ${id}:`, error);
             return ApiResponseDto.error('USER_FETCH_ERROR', '사용자 정보를 조회하는 중 오류가 발생했습니다.');
         }
+    }
+
+    @Post('send-init-pass-set-mail')
+    @ApiOperation({ summary: '초기 비밀번호 설정 메일 전송', description: '초기 비밀번호 설정 메일을 전송합니다.' })
+    @ApiBody({ schema: { type: 'object', properties: { email: { type: 'string' } } } })
+    async sendInitPassSetMail(@Body() body: { email: string }): Promise<ApiResponseDto<void>> {
+        await this.adminUsecase.sendInitPassSetMail(body.email);
+        return ApiResponseDto.success(null);
+    }
+
+    @Post('send-temp-password-mail')
+    @ApiOperation({ summary: '임시 비밀번호 발급 메일 전송', description: '임시 비밀번호 발급 메일을 전송합니다.' })
+    @ApiBody({ schema: { type: 'object', properties: { email: { type: 'string' } } } })
+    async sendTempPasswordMail(@Body() body: { email: string }): Promise<ApiResponseDto<void>> {
+        await this.adminUsecase.sendTempPasswordMail(body.email);
+        return ApiResponseDto.success(null);
     }
 }

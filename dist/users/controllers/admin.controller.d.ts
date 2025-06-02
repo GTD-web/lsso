@@ -9,4 +9,10 @@ export declare class AdminUsersController {
     findAll(): Promise<ApiResponseDto<UserResponseDto[]>>;
     search(query: string): Promise<ApiResponseDto<UserResponseDto[]>>;
     findOne(id: string): Promise<ApiResponseDto<UserResponseDto>>;
+    sendInitPassSetMail(body: {
+        email: string;
+    }): Promise<ApiResponseDto<void>>;
+    sendTempPasswordMail(body: {
+        email: string;
+    }): Promise<ApiResponseDto<void>>;
 }

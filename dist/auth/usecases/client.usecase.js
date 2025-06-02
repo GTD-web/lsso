@@ -192,7 +192,10 @@ let ClientUseCase = class ClientUseCase {
                 throw new common_1.NotFoundException('사용자를 찾을 수 없습니다.');
             }
             const hashedPassword = await bcrypt.hash(newPassword, 10);
-            await this.usersService.update(user.id, { password: hashedPassword });
+            await this.usersService.update(user.id, {
+                password: hashedPassword,
+                ...(user.isInitialPasswordSet === false ? { isInitialPasswordSet: true } : {}),
+            });
         }
         catch (error) {
             if (error instanceof common_1.UnauthorizedException || error instanceof common_1.NotFoundException) {

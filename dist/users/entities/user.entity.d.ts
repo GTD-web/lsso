@@ -13,6 +13,7 @@ export declare class User {
     department: string;
     position: string;
     rank: string;
+    isInitialPasswordSet: boolean;
     tokens: Token[];
     createdAt: Date;
     updatedAt: Date;

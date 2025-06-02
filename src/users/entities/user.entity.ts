@@ -42,6 +42,9 @@ export class User {
     @Column({ comment: '직급', nullable: true })
     rank: string;
 
+    @Column({ comment: '초기 비밀번호 설정 여부', default: false })
+    isInitialPasswordSet: boolean;
+
     @OneToMany(() => Token, (token) => token.user)
     tokens: Token[];
 

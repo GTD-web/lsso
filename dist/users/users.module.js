@@ -16,12 +16,14 @@ const admin_controller_1 = require("./controllers/admin.controller");
 const domain_controller_1 = require("./controllers/domain.controller");
 const admin_usecase_1 = require("./usecases/admin.usecase");
 const webhook_usecase_1 = require("./usecases/webhook.usecase");
+const jwt_1 = require("@nestjs/jwt");
+const mail_module_1 = require("../mail/mail.module");
 let UsersModule = class UsersModule {
 };
 exports.UsersModule = UsersModule;
 exports.UsersModule = UsersModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([user_entity_1.User])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([user_entity_1.User]), mail_module_1.MailModule, jwt_1.JwtModule.register({})],
         providers: [users_service_1.UsersService, admin_usecase_1.AdminUsecase, webhook_usecase_1.WebhookUsecase],
         controllers: [webhook_controller_1.WebhookUsersController, admin_controller_1.AdminUsersController, domain_controller_1.DomainUsersController],
         exports: [users_service_1.UsersService],

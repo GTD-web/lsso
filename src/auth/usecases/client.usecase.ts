@@ -291,7 +291,10 @@ export class ClientUseCase {
             const hashedPassword = await bcrypt.hash(newPassword, 10);
 
             // 비밀번호 업데이트
-            await this.usersService.update(user.id, { password: hashedPassword });
+            await this.usersService.update(user.id, {
+                password: hashedPassword,
+                ...(user.isInitialPasswordSet === false ? { isInitialPasswordSet: true } : {}),
+            });
         } catch (error) {
             if (error instanceof UnauthorizedException || error instanceof NotFoundException) {
                 throw error;
