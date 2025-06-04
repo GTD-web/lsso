@@ -28,6 +28,7 @@ class UserResponseDto {
         this.createdAt = user.createdAt.toISOString();
         this.updatedAt = user.updatedAt.toISOString();
         this.hasToken = user.tokens && Array.isArray(user.tokens) && user.tokens.length > 0;
+        this.isInitialPasswordSet = user.isInitialPasswordSet;
     }
 }
 exports.UserResponseDto = UserResponseDto;
@@ -91,4 +92,8 @@ __decorate([
     (0, swagger_1.ApiProperty)({ description: '토큰 정보', required: false }),
     __metadata("design:type", Boolean)
 ], UserResponseDto.prototype, "hasToken", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '초기 비밀번호 설정 여부', required: false }),
+    __metadata("design:type", Boolean)
+], UserResponseDto.prototype, "isInitialPasswordSet", void 0);
 //# sourceMappingURL=user-response.dto.js.map

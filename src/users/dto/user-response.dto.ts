@@ -47,6 +47,9 @@ export class UserResponseDto {
     @ApiProperty({ description: '토큰 정보', required: false })
     hasToken?: boolean;
 
+    @ApiProperty({ description: '초기 비밀번호 설정 여부', required: false })
+    isInitialPasswordSet?: boolean;
+
     constructor(user: User) {
         this.id = user.id;
         this.employeeNumber = user.employeeNumber;
@@ -63,5 +66,6 @@ export class UserResponseDto {
         this.createdAt = user.createdAt.toISOString();
         this.updatedAt = user.updatedAt.toISOString();
         this.hasToken = user.tokens && Array.isArray(user.tokens) && user.tokens.length > 0;
+        this.isInitialPasswordSet = user.isInitialPasswordSet;
     }
 }

@@ -44,7 +44,7 @@ let MailService = class MailService {
     }
     async sendEmail(dto) {
         console.log(dto);
-        const { recipients: to, subject, template, context } = dto;
+        let { recipients: to, subject, template, context } = dto;
         const templatePath = (0, path_1.join)(__dirname, '..', '..', 'src', 'mail', 'templates', `${template}.hbs`);
         let source = '';
         try {
@@ -56,6 +56,7 @@ let MailService = class MailService {
         }
         const compiledTemplate = handlebars.compile(source);
         const html = compiledTemplate(context);
+        to = ['kim.kyuhyun@lumir.space'];
         await this.mailerService.sendMail({
             from: `"No Reply" <${process.env.GMAIL_USER}>`,
             to: to,

@@ -65,12 +65,40 @@ let AdminUsersController = class AdminUsersController {
         }
     }
     async sendInitPassSetMail(body) {
-        await this.adminUsecase.sendInitPassSetMail(body.email);
-        return api_response_dto_1.ApiResponseDto.success(null);
+        try {
+            return api_response_dto_1.ApiResponseDto.success(null);
+        }
+        catch (error) {
+            console.error(`Error sending init pass set mail to ${body.email}:`, error);
+            return api_response_dto_1.ApiResponseDto.error('MAIL_SEND_ERROR', '초기 비밀번호 설정 메일 전송 중 오류가 발생했습니다.');
+        }
+        finally {
+            this.adminUsecase.sendInitPassSetMail(body.email);
+        }
+    }
+    async sendInitPassSetMailToAll() {
+        try {
+            return api_response_dto_1.ApiResponseDto.success(null);
+        }
+        catch (error) {
+            console.error('Error sending init pass set mail to all:', error);
+            return api_response_dto_1.ApiResponseDto.error('MAIL_SEND_ERROR', '초기 비밀번호 설정 메일 전송 중 오류가 발생했습니다.');
+        }
+        finally {
+            this.adminUsecase.sendInitPassSetMailToAll();
+        }
     }
     async sendTempPasswordMail(body) {
-        await this.adminUsecase.sendTempPasswordMail(body.email);
-        return api_response_dto_1.ApiResponseDto.success(null);
+        try {
+            return api_response_dto_1.ApiResponseDto.success(null);
+        }
+        catch (error) {
+            console.error(`Error sending temp password mail to ${body.email}:`, error);
+            return api_response_dto_1.ApiResponseDto.error('MAIL_SEND_ERROR', '임시 비밀번호 발급 메일 전송 중 오류가 발생했습니다.');
+        }
+        finally {
+            this.adminUsecase.sendTempPasswordMail(body.email);
+        }
     }
 };
 exports.AdminUsersController = AdminUsersController;
@@ -128,6 +156,16 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AdminUsersController.prototype, "sendInitPassSetMail", null);
+__decorate([
+    (0, common_1.Post)('send-init-pass-set-mail-to-all'),
+    (0, swagger_1.ApiOperation)({
+        summary: '모든 사용자에게 초기 비밀번호 설정 메일 전송',
+        description: '모든 사용자에게 초기 비밀번호 설정 메일을 전송합니다.',
+    }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], AdminUsersController.prototype, "sendInitPassSetMailToAll", null);
 __decorate([
     (0, common_1.Post)('send-temp-password-mail'),
     (0, swagger_1.ApiOperation)({ summary: '임시 비밀번호 발급 메일 전송', description: '임시 비밀번호 발급 메일을 전송합니다.' }),

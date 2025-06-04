@@ -12,6 +12,7 @@ export declare class AdminUsersController {
     sendInitPassSetMail(body: {
         email: string;
     }): Promise<ApiResponseDto<void>>;
+    sendInitPassSetMailToAll(): Promise<ApiResponseDto<void>>;
     sendTempPasswordMail(body: {
         email: string;
     }): Promise<ApiResponseDto<void>>;

@@ -9,5 +9,6 @@ export declare class AdminUsecase {
     constructor(usersService: UsersService, jwtService: JwtService, mailService: MailService);
     searchUsers(query: string): Promise<User[]>;
     sendInitPassSetMail(email: string): Promise<void>;
+    sendInitPassSetMailToAll(): Promise<void>;
     sendTempPasswordMail(email: string): Promise<void>;
 }

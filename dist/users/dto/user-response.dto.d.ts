@@ -15,5 +15,6 @@ export declare class UserResponseDto {
     createdAt: string;
     updatedAt: string;
     hasToken?: boolean;
+    isInitialPasswordSet?: boolean;
     constructor(user: User);
 }
