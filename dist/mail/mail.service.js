@@ -82,7 +82,6 @@ let MailService = class MailService {
         }
         const compiledTemplate = handlebars.compile(source);
         const html = compiledTemplate(context);
-        to = ['kim.kyuhyun@lumir.space'];
         await this.mailerService.sendMail({
             from: `"No Reply" <${process.env.GMAIL_USER}>`,
             to: to,
