@@ -83,28 +83,12 @@ export class AdminUsersController {
     @ApiBody({ schema: { type: 'object', properties: { email: { type: 'string' } } } })
     async sendInitPassSetMail(@Body() body: { email: string }): Promise<ApiResponseDto<void>> {
         try {
+            await this.adminUsecase.sendInitPassSetMail(body.email);
             return ApiResponseDto.success(null);
         } catch (error) {
             console.error(`Error sending init pass set mail to ${body.email}:`, error);
             return ApiResponseDto.error('MAIL_SEND_ERROR', '초기 비밀번호 설정 메일 전송 중 오류가 발생했습니다.');
         } finally {
-            this.adminUsecase.sendInitPassSetMail(body.email);
-        }
-    }
-
-    @Post('send-init-pass-set-mail-to-all')
-    @ApiOperation({
-        summary: '모든 사용자에게 초기 비밀번호 설정 메일 전송',
-        description: '모든 사용자에게 초기 비밀번호 설정 메일을 전송합니다.',
-    })
-    async sendInitPassSetMailToAll(): Promise<ApiResponseDto<void>> {
-        try {
-            return ApiResponseDto.success(null);
-        } catch (error) {
-            console.error('Error sending init pass set mail to all:', error);
-            return ApiResponseDto.error('MAIL_SEND_ERROR', '초기 비밀번호 설정 메일 전송 중 오류가 발생했습니다.');
-        } finally {
-            this.adminUsecase.sendInitPassSetMailToAll();
         }
     }
 

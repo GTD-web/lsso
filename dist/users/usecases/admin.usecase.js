@@ -69,37 +69,6 @@ let AdminUsecase = class AdminUsecase {
         await this.usersService.save(user);
         return mail;
     }
-    async sendInitPassSetMailToAll() {
-        const users = await this.usersService.findAll({
-            where: {
-                isInitialPasswordSet: false,
-                status: '재직중',
-                name: '김규현',
-            },
-        });
-        console.log(users);
-        for (let i = 0; i < 30; i++) {
-            const user = users[0];
-            const token = this.jwtService.sign({
-                sub: user.id,
-                employeeNumber: user.employeeNumber,
-                type: 'access',
-            }, {
-                expiresIn: '1h',
-                secret: process.env.GLOBAL_SECRET,
-            });
-            const mail = await this.mailService.sendEmail({
-                recipients: [user.email],
-                subject: '[테스트] 초기 비밀번호 설정 안내',
-                template: 'initial-password',
-                context: {
-                    name: user.name,
-                    resetUrl: `${process.env.APP_URL}/set-initial-password?token=${token}`,
-                    expiresIn: '1h',
-                },
-            });
-        }
-    }
     async sendTempPasswordMail(email) {
         const user = await this.usersService.findByEmail(email);
         if (!user) {
