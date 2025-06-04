@@ -28,7 +28,7 @@ export declare class ClientUseCase {
     private generateJwtToken;
     generateTokenForUser(user: User, expiresInDays?: number, refreshExpiresInDays?: number): Promise<Token>;
     changePassword(token: string, newPassword: string): Promise<void>;
-    checkPassword(token: string, password: string): Promise<boolean>;
+    checkPassword(token: string, password: string, email?: string): Promise<boolean>;
     verifyToken(token: string): Promise<{
         valid: boolean;
         user_info?: any;

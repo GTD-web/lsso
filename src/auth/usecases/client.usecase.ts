@@ -308,7 +308,7 @@ export class ClientUseCase {
      * @param token JWT 토큰
      * @param password 확인할 비밀번호
      */
-    async checkPassword(token: string, password: string): Promise<boolean> {
+    async checkPassword(token: string, password: string, email?: string): Promise<boolean> {
         try {
             // 토큰 검증 및 사용자 정보 추출
             const payload = this.jwtService.verify(token, { secret: this.jwtSecret });
@@ -316,6 +316,12 @@ export class ClientUseCase {
 
             if (!user) {
                 throw new NotFoundException('사용자를 찾을 수 없습니다.');
+            }
+
+            if (email) {
+                if (user.email !== email) {
+                    throw new UnauthorizedException('이메일이 일치하지 않습니다.');
+                }
             }
 
             // 비밀번호 검증

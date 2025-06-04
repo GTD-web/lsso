@@ -19,7 +19,7 @@ export class MailService {
                 }
                 return a > b;
             },
-            eq: (a: number, b: number) => a === b,
+            eq: (a: any, b: any) => a === b,
             mod: (a: number, b: number) => a % b,
             times: function (n: number, block: any) {
                 let accum = '';
@@ -29,6 +29,31 @@ export class MailService {
             or: (a: boolean, b: boolean) => a || b,
             minutesToHours: (minutes: number) => {
                 return Number((minutes / 60).toFixed(2));
+            },
+            substring: (str: string, start: number, end?: number) => {
+                if (!str) return '';
+                if (end === undefined) {
+                    return str.substring(start);
+                }
+                return str.substring(start, end);
+            },
+            formatExpiresIn: (expiresIn: string) => {
+                if (!expiresIn) return '';
+                const unit = expiresIn.slice(-1);
+                const value = expiresIn.slice(0, -1);
+
+                switch (unit) {
+                    case 'h':
+                        return `${value}시간`;
+                    case 'm':
+                        return `${value}분`;
+                    case 'd':
+                        return `${value}일`;
+                    case 's':
+                        return `${value}초`;
+                    default:
+                        return expiresIn;
+                }
             },
         });
     }

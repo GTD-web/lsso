@@ -17,6 +17,7 @@ export declare class ClientAuthController {
     }>;
     checkPassword(authHeader: string, body: {
         currentPassword: string;
+        email?: string;
     }): Promise<{
         isValid: boolean;
     }>;

@@ -204,12 +204,17 @@ let ClientUseCase = class ClientUseCase {
             throw new common_1.UnauthorizedException('비밀번호 변경 중 오류가 발생했습니다.');
         }
     }
-    async checkPassword(token, password) {
+    async checkPassword(token, password, email) {
         try {
             const payload = this.jwtService.verify(token, { secret: this.jwtSecret });
             const user = await this.usersService.findOne(payload.sub);
             if (!user) {
                 throw new common_1.NotFoundException('사용자를 찾을 수 없습니다.');
+            }
+            if (email) {
+                if (user.email !== email) {
+                    throw new common_1.UnauthorizedException('이메일이 일치하지 않습니다.');
+                }
             }
             return await bcrypt.compare(password, user.password);
         }

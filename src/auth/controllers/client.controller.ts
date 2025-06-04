@@ -198,7 +198,7 @@ export class ClientAuthController {
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
             throw new UnauthorizedException('유효한 Bearer 토큰이 필요합니다.');
         }
-
+        console.log(body);
         const token = authHeader.split(' ')[1];
         await this.clientUseCase.changePassword(token, body.newPassword);
 
@@ -243,13 +243,17 @@ export class ClientAuthController {
     })
     @ApiResponse({ status: 400, description: '잘못된 요청 형식' })
     @ApiResponse({ status: 401, description: '인증 실패' })
-    async checkPassword(@Headers('Authorization') authHeader: string, @Body() body: { currentPassword: string }) {
+    async checkPassword(
+        @Headers('Authorization') authHeader: string,
+        @Body() body: { currentPassword: string; email?: string },
+    ) {
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
             throw new UnauthorizedException('유효한 Bearer 토큰이 필요합니다.');
         }
+        console.log(body);
 
         const token = authHeader.split(' ')[1];
-        const isValid = await this.clientUseCase.checkPassword(token, body.currentPassword);
+        const isValid = await this.clientUseCase.checkPassword(token, body.currentPassword, body.email);
 
         return {
             isValid,

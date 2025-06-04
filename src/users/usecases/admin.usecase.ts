@@ -60,7 +60,7 @@ export class AdminUsecase {
         });
         const mail = await this.mailService.sendEmail({
             recipients: [user.email],
-            subject: '초기 비밀번호 설정 안내',
+            subject: '[Lumir Backoffice] 초기 비밀번호 설정 안내',
             template: 'initial-password',
             context: {
                 name: user.name,
@@ -90,7 +90,7 @@ export class AdminUsecase {
 
         const mail = await this.mailService.sendEmail({
             recipients: [user.email],
-            subject: '임시 비밀번호 발급',
+            subject: '[Lumir Backoffice] 임시 비밀번호 발급',
             template: 'temp-password',
             context: {
                 name: user.name,

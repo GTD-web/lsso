@@ -40,6 +40,32 @@ let MailService = class MailService {
             minutesToHours: (minutes) => {
                 return Number((minutes / 60).toFixed(2));
             },
+            substring: (str, start, end) => {
+                if (!str)
+                    return '';
+                if (end === undefined) {
+                    return str.substring(start);
+                }
+                return str.substring(start, end);
+            },
+            formatExpiresIn: (expiresIn) => {
+                if (!expiresIn)
+                    return '';
+                const unit = expiresIn.slice(-1);
+                const value = expiresIn.slice(0, -1);
+                switch (unit) {
+                    case 'h':
+                        return `${value}시간`;
+                    case 'm':
+                        return `${value}분`;
+                    case 'd':
+                        return `${value}일`;
+                    case 's':
+                        return `${value}초`;
+                    default:
+                        return expiresIn;
+                }
+            },
         });
     }
     async sendEmail(dto) {
