@@ -55,7 +55,7 @@ export class AdminUsecase {
 
         // 액세스 토큰 생성
         const token = this.jwtService.sign(payload, {
-            expiresIn: '7d',
+            expiresIn: '1d',
             secret: process.env.GLOBAL_SECRET,
         });
         const mail = await this.mailService.sendEmail({
@@ -65,7 +65,7 @@ export class AdminUsecase {
             context: {
                 name: user.name,
                 resetUrl: `${process.env.APP_URL}/set-initial-password?token=${token}`,
-                expiresIn: '7d',
+                expiresIn: '1d',
             },
         });
         console.log(mail);
