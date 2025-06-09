@@ -24,7 +24,7 @@ let LoggingInterceptor = class LoggingInterceptor {
         const startTime = Date.now();
         const ctx = context.switchToHttp();
         const request = ctx.getRequest();
-        const passUrl = ['/api/admin', '/api/domain', '/api/webhook'];
+        const passUrl = ['/api/admin', '/api/domain', '/api/webhook', '/api/auth/verify'];
         if (passUrl.some((url) => request.url.startsWith(url))) {
             return next.handle();
         }

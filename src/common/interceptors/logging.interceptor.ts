@@ -14,7 +14,7 @@ export class LoggingInterceptor implements NestInterceptor {
         const ctx = context.switchToHttp();
         const request = ctx.getRequest<Request>();
 
-        const passUrl = ['/api/admin', '/api/domain', '/api/webhook'];
+        const passUrl = ['/api/admin', '/api/domain', '/api/webhook', '/api/auth/verify'];
         if (passUrl.some((url) => request.url.startsWith(url))) {
             return next.handle();
         }
