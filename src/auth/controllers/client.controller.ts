@@ -198,7 +198,7 @@ export class ClientAuthController {
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
             throw new UnauthorizedException('유효한 Bearer 토큰이 필요합니다.');
         }
-        console.log(body, authHeader);
+
         const token = authHeader.split(' ')[1];
         await this.clientUseCase.changePassword(token, body.newPassword);
 
@@ -250,7 +250,6 @@ export class ClientAuthController {
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
             throw new UnauthorizedException('유효한 Bearer 토큰이 필요합니다.');
         }
-        console.log(body, authHeader);
 
         const token = authHeader.split(' ')[1];
         const isValid = await this.clientUseCase.checkPassword(token, body.currentPassword, body.email);
