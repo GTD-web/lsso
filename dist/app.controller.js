@@ -25,8 +25,10 @@ let AppController = class AppController {
             token,
         });
     }
-    async changePassword(res) {
-        return res.render('pages/change-password');
+    async changePassword(res, token) {
+        return res.render('pages/change-password', {
+            token,
+        });
     }
 };
 exports.AppController = AppController;
@@ -41,8 +43,9 @@ __decorate([
 __decorate([
     (0, common_1.Get)('change-password'),
     __param(0, (0, common_1.Res)()),
+    __param(1, (0, common_1.Query)('token')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", Promise)
 ], AppController.prototype, "changePassword", null);
 exports.AppController = AppController = __decorate([

@@ -16,7 +16,9 @@ export class AppController {
     }
 
     @Get('change-password')
-    async changePassword(@Res() res: Response) {
-        return res.render('pages/change-password');
+    async changePassword(@Res() res: Response, @Query('token') token: string) {
+        return res.render('pages/change-password', {
+            token,
+        });
     }
 }

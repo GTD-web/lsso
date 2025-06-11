@@ -186,7 +186,8 @@ let ClientUseCase = class ClientUseCase {
     }
     async changePassword(token, newPassword) {
         try {
-            const payload = this.jwtService.verify(token, { secret: this.jwtSecret });
+            const payload = await this.jwtService.verify(token, { secret: this.jwtSecret });
+            console.log(payload);
             const user = await this.usersService.findOne(payload.sub);
             if (!user) {
                 throw new common_1.NotFoundException('사용자를 찾을 수 없습니다.');
@@ -198,6 +199,7 @@ let ClientUseCase = class ClientUseCase {
             });
         }
         catch (error) {
+            console.log(error);
             if (error instanceof common_1.UnauthorizedException || error instanceof common_1.NotFoundException) {
                 throw error;
             }
@@ -216,6 +218,7 @@ let ClientUseCase = class ClientUseCase {
                     throw new common_1.UnauthorizedException('이메일이 일치하지 않습니다.');
                 }
             }
+            console.log(user, password);
             return await bcrypt.compare(password, user.password);
         }
         catch (error) {
