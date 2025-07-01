@@ -5,10 +5,11 @@ import { User } from '../entities/user.entity';
 import { EmployeeResponseDto } from '../dto/employee-response.dto';
 import axios from 'axios';
 import { UsersService } from '../services/users.service';
+import { AdminUsecase } from './admin.usecase';
 
 @Injectable()
 export class WebhookUsecase {
-    constructor(private readonly usersService: UsersService) {}
+    constructor(private readonly usersService: UsersService, private readonly adminUsecase: AdminUsecase) {}
 
     async onModuleInit() {
         const users = await this.usersService.findAll();
@@ -45,6 +46,7 @@ export class WebhookUsecase {
                 await this.usersService.save(user);
             } else {
                 await this.usersService.save(this.usersService.create(employee));
+                await this.adminUsecase.sendInitPassSetMail(employee.email);
             }
         }
     }

@@ -14,9 +14,11 @@ const common_1 = require("@nestjs/common");
 const employee_response_dto_1 = require("../dto/employee-response.dto");
 const axios_1 = require("axios");
 const users_service_1 = require("../services/users.service");
+const admin_usecase_1 = require("./admin.usecase");
 let WebhookUsecase = class WebhookUsecase {
-    constructor(usersService) {
+    constructor(usersService, adminUsecase) {
         this.usersService = usersService;
+        this.adminUsecase = adminUsecase;
     }
     async onModuleInit() {
         const users = await this.usersService.findAll();
@@ -52,6 +54,7 @@ let WebhookUsecase = class WebhookUsecase {
             }
             else {
                 await this.usersService.save(this.usersService.create(employee));
+                await this.adminUsecase.sendInitPassSetMail(employee.email);
             }
         }
     }
@@ -59,6 +62,6 @@ let WebhookUsecase = class WebhookUsecase {
 exports.WebhookUsecase = WebhookUsecase;
 exports.WebhookUsecase = WebhookUsecase = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [users_service_1.UsersService])
+    __metadata("design:paramtypes", [users_service_1.UsersService, admin_usecase_1.AdminUsecase])
 ], WebhookUsecase);
 //# sourceMappingURL=webhook.usecase.js.map
