@@ -16,6 +16,7 @@ exports.WebhookUsersController = void 0;
 const common_1 = require("@nestjs/common");
 const webhook_usecase_1 = require("../usecases/webhook.usecase");
 const swagger_1 = require("@nestjs/swagger");
+const public_decorator_1 = require("../../common/decorators/public.decorator");
 let WebhookUsersController = class WebhookUsersController {
     constructor(webhookUsecase) {
         this.webhookUsecase = webhookUsecase;
@@ -88,6 +89,7 @@ __decorate([
 ], WebhookUsersController.prototype, "webhookDelete", null);
 exports.WebhookUsersController = WebhookUsersController = __decorate([
     (0, common_1.Controller)('webhook/users'),
+    (0, public_decorator_1.Public)(),
     (0, swagger_1.ApiExcludeController)(),
     __metadata("design:paramtypes", [webhook_usecase_1.WebhookUsecase])
 ], WebhookUsersController);

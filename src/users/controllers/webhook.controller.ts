@@ -1,8 +1,10 @@
 import { Controller, Get, Body, Post } from '@nestjs/common';
 import { WebhookUsecase } from '../usecases/webhook.usecase';
 import { ApiExcludeController } from '@nestjs/swagger';
+import { Public } from '../../common/decorators/public.decorator';
 
 @Controller('webhook/users')
+@Public()
 @ApiExcludeController()
 export class WebhookUsersController {
     constructor(private readonly webhookUsecase: WebhookUsecase) {}
