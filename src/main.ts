@@ -34,7 +34,7 @@ async function bootstrap() {
     // CORS setup
     app.enableCors();
 
-    app.useGlobalInterceptors(new LoggingInterceptor(app.get(LogsService), app.get(SystemsService)));
+    // app.useGlobalInterceptors(new LoggingInterceptor(app.get(LogsService), app.get(SystemsService)));
 
     // Handlebars 설정
     app.useStaticAssets(join(__dirname, '..', 'public'));
