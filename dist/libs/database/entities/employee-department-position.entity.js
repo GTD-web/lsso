@@ -42,61 +42,6 @@ __decorate([
     __metadata("design:type", String)
 ], EmployeeDepartmentPosition.prototype, "positionId", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '시작일', type: 'date' }),
-    __metadata("design:type", Date)
-], EmployeeDepartmentPosition.prototype, "startDate", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '종료일', type: 'date', nullable: true }),
-    __metadata("design:type", Date)
-], EmployeeDepartmentPosition.prototype, "endDate", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '활성 여부', default: true }),
-    __metadata("design:type", Boolean)
-], EmployeeDepartmentPosition.prototype, "isActive", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '주 소속 여부 (메인 부서)', default: true }),
-    __metadata("design:type", Boolean)
-], EmployeeDepartmentPosition.prototype, "isPrimary", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '임시 발령 여부', default: false }),
-    __metadata("design:type", Boolean)
-], EmployeeDepartmentPosition.prototype, "isTemporary", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '발령 이유', nullable: true }),
-    __metadata("design:type", String)
-], EmployeeDepartmentPosition.prototype, "reason", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '권한 레벨', nullable: true }),
-    __metadata("design:type", Number)
-], EmployeeDepartmentPosition.prototype, "authorityLevel", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '비고', nullable: true }),
-    __metadata("design:type", String)
-], EmployeeDepartmentPosition.prototype, "notes", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '생성자 ID', type: 'uuid', nullable: true }),
-    __metadata("design:type", String)
-], EmployeeDepartmentPosition.prototype, "createdBy", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '수정자 ID', type: 'uuid', nullable: true }),
-    __metadata("design:type", String)
-], EmployeeDepartmentPosition.prototype, "updatedBy", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)(() => employee_entity_1.Employee, { eager: true }),
-    (0, typeorm_1.JoinColumn)({ name: 'employeeId' }),
-    __metadata("design:type", employee_entity_1.Employee)
-], EmployeeDepartmentPosition.prototype, "employee", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)(() => department_entity_1.Department, { eager: true }),
-    (0, typeorm_1.JoinColumn)({ name: 'departmentId' }),
-    __metadata("design:type", department_entity_1.Department)
-], EmployeeDepartmentPosition.prototype, "department", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)(() => position_entity_1.Position, { eager: true }),
-    (0, typeorm_1.JoinColumn)({ name: 'positionId' }),
-    __metadata("design:type", position_entity_1.Position)
-], EmployeeDepartmentPosition.prototype, "position", void 0);
-__decorate([
     (0, typeorm_1.CreateDateColumn)({ comment: '생성일' }),
     __metadata("design:type", Date)
 ], EmployeeDepartmentPosition.prototype, "createdAt", void 0);
@@ -104,13 +49,26 @@ __decorate([
     (0, typeorm_1.UpdateDateColumn)({ comment: '수정일' }),
     __metadata("design:type", Date)
 ], EmployeeDepartmentPosition.prototype, "updatedAt", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => employee_entity_1.Employee),
+    (0, typeorm_1.JoinColumn)({ name: 'employeeId' }),
+    __metadata("design:type", employee_entity_1.Employee)
+], EmployeeDepartmentPosition.prototype, "employee", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => department_entity_1.Department),
+    (0, typeorm_1.JoinColumn)({ name: 'departmentId' }),
+    __metadata("design:type", department_entity_1.Department)
+], EmployeeDepartmentPosition.prototype, "department", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => position_entity_1.Position),
+    (0, typeorm_1.JoinColumn)({ name: 'positionId' }),
+    __metadata("design:type", position_entity_1.Position)
+], EmployeeDepartmentPosition.prototype, "position", void 0);
 exports.EmployeeDepartmentPosition = EmployeeDepartmentPosition = __decorate([
     (0, typeorm_1.Entity)('employee_department_positions'),
     (0, typeorm_1.Unique)(['employeeId', 'departmentId']),
     (0, typeorm_1.Index)(['employeeId']),
     (0, typeorm_1.Index)(['departmentId']),
-    (0, typeorm_1.Index)(['positionId']),
-    (0, typeorm_1.Index)(['employeeId', 'isActive']),
-    (0, typeorm_1.Index)(['departmentId', 'isActive'])
+    (0, typeorm_1.Index)(['positionId'])
 ], EmployeeDepartmentPosition);
 //# sourceMappingURL=employee-department-position.entity.js.map

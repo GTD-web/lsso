@@ -13,19 +13,9 @@ export declare class EmployeeDepartmentPosition {
     employeeId: string;
     departmentId: string;
     positionId: string;
-    startDate: Date;
-    endDate?: Date;
-    isActive: boolean;
-    isPrimary: boolean;
-    isTemporary: boolean;
-    reason?: string;
-    authorityLevel?: number;
-    notes?: string;
-    createdBy?: string;
-    updatedBy?: string;
+    createdAt: Date;
+    updatedAt: Date;
     employee: Employee;
     department: Department;
     position: Position;
-    createdAt: Date;
-    updatedAt: Date;
 }

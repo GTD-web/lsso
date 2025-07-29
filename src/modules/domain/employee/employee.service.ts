@@ -36,4 +36,11 @@ export class DomainEmployeeService extends BaseService<Employee> {
         }
         return employee;
     }
+
+    /**
+     * 직원의 비밀번호를 업데이트합니다
+     */
+    async updatePassword(employeeId: string, hashedPassword: string): Promise<Employee> {
+        return this.update(employeeId, { password: hashedPassword });
+    }
 }

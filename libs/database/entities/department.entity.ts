@@ -23,9 +23,6 @@ export class Department {
     @Column({ comment: '위치', nullable: true })
     location?: string;
 
-    @Column({ comment: '매니저 ID', type: 'uuid', nullable: true })
-    managerId?: string;
-
     @Column({ comment: '상위 부서 ID', type: 'uuid', nullable: true })
     parentDepartmentId?: string;
 
@@ -40,8 +37,6 @@ export class Department {
 
     @OneToMany(() => Department, (department) => department.parentDepartment)
     childDepartments: Department[];
-
-    // 소속 직원은 이력 테이블로 분리
 
     @CreateDateColumn({ comment: '생성일' })
     createdAt: Date;

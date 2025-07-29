@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Entities = exports.EmployeeProjectAssignment = exports.ProjectRole = exports.Project = exports.EmployeeRankHistory = exports.EmployeeDepartmentPosition = exports.Rank = exports.Position = exports.Department = exports.Employee = void 0;
+exports.Entities = exports.Log = exports.SystemWebhook = exports.EmployeeToken = exports.Token = exports.System = exports.WebhookEventLog = exports.Webhook = exports.EmployeeRankHistory = exports.EmployeeDepartmentPosition = exports.Rank = exports.Position = exports.Department = exports.Employee = void 0;
 const employee_entity_1 = require("./employee.entity");
 Object.defineProperty(exports, "Employee", { enumerable: true, get: function () { return employee_entity_1.Employee; } });
 const department_entity_1 = require("./department.entity");
@@ -13,12 +13,20 @@ const employee_department_position_entity_1 = require("./employee-department-pos
 Object.defineProperty(exports, "EmployeeDepartmentPosition", { enumerable: true, get: function () { return employee_department_position_entity_1.EmployeeDepartmentPosition; } });
 const employee_rank_history_entity_1 = require("./employee-rank-history.entity");
 Object.defineProperty(exports, "EmployeeRankHistory", { enumerable: true, get: function () { return employee_rank_history_entity_1.EmployeeRankHistory; } });
-const project_entity_1 = require("./project.entity");
-Object.defineProperty(exports, "Project", { enumerable: true, get: function () { return project_entity_1.Project; } });
-const project_role_entity_1 = require("./project-role.entity");
-Object.defineProperty(exports, "ProjectRole", { enumerable: true, get: function () { return project_role_entity_1.ProjectRole; } });
-const employee_project_assignment_entity_1 = require("./employee-project-assignment.entity");
-Object.defineProperty(exports, "EmployeeProjectAssignment", { enumerable: true, get: function () { return employee_project_assignment_entity_1.EmployeeProjectAssignment; } });
+const webhook_entity_1 = require("./webhook.entity");
+Object.defineProperty(exports, "Webhook", { enumerable: true, get: function () { return webhook_entity_1.Webhook; } });
+const webhook_event_log_entity_1 = require("./webhook-event-log.entity");
+Object.defineProperty(exports, "WebhookEventLog", { enumerable: true, get: function () { return webhook_event_log_entity_1.WebhookEventLog; } });
+const system_entity_1 = require("./system.entity");
+Object.defineProperty(exports, "System", { enumerable: true, get: function () { return system_entity_1.System; } });
+const token_entity_1 = require("./token.entity");
+Object.defineProperty(exports, "Token", { enumerable: true, get: function () { return token_entity_1.Token; } });
+const employee_token_entity_1 = require("./employee-token.entity");
+Object.defineProperty(exports, "EmployeeToken", { enumerable: true, get: function () { return employee_token_entity_1.EmployeeToken; } });
+const system_webhook_entity_1 = require("./system-webhook.entity");
+Object.defineProperty(exports, "SystemWebhook", { enumerable: true, get: function () { return system_webhook_entity_1.SystemWebhook; } });
+const log_entity_1 = require("./log.entity");
+Object.defineProperty(exports, "Log", { enumerable: true, get: function () { return log_entity_1.Log; } });
 exports.Entities = [
     employee_entity_1.Employee,
     department_entity_1.Department,
@@ -26,8 +34,12 @@ exports.Entities = [
     rank_entity_1.Rank,
     employee_department_position_entity_1.EmployeeDepartmentPosition,
     employee_rank_history_entity_1.EmployeeRankHistory,
-    project_entity_1.Project,
-    project_role_entity_1.ProjectRole,
-    employee_project_assignment_entity_1.EmployeeProjectAssignment,
+    webhook_entity_1.Webhook,
+    webhook_event_log_entity_1.WebhookEventLog,
+    system_entity_1.System,
+    token_entity_1.Token,
+    employee_token_entity_1.EmployeeToken,
+    system_webhook_entity_1.SystemWebhook,
+    log_entity_1.Log,
 ];
 //# sourceMappingURL=index.js.map

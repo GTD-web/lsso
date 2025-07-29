@@ -3,7 +3,6 @@ export declare class Department {
     departmentName: string;
     departmentCode: string;
     location?: string;
-    managerId?: string;
     parentDepartmentId?: string;
     order: number;
     parentDepartment?: Department;

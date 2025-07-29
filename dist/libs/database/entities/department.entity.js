@@ -31,10 +31,6 @@ __decorate([
     __metadata("design:type", String)
 ], Department.prototype, "location", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '매니저 ID', type: 'uuid', nullable: true }),
-    __metadata("design:type", String)
-], Department.prototype, "managerId", void 0);
-__decorate([
     (0, typeorm_1.Column)({ comment: '상위 부서 ID', type: 'uuid', nullable: true }),
     __metadata("design:type", String)
 ], Department.prototype, "parentDepartmentId", void 0);

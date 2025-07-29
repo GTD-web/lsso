@@ -41,6 +41,9 @@ let DomainEmployeeService = class DomainEmployeeService extends base_service_1.B
         }
         return employee;
     }
+    async updatePassword(employeeId, hashedPassword) {
+        return this.update(employeeId, { password: hashedPassword });
+    }
 };
 exports.DomainEmployeeService = DomainEmployeeService;
 exports.DomainEmployeeService = DomainEmployeeService = __decorate([
