@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { setupSwagger } from './common/utils/swagger';
+import { ENV } from '../libs/configs/env.config';
 import * as dtos from './dtos.index';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
@@ -14,7 +15,14 @@ import { RequestInterceptor } from '../libs/common/interceptors/request.intercep
 import { ErrorInterceptor } from '../libs/common/interceptors/error.interceptor';
 
 async function bootstrap() {
-    console.log('bootstrap', __dirname);
+    console.log('bootstrap', __dirname, ENV);
+
+    // Vercel 환경에서는 실행하지 않음
+    if (process.env.VERCEL || process.env.NOW_REGION) {
+        console.log('Running in Vercel environment, skipping bootstrap');
+        return;
+    }
+
     const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
     // Global pipes
