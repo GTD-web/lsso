@@ -31,7 +31,7 @@ import { MailModule } from './modules/application/legacy/mail/mail.module';
         TypeOrmModule.forFeature(Entities),
 
         SsoApplicationModule,
-        MigrationModule,
+        // MigrationModule,
         AuthModule,
         UsersModule,
         LogsModule,
