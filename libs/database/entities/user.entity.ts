@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
-import { Token } from 'src/tokens/entities/token.entity';
+import { Token } from './token.entity';
 
 @Entity('users')
 export class User {
@@ -50,4 +50,7 @@ export class User {
 
     @UpdateDateColumn()
     updatedAt: Date;
+
+    @OneToMany(() => Token, (token) => token.user)
+    tokens: Token[];
 }
