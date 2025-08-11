@@ -214,7 +214,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.RequestInterceptor = void 0;
-const date_util_1 = __webpack_require__(/*! ../utils/date.util */ "./libs/common/utils/date.util.ts");
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const operators_1 = __webpack_require__(/*! rxjs/operators */ "rxjs/operators");
 let RequestInterceptor = class RequestInterceptor {
@@ -222,7 +221,7 @@ let RequestInterceptor = class RequestInterceptor {
         const request = context.switchToHttp().getRequest();
         const { method, url, body, query, params } = request;
         const now = Date.now();
-        console.log(`[Request] ${date_util_1.DateUtil.now().toISOString()} ${method} ${url}`);
+        console.log(`[Request] ${new Date().toISOString()} ${method} ${url}`);
         if (Object.keys(body).length > 0) {
             console.log('Body:', body);
         }
@@ -403,160 +402,6 @@ exports.BaseService = BaseService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [typeof (_a = typeof repository_interface_1.IRepository !== "undefined" && repository_interface_1.IRepository) === "function" ? _a : Object])
 ], BaseService);
-
-
-/***/ }),
-
-/***/ "./libs/common/utils/date.util.ts":
-/*!****************************************!*\
-  !*** ./libs/common/utils/date.util.ts ***!
-  \****************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DateUtil = void 0;
-const dayjs_1 = __webpack_require__(/*! dayjs */ "dayjs");
-let hasTimezone = false;
-try {
-    const utc = __webpack_require__(/*! dayjs/plugin/utc */ "dayjs/plugin/utc");
-    const timezone = __webpack_require__(/*! dayjs/plugin/timezone */ "dayjs/plugin/timezone");
-    dayjs_1.default.extend(utc);
-    dayjs_1.default.extend(timezone);
-    if (dayjs_1.default.tz && dayjs_1.default.tz.setDefault) {
-        dayjs_1.default.tz.setDefault('Asia/Seoul');
-        hasTimezone = true;
-    }
-}
-catch (error) {
-    console.warn('Failed to load dayjs timezone plugins:', error.message);
-    hasTimezone = false;
-}
-class DateUtilWrapper {
-    constructor(date) {
-        this.date = date;
-    }
-    toDate() {
-        return this.date.toDate();
-    }
-    format(format = 'YYYY-MM-DD HH:mm:ss') {
-        return this.date.format(format);
-    }
-    addDays(days) {
-        return new DateUtilWrapper(this.date.add(days, 'day'));
-    }
-    addMinutes(minutes) {
-        return new DateUtilWrapper(this.date.add(minutes, 'minute'));
-    }
-    toISOString() {
-        return this.date.toISOString();
-    }
-    toMinutes() {
-        return this.date.hour() * 60 + this.date.minute();
-    }
-    hour(hours) {
-        return new DateUtilWrapper(this.date.hour(hours));
-    }
-    minute(minutes) {
-        return new DateUtilWrapper(this.date.minute(minutes));
-    }
-    second(seconds) {
-        return new DateUtilWrapper(this.date.second(seconds));
-    }
-    getYear() {
-        return this.date.year();
-    }
-    getMonth() {
-        return this.date.month() + 1;
-    }
-    getDate() {
-        return this.date.date();
-    }
-    getDaysInMonth() {
-        return this.date.daysInMonth();
-    }
-    getFirstDayOfMonth() {
-        return new DateUtilWrapper(this.date.startOf('month'));
-    }
-    getLastDayOfMonth() {
-        return new DateUtilWrapper(this.date.endOf('month'));
-    }
-}
-class DateUtil {
-    static now() {
-        if (hasTimezone && dayjs_1.default.tz) {
-            return new DateUtilWrapper((0, dayjs_1.default)().tz('Asia/Seoul'));
-        }
-        return new DateUtilWrapper((0, dayjs_1.default)());
-    }
-    static date(date) {
-        if (hasTimezone && dayjs_1.default.tz) {
-            return new DateUtilWrapper(dayjs_1.default.tz(date, 'Asia/Seoul'));
-        }
-        return new DateUtilWrapper((0, dayjs_1.default)(date));
-    }
-    static format(date, format = 'YYYY-MM-DD HH:mm:ss') {
-        return this.date(date).format(format);
-    }
-    static parse(dateString) {
-        return this.date(dateString);
-    }
-    static addDays(date, days) {
-        return this.date(date).addDays(days);
-    }
-    static addMinutes(date, minutes) {
-        return this.date(date).addMinutes(minutes);
-    }
-    static toISOString(date) {
-        return this.date(date).toISOString();
-    }
-    static toMinutes(date) {
-        const d = this.date(date);
-        return d.toMinutes();
-    }
-    static fromMinutes(minutes) {
-        const hours = Math.floor(minutes / 60);
-        const mins = minutes % 60;
-        return this.now().hour(hours).minute(mins).second(0);
-    }
-    static getYear(date = new Date()) {
-        return this.date(date).getYear();
-    }
-    static getMonth(date = new Date()) {
-        return this.date(date).getMonth();
-    }
-    static getDate(date = new Date()) {
-        return this.date(date).getDate();
-    }
-    static getDaysInMonth(date = new Date()) {
-        return this.date(date).getDaysInMonth();
-    }
-    static getFirstDayOfMonth(date = new Date()) {
-        return this.date(date).getFirstDayOfMonth();
-    }
-    static getLastDayOfMonth(date = new Date()) {
-        return this.date(date).getLastDayOfMonth();
-    }
-    static toAlarmRangeString(startDate, endDate) {
-        const start = (0, dayjs_1.default)(startDate);
-        const end = (0, dayjs_1.default)(endDate);
-        if (start.isSame(end, 'day')) {
-            return `${this.replaceWeekday(start.format('YY.MM.DD(ddd) HH:mm'))} ~ ${end.format('HH:mm')}`;
-        }
-        return `${this.replaceWeekday(start.format('YY.MM.DD(ddd) HH:mm'))} ~ ${this.replaceWeekday(end.format('YY.MM.DD(ddd) HH:mm'))}`;
-    }
-    static replaceWeekday(str) {
-        return str
-            .replace('Mon', '월')
-            .replace('Tue', '화')
-            .replace('Wed', '수')
-            .replace('Thu', '목')
-            .replace('Fri', '금')
-            .replace('Sat', '토')
-            .replace('Sun', '일');
-    }
-}
-exports.DateUtil = DateUtil;
 
 
 /***/ }),
@@ -2253,7 +2098,6 @@ const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const operators_1 = __webpack_require__(/*! rxjs/operators */ "rxjs/operators");
 const logs_service_1 = __webpack_require__(/*! ../../modules/application/legacy/logs/services/logs.service */ "./src/modules/application/legacy/logs/services/logs.service.ts");
 const systems_service_1 = __webpack_require__(/*! ../../modules/application/legacy/systems/services/systems.service */ "./src/modules/application/legacy/systems/services/systems.service.ts");
-const date_util_1 = __webpack_require__(/*! ../utils/date.util */ "./src/common/utils/date.util.ts");
 let LoggingInterceptor = class LoggingInterceptor {
     constructor(logsService, systemService) {
         this.logsService = logsService;
@@ -2287,7 +2131,7 @@ let LoggingInterceptor = class LoggingInterceptor {
             body: request.body,
             ip: ip,
             userAgent: request.get('user-agent'),
-            requestTimestamp: date_util_1.DateUtil.now().toDate(),
+            requestTimestamp: new Date(),
             responseTimestamp: null,
             responseTime: null,
             statusCode: null,
@@ -2297,13 +2141,13 @@ let LoggingInterceptor = class LoggingInterceptor {
             isError: false,
         };
         return next.handle().pipe((0, operators_1.tap)(async (response) => {
-            logData.responseTimestamp = date_util_1.DateUtil.now().toDate();
+            logData.responseTimestamp = new Date();
             logData.responseTime = logData.responseTimestamp - startTime;
             logData.statusCode = context.switchToHttp().getResponse().statusCode;
             logData.response = request.method !== 'GET' ? response : null;
             logData.system = response?.system || null;
         }), (0, operators_1.catchError)(async (error) => {
-            logData.responseTimestamp = date_util_1.DateUtil.now().toDate();
+            logData.responseTimestamp = new Date();
             logData.responseTime = logData.responseTimestamp - startTime;
             logData.statusCode = error.status || 500;
             logData.system = error?.response?.system || null;
@@ -2322,90 +2166,6 @@ exports.LoggingInterceptor = LoggingInterceptor = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [typeof (_a = typeof logs_service_1.LogsService !== "undefined" && logs_service_1.LogsService) === "function" ? _a : Object, typeof (_b = typeof systems_service_1.SystemsService !== "undefined" && systems_service_1.SystemsService) === "function" ? _b : Object])
 ], LoggingInterceptor);
-
-
-/***/ }),
-
-/***/ "./src/common/utils/date.util.ts":
-/*!***************************************!*\
-  !*** ./src/common/utils/date.util.ts ***!
-  \***************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DateUtil = void 0;
-const dayjs = __webpack_require__(/*! dayjs */ "dayjs");
-const utc = __webpack_require__(/*! dayjs/plugin/utc */ "dayjs/plugin/utc");
-const timezone = __webpack_require__(/*! dayjs/plugin/timezone */ "dayjs/plugin/timezone");
-dayjs.extend(utc);
-dayjs.extend(timezone);
-dayjs.tz.setDefault('Asia/Seoul');
-class DateUtilWrapper {
-    constructor(date) {
-        this.date = date;
-    }
-    toDate() {
-        return this.date.toDate();
-    }
-    format(format = 'YYYY-MM-DD HH:mm:ss') {
-        return this.date.format(format);
-    }
-    addDays(days) {
-        return new DateUtilWrapper(this.date.add(days, 'day'));
-    }
-    addMinutes(minutes) {
-        return new DateUtilWrapper(this.date.add(minutes, 'minute'));
-    }
-    toISOString() {
-        return this.date.toISOString();
-    }
-    toMinutes() {
-        return this.date.hour() * 60 + this.date.minute();
-    }
-    hour(hours) {
-        return new DateUtilWrapper(this.date.hour(hours));
-    }
-    minute(minutes) {
-        return new DateUtilWrapper(this.date.minute(minutes));
-    }
-    second(seconds) {
-        return new DateUtilWrapper(this.date.second(seconds));
-    }
-}
-class DateUtil {
-    static now() {
-        return new DateUtilWrapper(dayjs().tz('Asia/Seoul'));
-    }
-    static date(date) {
-        return new DateUtilWrapper(dayjs.tz(date, 'Asia/Seoul'));
-    }
-    static format(date, format = 'YYYY-MM-DD HH:mm:ss') {
-        return this.date(date).format(format);
-    }
-    static parse(dateString) {
-        return this.date(dateString);
-    }
-    static addDays(date, days) {
-        return this.date(date).addDays(days);
-    }
-    static addMinutes(date, minutes) {
-        return this.date(date).addMinutes(minutes);
-    }
-    static toISOString(date) {
-        return this.date(date).toISOString();
-    }
-    static toMinutes(date) {
-        const d = this.date(date);
-        return d.toMinutes();
-    }
-    static fromMinutes(minutes) {
-        const hours = Math.floor(minutes / 60);
-        const mins = minutes % 60;
-        return this.now().hour(hours).minute(mins).second(0);
-    }
-}
-exports.DateUtil = DateUtil;
 
 
 /***/ }),
@@ -9948,36 +9708,6 @@ module.exports = require("class-transformer");
 /***/ ((module) => {
 
 module.exports = require("class-validator");
-
-/***/ }),
-
-/***/ "dayjs":
-/*!************************!*\
-  !*** external "dayjs" ***!
-  \************************/
-/***/ ((module) => {
-
-module.exports = require("dayjs");
-
-/***/ }),
-
-/***/ "dayjs/plugin/timezone":
-/*!****************************************!*\
-  !*** external "dayjs/plugin/timezone" ***!
-  \****************************************/
-/***/ ((module) => {
-
-module.exports = require("dayjs/plugin/timezone");
-
-/***/ }),
-
-/***/ "dayjs/plugin/utc":
-/*!***********************************!*\
-  !*** external "dayjs/plugin/utc" ***!
-  \***********************************/
-/***/ ((module) => {
-
-module.exports = require("dayjs/plugin/utc");
 
 /***/ }),
 
