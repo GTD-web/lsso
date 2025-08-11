@@ -39,9 +39,6 @@ let DomainDepartmentService = DomainDepartmentService_1 = class DomainDepartment
         const department = await this.departmentRepository.findOne({
             where: { departmentCode },
         });
-        if (!department) {
-            throw new common_1.NotFoundException('부서를 찾을 수 없습니다.');
-        }
         return department;
     }
     async findAllDepartments() {

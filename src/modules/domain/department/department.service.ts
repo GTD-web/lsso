@@ -35,9 +35,6 @@ export class DomainDepartmentService extends BaseService<Department> {
         const department = await this.departmentRepository.findOne({
             where: { departmentCode },
         });
-        if (!department) {
-            throw new NotFoundException('부서를 찾을 수 없습니다.');
-        }
         return department;
     }
 

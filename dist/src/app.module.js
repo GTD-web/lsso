@@ -19,7 +19,6 @@ const config_2 = require("@nestjs/config");
 const env_config_1 = require("../libs/configs/env.config");
 const entities_1 = require("../libs/database/entities");
 const sso_application_module_1 = require("./modules/application/single-sign-on/sso-application.module");
-const migration_module_1 = require("./modules/context/migration/migration.module");
 const auth_module_1 = require("./modules/application/legacy/auth/auth.module");
 const users_module_1 = require("./modules/application/legacy/users/users.module");
 const logs_module_1 = require("./modules/application/legacy/logs/logs.module");
@@ -42,7 +41,6 @@ exports.AppModule = AppModule = __decorate([
             }),
             typeorm_1.TypeOrmModule.forFeature(entities_1.Entities),
             sso_application_module_1.SsoApplicationModule,
-            migration_module_1.MigrationModule,
             auth_module_1.AuthModule,
             users_module_1.UsersModule,
             logs_module_1.LogsModule,

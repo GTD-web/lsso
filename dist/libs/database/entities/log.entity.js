@@ -65,6 +65,7 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)({
         type: 'timestamp with time zone',
+        nullable: true,
         comment: '요청 시작 시간',
     }),
     __metadata("design:type", Date)

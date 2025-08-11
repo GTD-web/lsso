@@ -48,6 +48,8 @@ export class Log {
 
     @Column({
         type: 'timestamp with time zone',
+        nullable: true,
+
         comment: '요청 시작 시간',
     })
     requestTimestamp: Date;

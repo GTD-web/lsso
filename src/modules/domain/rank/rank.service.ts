@@ -22,9 +22,7 @@ export class DomainRankService extends BaseService<Rank> {
         const rank = await this.rankRepository.findOne({
             where: { rankName },
         });
-        if (!rank) {
-            throw new NotFoundException('직급을 찾을 수 없습니다.');
-        }
+
         return rank;
     }
 
@@ -33,9 +31,7 @@ export class DomainRankService extends BaseService<Rank> {
         const rank = await this.rankRepository.findOne({
             where: { rankCode },
         });
-        if (!rank) {
-            throw new NotFoundException('직급을 찾을 수 없습니다.');
-        }
+
         return rank;
     }
 

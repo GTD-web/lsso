@@ -28,18 +28,12 @@ let DomainRankService = class DomainRankService extends base_service_1.BaseServi
         const rank = await this.rankRepository.findOne({
             where: { rankName },
         });
-        if (!rank) {
-            throw new common_1.NotFoundException('직급을 찾을 수 없습니다.');
-        }
         return rank;
     }
     async findByCode(rankCode) {
         const rank = await this.rankRepository.findOne({
             where: { rankCode },
         });
-        if (!rank) {
-            throw new common_1.NotFoundException('직급을 찾을 수 없습니다.');
-        }
         return rank;
     }
     async findAllRanks() {
