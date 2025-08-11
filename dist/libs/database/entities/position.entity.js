@@ -27,33 +27,13 @@ __decorate([
     __metadata("design:type", String)
 ], Position.prototype, "positionCode", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '직책 레벨 (높을수록 상위 직책)' }),
+    (0, typeorm_1.Column)({ comment: '직책 레벨 (낮을수록 상위 직책)' }),
     __metadata("design:type", Number)
 ], Position.prototype, "level", void 0);
 __decorate([
     (0, typeorm_1.Column)({ comment: '관리 권한 여부', default: false }),
     __metadata("design:type", Boolean)
 ], Position.prototype, "hasManagementAuthority", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '승인 권한 레벨', default: 0 }),
-    __metadata("design:type", Number)
-], Position.prototype, "approvalLevel", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '직책 설명', nullable: true }),
-    __metadata("design:type", String)
-], Position.prototype, "description", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '활성 여부', default: true }),
-    __metadata("design:type", Boolean)
-], Position.prototype, "isActive", void 0);
-__decorate([
-    (0, typeorm_1.CreateDateColumn)({ comment: '생성일' }),
-    __metadata("design:type", Date)
-], Position.prototype, "createdAt", void 0);
-__decorate([
-    (0, typeorm_1.UpdateDateColumn)({ comment: '수정일' }),
-    __metadata("design:type", Date)
-], Position.prototype, "updatedAt", void 0);
 exports.Position = Position = __decorate([
     (0, typeorm_1.Entity)('positions')
 ], Position);

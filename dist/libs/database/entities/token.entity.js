@@ -49,9 +49,21 @@ __decorate([
     __metadata("design:type", String)
 ], Token.prototype, "ipAddress", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", Date)
+], Token.prototype, "lastAccess", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: true }),
+    __metadata("design:type", Boolean)
+], Token.prototype, "isActive", void 0);
+__decorate([
     (0, typeorm_1.CreateDateColumn)({ comment: '생성일시' }),
     __metadata("design:type", Date)
 ], Token.prototype, "createdAt", void 0);
+__decorate([
+    (0, typeorm_1.UpdateDateColumn)(),
+    __metadata("design:type", Date)
+], Token.prototype, "updatedAt", void 0);
 exports.Token = Token = __decorate([
     (0, typeorm_1.Entity)('tokens')
 ], Token);

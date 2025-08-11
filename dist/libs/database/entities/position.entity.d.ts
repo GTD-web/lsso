@@ -4,9 +4,4 @@ export declare class Position {
     positionCode: string;
     level: number;
     hasManagementAuthority: boolean;
-    approvalLevel: number;
-    description?: string;
-    isActive: boolean;
-    createdAt: Date;
-    updatedAt: Date;
 }

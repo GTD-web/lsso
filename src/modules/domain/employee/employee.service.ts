@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { DomainEmployeeRepository } from './employee.repository';
 import { BaseService } from '../../../../libs/common/services/base.service';
 import { Employee } from '../../../../libs/database/entities';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class DomainEmployeeService extends BaseService<Employee> {
@@ -31,9 +32,6 @@ export class DomainEmployeeService extends BaseService<Employee> {
 
     async findByEmployeeNumber(employeeNumber: string): Promise<Employee> {
         const employee = await this.employeeRepository.findOne({ where: { employeeNumber } });
-        if (!employee) {
-            throw new NotFoundException('직원을 찾을 수 없습니다.');
-        }
         return employee;
     }
 
@@ -42,5 +40,25 @@ export class DomainEmployeeService extends BaseService<Employee> {
      */
     async updatePassword(employeeId: string, hashedPassword: string): Promise<Employee> {
         return this.update(employeeId, { password: hashedPassword });
+    }
+
+    hashPassword(password: string = '1234'): string {
+        return bcrypt.hashSync(password, 10);
+    }
+
+    async verifyPassword(password: string, employee: Employee): Promise<boolean> {
+        return bcrypt.compare(password, employee.password);
+    }
+
+    /**
+     * 다중 직원 데이터를 일괄 저장합니다
+     */
+    async bulkSave(employees: Employee[]): Promise<Employee[]> {
+        const savedEmployees: Employee[] = [];
+        for (const employee of employees) {
+            const saved = await this.save(employee);
+            savedEmployees.push(saved);
+        }
+        return savedEmployees;
     }
 }

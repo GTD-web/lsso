@@ -9,6 +9,14 @@ export class DomainPositionService extends BaseService<Position> {
         super(positionRepository);
     }
 
+    // 직책 찾기
+    async findById(positionId: string): Promise<Position> {
+        const position = await this.positionRepository.findOne({
+            where: { id: positionId },
+        });
+        return position;
+    }
+
     // 직책명으로 찾기
     async findByTitle(positionTitle: string): Promise<Position> {
         const position = await this.positionRepository.findOne({
@@ -25,32 +33,21 @@ export class DomainPositionService extends BaseService<Position> {
         const position = await this.positionRepository.findOne({
             where: { positionCode },
         });
-        if (!position) {
-            throw new NotFoundException('직책을 찾을 수 없습니다.');
-        }
         return position;
-    }
-
-    // 활성 직책 목록 조회
-    async findActivePositions(): Promise<Position[]> {
-        return this.positionRepository.findAll({
-            where: { isActive: true },
-            order: { level: 'DESC' },
-        });
     }
 
     // 레벨별 직책 조회
     async findByLevel(level: number): Promise<Position[]> {
         return this.positionRepository.findAll({
             where: { level },
-            order: { positionTitle: 'ASC' },
+            order: { level: 'ASC' },
         });
     }
 
     // 관리 권한이 있는 직책 조회
     async findManagementPositions(): Promise<Position[]> {
         return this.positionRepository.findAll({
-            where: { hasManagementAuthority: true, isActive: true },
+            where: { hasManagementAuthority: true },
             order: { level: 'DESC' },
         });
     }

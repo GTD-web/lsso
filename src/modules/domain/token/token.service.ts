@@ -2,10 +2,16 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { DomainTokenRepository } from './token.repository';
 import { BaseService } from '../../../../libs/common/services/base.service';
 import { Token } from '../../../../libs/database/entities';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class DomainTokenService extends BaseService<Token> {
-    constructor(private readonly tokenRepository: DomainTokenRepository) {
+    constructor(
+        private readonly tokenRepository: DomainTokenRepository,
+        private readonly jwtService: JwtService,
+        private readonly configService: ConfigService,
+    ) {
         super(tokenRepository);
     }
 
@@ -43,6 +49,19 @@ export class DomainTokenService extends BaseService<Token> {
         const now = new Date();
         return this.tokenRepository.findAll({
             order: { tokenExpiresAt: 'ASC' },
+        });
+    }
+
+    generateJwtToken(payload: any, expiresIn: string): string {
+        return this.jwtService.sign(payload, {
+            secret: this.configService.get<string>('GLOBAL_SECRET'),
+            expiresIn: expiresIn,
+        });
+    }
+
+    verifyJwtToken(token: string): any {
+        return this.jwtService.verify(token, {
+            secret: this.configService.get<string>('GLOBAL_SECRET'),
         });
     }
 }

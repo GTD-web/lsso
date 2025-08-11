@@ -9,8 +9,15 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Department = void 0;
+exports.Department = exports.DepartmentType = void 0;
 const typeorm_1 = require("typeorm");
+var DepartmentType;
+(function (DepartmentType) {
+    DepartmentType["COMPANY"] = "COMPANY";
+    DepartmentType["DIVISION"] = "DIVISION";
+    DepartmentType["DEPARTMENT"] = "DEPARTMENT";
+    DepartmentType["TEAM"] = "TEAM";
+})(DepartmentType || (exports.DepartmentType = DepartmentType = {}));
 let Department = class Department {
 };
 exports.Department = Department;
@@ -27,9 +34,9 @@ __decorate([
     __metadata("design:type", String)
 ], Department.prototype, "departmentCode", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '위치', nullable: true }),
+    (0, typeorm_1.Column)({ comment: '유형', type: 'enum', enum: DepartmentType, default: DepartmentType.DEPARTMENT }),
     __metadata("design:type", String)
-], Department.prototype, "location", void 0);
+], Department.prototype, "type", void 0);
 __decorate([
     (0, typeorm_1.Column)({ comment: '상위 부서 ID', type: 'uuid', nullable: true }),
     __metadata("design:type", String)

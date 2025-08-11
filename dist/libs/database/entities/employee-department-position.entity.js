@@ -42,6 +42,10 @@ __decorate([
     __metadata("design:type", String)
 ], EmployeeDepartmentPosition.prototype, "positionId", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ comment: '관리자 권한 여부', type: 'boolean', default: false }),
+    __metadata("design:type", Boolean)
+], EmployeeDepartmentPosition.prototype, "isManager", void 0);
+__decorate([
     (0, typeorm_1.CreateDateColumn)({ comment: '생성일' }),
     __metadata("design:type", Date)
 ], EmployeeDepartmentPosition.prototype, "createdAt", void 0);

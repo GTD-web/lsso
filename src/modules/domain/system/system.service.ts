@@ -2,6 +2,9 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { DomainSystemRepository } from './system.repository';
 import { BaseService } from '../../../../libs/common/services/base.service';
 import { System } from '../../../../libs/database/entities';
+import { randomBytes } from 'crypto';
+import * as bcrypt from 'bcrypt';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class DomainSystemService extends BaseService<System> {
@@ -48,5 +51,24 @@ export class DomainSystemService extends BaseService<System> {
             throw new NotFoundException('해당 도메인의 시스템을 찾을 수 없습니다.');
         }
         return system;
+    }
+
+    async verifyClientSecret(clientSecret: string, system: System): Promise<boolean> {
+        return bcrypt.compare(clientSecret, system.clientSecret);
+    }
+
+    generateCredentials(): { clientId: string; clientSecret: string; hash: string } {
+        const clientId = uuidv4();
+        const { clientSecret, hash } = this.generateSecret();
+        return { clientId, clientSecret, hash };
+    }
+
+    generateSecret(): { clientSecret: string; hash: string } {
+        // secret 생성
+        const clientSecret = randomBytes(32).toString('hex');
+        // 비밀키 생성, bycrypt 사용으로 단방향 해시
+        const hash = bcrypt.hashSync(clientSecret, 10);
+
+        return { clientSecret, hash };
     }
 }

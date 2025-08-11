@@ -39,6 +39,9 @@ export class EmployeeDepartmentPosition {
     @Column({ comment: '직책 ID', type: 'uuid' })
     positionId: string;
 
+    @Column({ comment: '관리자 권한 여부', type: 'boolean', default: false })
+    isManager: boolean;
+
     @CreateDateColumn({ comment: '생성일' })
     createdAt: Date;
 

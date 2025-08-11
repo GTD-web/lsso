@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Entities = exports.Log = exports.SystemWebhook = exports.EmployeeToken = exports.Token = exports.System = exports.WebhookEventLog = exports.Webhook = exports.EmployeeRankHistory = exports.EmployeeDepartmentPosition = exports.Rank = exports.Position = exports.Department = exports.Employee = void 0;
+exports.Entities = exports.User = exports.Log = exports.SystemWebhook = exports.EmployeeToken = exports.Token = exports.System = exports.WebhookEventLog = exports.Webhook = exports.EmployeeRankHistory = exports.EmployeeDepartmentPosition = exports.Rank = exports.Position = exports.Department = exports.Employee = void 0;
 const employee_entity_1 = require("./employee.entity");
 Object.defineProperty(exports, "Employee", { enumerable: true, get: function () { return employee_entity_1.Employee; } });
 const department_entity_1 = require("./department.entity");
@@ -27,6 +27,8 @@ const system_webhook_entity_1 = require("./system-webhook.entity");
 Object.defineProperty(exports, "SystemWebhook", { enumerable: true, get: function () { return system_webhook_entity_1.SystemWebhook; } });
 const log_entity_1 = require("./log.entity");
 Object.defineProperty(exports, "Log", { enumerable: true, get: function () { return log_entity_1.Log; } });
+const user_entity_1 = require("./user.entity");
+Object.defineProperty(exports, "User", { enumerable: true, get: function () { return user_entity_1.User; } });
 exports.Entities = [
     employee_entity_1.Employee,
     department_entity_1.Department,
@@ -41,5 +43,6 @@ exports.Entities = [
     employee_token_entity_1.EmployeeToken,
     system_webhook_entity_1.SystemWebhook,
     log_entity_1.Log,
+    user_entity_1.User,
 ];
 //# sourceMappingURL=index.js.map

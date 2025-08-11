@@ -9,6 +9,13 @@ import {
     JoinColumn,
 } from 'typeorm';
 
+export enum DepartmentType {
+    COMPANY = 'COMPANY',
+    DIVISION = 'DIVISION',
+    DEPARTMENT = 'DEPARTMENT',
+    TEAM = 'TEAM',
+}
+
 @Entity('departments')
 export class Department {
     @PrimaryGeneratedColumn('uuid')
@@ -20,8 +27,8 @@ export class Department {
     @Column({ unique: true, comment: '부서 코드' })
     departmentCode: string;
 
-    @Column({ comment: '위치', nullable: true })
-    location?: string;
+    @Column({ comment: '유형', type: 'enum', enum: DepartmentType, default: DepartmentType.DEPARTMENT })
+    type: DepartmentType;
 
     @Column({ comment: '상위 부서 ID', type: 'uuid', nullable: true })
     parentDepartmentId?: string;

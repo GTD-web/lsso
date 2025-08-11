@@ -9,6 +9,14 @@ export class DomainRankService extends BaseService<Rank> {
         super(rankRepository);
     }
 
+    // 직급 찾기
+    async findById(rankId: string): Promise<Rank> {
+        const rank = await this.rankRepository.findOne({
+            where: { id: rankId },
+        });
+        return rank;
+    }
+
     // 직급명으로 찾기
     async findByName(rankName: string): Promise<Rank> {
         const rank = await this.rankRepository.findOne({

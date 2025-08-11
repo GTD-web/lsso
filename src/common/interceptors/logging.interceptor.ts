@@ -1,9 +1,9 @@
 import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { tap, catchError, finalize } from 'rxjs/operators';
-import { LogsService } from '../../logs/services/logs.service';
+import { LogsService } from '../../modules/application/legacy/logs/services/logs.service';
 import { Request, Response } from 'express';
-import { SystemsService } from '../../systems/services/systems.service';
+import { SystemsService } from '../../modules/application/legacy/systems/services/systems.service';
 import { DateUtil } from '../utils/date.util';
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
@@ -29,6 +29,7 @@ export class LoggingInterceptor implements NestInterceptor {
         if (ip === '::ffff:127.0.0.1' || ip === '::1') {
             ip = '127.0.0.1';
         }
+        console.log(ip);
 
         // 요청 정보 수집
         const logData = {

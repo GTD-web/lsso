@@ -1,8 +1,14 @@
+export declare enum DepartmentType {
+    COMPANY = "COMPANY",
+    DIVISION = "DIVISION",
+    DEPARTMENT = "DEPARTMENT",
+    TEAM = "TEAM"
+}
 export declare class Department {
     id: string;
     departmentName: string;
     departmentCode: string;
-    location?: string;
+    type: DepartmentType;
     parentDepartmentId?: string;
     order: number;
     parentDepartment?: Department;

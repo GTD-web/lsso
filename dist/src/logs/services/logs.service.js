@@ -26,6 +26,7 @@ let LogsService = LogsService_1 = class LogsService {
     }
     async create(createLogDto) {
         const log = this.logRepository.create(createLogDto);
+        console.log(log);
         await this.logRepository.insert(log);
     }
     async createMany(createLogDto) {

@@ -11,6 +11,7 @@ import { Token } from './token.entity';
 import { EmployeeToken } from './employee-token.entity';
 import { SystemWebhook } from './system-webhook.entity';
 import { Log } from './log.entity';
+import { User } from './user.entity';
 
 export {
     Employee,
@@ -26,6 +27,7 @@ export {
     EmployeeToken,
     SystemWebhook,
     Log,
+    User,
 };
 
 export const Entities = [
@@ -42,4 +44,5 @@ export const Entities = [
     EmployeeToken,
     SystemWebhook,
     Log,
+    User,
 ];

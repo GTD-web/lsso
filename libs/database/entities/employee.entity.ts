@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { Gender, EmployeeStatus } from '../../common/enums';
 import { Rank } from './rank.entity';
+import { EmployeeDepartmentPosition } from './employee-department-position.entity';
 
 @Entity('employees')
 export class Employee {
@@ -70,6 +71,8 @@ export class Employee {
     isInitialPasswordSet: boolean;
 
     // 매니저 관계는 EmployeeDepartmentPosition에서 관리
+    @OneToMany(() => EmployeeDepartmentPosition, (edp) => edp.employee)
+    departmentPositions?: EmployeeDepartmentPosition[];
 
     @CreateDateColumn({ comment: '생성일' })
     createdAt: Date;

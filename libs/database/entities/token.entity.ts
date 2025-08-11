@@ -37,6 +37,15 @@ export class Token {
     })
     ipAddress?: string;
 
+    @Column({ nullable: true })
+    lastAccess: Date;
+
+    @Column({ default: true })
+    isActive: boolean;
+
     @CreateDateColumn({ comment: '생성일시' })
     createdAt: Date;
+
+    @UpdateDateColumn()
+    updatedAt: Date;
 }

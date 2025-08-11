@@ -8,4 +8,7 @@ export declare class DomainEmployeeService extends BaseService<Employee> {
     findByEmail(email: string): Promise<Employee>;
     findByEmployeeNumber(employeeNumber: string): Promise<Employee>;
     updatePassword(employeeId: string, hashedPassword: string): Promise<Employee>;
+    hashPassword(password?: string): string;
+    verifyPassword(password: string, employee: Employee): Promise<boolean>;
+    bulkSave(employees: Employee[]): Promise<Employee[]>;
 }

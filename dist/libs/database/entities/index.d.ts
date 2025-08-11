@@ -11,5 +11,6 @@ import { Token } from './token.entity';
 import { EmployeeToken } from './employee-token.entity';
 import { SystemWebhook } from './system-webhook.entity';
 import { Log } from './log.entity';
-export { Employee, Department, Position, Rank, EmployeeDepartmentPosition, EmployeeRankHistory, Webhook, WebhookEventLog, System, Token, EmployeeToken, SystemWebhook, Log, };
-export declare const Entities: (typeof SystemWebhook | typeof Employee | typeof Department | typeof Position | typeof Rank | typeof EmployeeDepartmentPosition | typeof EmployeeRankHistory | typeof Webhook | typeof WebhookEventLog | typeof System | typeof Token | typeof EmployeeToken | typeof Log)[];
+import { User } from './user.entity';
+export { Employee, Department, Position, Rank, EmployeeDepartmentPosition, EmployeeRankHistory, Webhook, WebhookEventLog, System, Token, EmployeeToken, SystemWebhook, Log, User, };
+export declare const Entities: (typeof Employee | typeof Department | typeof Position | typeof Rank | typeof EmployeeDepartmentPosition | typeof EmployeeRankHistory | typeof Webhook | typeof WebhookEventLog | typeof System | typeof Token | typeof EmployeeToken | typeof SystemWebhook | typeof Log | typeof User)[];

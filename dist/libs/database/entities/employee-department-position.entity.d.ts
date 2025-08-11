@@ -13,6 +13,7 @@ export declare class EmployeeDepartmentPosition {
     employeeId: string;
     departmentId: string;
     positionId: string;
+    isManager: boolean;
     createdAt: Date;
     updatedAt: Date;
     employee: Employee;

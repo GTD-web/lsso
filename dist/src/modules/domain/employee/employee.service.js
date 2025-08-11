@@ -13,6 +13,7 @@ exports.DomainEmployeeService = void 0;
 const common_1 = require("@nestjs/common");
 const employee_repository_1 = require("./employee.repository");
 const base_service_1 = require("../../../../libs/common/services/base.service");
+const bcrypt = require("bcrypt");
 let DomainEmployeeService = class DomainEmployeeService extends base_service_1.BaseService {
     constructor(employeeRepository) {
         super(employeeRepository);
@@ -36,13 +37,24 @@ let DomainEmployeeService = class DomainEmployeeService extends base_service_1.B
     }
     async findByEmployeeNumber(employeeNumber) {
         const employee = await this.employeeRepository.findOne({ where: { employeeNumber } });
-        if (!employee) {
-            throw new common_1.NotFoundException('직원을 찾을 수 없습니다.');
-        }
         return employee;
     }
     async updatePassword(employeeId, hashedPassword) {
         return this.update(employeeId, { password: hashedPassword });
+    }
+    hashPassword(password = '1234') {
+        return bcrypt.hashSync(password, 10);
+    }
+    async verifyPassword(password, employee) {
+        return bcrypt.compare(password, employee.password);
+    }
+    async bulkSave(employees) {
+        const savedEmployees = [];
+        for (const employee of employees) {
+            const saved = await this.save(employee);
+            savedEmployees.push(saved);
+        }
+        return savedEmployees;
     }
 };
 exports.DomainEmployeeService = DomainEmployeeService;

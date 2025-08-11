@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { DomainEmployeeDepartmentPositionRepository } from './employee-department-position.repository';
 import { BaseService } from '../../../../libs/common/services/base.service';
 import { EmployeeDepartmentPosition } from '../../../../libs/database/entities';
+import { In } from 'typeorm';
 
 @Injectable()
 export class DomainEmployeeDepartmentPositionService extends BaseService<EmployeeDepartmentPosition> {
@@ -10,9 +11,16 @@ export class DomainEmployeeDepartmentPositionService extends BaseService<Employe
     }
 
     // 직원의 부서-직책 정보 조회
-    async findByEmployeeId(employeeId: string): Promise<EmployeeDepartmentPosition[]> {
-        return this.employeeDepartmentPositionRepository.findAll({
+    async findByEmployeeId(employeeId: string): Promise<EmployeeDepartmentPosition> {
+        return this.employeeDepartmentPositionRepository.findOne({
             where: { employeeId },
+        });
+    }
+
+    // 직원의 부서-직책 정보 조회
+    async findAllByEmployeeIds(employeeIds: string[]): Promise<EmployeeDepartmentPosition[]> {
+        return this.employeeDepartmentPositionRepository.findAll({
+            where: { employeeId: In(employeeIds) },
             order: { createdAt: 'DESC' },
         });
     }
@@ -55,6 +63,10 @@ export class DomainEmployeeDepartmentPositionService extends BaseService<Employe
             departmentId,
             positionId,
         });
+    }
+
+    async deleteEmployeeDepartmentPosition(id: string): Promise<void> {
+        await this.employeeDepartmentPositionRepository.delete(id);
     }
 
     // 직원의 부서 이동 (새로운 부서-직책 할당)

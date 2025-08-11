@@ -27,21 +27,9 @@ __decorate([
     __metadata("design:type", String)
 ], Rank.prototype, "rankCode", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '직급 레벨 (높을수록 상위 직급)' }),
+    (0, typeorm_1.Column)({ comment: '직급 레벨 (낮을수록 상위 직급)' }),
     __metadata("design:type", Number)
 ], Rank.prototype, "level", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '직급 설명', nullable: true }),
-    __metadata("design:type", String)
-], Rank.prototype, "description", void 0);
-__decorate([
-    (0, typeorm_1.CreateDateColumn)({ comment: '생성일' }),
-    __metadata("design:type", Date)
-], Rank.prototype, "createdAt", void 0);
-__decorate([
-    (0, typeorm_1.UpdateDateColumn)({ comment: '수정일' }),
-    __metadata("design:type", Date)
-], Rank.prototype, "updatedAt", void 0);
 exports.Rank = Rank = __decorate([
     (0, typeorm_1.Entity)('ranks')
 ], Rank);

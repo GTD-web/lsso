@@ -12,8 +12,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.LoggingInterceptor = void 0;
 const common_1 = require("@nestjs/common");
 const operators_1 = require("rxjs/operators");
-const logs_service_1 = require("../../logs/services/logs.service");
-const systems_service_1 = require("../../systems/services/systems.service");
+const logs_service_1 = require("../../modules/application/legacy/logs/services/logs.service");
+const systems_service_1 = require("../../modules/application/legacy/systems/services/systems.service");
 const date_util_1 = require("../utils/date.util");
 let LoggingInterceptor = class LoggingInterceptor {
     constructor(logsService, systemService) {
@@ -37,6 +37,7 @@ let LoggingInterceptor = class LoggingInterceptor {
         if (ip === '::ffff:127.0.0.1' || ip === '::1') {
             ip = '127.0.0.1';
         }
+        console.log(ip);
         const logData = {
             origin: request.headers.origin,
             host: request.headers.host,

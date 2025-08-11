@@ -13,6 +13,7 @@ exports.Employee = void 0;
 const typeorm_1 = require("typeorm");
 const enums_1 = require("../../common/enums");
 const rank_entity_1 = require("./rank.entity");
+const employee_department_position_entity_1 = require("./employee-department-position.entity");
 let Employee = class Employee {
 };
 exports.Employee = Employee;
@@ -83,6 +84,10 @@ __decorate([
     (0, typeorm_1.Column)({ comment: '초기 비밀번호 설정 여부', default: false }),
     __metadata("design:type", Boolean)
 ], Employee.prototype, "isInitialPasswordSet", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => employee_department_position_entity_1.EmployeeDepartmentPosition, (edp) => edp.employee),
+    __metadata("design:type", Array)
+], Employee.prototype, "departmentPositions", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)({ comment: '생성일' }),
     __metadata("design:type", Date)

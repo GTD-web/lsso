@@ -6,5 +6,8 @@ export declare class Token {
     refreshTokenExpiresAt?: Date;
     clientInfo?: string;
     ipAddress?: string;
+    lastAccess: Date;
+    isActive: boolean;
     createdAt: Date;
+    updatedAt: Date;
 }

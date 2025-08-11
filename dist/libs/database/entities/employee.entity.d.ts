@@ -1,5 +1,6 @@
 import { Gender, EmployeeStatus } from '../../common/enums';
 import { Rank } from './rank.entity';
+import { EmployeeDepartmentPosition } from './employee-department-position.entity';
 export declare class Employee {
     id: string;
     employeeNumber: string;
@@ -15,6 +16,7 @@ export declare class Employee {
     currentRank?: Rank;
     terminationDate?: Date;
     isInitialPasswordSet: boolean;
+    departmentPositions?: EmployeeDepartmentPosition[];
     createdAt: Date;
     updatedAt: Date;
 }

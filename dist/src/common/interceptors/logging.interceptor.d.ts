@@ -1,7 +1,7 @@
 import { NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { LogsService } from '../../logs/services/logs.service';
-import { SystemsService } from '../../systems/services/systems.service';
+import { LogsService } from '../../modules/application/legacy/logs/services/logs.service';
+import { SystemsService } from '../../modules/application/legacy/systems/services/systems.service';
 export declare class LoggingInterceptor implements NestInterceptor {
     private readonly logsService;
     private readonly systemService;

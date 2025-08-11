@@ -15,11 +15,11 @@ export const typeOrmConfig = (configService: ConfigService): TypeOrmModuleOption
         schema: configService.get('database.schema'),
         synchronize: configService.get('NODE_ENV') !== 'production',
         // logging: configService.get('NODE_ENV') !== 'production',
-        migrations: [join(__dirname, 'libs/migrations/*.ts')],
-        migrationsRun: configService.get('database.port') === 6543,
-        ssl: configService.get('database.port') === 6543,
-        extra: {
-            ssl: configService.get('database.port') === 6543 ? { rejectUnauthorized: false } : null,
-        },
+        // migrations: [join(__dirname, 'libs/migrations/*.ts')],
+        // migrationsRun: configService.get('database.port') === 6543,
+        // ssl: configService.get('database.port') === 6543,
+        // extra: {
+        //     ssl: configService.get('database.port') === 6543 ? { rejectUnauthorized: false } : null,
+        // },
     };
 };
