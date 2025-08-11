@@ -425,7 +425,7 @@ exports["default"] = (0, config_1.registerAs)('database', () => {
         port: parseInt(process.env.POSTGRES_PORT, 10) || 5432,
         username: process.env.POSTGRES_USER || 'admin',
         password: process.env.POSTGRES_PASSWORD || 'tech7admin!',
-        database: process.env.POSTGRES_DB || 'resource-server',
+        database: process.env.POSTGRES_DATABASE || 'resource-server',
         schema: process.env.POSTGRES_SCHEMA || 'public',
     };
 });
