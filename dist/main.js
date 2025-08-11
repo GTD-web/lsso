@@ -628,7 +628,6 @@ const typeOrmConfig = (configService) => {
         database: configService.get('database.database'),
         entities: entities_1.Entities,
         schema: configService.get('database.schema'),
-        synchronize: configService.get('NODE_ENV') !== 'production',
     };
 };
 exports.typeOrmConfig = typeOrmConfig;
