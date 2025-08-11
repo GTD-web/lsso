@@ -416,12 +416,22 @@ exports.BaseService = BaseService = __decorate([
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DateUtil = void 0;
-const dayjs = __webpack_require__(/*! dayjs */ "dayjs");
-const utc = __webpack_require__(/*! dayjs/plugin/utc */ "dayjs/plugin/utc");
-const timezone = __webpack_require__(/*! dayjs/plugin/timezone */ "dayjs/plugin/timezone");
-dayjs.extend(utc);
-dayjs.extend(timezone);
-dayjs.tz.setDefault('Asia/Seoul');
+const dayjs_1 = __webpack_require__(/*! dayjs */ "dayjs");
+let hasTimezone = false;
+try {
+    const utc = __webpack_require__(/*! dayjs/plugin/utc */ "dayjs/plugin/utc");
+    const timezone = __webpack_require__(/*! dayjs/plugin/timezone */ "dayjs/plugin/timezone");
+    dayjs_1.default.extend(utc);
+    dayjs_1.default.extend(timezone);
+    if (dayjs_1.default.tz && dayjs_1.default.tz.setDefault) {
+        dayjs_1.default.tz.setDefault('Asia/Seoul');
+        hasTimezone = true;
+    }
+}
+catch (error) {
+    console.warn('Failed to load dayjs timezone plugins:', error.message);
+    hasTimezone = false;
+}
 class DateUtilWrapper {
     constructor(date) {
         this.date = date;
@@ -474,10 +484,16 @@ class DateUtilWrapper {
 }
 class DateUtil {
     static now() {
-        return new DateUtilWrapper(dayjs().tz('Asia/Seoul'));
+        if (hasTimezone && dayjs_1.default.tz) {
+            return new DateUtilWrapper((0, dayjs_1.default)().tz('Asia/Seoul'));
+        }
+        return new DateUtilWrapper((0, dayjs_1.default)());
     }
     static date(date) {
-        return new DateUtilWrapper(dayjs.tz(date, 'Asia/Seoul'));
+        if (hasTimezone && dayjs_1.default.tz) {
+            return new DateUtilWrapper(dayjs_1.default.tz(date, 'Asia/Seoul'));
+        }
+        return new DateUtilWrapper((0, dayjs_1.default)(date));
     }
     static format(date, format = 'YYYY-MM-DD HH:mm:ss') {
         return this.date(date).format(format);
@@ -522,8 +538,8 @@ class DateUtil {
         return this.date(date).getLastDayOfMonth();
     }
     static toAlarmRangeString(startDate, endDate) {
-        const start = dayjs(startDate);
-        const end = dayjs(endDate);
+        const start = (0, dayjs_1.default)(startDate);
+        const end = (0, dayjs_1.default)(endDate);
         if (start.isSame(end, 'day')) {
             return `${this.replaceWeekday(start.format('YY.MM.DD(ddd) HH:mm'))} ~ ${end.format('HH:mm')}`;
         }
@@ -10126,6 +10142,10 @@ const request_interceptor_1 = __webpack_require__(/*! ../libs/common/interceptor
 const error_interceptor_1 = __webpack_require__(/*! ../libs/common/interceptors/error.interceptor */ "./libs/common/interceptors/error.interceptor.ts");
 async function bootstrap() {
     console.log('bootstrap', __dirname, env_config_1.ENV);
+    if (process.env.VERCEL || process.env.NOW_REGION) {
+        console.log('Running in Vercel environment, skipping bootstrap');
+        return;
+    }
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     app.useGlobalPipes(new common_1.ValidationPipe({
         whitelist: true,
