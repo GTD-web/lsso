@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { DomainSystemService } from '../../domain/system/system.service';
-import { DomainWebhookService } from 'src/modules/domain/webhook/webhook.service';
-import { DomainWebhookEventLogService } from 'src/modules/domain/webhook-event-log/webhook-event-log.service';
-import { DomainSystemWebhookService } from 'src/modules/domain/system-webhook/system-webhook.service';
+import { DomainWebhookService } from '../../domain/webhook/webhook.service';
+import { DomainWebhookEventLogService } from '../../domain/webhook-event-log/webhook-event-log.service';
+import { DomainSystemWebhookService } from '../../domain/system-webhook/system-webhook.service';
 
 @Injectable()
 export class SystemManagementContextService {

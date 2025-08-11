@@ -16,8 +16,13 @@
         "noImplicitAny": false,
         "strictBindCallApply": false,
         "forceConsistentCasingInFileNames": false,
-        "noFallthroughCasesInSwitch": false
+        "noFallthroughCasesInSwitch": false,
+        "paths": {
+            "src/*": ["./src/*"],
+            "libs/*": ["./libs/*"],
+            "@/*": ["./src/*"]
+        }
     },
-    "include": ["src/**/*", "libs/**/*"],
+    "include": ["src/**/*", "libs/**/*", "api/**/*"],
     "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]
 }

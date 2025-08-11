@@ -7,7 +7,7 @@ import { CreateSystemDto } from '../dto/create-system.dto';
 import { UpdateSystemDto } from '../dto/update-system.dto';
 import { randomBytes } from 'crypto';
 import { v4 as uuidv4 } from 'uuid';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from '@node-rs/bcrypt';
 import { ResponseSystemDto } from '../dto/response-system.dto';
 @Injectable()
 export class AdminUsecase {

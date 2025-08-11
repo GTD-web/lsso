@@ -11,8 +11,8 @@ import axios from 'axios';
 import { DepartmentResponseDto } from './dto/department-response.dto';
 import { PositionResponseDto } from './dto/position-response.dto';
 import { RankResponseDto } from './dto/rank-response.dto';
-import { DomainUserService } from 'src/modules/domain/user/user.service';
-import { EmployeeStatus, Gender } from 'libs/common/enums';
+import { DomainUserService } from '../../domain/user/user.service';
+import { EmployeeStatus, Gender } from '../../../../libs/common/enums';
 
 @Injectable()
 export class MigrationService {

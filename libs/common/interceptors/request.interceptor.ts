@@ -1,4 +1,4 @@
-import { DateUtil } from '../utils/date.util';
+// import { DateUtil } from '../utils/date.util';
 import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
@@ -9,7 +9,7 @@ export class RequestInterceptor implements NestInterceptor {
         const request = context.switchToHttp().getRequest();
         const { method, url, body, query, params } = request;
         const now = Date.now();
-        console.log(`[Request] ${DateUtil.now().toISOString()} ${method} ${url}`);
+        console.log(`[Request] ${new Date().toISOString()} ${method} ${url}`);
         if (Object.keys(body).length > 0) {
             console.log('Body:', body);
         }

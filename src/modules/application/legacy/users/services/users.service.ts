@@ -6,7 +6,6 @@ import { DomainDepartmentService } from '../../../../domain/department/departmen
 import { DomainPositionService } from '../../../../domain/position/position.service';
 import { DomainRankService } from '../../../../domain/rank/rank.service';
 import { DomainEmployeeDepartmentPositionService } from '../../../../domain/employee-department-position/employee-department-position.service';
-import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {

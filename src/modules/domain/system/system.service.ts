@@ -3,7 +3,7 @@ import { DomainSystemRepository } from './system.repository';
 import { BaseService } from '../../../../libs/common/services/base.service';
 import { System } from '../../../../libs/database/entities';
 import { randomBytes } from 'crypto';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from '@node-rs/bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()

@@ -11,8 +11,8 @@ import {
     CheckPasswordRequestDto,
     CheckPasswordResponseDto,
 } from './dto';
-import { Employee } from 'libs/database/entities/employee.entity';
-import { Token } from 'libs/database/entities/token.entity';
+import { Employee } from '../../../../libs/database/entities/employee.entity';
+import { Token } from '../../../../libs/database/entities/token.entity';
 
 @Injectable()
 export class SsoApplicationService {

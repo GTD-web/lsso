@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { DomainUserRepository } from './user.repository';
 import { BaseService } from '../../../../libs/common/services/base.service';
-import { User } from 'libs/database/entities/user.entity';
-import * as bcrypt from 'bcrypt';
+import { User } from '../../../../libs/database/entities/user.entity';
+import * as bcrypt from '@node-rs/bcrypt';
 
 @Injectable()
 export class DomainUserService extends BaseService<User> {

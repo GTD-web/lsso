@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { DomainEmployeeRepository } from './employee.repository';
 import { BaseService } from '../../../../libs/common/services/base.service';
 import { Employee } from '../../../../libs/database/entities';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from '@node-rs/bcrypt';
 
 @Injectable()
 export class DomainEmployeeService extends BaseService<Employee> {

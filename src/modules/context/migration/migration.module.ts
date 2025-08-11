@@ -6,7 +6,7 @@ import { DomainPositionModule } from '../../domain/position/position.module';
 import { DomainRankModule } from '../../domain/rank/rank.module';
 import { DomainEmployeeDepartmentPositionModule } from '../../domain/employee-department-position/employee-department-position.module';
 import { DomainEmployeeRankHistoryModule } from '../../domain/employee-rank-history/employee-rank-history.module';
-import { DomainUserModule } from 'src/modules/domain/user/user.module';
+import { DomainUserModule } from '../../domain/user/user.module';
 
 @Module({
     imports: [
