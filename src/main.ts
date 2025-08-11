@@ -10,8 +10,8 @@ import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { LogsService } from './modules/application/legacy/logs/services/logs.service';
 import { SystemsService } from './modules/application/legacy/systems/services/systems.service';
 import * as hbs from 'hbs';
-import { RequestInterceptor } from 'libs/common/interceptors/request.interceptor';
-import { ErrorInterceptor } from 'libs/common/interceptors/error.interceptor';
+import { RequestInterceptor } from '../libs/common/interceptors/request.interceptor';
+import { ErrorInterceptor } from '../libs/common/interceptors/error.interceptor';
 
 async function bootstrap() {
     const app = await NestFactory.create<NestExpressApplication>(AppModule);

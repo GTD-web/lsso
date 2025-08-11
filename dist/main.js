@@ -2456,9 +2456,9 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(/*! src/users/dto */ "./src/users/dto/index.ts"), exports);
-__exportStar(__webpack_require__(/*! src/systems/dto */ "./src/systems/dto/index.ts"), exports);
-__exportStar(__webpack_require__(/*! src/common/dto */ "./src/common/dto/index.ts"), exports);
+__exportStar(__webpack_require__(/*! ./modules/application/legacy/users/dto */ "./src/modules/application/legacy/users/dto/index.ts"), exports);
+__exportStar(__webpack_require__(/*! ./modules/application/legacy/systems/dto */ "./src/modules/application/legacy/systems/dto/index.ts"), exports);
+__exportStar(__webpack_require__(/*! ./common/dto */ "./src/common/dto/index.ts"), exports);
 
 
 /***/ }),
@@ -4585,6 +4585,140 @@ __decorate([
 
 /***/ }),
 
+/***/ "./src/modules/application/legacy/systems/dto/index.ts":
+/*!*************************************************************!*\
+  !*** ./src/modules/application/legacy/systems/dto/index.ts ***!
+  \*************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(/*! ./create-system.dto */ "./src/modules/application/legacy/systems/dto/create-system.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./update-system.dto */ "./src/modules/application/legacy/systems/dto/update-system.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./response-system.dto */ "./src/modules/application/legacy/systems/dto/response-system.dto.ts"), exports);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/legacy/systems/dto/response-system.dto.ts":
+/*!***************************************************************************!*\
+  !*** ./src/modules/application/legacy/systems/dto/response-system.dto.ts ***!
+  \***************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ResponseSystemDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+class ResponseSystemDto {
+}
+exports.ResponseSystemDto = ResponseSystemDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '시스템 ID',
+        example: '123e4567-e89b-12d3-a456-426614174000',
+    }),
+    __metadata("design:type", String)
+], ResponseSystemDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '시스템 이름',
+        example: 'Sample System',
+    }),
+    __metadata("design:type", String)
+], ResponseSystemDto.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '시스템 설명',
+        example: 'This is a sample system description',
+    }),
+    __metadata("design:type", String)
+], ResponseSystemDto.prototype, "description", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '시스템 도메인',
+        example: 'sample-system.com',
+    }),
+    __metadata("design:type", String)
+], ResponseSystemDto.prototype, "domain", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '허용된 출처 URL 목록',
+        example: ['https://sample-system.com'],
+        type: [String],
+    }),
+    __metadata("design:type", Array)
+], ResponseSystemDto.prototype, "allowedOrigin", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '헬스 체크 URL',
+        example: 'https://sample-system.com/health',
+    }),
+    __metadata("design:type", String)
+], ResponseSystemDto.prototype, "healthCheckUrl", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '시스템 활성화 상태',
+        example: true,
+    }),
+    __metadata("design:type", Boolean)
+], ResponseSystemDto.prototype, "isActive", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '클라이언트 ID',
+        example: '123e4567-e89b-12d3-a456-426614174000',
+    }),
+    __metadata("design:type", String)
+], ResponseSystemDto.prototype, "clientId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '클라이언트 시크릿',
+        example: 'c891e70e62fc104e7d92c30b920cfb9e4cd39fa2c117fd2cb6e1e05c4054c204',
+    }),
+    __metadata("design:type", String)
+], ResponseSystemDto.prototype, "clientSecret", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '생성일',
+        example: '2023-01-01T00:00:00Z',
+    }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], ResponseSystemDto.prototype, "createdAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '수정일',
+        example: '2023-01-01T00:00:00Z',
+    }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], ResponseSystemDto.prototype, "updatedAt", void 0);
+
+
+/***/ }),
+
 /***/ "./src/modules/application/legacy/systems/dto/update-system.dto.ts":
 /*!*************************************************************************!*\
   !*** ./src/modules/application/legacy/systems/dto/update-system.dto.ts ***!
@@ -6162,6 +6296,33 @@ exports.AdminUsersController = AdminUsersController = __decorate([
     (0, common_1.Controller)('admin/users'),
     __metadata("design:paramtypes", [typeof (_a = typeof users_service_1.UsersService !== "undefined" && users_service_1.UsersService) === "function" ? _a : Object, typeof (_b = typeof admin_usecase_1.AdminUsecase !== "undefined" && admin_usecase_1.AdminUsecase) === "function" ? _b : Object])
 ], AdminUsersController);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/legacy/users/dto/index.ts":
+/*!***********************************************************!*\
+  !*** ./src/modules/application/legacy/users/dto/index.ts ***!
+  \***********************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(/*! ./user-response.dto */ "./src/modules/application/legacy/users/dto/user-response.dto.ts"), exports);
 
 
 /***/ }),
@@ -9654,583 +9815,6 @@ exports.DomainWebhookService = DomainWebhookService = __decorate([
 
 /***/ }),
 
-/***/ "./src/systems/dto/create-system.dto.ts":
-/*!**********************************************!*\
-  !*** ./src/systems/dto/create-system.dto.ts ***!
-  \**********************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CreateSystemDto = void 0;
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
-class CreateSystemDto {
-}
-exports.CreateSystemDto = CreateSystemDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '시스템 이름',
-        example: 'Sample System',
-        required: true,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], CreateSystemDto.prototype, "name", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '시스템 설명',
-        example: 'This is a sample system description',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], CreateSystemDto.prototype, "description", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '시스템 도메인',
-        example: 'example.com',
-        required: true,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], CreateSystemDto.prototype, "domain", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '허용된 출처 URL 목록',
-        example: ['https://sample-system.com'],
-        type: [String],
-        required: true,
-    }),
-    (0, class_validator_1.IsArray)(),
-    (0, class_validator_1.IsString)({ each: true }),
-    __metadata("design:type", Array)
-], CreateSystemDto.prototype, "allowedOrigin", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '헬스 체크 URL',
-        example: 'https://sample-system.com/health',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], CreateSystemDto.prototype, "healthCheckUrl", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '클라이언트 ID (입력하지 않으면 자동 생성)',
-        example: 'client-a1b2c3d4',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], CreateSystemDto.prototype, "clientId", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '클라이언트 시크릿 (입력하지 않으면 자동 생성)',
-        example: 'secret-a1b2c3d4e5f6',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], CreateSystemDto.prototype, "clientSecret", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '활성 여부',
-        example: true,
-        required: false,
-        default: true,
-    }),
-    (0, class_validator_1.IsBoolean)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", Boolean)
-], CreateSystemDto.prototype, "isActive", void 0);
-
-
-/***/ }),
-
-/***/ "./src/systems/dto/index.ts":
-/*!**********************************!*\
-  !*** ./src/systems/dto/index.ts ***!
-  \**********************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(/*! ./create-system.dto */ "./src/systems/dto/create-system.dto.ts"), exports);
-__exportStar(__webpack_require__(/*! ./update-system.dto */ "./src/systems/dto/update-system.dto.ts"), exports);
-__exportStar(__webpack_require__(/*! ./response-system.dto */ "./src/systems/dto/response-system.dto.ts"), exports);
-
-
-/***/ }),
-
-/***/ "./src/systems/dto/response-system.dto.ts":
-/*!************************************************!*\
-  !*** ./src/systems/dto/response-system.dto.ts ***!
-  \************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ResponseSystemDto = void 0;
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-class ResponseSystemDto {
-}
-exports.ResponseSystemDto = ResponseSystemDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '시스템 ID',
-        example: '123e4567-e89b-12d3-a456-426614174000',
-    }),
-    __metadata("design:type", String)
-], ResponseSystemDto.prototype, "id", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '시스템 이름',
-        example: 'Sample System',
-    }),
-    __metadata("design:type", String)
-], ResponseSystemDto.prototype, "name", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '시스템 설명',
-        example: 'This is a sample system description',
-    }),
-    __metadata("design:type", String)
-], ResponseSystemDto.prototype, "description", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '시스템 도메인',
-        example: 'sample-system.com',
-    }),
-    __metadata("design:type", String)
-], ResponseSystemDto.prototype, "domain", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '허용된 출처 URL 목록',
-        example: ['https://sample-system.com'],
-        type: [String],
-    }),
-    __metadata("design:type", Array)
-], ResponseSystemDto.prototype, "allowedOrigin", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '헬스 체크 URL',
-        example: 'https://sample-system.com/health',
-    }),
-    __metadata("design:type", String)
-], ResponseSystemDto.prototype, "healthCheckUrl", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '시스템 활성화 상태',
-        example: true,
-    }),
-    __metadata("design:type", Boolean)
-], ResponseSystemDto.prototype, "isActive", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '클라이언트 ID',
-        example: '123e4567-e89b-12d3-a456-426614174000',
-    }),
-    __metadata("design:type", String)
-], ResponseSystemDto.prototype, "clientId", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '클라이언트 시크릿',
-        example: 'c891e70e62fc104e7d92c30b920cfb9e4cd39fa2c117fd2cb6e1e05c4054c204',
-    }),
-    __metadata("design:type", String)
-], ResponseSystemDto.prototype, "clientSecret", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '생성일',
-        example: '2023-01-01T00:00:00Z',
-    }),
-    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
-], ResponseSystemDto.prototype, "createdAt", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '수정일',
-        example: '2023-01-01T00:00:00Z',
-    }),
-    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
-], ResponseSystemDto.prototype, "updatedAt", void 0);
-
-
-/***/ }),
-
-/***/ "./src/systems/dto/update-system.dto.ts":
-/*!**********************************************!*\
-  !*** ./src/systems/dto/update-system.dto.ts ***!
-  \**********************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.UpdateSystemDto = void 0;
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
-class UpdateSystemDto {
-}
-exports.UpdateSystemDto = UpdateSystemDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '시스템 이름',
-        example: 'Sample System',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], UpdateSystemDto.prototype, "name", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '시스템 설명',
-        example: 'This is a sample system description',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], UpdateSystemDto.prototype, "description", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '시스템 도메인',
-        example: 'example.com',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], UpdateSystemDto.prototype, "domain", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '허용된 출처 URL 목록',
-        example: ['https://sample-system.com'],
-        type: [String],
-        required: false,
-    }),
-    (0, class_validator_1.IsArray)(),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)({ each: true }),
-    __metadata("design:type", Array)
-], UpdateSystemDto.prototype, "allowedOrigin", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '헬스 체크 URL',
-        example: 'https://sample-system.com/health',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], UpdateSystemDto.prototype, "healthCheckUrl", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '클라이언트 ID',
-        example: 'client-a1b2c3d4',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], UpdateSystemDto.prototype, "clientId", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '클라이언트 시크릿',
-        example: 'secret-a1b2c3d4e5f6',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], UpdateSystemDto.prototype, "clientSecret", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '활성 여부',
-        example: true,
-        required: false,
-    }),
-    (0, class_validator_1.IsBoolean)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", Boolean)
-], UpdateSystemDto.prototype, "isActive", void 0);
-
-
-/***/ }),
-
-/***/ "./src/users/dto/employee-response.dto.ts":
-/*!************************************************!*\
-  !*** ./src/users/dto/employee-response.dto.ts ***!
-  \************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.EmployeeResponseDto = void 0;
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-class EmployeeResponseDto {
-    constructor(employee) {
-        this._id = employee._id;
-        this.employee_number = employee.employee_number;
-        this.name = employee.name;
-        this.email = employee.email;
-        this.phone_number = employee.phone_number;
-        this.date_of_birth = employee.date_of_birth;
-        this.gender = employee.gender;
-        this.hire_date = employee.hire_date;
-        this.status = employee.status;
-        this.department = employee.department?.department_code;
-        this.position = employee.position?.position_title;
-        this.rank = employee.rank?.rank_name;
-    }
-}
-exports.EmployeeResponseDto = EmployeeResponseDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '직원 ID', example: '67d116b591e5366c327915d2' }),
-    __metadata("design:type", String)
-], EmployeeResponseDto.prototype, "_id", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '사번', example: '24020' }),
-    __metadata("design:type", String)
-], EmployeeResponseDto.prototype, "employee_number", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '이름', example: '구석현' }),
-    __metadata("design:type", String)
-], EmployeeResponseDto.prototype, "name", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '이메일', example: 'koo.sukhyun@lumir.space' }),
-    __metadata("design:type", String)
-], EmployeeResponseDto.prototype, "email", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '전화번호', example: '010-1234-5678' }),
-    __metadata("design:type", String)
-], EmployeeResponseDto.prototype, "phone_number", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '생년월일', example: '1980-07-04T00:00:00.000Z' }),
-    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
-], EmployeeResponseDto.prototype, "date_of_birth", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '성별', example: 'MALE' }),
-    __metadata("design:type", String)
-], EmployeeResponseDto.prototype, "gender", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '입사일', example: '2024-05-21T00:00:00.000Z' }),
-    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
-], EmployeeResponseDto.prototype, "hire_date", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '재직 상태', example: '재직중' }),
-    __metadata("design:type", String)
-], EmployeeResponseDto.prototype, "status", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '부서', example: '대표이사' }),
-    __metadata("design:type", String)
-], EmployeeResponseDto.prototype, "department", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '직위', example: '대표이사' }),
-    __metadata("design:type", String)
-], EmployeeResponseDto.prototype, "position", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '직급', example: '대표이사' }),
-    __metadata("design:type", String)
-], EmployeeResponseDto.prototype, "rank", void 0);
-
-
-/***/ }),
-
-/***/ "./src/users/dto/index.ts":
-/*!********************************!*\
-  !*** ./src/users/dto/index.ts ***!
-  \********************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(/*! ./employee-response.dto */ "./src/users/dto/employee-response.dto.ts"), exports);
-__exportStar(__webpack_require__(/*! ./user-response.dto */ "./src/users/dto/user-response.dto.ts"), exports);
-
-
-/***/ }),
-
-/***/ "./src/users/dto/user-response.dto.ts":
-/*!********************************************!*\
-  !*** ./src/users/dto/user-response.dto.ts ***!
-  \********************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.UserResponseDto = void 0;
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-class UserResponseDto {
-    constructor(user) {
-        this.id = user.id;
-        this.employeeNumber = user.employeeNumber;
-        this.name = user.name;
-        this.email = user.email;
-        this.phoneNumber = user.phoneNumber;
-        this.dateOfBirth = user.dateOfBirth ? user.dateOfBirth.toISOString().split('T')[0] : undefined;
-        this.gender = user.gender;
-        this.hireDate = user.hireDate ? user.hireDate.toISOString().split('T')[0] : undefined;
-        this.status = user.status;
-        this.department = user.department;
-        this.position = user.position;
-        this.rank = user.rank;
-        this.createdAt = user.createdAt.toISOString();
-        this.updatedAt = user.updatedAt.toISOString();
-        this.hasToken = user.tokens && Array.isArray(user.tokens) && user.tokens.length > 0;
-        this.isInitialPasswordSet = user.isInitialPasswordSet;
-    }
-}
-exports.UserResponseDto = UserResponseDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '사용자 ID' }),
-    __metadata("design:type", String)
-], UserResponseDto.prototype, "id", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '직원 번호' }),
-    __metadata("design:type", String)
-], UserResponseDto.prototype, "employeeNumber", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '사용자 이름' }),
-    __metadata("design:type", String)
-], UserResponseDto.prototype, "name", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '이메일' }),
-    __metadata("design:type", String)
-], UserResponseDto.prototype, "email", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '전화번호', required: false }),
-    __metadata("design:type", String)
-], UserResponseDto.prototype, "phoneNumber", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '생년월일', required: false }),
-    __metadata("design:type", String)
-], UserResponseDto.prototype, "dateOfBirth", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '성별', required: false }),
-    __metadata("design:type", String)
-], UserResponseDto.prototype, "gender", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '입사일', required: false }),
-    __metadata("design:type", String)
-], UserResponseDto.prototype, "hireDate", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '재직 상태', required: false }),
-    __metadata("design:type", String)
-], UserResponseDto.prototype, "status", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '부서', required: false }),
-    __metadata("design:type", String)
-], UserResponseDto.prototype, "department", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '직위', required: false }),
-    __metadata("design:type", String)
-], UserResponseDto.prototype, "position", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '직급', required: false }),
-    __metadata("design:type", String)
-], UserResponseDto.prototype, "rank", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '생성일' }),
-    __metadata("design:type", String)
-], UserResponseDto.prototype, "createdAt", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '수정일' }),
-    __metadata("design:type", String)
-], UserResponseDto.prototype, "updatedAt", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '토큰 정보', required: false }),
-    __metadata("design:type", Boolean)
-], UserResponseDto.prototype, "hasToken", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '초기 비밀번호 설정 여부', required: false }),
-    __metadata("design:type", Boolean)
-], UserResponseDto.prototype, "isInitialPasswordSet", void 0);
-
-
-/***/ }),
-
 /***/ "@nestjs-modules/mailer":
 /*!*****************************************!*\
   !*** external "@nestjs-modules/mailer" ***!
@@ -10537,8 +10121,8 @@ const logging_interceptor_1 = __webpack_require__(/*! ./common/interceptors/logg
 const logs_service_1 = __webpack_require__(/*! ./modules/application/legacy/logs/services/logs.service */ "./src/modules/application/legacy/logs/services/logs.service.ts");
 const systems_service_1 = __webpack_require__(/*! ./modules/application/legacy/systems/services/systems.service */ "./src/modules/application/legacy/systems/services/systems.service.ts");
 const hbs = __webpack_require__(/*! hbs */ "hbs");
-const request_interceptor_1 = __webpack_require__(/*! libs/common/interceptors/request.interceptor */ "./libs/common/interceptors/request.interceptor.ts");
-const error_interceptor_1 = __webpack_require__(/*! libs/common/interceptors/error.interceptor */ "./libs/common/interceptors/error.interceptor.ts");
+const request_interceptor_1 = __webpack_require__(/*! ../libs/common/interceptors/request.interceptor */ "./libs/common/interceptors/request.interceptor.ts");
+const error_interceptor_1 = __webpack_require__(/*! ../libs/common/interceptors/error.interceptor */ "./libs/common/interceptors/error.interceptor.ts");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     app.useGlobalPipes(new common_1.ValidationPipe({

@@ -8,7 +8,7 @@ import {
     BeforeInsert,
     BeforeUpdate,
 } from 'typeorm';
-import { Token } from 'src/tokens/entities/token.entity';
+import { Token } from '../../../../../../libs/database/entities/token.entity';
 import * as bcrypt from 'bcrypt';
 
 @Entity('admins')
