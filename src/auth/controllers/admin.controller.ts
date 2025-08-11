@@ -38,6 +38,7 @@ export class AdminAuthController {
         type: () => ApiResponseDto<AdminLoginResponseDto>,
     })
     async login(@Body() loginDto: AdminLoginDto): Promise<ApiResponseDto<AdminLoginResponseDto>> {
+        console.log(loginDto);
         const result = await this.adminUseCase.login(loginDto.email, loginDto.password);
         return ApiResponseDto.success(result);
     }
