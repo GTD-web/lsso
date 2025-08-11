@@ -14,6 +14,7 @@ import { RequestInterceptor } from '../libs/common/interceptors/request.intercep
 import { ErrorInterceptor } from '../libs/common/interceptors/error.interceptor';
 
 async function bootstrap() {
+    console.log('bootstrap', __dirname);
     const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
     // Global pipes

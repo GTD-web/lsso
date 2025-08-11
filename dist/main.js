@@ -3290,7 +3290,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AuthService = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const bcrypt = __webpack_require__(/*! bcrypt */ "bcrypt");
+const bcrypt = __webpack_require__(/*! @node-rs/bcrypt */ "@node-rs/bcrypt");
 let AuthService = class AuthService {
     constructor() {
         this.hardcodedAdmin = {
@@ -4961,7 +4961,7 @@ const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const systems_service_1 = __webpack_require__(/*! ../services/systems.service */ "./src/modules/application/legacy/systems/services/systems.service.ts");
 const crypto_1 = __webpack_require__(/*! crypto */ "crypto");
 const uuid_1 = __webpack_require__(/*! uuid */ "uuid");
-const bcrypt = __webpack_require__(/*! bcrypt */ "bcrypt");
+const bcrypt = __webpack_require__(/*! @node-rs/bcrypt */ "@node-rs/bcrypt");
 let AdminUsecase = class AdminUsecase {
     constructor(systemsService) {
         this.systemsService = systemsService;
@@ -8493,7 +8493,7 @@ exports.DomainEmployeeService = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const employee_repository_1 = __webpack_require__(/*! ./employee.repository */ "./src/modules/domain/employee/employee.repository.ts");
 const base_service_1 = __webpack_require__(/*! ../../../../libs/common/services/base.service */ "./libs/common/services/base.service.ts");
-const bcrypt = __webpack_require__(/*! bcrypt */ "bcrypt");
+const bcrypt = __webpack_require__(/*! @node-rs/bcrypt */ "@node-rs/bcrypt");
 let DomainEmployeeService = class DomainEmployeeService extends base_service_1.BaseService {
     constructor(employeeRepository) {
         super(employeeRepository);
@@ -9252,7 +9252,7 @@ const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const system_repository_1 = __webpack_require__(/*! ./system.repository */ "./src/modules/domain/system/system.repository.ts");
 const base_service_1 = __webpack_require__(/*! ../../../../libs/common/services/base.service */ "./libs/common/services/base.service.ts");
 const crypto_1 = __webpack_require__(/*! crypto */ "crypto");
-const bcrypt = __webpack_require__(/*! bcrypt */ "bcrypt");
+const bcrypt = __webpack_require__(/*! @node-rs/bcrypt */ "@node-rs/bcrypt");
 const uuid_1 = __webpack_require__(/*! uuid */ "uuid");
 let DomainSystemService = class DomainSystemService extends base_service_1.BaseService {
     constructor(systemRepository) {
@@ -9905,13 +9905,13 @@ module.exports = require("@nestjs/typeorm");
 
 /***/ }),
 
-/***/ "bcrypt":
-/*!*************************!*\
-  !*** external "bcrypt" ***!
-  \*************************/
+/***/ "@node-rs/bcrypt":
+/*!**********************************!*\
+  !*** external "@node-rs/bcrypt" ***!
+  \**********************************/
 /***/ ((module) => {
 
-module.exports = require("bcrypt");
+module.exports = require("@node-rs/bcrypt");
 
 /***/ }),
 
@@ -10124,6 +10124,7 @@ const hbs = __webpack_require__(/*! hbs */ "hbs");
 const request_interceptor_1 = __webpack_require__(/*! ../libs/common/interceptors/request.interceptor */ "./libs/common/interceptors/request.interceptor.ts");
 const error_interceptor_1 = __webpack_require__(/*! ../libs/common/interceptors/error.interceptor */ "./libs/common/interceptors/error.interceptor.ts");
 async function bootstrap() {
+    console.log('bootstrap', __dirname);
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     app.useGlobalPipes(new common_1.ValidationPipe({
         whitelist: true,

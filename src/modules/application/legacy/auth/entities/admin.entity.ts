@@ -9,7 +9,7 @@ import {
     BeforeUpdate,
 } from 'typeorm';
 import { Token } from '../../../../../../libs/database/entities/token.entity';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from '@node-rs/bcrypt';
 
 @Entity('admins')
 export class Admin {
@@ -41,8 +41,7 @@ export class Admin {
         if (this.password) {
             // 이미 해시된 패스워드인지 확인 ($2b$로 시작하는 bcrypt 해시)
             if (!this.password.startsWith('$2b$')) {
-                const salt = await bcrypt.genSalt();
-                this.password = await bcrypt.hash(this.password, salt);
+                this.password = await bcrypt.hash(this.password, 10);
             }
         }
     }
