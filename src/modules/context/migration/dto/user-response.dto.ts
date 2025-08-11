@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { User } from '../entities/user.entity';
+import { User } from '../../../../../libs/database/entities/user.entity';
 
 export class UserResponseDto {
     @ApiProperty({ description: '사용자 ID' })
@@ -65,7 +65,7 @@ export class UserResponseDto {
         this.rank = user.rank;
         this.createdAt = user.createdAt.toISOString();
         this.updatedAt = user.updatedAt.toISOString();
-        this.hasToken = user.tokens && Array.isArray(user.tokens) && user.tokens.length > 0;
+        this.hasToken = true;
         this.isInitialPasswordSet = user.isInitialPasswordSet;
     }
 }
