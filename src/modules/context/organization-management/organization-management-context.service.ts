@@ -5,10 +5,10 @@ import { DomainPositionService } from '../../domain/position/position.service';
 import { DomainRankService } from '../../domain/rank/rank.service';
 import { DomainEmployeeDepartmentPositionService } from '../../domain/employee-department-position/employee-department-position.service';
 import { DomainEmployeeRankHistoryService } from '../../domain/employee-rank-history/employee-rank-history.service';
-import { Department } from 'libs/database/entities/department.entity';
-import { Employee } from 'libs/database/entities/employee.entity';
-import { Position } from 'libs/database/entities/position.entity';
-import { Rank } from 'libs/database/entities/rank.entity';
+import { Department } from '../../../../libs/database/entities/department.entity';
+import { Employee } from '../../../../libs/database/entities/employee.entity';
+import { Position } from '../../../../libs/database/entities/position.entity';
+import { Rank } from '../../../../libs/database/entities/rank.entity';
 
 @Injectable()
 export class OrganizationContextService {
