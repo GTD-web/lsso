@@ -5,6 +5,8 @@ import { UsersService } from '../services/users.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { MailService } from '../../mail/mail.service';
+import { DomainTokenService } from 'src/modules/domain/token/token.service';
+import { AuthorizationContextService } from 'src/modules/context/authorization/authorization-context.service';
 
 @Injectable()
 export class AdminUsecase {
@@ -12,6 +14,7 @@ export class AdminUsecase {
         private readonly usersService: UsersService,
         private readonly jwtService: JwtService,
         private readonly mailService: MailService,
+        private readonly authorizationContextService: AuthorizationContextService,
     ) {}
 
     /**
@@ -45,17 +48,20 @@ export class AdminUsecase {
         if (employee.email !== email) {
             throw new NotFoundException('Employee not found');
         }
-        const payload = {
-            sub: employee.id,
-            employeeNumber: employee.employeeNumber,
-            type: 'access',
-        };
+        // const payload = {
+        //     sub: employee.id,
+        //     employeeNumber: employee.employeeNumber,
+        //     type: 'access',
+        // };
 
         // 액세스 토큰 생성
-        const token = this.jwtService.sign(payload, {
-            expiresIn: '1d',
-            secret: process.env.GLOBAL_SECRET,
-        });
+        // const token = this.jwtService.sign(payload, {
+        //     expiresIn: '1d',
+        //     secret: process.env.GLOBAL_SECRET,
+        // });
+
+        const token = await this.authorizationContextService.토큰정보를_생성한다(employee);
+
         const mail = await this.mailService.sendEmail({
             recipients: [employee.email],
             subject: '[Lumir Backoffice] 초기 비밀번호 설정 안내',

@@ -9,8 +9,8 @@ import { DomainDepartmentModule } from '../../../domain/department/department.mo
 import { DomainPositionModule } from '../../../domain/position/position.module';
 import { DomainRankModule } from '../../../domain/rank/rank.module';
 import { DomainEmployeeDepartmentPositionModule } from '../../../domain/employee-department-position/employee-department-position.module';
-import { WebhookUsersController } from './controllers/webhook.controller';
-import { WebhookUsecase } from './usecases/webhook.usecase';
+import { DomainTokenModule } from 'src/modules/domain/token/token.module';
+import { AuthorizationContextModule } from 'src/modules/context/authorization/authorization-context.module';
 
 @Module({
     imports: [
@@ -21,10 +21,11 @@ import { WebhookUsecase } from './usecases/webhook.usecase';
         DomainPositionModule,
         DomainRankModule,
         DomainEmployeeDepartmentPositionModule,
+        AuthorizationContextModule,
         MailModule,
     ],
-    providers: [UsersService, AdminUsecase, WebhookUsecase],
-    controllers: [AdminUsersController, WebhookUsersController],
+    providers: [UsersService, AdminUsecase],
+    controllers: [AdminUsersController],
     exports: [UsersService],
 })
 export class UsersModule {}
