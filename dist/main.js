@@ -4011,8 +4011,8 @@ let MailService = class MailService {
     async sendEmail(dto) {
         console.log(dto);
         let { recipients: to, subject, template, context } = dto;
-        const templatePath = (0, path_1.join)(__dirname, '..', 'src', 'modules', 'application', 'legacy', 'mail', 'templates', `${template}.hbs`);
-        console.log(__dirname, templatePath);
+        const templatePath = (0, path_1.join)(process.cwd(), 'src', 'modules', 'application', 'legacy', 'mail', 'templates', `${template}.hbs`);
+        console.log(templatePath);
         let source = '';
         try {
             source = fs.readFileSync(templatePath, 'utf-8');
@@ -9860,7 +9860,6 @@ const core_1 = __webpack_require__(/*! @nestjs/core */ "@nestjs/core");
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const app_module_1 = __webpack_require__(/*! ./app.module */ "./src/app.module.ts");
 const swagger_1 = __webpack_require__(/*! ./common/utils/swagger */ "./src/common/utils/swagger.ts");
-const env_config_1 = __webpack_require__(/*! ../libs/configs/env.config */ "./libs/configs/env.config.ts");
 const dtos = __webpack_require__(/*! ./dtos.index */ "./src/dtos.index.ts");
 const path_1 = __webpack_require__(/*! path */ "path");
 const logging_interceptor_1 = __webpack_require__(/*! ./common/interceptors/logging.interceptor */ "./src/common/interceptors/logging.interceptor.ts");
@@ -9870,7 +9869,6 @@ const hbs = __webpack_require__(/*! hbs */ "hbs");
 const request_interceptor_1 = __webpack_require__(/*! ../libs/common/interceptors/request.interceptor */ "./libs/common/interceptors/request.interceptor.ts");
 const error_interceptor_1 = __webpack_require__(/*! ../libs/common/interceptors/error.interceptor */ "./libs/common/interceptors/error.interceptor.ts");
 async function bootstrap() {
-    console.log('bootstrap', __dirname, env_config_1.ENV);
     if (process.env.VERCEL || process.env.NOW_REGION) {
         console.log('Running in Vercel environment, skipping bootstrap');
         return;

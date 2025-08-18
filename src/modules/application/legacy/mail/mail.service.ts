@@ -68,10 +68,9 @@ export class MailService {
     async sendEmail(dto: SendMailDto) {
         console.log(dto);
         let { recipients: to, subject, template, context } = dto;
-        const templatePath = join(
-            __dirname,
-            '..',
 
+        const templatePath = join(
+            process.cwd(),
             'src',
             'modules',
             'application',
@@ -80,7 +79,7 @@ export class MailService {
             'templates',
             `${template}.hbs`,
         );
-        console.log(__dirname, templatePath);
+        console.log(templatePath);
         let source = '';
         try {
             source = fs.readFileSync(templatePath, 'utf-8');
