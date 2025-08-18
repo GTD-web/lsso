@@ -71,11 +71,7 @@ export class MailService {
         const templatePath = join(
             __dirname,
             '..',
-            '..',
-            '..',
-            '..',
-            '..',
-            '..',
+
             'src',
             'modules',
             'application',
@@ -84,6 +80,7 @@ export class MailService {
             'templates',
             `${template}.hbs`,
         );
+        console.log(__dirname, templatePath);
         let source = '';
         try {
             source = fs.readFileSync(templatePath, 'utf-8');

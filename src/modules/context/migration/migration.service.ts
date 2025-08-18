@@ -27,7 +27,7 @@ export class MigrationService {
     ) {}
 
     async onApplicationBootstrap() {
-        this.migrate();
+        // this.migrate();
     }
 
     async getEmployees(): Promise<EmployeeResponseDto[]> {
