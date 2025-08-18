@@ -15,8 +15,6 @@ import { RequestInterceptor } from '../libs/common/interceptors/request.intercep
 import { ErrorInterceptor } from '../libs/common/interceptors/error.interceptor';
 
 async function bootstrap() {
-    console.log('bootstrap', __dirname, ENV);
-
     // Vercel 환경에서는 실행하지 않음
     if (process.env.VERCEL || process.env.NOW_REGION) {
         console.log('Running in Vercel environment, skipping bootstrap');
