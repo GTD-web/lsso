@@ -9,6 +9,8 @@ import { DomainDepartmentModule } from '../../../domain/department/department.mo
 import { DomainPositionModule } from '../../../domain/position/position.module';
 import { DomainRankModule } from '../../../domain/rank/rank.module';
 import { DomainEmployeeDepartmentPositionModule } from '../../../domain/employee-department-position/employee-department-position.module';
+import { WebhookUsersController } from './controllers/webhook.controller';
+import { WebhookUsecase } from './usecases/webhook.usecase';
 
 @Module({
     imports: [
@@ -21,8 +23,8 @@ import { DomainEmployeeDepartmentPositionModule } from '../../../domain/employee
         DomainEmployeeDepartmentPositionModule,
         MailModule,
     ],
-    providers: [UsersService, AdminUsecase],
-    controllers: [AdminUsersController],
+    providers: [UsersService, AdminUsecase, WebhookUsecase],
+    controllers: [AdminUsersController, WebhookUsersController],
     exports: [UsersService],
 })
 export class UsersModule {}
