@@ -66,7 +66,9 @@ export class UsersService {
             employeeData.password = this.hashPassword();
         }
 
-        return this.employeeService.create(employeeData);
+        const employee = await this.employeeService.create(employeeData);
+        await this.employeeService.save(employee);
+        return employee;
     }
 
     async save(employee: Employee): Promise<Employee> {
