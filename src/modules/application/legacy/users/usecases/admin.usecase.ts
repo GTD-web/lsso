@@ -68,7 +68,7 @@ export class AdminUsecase {
             template: 'initial-password',
             context: {
                 name: employee.name,
-                resetUrl: `${process.env.APP_URL}/set-initial-password?token=${token}`,
+                resetUrl: `${process.env.APP_URL}/set-initial-password?token=${token.accessToken}`,
                 expiresIn: '1d',
             },
         });
