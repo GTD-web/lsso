@@ -70,6 +70,9 @@ export class Employee {
     @Column({ comment: '초기 비밀번호 설정 여부', default: false })
     isInitialPasswordSet: boolean;
 
+    @Column({ comment: 'FCM 토큰', nullable: true })
+    fcmToken?: string;
+
     // 매니저 관계는 EmployeeDepartmentPosition에서 관리
     @OneToMany(() => EmployeeDepartmentPosition, (edp) => edp.employee)
     departmentPositions?: EmployeeDepartmentPosition[];

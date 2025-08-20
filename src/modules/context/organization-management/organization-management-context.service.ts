@@ -102,4 +102,16 @@ export class OrganizationContextService {
 
         return resultMap;
     }
+
+    async 직원의_FCM토큰을_업데이트한다(employeeId: string, fcmToken: string): Promise<Employee> {
+        return this.직원서비스.update(employeeId, {
+            fcmToken: fcmToken,
+        });
+    }
+
+    async 직원의_FCM토큰을_제거한다(employeeId: string): Promise<Employee> {
+        return this.직원서비스.update(employeeId, {
+            fcmToken: null,
+        });
+    }
 }
