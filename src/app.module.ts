@@ -18,6 +18,7 @@ import { SystemsModule } from './modules/application/legacy/systems/systems.modu
 import { TokensModule } from './modules/application/legacy/tokens/tokens.module';
 import { MailModule } from './modules/application/legacy/mail/mail.module';
 import { OrganizationInformationApplicationModule } from './modules/application/organization-information/organization-information-application.module';
+import { FcmTokenManagementApplicationModule } from './modules/application/fcm-token-management/fcm-token-management-application.module';
 
 @Module({
     imports: [
@@ -33,6 +34,7 @@ import { OrganizationInformationApplicationModule } from './modules/application/
 
         SsoApplicationModule,
         OrganizationInformationApplicationModule,
+        FcmTokenManagementApplicationModule,
         // MigrationModule,
         AuthModule,
         UsersModule,
