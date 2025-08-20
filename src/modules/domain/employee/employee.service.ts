@@ -2,6 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { DomainEmployeeRepository } from './employee.repository';
 import { BaseService } from '../../../../libs/common/services/base.service';
 import { Employee } from '../../../../libs/database/entities';
+import { EmployeeStatus } from '../../../../libs/common/enums';
+import { In, Not } from 'typeorm';
 import * as bcrypt from '@node-rs/bcrypt';
 
 @Injectable()
@@ -60,5 +62,47 @@ export class DomainEmployeeService extends BaseService<Employee> {
             savedEmployees.push(saved);
         }
         return savedEmployees;
+    }
+
+    /**
+     * 여러 직원 ID로 직원들을 조회합니다
+     */
+    async findByEmployeeIds(employeeIds: string[], includeTerminated = false): Promise<Employee[]> {
+        const where: any = { id: In(employeeIds) };
+
+        if (!includeTerminated) {
+            where.status = Not(EmployeeStatus.Terminated);
+        }
+
+        return this.employeeRepository.findAll({ where });
+    }
+
+    /**
+     * 여러 사번으로 직원들을 조회합니다
+     */
+    async findByEmployeeNumbers(employeeNumbers: string[], includeTerminated = false): Promise<Employee[]> {
+        const where: any = { employeeNumber: In(employeeNumbers) };
+
+        if (!includeTerminated) {
+            where.status = Not(EmployeeStatus.Terminated);
+        }
+
+        return this.employeeRepository.findAll({ where });
+    }
+
+    /**
+     * 전체 직원을 조회합니다
+     */
+    async findAllEmployees(includeTerminated = false): Promise<Employee[]> {
+        const where: any = {};
+
+        if (!includeTerminated) {
+            where.status = Not(EmployeeStatus.Terminated);
+        }
+
+        return this.employeeRepository.findAll({
+            where,
+            order: { employeeNumber: 'ASC' },
+        });
     }
 }

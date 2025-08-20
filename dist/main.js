@@ -2,6 +2,42 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./libs/common/decorators/public.decorator.ts":
+/*!****************************************************!*\
+  !*** ./libs/common/decorators/public.decorator.ts ***!
+  \****************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Public = exports.IS_PUBLIC_KEY = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+exports.IS_PUBLIC_KEY = 'isPublic';
+const Public = () => (0, common_1.SetMetadata)(exports.IS_PUBLIC_KEY, true);
+exports.Public = Public;
+
+
+/***/ }),
+
+/***/ "./libs/common/decorators/user.decorator.ts":
+/*!**************************************************!*\
+  !*** ./libs/common/decorators/user.decorator.ts ***!
+  \**************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.User = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+exports.User = (0, common_1.createParamDecorator)((data, ctx) => {
+    const request = ctx.switchToHttp().getRequest();
+    const user = request.user;
+    return data ? user?.[data] : user;
+});
+
+
+/***/ }),
+
 /***/ "./libs/common/enums/employee-status.enum.ts":
 /*!***************************************************!*\
   !*** ./libs/common/enums/employee-status.enum.ts ***!
@@ -142,6 +178,62 @@ var WebhookExecutionStatus;
     WebhookExecutionStatus["Cancelled"] = "cancelled";
     WebhookExecutionStatus["Retry"] = "retry";
 })(WebhookExecutionStatus || (exports.WebhookExecutionStatus = WebhookExecutionStatus = {}));
+
+
+/***/ }),
+
+/***/ "./libs/common/guards/jwt-auth.guard.ts":
+/*!**********************************************!*\
+  !*** ./libs/common/guards/jwt-auth.guard.ts ***!
+  \**********************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.JwtAuthGuard = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const passport_1 = __webpack_require__(/*! @nestjs/passport */ "@nestjs/passport");
+const core_1 = __webpack_require__(/*! @nestjs/core */ "@nestjs/core");
+const public_decorator_1 = __webpack_require__(/*! ../decorators/public.decorator */ "./libs/common/decorators/public.decorator.ts");
+let JwtAuthGuard = class JwtAuthGuard extends (0, passport_1.AuthGuard)('jwt') {
+    constructor(reflector) {
+        super();
+        this.reflector = reflector;
+    }
+    canActivate(context) {
+        const isPublic = this.reflector.getAllAndOverride(public_decorator_1.IS_PUBLIC_KEY, [
+            context.getHandler(),
+            context.getClass(),
+        ]);
+        if (isPublic) {
+            return true;
+        }
+        return super.canActivate(context);
+    }
+    handleRequest(err, user, info, context) {
+        if (err || !user) {
+            throw err || new common_1.UnauthorizedException('인증이 필요합니다.');
+        }
+        const request = context.switchToHttp().getRequest();
+        request.user = user;
+        return user;
+    }
+};
+exports.JwtAuthGuard = JwtAuthGuard;
+exports.JwtAuthGuard = JwtAuthGuard = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof core_1.Reflector !== "undefined" && core_1.Reflector) === "function" ? _a : Object])
+], JwtAuthGuard);
 
 
 /***/ }),
@@ -406,6 +498,76 @@ exports.BaseService = BaseService = __decorate([
 
 /***/ }),
 
+/***/ "./libs/common/strategies/jwt.strategy.ts":
+/*!************************************************!*\
+  !*** ./libs/common/strategies/jwt.strategy.ts ***!
+  \************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.JwtStrategy = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const passport_1 = __webpack_require__(/*! @nestjs/passport */ "@nestjs/passport");
+const passport_jwt_1 = __webpack_require__(/*! passport-jwt */ "passport-jwt");
+const config_1 = __webpack_require__(/*! @nestjs/config */ "@nestjs/config");
+const authorization_context_service_1 = __webpack_require__(/*! ../../../src/modules/context/authorization/authorization-context.service */ "./src/modules/context/authorization/authorization-context.service.ts");
+let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy) {
+    constructor(configService, authorizationContextService) {
+        super({
+            jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
+            ignoreExpiration: false,
+            secretOrKey: configService.get('GLOBAL_SECRET'),
+            passReqToCallback: true,
+        });
+        this.configService = configService;
+        this.authorizationContextService = authorizationContextService;
+    }
+    async validate(req, payload) {
+        try {
+            const authHeader = req.headers.authorization;
+            if (!authHeader || !authHeader.startsWith('Bearer ')) {
+                throw new common_1.UnauthorizedException('유효하지 않은 토큰 형식입니다.');
+            }
+            const accessToken = authHeader.split(' ')[1];
+            const { employee, token } = await this.authorizationContextService.엑세스토큰을_검증한다(accessToken);
+            return {
+                id: employee.id,
+                employeeNumber: employee.employeeNumber,
+                name: employee.name,
+                email: employee.email,
+                status: employee.status,
+                currentRankId: employee.currentRankId,
+                token: {
+                    id: token.id,
+                    expiresAt: token.tokenExpiresAt,
+                },
+            };
+        }
+        catch (error) {
+            throw new common_1.UnauthorizedException('토큰 검증에 실패했습니다.');
+        }
+    }
+};
+exports.JwtStrategy = JwtStrategy;
+exports.JwtStrategy = JwtStrategy = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _a : Object, typeof (_b = typeof authorization_context_service_1.AuthorizationContextService !== "undefined" && authorization_context_service_1.AuthorizationContextService) === "function" ? _b : Object])
+], JwtStrategy);
+
+
+/***/ }),
+
 /***/ "./libs/configs/env.config.ts":
 /*!************************************!*\
   !*** ./libs/configs/env.config.ts ***!
@@ -465,6 +627,26 @@ exports.FIREBASE_CONFIG = (0, config_1.registerAs)('firebase', () => {
         universeDomain: process.env.FIREBASE_UNIVERSE_DOMAIN,
     };
 });
+
+
+/***/ }),
+
+/***/ "./libs/configs/jwt.config.ts":
+/*!************************************!*\
+  !*** ./libs/configs/jwt.config.ts ***!
+  \************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.jwtConfig = void 0;
+const jwtConfig = (configService) => ({
+    secret: configService.get('GLOBAL_SECRET'),
+    signOptions: {
+        expiresIn: configService.get('JWT_EXPIRES_IN'),
+    },
+});
+exports.jwtConfig = jwtConfig;
 
 
 /***/ }),
@@ -1861,6 +2043,7 @@ const logs_module_1 = __webpack_require__(/*! ./modules/application/legacy/logs/
 const systems_module_1 = __webpack_require__(/*! ./modules/application/legacy/systems/systems.module */ "./src/modules/application/legacy/systems/systems.module.ts");
 const tokens_module_1 = __webpack_require__(/*! ./modules/application/legacy/tokens/tokens.module */ "./src/modules/application/legacy/tokens/tokens.module.ts");
 const mail_module_1 = __webpack_require__(/*! ./modules/application/legacy/mail/mail.module */ "./src/modules/application/legacy/mail/mail.module.ts");
+const organization_information_application_module_1 = __webpack_require__(/*! ./modules/application/organization-information/organization-information-application.module */ "./src/modules/application/organization-information/organization-information-application.module.ts");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -1877,6 +2060,7 @@ exports.AppModule = AppModule = __decorate([
             }),
             typeorm_1.TypeOrmModule.forFeature(entities_1.Entities),
             sso_application_module_1.SsoApplicationModule,
+            organization_information_application_module_1.OrganizationInformationApplicationModule,
             auth_module_1.AuthModule,
             users_module_1.UsersModule,
             logs_module_1.LogsModule,
@@ -6473,6 +6657,754 @@ exports.UsersModule = UsersModule = __decorate([
 
 /***/ }),
 
+/***/ "./src/modules/application/organization-information/controllers/organization-information-application.controller.ts":
+/*!*************************************************************************************************************************!*\
+  !*** ./src/modules/application/organization-information/controllers/organization-information-application.controller.ts ***!
+  \*************************************************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d, _e;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.OrganizationInformationApplicationController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const organization_information_application_service_1 = __webpack_require__(/*! ../organization-information-application.service */ "./src/modules/application/organization-information/organization-information-application.service.ts");
+const dto_1 = __webpack_require__(/*! ../dto */ "./src/modules/application/organization-information/dto/index.ts");
+const jwt_auth_guard_1 = __webpack_require__(/*! ../../../../../libs/common/guards/jwt-auth.guard */ "./libs/common/guards/jwt-auth.guard.ts");
+const user_decorator_1 = __webpack_require__(/*! ../../../../../libs/common/decorators/user.decorator */ "./libs/common/decorators/user.decorator.ts");
+let OrganizationInformationApplicationController = class OrganizationInformationApplicationController {
+    constructor(organizationInformationApplicationService) {
+        this.organizationInformationApplicationService = organizationInformationApplicationService;
+    }
+    async getEmployee(user, employeeId, employeeNumber, withDetail) {
+        console.log('인증된 사용자:', user);
+        const requestDto = {
+            employeeId,
+            employeeNumber,
+            withDetail,
+        };
+        return this.organizationInformationApplicationService.직원정보를_조회한다(requestDto);
+    }
+    async getEmployees(user, employeeIds, employeeNumbers, withDetail, includeTerminated) {
+        const employeeIdsArray = employeeIds
+            ? employeeIds
+                .split(',')
+                .map((id) => id.trim())
+                .filter((id) => id.length > 0)
+            : undefined;
+        const employeeNumbersArray = employeeNumbers
+            ? employeeNumbers
+                .split(',')
+                .map((num) => num.trim())
+                .filter((num) => num.length > 0)
+            : undefined;
+        const requestDto = {
+            employeeIds: employeeIdsArray,
+            employeeNumbers: employeeNumbersArray,
+            withDetail: withDetail || false,
+            includeTerminated: includeTerminated || false,
+        };
+        return this.organizationInformationApplicationService.여러_직원정보를_조회한다(requestDto);
+    }
+};
+exports.OrganizationInformationApplicationController = OrganizationInformationApplicationController;
+__decorate([
+    (0, common_1.Get)('employee'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, swagger_1.ApiOperation)({
+        summary: '직원 정보 조회',
+        description: '직원 ID 또는 사번으로 직원의 기본 정보와 조직 정보를 조회합니다.',
+    }),
+    (0, swagger_1.ApiQuery)({
+        name: 'employeeId',
+        description: '직원 ID',
+        required: false,
+        type: String,
+        example: 'emp123',
+    }),
+    (0, swagger_1.ApiQuery)({
+        name: 'employeeNumber',
+        description: '사번',
+        required: false,
+        type: String,
+        example: 'E2023001',
+    }),
+    (0, swagger_1.ApiQuery)({
+        name: 'withDetail',
+        description: '상세 정보 포함 여부 (부서, 직책, 직급의 상세 정보)',
+        required: false,
+        type: Boolean,
+        example: true,
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: '직원 정보 조회 성공',
+        type: dto_1.EmployeeResponseDto,
+    }),
+    (0, swagger_1.ApiResponse)({ status: 400, description: '잘못된 요청 형식 (직원 ID 또는 사번 중 하나는 필수)' }),
+    (0, swagger_1.ApiResponse)({ status: 401, description: '인증이 필요합니다' }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: '해당 직원을 찾을 수 없음' }),
+    __param(0, (0, user_decorator_1.User)()),
+    __param(1, (0, common_1.Query)('employeeId')),
+    __param(2, (0, common_1.Query)('employeeNumber')),
+    __param(3, (0, common_1.Query)('withDetail')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_b = typeof user_decorator_1.AuthenticatedUser !== "undefined" && user_decorator_1.AuthenticatedUser) === "function" ? _b : Object, String, String, Boolean]),
+    __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
+], OrganizationInformationApplicationController.prototype, "getEmployee", null);
+__decorate([
+    (0, common_1.Get)('employees'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, swagger_1.ApiOperation)({
+        summary: '여러 직원 정보 조회',
+        description: '직원 ID 배열 또는 사번 배열로 여러 직원의 정보를 조회합니다. 배열이 비어있으면 전체 직원을 조회합니다.',
+    }),
+    (0, swagger_1.ApiQuery)({
+        name: 'employeeIds',
+        description: '직원 ID 배열 (쉼표로 구분)',
+        required: false,
+        type: String,
+        example: 'emp123,emp456',
+    }),
+    (0, swagger_1.ApiQuery)({
+        name: 'employeeNumbers',
+        description: '사번 배열 (쉼표로 구분)',
+        required: false,
+        type: String,
+        example: 'E2023001,E2023002',
+    }),
+    (0, swagger_1.ApiQuery)({
+        name: 'withDetail',
+        description: '상세 정보 포함 여부 (부서, 직책, 직급의 상세 정보)',
+        required: false,
+        type: Boolean,
+        example: false,
+    }),
+    (0, swagger_1.ApiQuery)({
+        name: 'includeTerminated',
+        description: '퇴사한 직원 포함 여부',
+        required: false,
+        type: Boolean,
+        example: false,
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: '직원 목록 조회 성공',
+        type: dto_1.EmployeesResponseDto,
+    }),
+    (0, swagger_1.ApiResponse)({ status: 401, description: '인증이 필요합니다' }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: '직원 정보를 조회할 수 없음' }),
+    __param(0, (0, user_decorator_1.User)()),
+    __param(1, (0, common_1.Query)('employeeIds')),
+    __param(2, (0, common_1.Query)('employeeNumbers')),
+    __param(3, (0, common_1.Query)('withDetail')),
+    __param(4, (0, common_1.Query)('includeTerminated')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_d = typeof user_decorator_1.AuthenticatedUser !== "undefined" && user_decorator_1.AuthenticatedUser) === "function" ? _d : Object, String, String, Boolean, Boolean]),
+    __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
+], OrganizationInformationApplicationController.prototype, "getEmployees", null);
+exports.OrganizationInformationApplicationController = OrganizationInformationApplicationController = __decorate([
+    (0, swagger_1.ApiTags)('조직 정보 API'),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Controller)('organization'),
+    __metadata("design:paramtypes", [typeof (_a = typeof organization_information_application_service_1.OrganizationInformationApplicationService !== "undefined" && organization_information_application_service_1.OrganizationInformationApplicationService) === "function" ? _a : Object])
+], OrganizationInformationApplicationController);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/organization-information/dto/employee-request.dto.ts":
+/*!**************************************************************************************!*\
+  !*** ./src/modules/application/organization-information/dto/employee-request.dto.ts ***!
+  \**************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EmployeeRequestDto = void 0;
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+const class_transformer_1 = __webpack_require__(/*! class-transformer */ "class-transformer");
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+class EmployeeRequestDto {
+}
+exports.EmployeeRequestDto = EmployeeRequestDto;
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        description: '직원 ID로 조회',
+        example: 'emp123',
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], EmployeeRequestDto.prototype, "employeeId", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        description: '사번으로 조회',
+        example: 'E2023001',
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], EmployeeRequestDto.prototype, "employeeNumber", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        description: '상세 정보 포함 여부 (부서, 직책, 직급의 상세 정보)',
+        example: true,
+        type: Boolean,
+    }),
+    (0, class_transformer_1.Transform)(({ value }) => {
+        if (value === 'true')
+            return true;
+        if (value === 'false')
+            return false;
+        return value;
+    }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], EmployeeRequestDto.prototype, "withDetail", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/organization-information/dto/employee-response.dto.ts":
+/*!***************************************************************************************!*\
+  !*** ./src/modules/application/organization-information/dto/employee-response.dto.ts ***!
+  \***************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EmployeeResponseDto = exports.RankDetailDto = exports.PositionDetailDto = exports.DepartmentDetailDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+class DepartmentDetailDto {
+}
+exports.DepartmentDetailDto = DepartmentDetailDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '부서 ID' }),
+    __metadata("design:type", String)
+], DepartmentDetailDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '부서명' }),
+    __metadata("design:type", String)
+], DepartmentDetailDto.prototype, "departmentName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '부서 코드' }),
+    __metadata("design:type", String)
+], DepartmentDetailDto.prototype, "departmentCode", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '부서 유형', enum: ['COMPANY', 'DIVISION', 'DEPARTMENT', 'TEAM'] }),
+    __metadata("design:type", String)
+], DepartmentDetailDto.prototype, "type", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '상위 부서 ID' }),
+    __metadata("design:type", String)
+], DepartmentDetailDto.prototype, "parentDepartmentId", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '상위 부서명' }),
+    __metadata("design:type", String)
+], DepartmentDetailDto.prototype, "parentDepartmentName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '정렬 순서' }),
+    __metadata("design:type", Number)
+], DepartmentDetailDto.prototype, "order", void 0);
+class PositionDetailDto {
+}
+exports.PositionDetailDto = PositionDetailDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직책 ID' }),
+    __metadata("design:type", String)
+], PositionDetailDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직책명' }),
+    __metadata("design:type", String)
+], PositionDetailDto.prototype, "positionTitle", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직책 코드' }),
+    __metadata("design:type", String)
+], PositionDetailDto.prototype, "positionCode", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직책 레벨' }),
+    __metadata("design:type", Number)
+], PositionDetailDto.prototype, "level", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '관리 권한 여부' }),
+    __metadata("design:type", Boolean)
+], PositionDetailDto.prototype, "hasManagementAuthority", void 0);
+class RankDetailDto {
+}
+exports.RankDetailDto = RankDetailDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직급 ID' }),
+    __metadata("design:type", String)
+], RankDetailDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직급명' }),
+    __metadata("design:type", String)
+], RankDetailDto.prototype, "rankName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직급 코드' }),
+    __metadata("design:type", String)
+], RankDetailDto.prototype, "rankCode", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직급 레벨' }),
+    __metadata("design:type", Number)
+], RankDetailDto.prototype, "level", void 0);
+class EmployeeResponseDto {
+}
+exports.EmployeeResponseDto = EmployeeResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직원 ID' }),
+    __metadata("design:type", String)
+], EmployeeResponseDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직원 이름' }),
+    __metadata("design:type", String)
+], EmployeeResponseDto.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직원 이메일' }),
+    __metadata("design:type", String)
+], EmployeeResponseDto.prototype, "email", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '사번' }),
+    __metadata("design:type", String)
+], EmployeeResponseDto.prototype, "employeeNumber", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '전화번호' }),
+    __metadata("design:type", String)
+], EmployeeResponseDto.prototype, "phoneNumber", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '생년월일' }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], EmployeeResponseDto.prototype, "dateOfBirth", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '성별' }),
+    __metadata("design:type", String)
+], EmployeeResponseDto.prototype, "gender", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '입사일' }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], EmployeeResponseDto.prototype, "hireDate", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직원 상태' }),
+    __metadata("design:type", String)
+], EmployeeResponseDto.prototype, "status", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '부서 상세 정보 (withDetail=true일 때만 포함)', type: DepartmentDetailDto }),
+    __metadata("design:type", DepartmentDetailDto)
+], EmployeeResponseDto.prototype, "department", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '직책 상세 정보 (withDetail=true일 때만 포함)', type: PositionDetailDto }),
+    __metadata("design:type", PositionDetailDto)
+], EmployeeResponseDto.prototype, "position", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '직급 상세 정보 (withDetail=true일 때만 포함)', type: RankDetailDto }),
+    __metadata("design:type", RankDetailDto)
+], EmployeeResponseDto.prototype, "rank", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/organization-information/dto/employees-request.dto.ts":
+/*!***************************************************************************************!*\
+  !*** ./src/modules/application/organization-information/dto/employees-request.dto.ts ***!
+  \***************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EmployeesRequestDto = void 0;
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+const class_transformer_1 = __webpack_require__(/*! class-transformer */ "class-transformer");
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+class EmployeesRequestDto {
+    constructor() {
+        this.withDetail = false;
+        this.includeTerminated = false;
+    }
+}
+exports.EmployeesRequestDto = EmployeesRequestDto;
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        description: '직원 ID 배열 (비어있으면 전체 직원 조회)',
+        example: ['emp123', 'emp456'],
+        type: [String],
+    }),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => String),
+    __metadata("design:type", Array)
+], EmployeesRequestDto.prototype, "employeeIds", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        description: '사번 배열 (비어있으면 전체 직원 조회)',
+        example: ['E2023001', 'E2023002'],
+        type: [String],
+    }),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => String),
+    __metadata("design:type", Array)
+], EmployeesRequestDto.prototype, "employeeNumbers", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        description: '상세 정보 포함 여부 (부서, 직책, 직급의 상세 정보)',
+        example: false,
+        type: Boolean,
+        default: false,
+    }),
+    (0, class_transformer_1.Transform)(({ value }) => {
+        if (value === 'true')
+            return true;
+        if (value === 'false')
+            return false;
+        return value;
+    }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], EmployeesRequestDto.prototype, "withDetail", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        description: '퇴사한 직원 포함 여부',
+        example: false,
+        type: Boolean,
+        default: false,
+    }),
+    (0, class_transformer_1.Transform)(({ value }) => {
+        if (value === 'true')
+            return true;
+        if (value === 'false')
+            return false;
+        return value;
+    }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], EmployeesRequestDto.prototype, "includeTerminated", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/organization-information/dto/employees-response.dto.ts":
+/*!****************************************************************************************!*\
+  !*** ./src/modules/application/organization-information/dto/employees-response.dto.ts ***!
+  \****************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EmployeesResponseDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const employee_response_dto_1 = __webpack_require__(/*! ./employee-response.dto */ "./src/modules/application/organization-information/dto/employee-response.dto.ts");
+class EmployeesResponseDto {
+}
+exports.EmployeesResponseDto = EmployeesResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '직원 목록',
+        type: [employee_response_dto_1.EmployeeResponseDto],
+    }),
+    __metadata("design:type", Array)
+], EmployeesResponseDto.prototype, "employees", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '총 직원 수',
+    }),
+    __metadata("design:type", Number)
+], EmployeesResponseDto.prototype, "total", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/organization-information/dto/index.ts":
+/*!***********************************************************************!*\
+  !*** ./src/modules/application/organization-information/dto/index.ts ***!
+  \***********************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(/*! ./employee-request.dto */ "./src/modules/application/organization-information/dto/employee-request.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./employee-response.dto */ "./src/modules/application/organization-information/dto/employee-response.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./employees-request.dto */ "./src/modules/application/organization-information/dto/employees-request.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./employees-response.dto */ "./src/modules/application/organization-information/dto/employees-response.dto.ts"), exports);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/organization-information/organization-information-application.module.ts":
+/*!*********************************************************************************************************!*\
+  !*** ./src/modules/application/organization-information/organization-information-application.module.ts ***!
+  \*********************************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.OrganizationInformationApplicationModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const passport_1 = __webpack_require__(/*! @nestjs/passport */ "@nestjs/passport");
+const jwt_1 = __webpack_require__(/*! @nestjs/jwt */ "@nestjs/jwt");
+const config_1 = __webpack_require__(/*! @nestjs/config */ "@nestjs/config");
+const organization_information_application_service_1 = __webpack_require__(/*! ./organization-information-application.service */ "./src/modules/application/organization-information/organization-information-application.service.ts");
+const organization_information_application_controller_1 = __webpack_require__(/*! ./controllers/organization-information-application.controller */ "./src/modules/application/organization-information/controllers/organization-information-application.controller.ts");
+const organization_management_context_module_1 = __webpack_require__(/*! ../../context/organization-management/organization-management-context.module */ "./src/modules/context/organization-management/organization-management-context.module.ts");
+const authorization_context_module_1 = __webpack_require__(/*! ../../context/authorization/authorization-context.module */ "./src/modules/context/authorization/authorization-context.module.ts");
+const jwt_strategy_1 = __webpack_require__(/*! ../../../../libs/common/strategies/jwt.strategy */ "./libs/common/strategies/jwt.strategy.ts");
+const jwt_auth_guard_1 = __webpack_require__(/*! ../../../../libs/common/guards/jwt-auth.guard */ "./libs/common/guards/jwt-auth.guard.ts");
+const jwt_config_1 = __webpack_require__(/*! ../../../../libs/configs/jwt.config */ "./libs/configs/jwt.config.ts");
+let OrganizationInformationApplicationModule = class OrganizationInformationApplicationModule {
+};
+exports.OrganizationInformationApplicationModule = OrganizationInformationApplicationModule;
+exports.OrganizationInformationApplicationModule = OrganizationInformationApplicationModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            organization_management_context_module_1.OrganizationManagementContextModule,
+            authorization_context_module_1.AuthorizationContextModule,
+            passport_1.PassportModule,
+            jwt_1.JwtModule.registerAsync({
+                useFactory: jwt_config_1.jwtConfig,
+                inject: [config_1.ConfigService],
+            }),
+        ],
+        controllers: [organization_information_application_controller_1.OrganizationInformationApplicationController],
+        providers: [organization_information_application_service_1.OrganizationInformationApplicationService, jwt_strategy_1.JwtStrategy, jwt_auth_guard_1.JwtAuthGuard],
+        exports: [organization_information_application_service_1.OrganizationInformationApplicationService],
+    })
+], OrganizationInformationApplicationModule);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/organization-information/organization-information-application.service.ts":
+/*!**********************************************************************************************************!*\
+  !*** ./src/modules/application/organization-information/organization-information-application.service.ts ***!
+  \**********************************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.OrganizationInformationApplicationService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const organization_management_context_service_1 = __webpack_require__(/*! ../../context/organization-management/organization-management-context.service */ "./src/modules/context/organization-management/organization-management-context.service.ts");
+let OrganizationInformationApplicationService = class OrganizationInformationApplicationService {
+    constructor(organizationContextService) {
+        this.organizationContextService = organizationContextService;
+    }
+    async 직원정보를_조회한다(requestDto) {
+        const { employeeId, employeeNumber, withDetail } = requestDto;
+        if (!employeeId && !employeeNumber) {
+            throw new common_1.BadRequestException('직원 ID 또는 사번 중 하나는 반드시 필요합니다.');
+        }
+        let employee;
+        try {
+            if (employeeId) {
+                employee = await this.organizationContextService.직원_ID값으로_직원정보를_조회한다(employeeId);
+            }
+            else if (employeeNumber) {
+                employee = await this.organizationContextService.직원_사번으로_직원정보를_조회한다(employeeNumber);
+            }
+        }
+        catch (error) {
+            throw new common_1.NotFoundException('해당 직원 정보를 찾을 수 없습니다.');
+        }
+        let response = {
+            id: employee.id,
+            name: employee.name,
+            email: employee.email,
+            employeeNumber: employee.employeeNumber,
+            phoneNumber: employee.phoneNumber,
+            dateOfBirth: employee.dateOfBirth,
+            gender: employee.gender,
+            hireDate: employee.hireDate,
+            status: employee.status,
+        };
+        if (withDetail) {
+            const details = await this.organizationContextService.직원의_부서_직책_직급을_조회한다(employee);
+            response.department = this.부서_정보를_매핑한다(details.department);
+            response.position = this.직책_정보를_매핑한다(details.position);
+            response.rank = this.직급_정보를_매핑한다(details.rank);
+        }
+        return response;
+    }
+    async 여러_직원정보를_조회한다(requestDto) {
+        const { employeeIds, employeeNumbers, withDetail = false, includeTerminated = false } = requestDto;
+        let employees = [];
+        try {
+            if (employeeIds && employeeIds.length > 0) {
+                employees = await this.organizationContextService.여러_직원_ID값으로_직원정보를_조회한다(employeeIds, includeTerminated);
+            }
+            else if (employeeNumbers && employeeNumbers.length > 0) {
+                employees = await this.organizationContextService.여러_직원_사번으로_직원정보를_조회한다(employeeNumbers, includeTerminated);
+            }
+            else {
+                employees = await this.organizationContextService.전체_직원정보를_조회한다(includeTerminated);
+            }
+        }
+        catch (error) {
+            throw new common_1.NotFoundException('직원 정보를 조회할 수 없습니다.');
+        }
+        const employeeResponses = [];
+        let detailsMap;
+        if (withDetail && employees.length > 0) {
+            try {
+                detailsMap = await this.organizationContextService.여러_직원의_부서_직책_직급을_일괄조회한다(employees);
+            }
+            catch (error) {
+            }
+        }
+        for (const employee of employees) {
+            const response = {
+                id: employee.id,
+                name: employee.name,
+                email: employee.email,
+                employeeNumber: employee.employeeNumber,
+                phoneNumber: employee.phoneNumber,
+                dateOfBirth: employee.dateOfBirth,
+                gender: employee.gender,
+                hireDate: employee.hireDate,
+                status: employee.status,
+            };
+            if (withDetail && detailsMap) {
+                const details = detailsMap.get(employee.id);
+                if (details) {
+                    response.department = this.부서_정보를_매핑한다(details.department);
+                    response.position = this.직책_정보를_매핑한다(details.position);
+                    response.rank = this.직급_정보를_매핑한다(details.rank);
+                }
+            }
+            employeeResponses.push(response);
+        }
+        return {
+            employees: employeeResponses,
+            total: employeeResponses.length,
+        };
+    }
+    부서_정보를_매핑한다(department) {
+        if (!department)
+            return undefined;
+        return {
+            id: department.id,
+            departmentName: department.departmentName,
+            departmentCode: department.departmentCode,
+            type: department.type,
+            parentDepartmentId: department.parentDepartmentId,
+            parentDepartmentName: department.parentDepartment?.departmentName,
+            order: department.order,
+        };
+    }
+    직책_정보를_매핑한다(position) {
+        if (!position)
+            return undefined;
+        return {
+            id: position.id,
+            positionTitle: position.positionTitle,
+            positionCode: position.positionCode,
+            level: position.level,
+            hasManagementAuthority: position.hasManagementAuthority,
+        };
+    }
+    직급_정보를_매핑한다(rank) {
+        if (!rank)
+            return undefined;
+        return {
+            id: rank.id,
+            rankName: rank.rankName,
+            rankCode: rank.rankCode,
+            level: rank.level,
+        };
+    }
+};
+exports.OrganizationInformationApplicationService = OrganizationInformationApplicationService;
+exports.OrganizationInformationApplicationService = OrganizationInformationApplicationService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof organization_management_context_service_1.OrganizationContextService !== "undefined" && organization_management_context_service_1.OrganizationContextService) === "function" ? _a : Object])
+], OrganizationInformationApplicationService);
+
+
+/***/ }),
+
 /***/ "./src/modules/application/single-sign-on/controllers/sso-application.controller.ts":
 /*!******************************************************************************************!*\
   !*** ./src/modules/application/single-sign-on/controllers/sso-application.controller.ts ***!
@@ -7435,12 +8367,58 @@ let OrganizationContextService = class OrganizationContextService {
         this.직원부서직책서비스 = 직원부서직책서비스;
         this.직원직급이력서비스 = 직원직급이력서비스;
     }
+    async 직원_ID값으로_직원정보를_조회한다(employeeId) {
+        return this.직원서비스.findByEmployeeId(employeeId);
+    }
+    async 직원_사번으로_직원정보를_조회한다(employeeNumber) {
+        return this.직원서비스.findByEmployeeNumber(employeeNumber);
+    }
     async 직원의_부서_직책_직급을_조회한다(employee) {
         const 부서직책정보 = await this.직원부서직책서비스.findByEmployeeId(employee.id);
         const department = await this.부서서비스.findById(부서직책정보.departmentId);
         const position = await this.직책서비스.findById(부서직책정보.positionId);
         const rank = await this.직급서비스.findById(employee.currentRankId);
         return { department, position, rank };
+    }
+    async 여러_직원_ID값으로_직원정보를_조회한다(employeeIds, includeTerminated = false) {
+        return this.직원서비스.findByEmployeeIds(employeeIds, includeTerminated);
+    }
+    async 여러_직원_사번으로_직원정보를_조회한다(employeeNumbers, includeTerminated = false) {
+        return this.직원서비스.findByEmployeeNumbers(employeeNumbers, includeTerminated);
+    }
+    async 전체_직원정보를_조회한다(includeTerminated = false) {
+        return this.직원서비스.findAllEmployees(includeTerminated);
+    }
+    async 여러_직원의_부서_직책_직급을_일괄조회한다(employees) {
+        const employeeIds = employees.map((emp) => emp.id);
+        const resultMap = new Map();
+        const 부서직책정보들 = await this.직원부서직책서비스.findAllByEmployeeIds(employeeIds);
+        const departmentIds = [...new Set(부서직책정보들.map((info) => info.departmentId))];
+        const positionIds = [...new Set(부서직책정보들.map((info) => info.positionId))];
+        const rankIds = [...new Set(employees.map((emp) => emp.currentRankId).filter((id) => id))];
+        const [departments, positions, ranks] = await Promise.all([
+            this.부서서비스.findByIdsWithParent(departmentIds),
+            this.직책서비스.findByIds(positionIds),
+            this.직급서비스.findByIds(rankIds),
+        ]);
+        const departmentMap = new Map(departments.map((dept) => [dept.id, dept]));
+        const positionMap = new Map(positions.map((pos) => [pos.id, pos]));
+        const rankMap = new Map(ranks.map((rank) => [rank.id, rank]));
+        const 부서직책Map = new Map(부서직책정보들.map((info) => [info.employeeId, info]));
+        for (const employee of employees) {
+            const 부서직책정보 = 부서직책Map.get(employee.id);
+            if (부서직책정보) {
+                const department = departmentMap.get(부서직책정보.departmentId);
+                const position = positionMap.get(부서직책정보.positionId);
+                const rank = rankMap.get(employee.currentRankId);
+                resultMap.set(employee.id, {
+                    department,
+                    position,
+                    rank,
+                });
+            }
+        }
+        return resultMap;
     }
 };
 exports.OrganizationContextService = OrganizationContextService;
@@ -7627,6 +8605,7 @@ exports.DomainDepartmentService = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const department_repository_1 = __webpack_require__(/*! ./department.repository */ "./src/modules/domain/department/department.repository.ts");
 const base_service_1 = __webpack_require__(/*! ../../../../libs/common/services/base.service */ "./libs/common/services/base.service.ts");
+const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
 let DomainDepartmentService = DomainDepartmentService_1 = class DomainDepartmentService extends base_service_1.BaseService {
     constructor(departmentRepository) {
         super(departmentRepository);
@@ -7638,6 +8617,28 @@ let DomainDepartmentService = DomainDepartmentService_1 = class DomainDepartment
             where: { id: departmentId },
         });
         return department;
+    }
+    async findByIdWithParent(departmentId) {
+        const department = await this.departmentRepository.findOne({
+            where: { id: departmentId },
+            relations: ['parentDepartment'],
+        });
+        return department;
+    }
+    async findByIds(departmentIds) {
+        if (departmentIds.length === 0)
+            return [];
+        return this.departmentRepository.findAll({
+            where: { id: (0, typeorm_1.In)(departmentIds) },
+        });
+    }
+    async findByIdsWithParent(departmentIds) {
+        if (departmentIds.length === 0)
+            return [];
+        return this.departmentRepository.findAll({
+            where: { id: (0, typeorm_1.In)(departmentIds) },
+            relations: ['parentDepartment'],
+        });
     }
     async findByName(departmentName) {
         const department = await this.departmentRepository.findOne({
@@ -8268,6 +9269,8 @@ exports.DomainEmployeeService = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const employee_repository_1 = __webpack_require__(/*! ./employee.repository */ "./src/modules/domain/employee/employee.repository.ts");
 const base_service_1 = __webpack_require__(/*! ../../../../libs/common/services/base.service */ "./libs/common/services/base.service.ts");
+const enums_1 = __webpack_require__(/*! ../../../../libs/common/enums */ "./libs/common/enums/index.ts");
+const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
 const bcrypt = __webpack_require__(/*! @node-rs/bcrypt */ "@node-rs/bcrypt");
 let DomainEmployeeService = class DomainEmployeeService extends base_service_1.BaseService {
     constructor(employeeRepository) {
@@ -8310,6 +9313,30 @@ let DomainEmployeeService = class DomainEmployeeService extends base_service_1.B
             savedEmployees.push(saved);
         }
         return savedEmployees;
+    }
+    async findByEmployeeIds(employeeIds, includeTerminated = false) {
+        const where = { id: (0, typeorm_1.In)(employeeIds) };
+        if (!includeTerminated) {
+            where.status = (0, typeorm_1.Not)(enums_1.EmployeeStatus.Terminated);
+        }
+        return this.employeeRepository.findAll({ where });
+    }
+    async findByEmployeeNumbers(employeeNumbers, includeTerminated = false) {
+        const where = { employeeNumber: (0, typeorm_1.In)(employeeNumbers) };
+        if (!includeTerminated) {
+            where.status = (0, typeorm_1.Not)(enums_1.EmployeeStatus.Terminated);
+        }
+        return this.employeeRepository.findAll({ where });
+    }
+    async findAllEmployees(includeTerminated = false) {
+        const where = {};
+        if (!includeTerminated) {
+            where.status = (0, typeorm_1.Not)(enums_1.EmployeeStatus.Terminated);
+        }
+        return this.employeeRepository.findAll({
+            where,
+            order: { employeeNumber: 'ASC' },
+        });
     }
 };
 exports.DomainEmployeeService = DomainEmployeeService;
@@ -8565,6 +9592,7 @@ exports.DomainPositionService = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const position_repository_1 = __webpack_require__(/*! ./position.repository */ "./src/modules/domain/position/position.repository.ts");
 const base_service_1 = __webpack_require__(/*! ../../../../libs/common/services/base.service */ "./libs/common/services/base.service.ts");
+const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
 let DomainPositionService = class DomainPositionService extends base_service_1.BaseService {
     constructor(positionRepository) {
         super(positionRepository);
@@ -8575,6 +9603,13 @@ let DomainPositionService = class DomainPositionService extends base_service_1.B
             where: { id: positionId },
         });
         return position;
+    }
+    async findByIds(positionIds) {
+        if (positionIds.length === 0)
+            return [];
+        return this.positionRepository.findAll({
+            where: { id: (0, typeorm_1.In)(positionIds) },
+        });
     }
     async findByTitle(positionTitle) {
         const position = await this.positionRepository.findOne({
@@ -8711,6 +9746,7 @@ exports.DomainRankService = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const rank_repository_1 = __webpack_require__(/*! ./rank.repository */ "./src/modules/domain/rank/rank.repository.ts");
 const base_service_1 = __webpack_require__(/*! ../../../../libs/common/services/base.service */ "./libs/common/services/base.service.ts");
+const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
 let DomainRankService = class DomainRankService extends base_service_1.BaseService {
     constructor(rankRepository) {
         super(rankRepository);
@@ -8721,6 +9757,13 @@ let DomainRankService = class DomainRankService extends base_service_1.BaseServi
             where: { id: rankId },
         });
         return rank;
+    }
+    async findByIds(rankIds) {
+        if (rankIds.length === 0)
+            return [];
+        return this.rankRepository.findAll({
+            where: { id: (0, typeorm_1.In)(rankIds) },
+        });
     }
     async findByName(rankName) {
         const rank = await this.rankRepository.findOne({
@@ -9747,6 +10790,16 @@ module.exports = require("handlebars");
 /***/ ((module) => {
 
 module.exports = require("hbs");
+
+/***/ }),
+
+/***/ "passport-jwt":
+/*!*******************************!*\
+  !*** external "passport-jwt" ***!
+  \*******************************/
+/***/ ((module) => {
+
+module.exports = require("passport-jwt");
 
 /***/ }),
 

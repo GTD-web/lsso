@@ -17,6 +17,7 @@ import { LogsModule } from './modules/application/legacy/logs/logs.module';
 import { SystemsModule } from './modules/application/legacy/systems/systems.module';
 import { TokensModule } from './modules/application/legacy/tokens/tokens.module';
 import { MailModule } from './modules/application/legacy/mail/mail.module';
+import { OrganizationInformationApplicationModule } from './modules/application/organization-information/organization-information-application.module';
 
 @Module({
     imports: [
@@ -31,6 +32,7 @@ import { MailModule } from './modules/application/legacy/mail/mail.module';
         TypeOrmModule.forFeature(Entities),
 
         SsoApplicationModule,
+        OrganizationInformationApplicationModule,
         // MigrationModule,
         AuthModule,
         UsersModule,

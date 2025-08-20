@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { DomainRankRepository } from './rank.repository';
 import { BaseService } from '../../../../libs/common/services/base.service';
 import { Rank } from '../../../../libs/database/entities';
+import { In } from 'typeorm';
 
 @Injectable()
 export class DomainRankService extends BaseService<Rank> {
@@ -15,6 +16,14 @@ export class DomainRankService extends BaseService<Rank> {
             where: { id: rankId },
         });
         return rank;
+    }
+
+    // 여러 직급 ID로 찾기
+    async findByIds(rankIds: string[]): Promise<Rank[]> {
+        if (rankIds.length === 0) return [];
+        return this.rankRepository.findAll({
+            where: { id: In(rankIds) },
+        });
     }
 
     // 직급명으로 찾기
