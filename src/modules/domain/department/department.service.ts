@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { DomainDepartmentRepository } from './department.repository';
 import { BaseService } from '../../../../libs/common/services/base.service';
 import { Department } from '../../../../libs/database/entities';
+import { In } from 'typeorm';
 
 @Injectable()
 export class DomainDepartmentService extends BaseService<Department> {
@@ -17,6 +18,32 @@ export class DomainDepartmentService extends BaseService<Department> {
             where: { id: departmentId },
         });
         return department;
+    }
+
+    // 부서 찾기 (상위 부서 정보 포함)
+    async findByIdWithParent(departmentId: string): Promise<Department> {
+        const department = await this.departmentRepository.findOne({
+            where: { id: departmentId },
+            relations: ['parentDepartment'],
+        });
+        return department;
+    }
+
+    // 여러 부서 ID로 찾기
+    async findByIds(departmentIds: string[]): Promise<Department[]> {
+        if (departmentIds.length === 0) return [];
+        return this.departmentRepository.findAll({
+            where: { id: In(departmentIds) },
+        });
+    }
+
+    // 여러 부서 ID로 찾기 (상위 부서 정보 포함)
+    async findByIdsWithParent(departmentIds: string[]): Promise<Department[]> {
+        if (departmentIds.length === 0) return [];
+        return this.departmentRepository.findAll({
+            where: { id: In(departmentIds) },
+            relations: ['parentDepartment'],
+        });
     }
 
     // 부서 이름으로 찾기
