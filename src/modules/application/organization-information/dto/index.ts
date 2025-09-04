@@ -2,3 +2,5 @@ export * from './employee-request.dto';
 export * from './employee-response.dto';
 export * from './employees-request.dto';
 export * from './employees-response.dto';
+export * from './department-hierarchy-request.dto';
+export * from './department-hierarchy-response.dto';

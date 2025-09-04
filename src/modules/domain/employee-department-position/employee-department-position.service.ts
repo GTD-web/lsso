@@ -33,6 +33,16 @@ export class DomainEmployeeDepartmentPositionService extends BaseService<Employe
         });
     }
 
+    // 🚀 성능 최적화: 여러 부서의 직원-직책 정보를 배치 조회
+    async findByDepartmentIds(departmentIds: string[]): Promise<EmployeeDepartmentPosition[]> {
+        if (departmentIds.length === 0) return [];
+
+        return this.employeeDepartmentPositionRepository.findAll({
+            where: { departmentId: In(departmentIds) },
+            order: { departmentId: 'ASC', createdAt: 'DESC' },
+        });
+    }
+
     // 특정 직책의 직원들 조회
     async findByPositionId(positionId: string): Promise<EmployeeDepartmentPosition[]> {
         return this.employeeDepartmentPositionRepository.findAll({
