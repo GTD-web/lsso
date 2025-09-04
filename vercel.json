@@ -19,7 +19,7 @@
     "crons": [
         {
             "path": "/api/organization/cron/sync",
-            "schedule": "0 0 * * *"
+            "schedule": "0 * * * *"
         }
     ]
 }
