@@ -8,6 +8,9 @@ import {
     DepartmentDetailDto,
     PositionDetailDto,
     RankDetailDto,
+    DepartmentHierarchyRequestDto,
+    DepartmentHierarchyResponseDto,
+    DepartmentWithEmployeesDto,
 } from './dto';
 import { Employee } from '../../../../libs/database/entities/employee.entity';
 import { Department } from '../../../../libs/database/entities/department.entity';
@@ -28,13 +31,12 @@ export class OrganizationInformationApplicationService {
 
         let employee: Employee;
 
-        try {
-            if (employeeId) {
-                employee = await this.organizationContextService.직원_ID값으로_직원정보를_조회한다(employeeId);
-            } else if (employeeNumber) {
-                employee = await this.organizationContextService.직원_사번으로_직원정보를_조회한다(employeeNumber);
-            }
-        } catch (error) {
+        if (employeeId) {
+            employee = await this.organizationContextService.직원_ID값으로_직원정보를_조회한다(employeeId);
+        } else if (employeeNumber) {
+            employee = await this.organizationContextService.직원_사번으로_직원정보를_조회한다(employeeNumber);
+        }
+        if (!employee) {
             throw new NotFoundException('해당 직원 정보를 찾을 수 없습니다.');
         }
 
@@ -169,6 +171,163 @@ export class OrganizationInformationApplicationService {
             rankName: rank.rankName,
             rankCode: rank.rankCode,
             level: rank.level,
+        };
+    }
+
+    async 부서_계층구조별_직원정보를_조회한다(
+        requestDto: DepartmentHierarchyRequestDto,
+    ): Promise<DepartmentHierarchyResponseDto> {
+        const {
+            rootDepartmentId,
+            maxDepth,
+            withEmployeeDetail = false,
+            includeTerminated = false,
+            includeEmptyDepartments = true,
+        } = requestDto;
+
+        try {
+            // Context 서비스를 통해 부서 계층구조와 직원 정보 조회
+            const result = await this.organizationContextService.부서_계층구조별_직원정보를_조회한다(
+                rootDepartmentId,
+                maxDepth,
+                withEmployeeDetail,
+                includeTerminated,
+                includeEmptyDepartments,
+            );
+
+            // 응답 DTO로 변환
+            const departmentHierarchy = this.부서_계층구조를_응답_DTO로_변환한다(
+                result.departments,
+                result.employeesByDepartment,
+                result.departmentDetails,
+                withEmployeeDetail,
+            );
+
+            // 통계 계산
+            const { totalDepartments, totalEmployees, maxDepthCalculated } =
+                this.부서_계층구조_통계를_계산한다(departmentHierarchy);
+
+            return {
+                departments: departmentHierarchy,
+                totalDepartments,
+                totalEmployees,
+                maxDepth: maxDepthCalculated,
+            };
+        } catch (error) {
+            throw new NotFoundException('부서 계층구조 정보를 조회할 수 없습니다.');
+        }
+    }
+
+    private 부서_계층구조를_응답_DTO로_변환한다(
+        departments: Department[],
+        employeesByDepartment: Map<string, { employees: Employee[]; departmentPositions: Map<string, any> }>,
+        departmentDetails?: Map<string, { department: Department; position: Position; rank: Rank }[]>,
+        withEmployeeDetail = false,
+        currentDepth = 0,
+    ): DepartmentWithEmployeesDto[] {
+        const result: DepartmentWithEmployeesDto[] = [];
+
+        for (const department of departments) {
+            // 해당 부서의 직원 정보 조회
+            const departmentEmployeeInfo = employeesByDepartment.get(department.id) || {
+                employees: [],
+                departmentPositions: new Map(),
+            };
+
+            // 직원 정보를 EmployeeResponseDto로 변환
+            const employees: EmployeeResponseDto[] = [];
+            for (const employee of departmentEmployeeInfo.employees) {
+                const employeeResponse: EmployeeResponseDto = {
+                    id: employee.id,
+                    name: employee.name,
+                    email: employee.email,
+                    employeeNumber: employee.employeeNumber,
+                    phoneNumber: employee.phoneNumber,
+                    dateOfBirth: employee.dateOfBirth,
+                    gender: employee.gender,
+                    hireDate: employee.hireDate,
+                    status: employee.status,
+                };
+
+                // 🚀 성능 최적화: 상세 정보 매핑 최적화
+                if (withEmployeeDetail && departmentDetails) {
+                    const deptDetails = departmentDetails.get(department.id);
+                    if (deptDetails) {
+                        // 해당 직원의 상세 정보 찾기
+                        const employeeDetail = deptDetails.find((d) => {
+                            // 직원-부서-직책 관계에서 해당 직원 찾기
+                            const deptPositions = departmentEmployeeInfo.departmentPositions;
+                            return deptPositions.has(employee.id) && d.department.id === department.id;
+                        });
+
+                        if (employeeDetail) {
+                            employeeResponse.department = this.부서_정보를_매핑한다(employeeDetail.department);
+                            employeeResponse.position = this.직책_정보를_매핑한다(employeeDetail.position);
+                            employeeResponse.rank = this.직급_정보를_매핑한다(employeeDetail.rank);
+                        }
+                    }
+                }
+
+                employees.push(employeeResponse);
+            }
+
+            // 하위 부서 처리
+            const childDepartments = this.부서_계층구조를_응답_DTO로_변환한다(
+                department.childDepartments || [],
+                employeesByDepartment,
+                departmentDetails,
+                withEmployeeDetail,
+                currentDepth + 1,
+            );
+
+            const departmentDto: DepartmentWithEmployeesDto = {
+                id: department.id,
+                departmentName: department.departmentName,
+                departmentCode: department.departmentCode,
+                type: department.type,
+                parentDepartmentId: department.parentDepartmentId,
+                parentDepartmentName: department.parentDepartment?.departmentName,
+                order: department.order,
+                depth: currentDepth,
+                employees: employees.sort((a, b) => a.name.localeCompare(b.name)),
+                employeeCount: employees.length,
+                childDepartments: childDepartments.sort((a, b) => a.order - b.order),
+                childDepartmentCount: childDepartments.length,
+            };
+
+            result.push(departmentDto);
+        }
+
+        return result.sort((a, b) => a.order - b.order);
+    }
+
+    private 부서_계층구조_통계를_계산한다(departments: DepartmentWithEmployeesDto[]): {
+        totalDepartments: number;
+        totalEmployees: number;
+        maxDepthCalculated: number;
+    } {
+        let totalDepartments = 0;
+        let totalEmployees = 0;
+        let maxDepthCalculated = 0;
+
+        const calculateStats = (depts: DepartmentWithEmployeesDto[]) => {
+            for (const dept of depts) {
+                totalDepartments++;
+                totalEmployees += dept.employeeCount;
+                maxDepthCalculated = Math.max(maxDepthCalculated, dept.depth);
+
+                if (dept.childDepartments && dept.childDepartments.length > 0) {
+                    calculateStats(dept.childDepartments);
+                }
+            }
+        };
+
+        calculateStats(departments);
+
+        return {
+            totalDepartments,
+            totalEmployees,
+            maxDepthCalculated,
         };
     }
 }

@@ -15,5 +15,11 @@
             "dest": "api/index.ts",
             "methods": ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"]
         }
+    ],
+    "crons": [
+        {
+            "path": "/api/organization/cron/sync",
+            "schedule": "0 0 * * *"
+        }
     ]
 }

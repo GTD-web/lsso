@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { DepartmentType } from 'libs/database/entities/department.entity';
 
 // 부서 상세 정보
 export class DepartmentDetailDto {
@@ -11,8 +12,8 @@ export class DepartmentDetailDto {
     @ApiProperty({ description: '부서 코드' })
     departmentCode: string;
 
-    @ApiProperty({ description: '부서 유형', enum: ['COMPANY', 'DIVISION', 'DEPARTMENT', 'TEAM'] })
-    type: string;
+    @ApiProperty({ description: '부서 유형', enum: DepartmentType })
+    type: DepartmentType;
 
     @ApiPropertyOptional({ description: '상위 부서 ID' })
     parentDepartmentId?: string;

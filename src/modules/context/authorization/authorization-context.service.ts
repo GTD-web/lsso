@@ -69,6 +69,9 @@ export class AuthorizationContextService {
         }
         const payload = this.토큰서비스.verifyJwtToken(accessToken);
         const employee = await this.직원서비스.findByEmployeeId(payload.sub);
+        if (!employee) {
+            throw new NotFoundException('존재하지 않는 사용자입니다.');
+        }
         return { employee, token };
     }
 
@@ -81,6 +84,9 @@ export class AuthorizationContextService {
         }
         const payload = this.토큰서비스.verifyJwtToken(refresh_token);
         const employee = await this.직원서비스.findByEmployeeId(payload.sub);
+        if (!employee) {
+            throw new NotFoundException('존재하지 않는 사용자입니다.');
+        }
         return employee;
     }
 

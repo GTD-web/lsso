@@ -60,4 +60,11 @@ export class DomainPositionService extends BaseService<Position> {
             order: { level: 'DESC' },
         });
     }
+
+    // 🚀 성능 최적화: 전체 직책 목록 조회 (레벨 순)
+    async findAllPositions(): Promise<Position[]> {
+        return this.positionRepository.findAll({
+            order: { level: 'ASC', positionTitle: 'ASC' },
+        });
+    }
 }

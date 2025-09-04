@@ -35,7 +35,7 @@ import { FcmTokenManagementApplicationModule } from './modules/application/fcm-t
         SsoApplicationModule,
         OrganizationInformationApplicationModule,
         FcmTokenManagementApplicationModule,
-        // MigrationModule,
+        MigrationModule,
         AuthModule,
         UsersModule,
         LogsModule,
