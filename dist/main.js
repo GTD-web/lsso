@@ -1280,20 +1280,30 @@ let FcmTokenManagementApplicationController = class FcmTokenManagementApplicatio
         this.fcmTokenManagementApplicationService = fcmTokenManagementApplicationService;
     }
     async subscribeFcm(body) {
-        return this.fcmTokenManagementApplicationService.FCM토큰을_구독한다(body.employeeNumber, body);
+        return this.fcmTokenManagementApplicationService.FCM토큰을_구독한다(body);
     }
-    async getFcmToken(body) {
-        return this.fcmTokenManagementApplicationService.FCM토큰을_조회한다(body.employeeNumber);
+    async getFcmToken(baseEmployeeIdentifierDto) {
+        return this.fcmTokenManagementApplicationService.FCM토큰을_조회한다(baseEmployeeIdentifierDto);
     }
     async unsubscribeFcm(body) {
-        return this.fcmTokenManagementApplicationService.FCM토큰_구독을_해지한다(body.employeeNumber);
+        return this.fcmTokenManagementApplicationService.FCM토큰_구독을_해지한다(body);
     }
-    async getFcmTokens(employeeNumbers) {
-        const employeeNumbersArray = employeeNumbers
-            .split(',')
-            .map((num) => num.trim())
-            .filter((num) => num.length > 0);
-        return this.fcmTokenManagementApplicationService.여러_직원의_FCM토큰을_조회한다(employeeNumbersArray);
+    async getFcmTokens(employeeNumbers, employeeIds) {
+        if (employeeIds) {
+            const employeeIdsArray = employeeIds
+                .split(',')
+                .map((id) => id.trim())
+                .filter((id) => id.length > 0);
+            return this.fcmTokenManagementApplicationService.여러_직원의_FCM토큰을_ID로_조회한다(employeeIdsArray);
+        }
+        if (employeeNumbers) {
+            const employeeNumbersArray = employeeNumbers
+                .split(',')
+                .map((num) => num.trim())
+                .filter((num) => num.length > 0);
+            return this.fcmTokenManagementApplicationService.여러_직원의_FCM토큰을_조회한다(employeeNumbersArray);
+        }
+        throw new common_1.BadRequestException('employeeIds 또는 employeeNumbers 중 하나는 반드시 제공되어야 합니다.');
     }
 };
 exports.FcmTokenManagementApplicationController = FcmTokenManagementApplicationController;
@@ -1317,22 +1327,36 @@ __decorate([
     __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
 ], FcmTokenManagementApplicationController.prototype, "subscribeFcm", null);
 __decorate([
-    (0, common_1.Post)('token'),
+    (0, common_1.Get)('token'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     (0, swagger_1.ApiOperation)({
         summary: 'FCM 토큰 조회',
-        description: '직원번호로 FCM 토큰을 조회합니다.',
+        description: 'employeeId 또는 employeeNumber로 직원의 모든 FCM 토큰을 조회합니다.',
+    }),
+    (0, swagger_1.ApiQuery)({
+        name: 'employeeId',
+        description: '직원 ID (UUID)',
+        required: false,
+        type: String,
+        example: '123e4567-e89b-12d3-a456-426614174000',
+    }),
+    (0, swagger_1.ApiQuery)({
+        name: 'employeeNumber',
+        description: '직원 번호',
+        required: false,
+        type: String,
+        example: '25001',
     }),
     (0, swagger_1.ApiResponse)({
         status: 200,
         description: 'FCM 토큰 조회 성공',
-        type: dto_1.FcmTokenResponseDto,
+        type: dto_1.FcmTokensResponseDto,
     }),
     (0, swagger_1.ApiResponse)({ status: 400, description: '잘못된 요청 형식' }),
     (0, swagger_1.ApiResponse)({ status: 404, description: '직원 정보를 찾을 수 없음' }),
-    __param(0, (0, common_1.Body)()),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_d = typeof dto_1.FcmTokenRequestDto !== "undefined" && dto_1.FcmTokenRequestDto) === "function" ? _d : Object]),
+    __metadata("design:paramtypes", [typeof (_d = typeof dto_1.BaseEmployeeIdentifierDto !== "undefined" && dto_1.BaseEmployeeIdentifierDto) === "function" ? _d : Object]),
     __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
 ], FcmTokenManagementApplicationController.prototype, "getFcmToken", null);
 __decorate([
@@ -1359,25 +1383,33 @@ __decorate([
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     (0, swagger_1.ApiOperation)({
         summary: '여러 직원의 FCM 토큰 조회 (알림서버용)',
-        description: '알림서버에서 사용할 여러 직원의 FCM 토큰을 조회합니다.',
+        description: '알림서버에서 사용할 여러 직원의 FCM 토큰을 조회합니다. employeeIds 또는 employeeNumbers 중 하나를 제공해야 합니다.',
     }),
     (0, swagger_1.ApiQuery)({
         name: 'employeeNumbers',
         description: '직원번호 배열 (쉼표로 구분)',
-        required: true,
+        required: false,
         type: String,
         example: '25001,25002,25003',
+    }),
+    (0, swagger_1.ApiQuery)({
+        name: 'employeeIds',
+        description: '직원 ID 배열 (쉼표로 구분, UUID)',
+        required: false,
+        type: String,
+        example: '123e4567-e89b-12d3-a456-426614174000,123e4567-e89b-12d3-a456-426614174001',
     }),
     (0, swagger_1.ApiResponse)({
         status: 200,
         description: 'FCM 토큰 목록 조회 성공',
-        type: [dto_1.FcmTokenResponseDto],
+        type: dto_1.MultipleFcmTokensResponseDto,
     }),
     (0, swagger_1.ApiResponse)({ status: 400, description: '잘못된 요청 형식' }),
     (0, swagger_1.ApiResponse)({ status: 404, description: '직원 정보를 조회할 수 없음' }),
     __param(0, (0, common_1.Query)('employeeNumbers')),
+    __param(1, (0, common_1.Query)('employeeIds')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
 ], FcmTokenManagementApplicationController.prototype, "getFcmTokens", null);
 exports.FcmTokenManagementApplicationController = FcmTokenManagementApplicationController = __decorate([
@@ -1385,6 +1417,67 @@ exports.FcmTokenManagementApplicationController = FcmTokenManagementApplicationC
     (0, common_1.Controller)('fcm'),
     __metadata("design:paramtypes", [typeof (_a = typeof fcm_token_management_application_service_1.FcmTokenManagementApplicationService !== "undefined" && fcm_token_management_application_service_1.FcmTokenManagementApplicationService) === "function" ? _a : Object])
 ], FcmTokenManagementApplicationController);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/fcm-token-management/dto/base-employee-identifier.dto.ts":
+/*!******************************************************************************************!*\
+  !*** ./src/modules/application/fcm-token-management/dto/base-employee-identifier.dto.ts ***!
+  \******************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.BaseEmployeeIdentifierDto = void 0;
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+class BaseEmployeeIdentifierDto {
+    validate() {
+        if (!this.employeeId && !this.employeeNumber) {
+            throw new Error('employeeId 또는 employeeNumber 중 하나는 반드시 제공되어야 합니다.');
+        }
+    }
+    getIdentifier() {
+        if (this.employeeId) {
+            return { type: 'id', value: this.employeeId };
+        }
+        if (this.employeeNumber) {
+            return { type: 'number', value: this.employeeNumber };
+        }
+        throw new Error('employeeId 또는 employeeNumber 중 하나는 반드시 제공되어야 합니다.');
+    }
+}
+exports.BaseEmployeeIdentifierDto = BaseEmployeeIdentifierDto;
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        description: '직원 ID (UUID)',
+        example: '123e4567-e89b-12d3-a456-426614174000',
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsUUID)('4', { message: 'employeeId는 유효한 UUID 형식이어야 합니다.' }),
+    (0, class_validator_1.ValidateIf)((obj) => !obj.employeeNumber || obj.employeeId),
+    __metadata("design:type", String)
+], BaseEmployeeIdentifierDto.prototype, "employeeId", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        description: '직원 번호',
+        example: '25001',
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.ValidateIf)((obj) => !obj.employeeId || obj.employeeNumber),
+    __metadata("design:type", String)
+], BaseEmployeeIdentifierDto.prototype, "employeeNumber", void 0);
 
 
 /***/ }),
@@ -1405,22 +1498,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.FcmSubscribeRequestDto = void 0;
 const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
 const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-class FcmSubscribeRequestDto {
+const base_employee_identifier_dto_1 = __webpack_require__(/*! ./base-employee-identifier.dto */ "./src/modules/application/fcm-token-management/dto/base-employee-identifier.dto.ts");
+const fcm_token_entity_1 = __webpack_require__(/*! ../../../domain/fcm-token/fcm-token.entity */ "./src/modules/domain/fcm-token/fcm-token.entity.ts");
+class FcmSubscribeRequestDto extends base_employee_identifier_dto_1.BaseEmployeeIdentifierDto {
 }
 exports.FcmSubscribeRequestDto = FcmSubscribeRequestDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '직원 번호',
-        example: '25001',
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], FcmSubscribeRequestDto.prototype, "employeeNumber", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: 'FCM 토큰',
@@ -1433,11 +1520,12 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: '기기 타입',
-        example: 'pc, mobile',
+        example: fcm_token_entity_1.DeviceType.PC,
+        enum: fcm_token_entity_1.DeviceType,
     }),
-    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsEnum)(fcm_token_entity_1.DeviceType),
     (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
+    __metadata("design:type", typeof (_a = typeof fcm_token_entity_1.DeviceType !== "undefined" && fcm_token_entity_1.DeviceType) === "function" ? _a : Object)
 ], FcmSubscribeRequestDto.prototype, "deviceType", void 0);
 
 
@@ -1494,34 +1582,15 @@ __decorate([
 /*!***********************************************************************************!*\
   !*** ./src/modules/application/fcm-token-management/dto/fcm-token-request.dto.ts ***!
   \***********************************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.FcmTokenRequestDto = void 0;
-const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-class FcmTokenRequestDto {
+const base_employee_identifier_dto_1 = __webpack_require__(/*! ./base-employee-identifier.dto */ "./src/modules/application/fcm-token-management/dto/base-employee-identifier.dto.ts");
+class FcmTokenRequestDto extends base_employee_identifier_dto_1.BaseEmployeeIdentifierDto {
 }
 exports.FcmTokenRequestDto = FcmTokenRequestDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '직원 번호',
-        example: '25001',
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], FcmTokenRequestDto.prototype, "employeeNumber", void 0);
 
 
 /***/ }),
@@ -1581,10 +1650,10 @@ __decorate([
 
 /***/ }),
 
-/***/ "./src/modules/application/fcm-token-management/dto/fcm-unsubscribe-request.dto.ts":
-/*!*****************************************************************************************!*\
-  !*** ./src/modules/application/fcm-token-management/dto/fcm-unsubscribe-request.dto.ts ***!
-  \*****************************************************************************************/
+/***/ "./src/modules/application/fcm-token-management/dto/fcm-tokens-response.dto.ts":
+/*!*************************************************************************************!*\
+  !*** ./src/modules/application/fcm-token-management/dto/fcm-tokens-response.dto.ts ***!
+  \*************************************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1597,22 +1666,69 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.FcmUnsubscribeRequestDto = void 0;
-const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+exports.FcmTokensResponseDto = exports.FcmTokenDto = void 0;
 const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-class FcmUnsubscribeRequestDto {
+const fcm_token_entity_1 = __webpack_require__(/*! ../../../domain/fcm-token/fcm-token.entity */ "./src/modules/domain/fcm-token/fcm-token.entity.ts");
+class FcmTokenDto {
 }
-exports.FcmUnsubscribeRequestDto = FcmUnsubscribeRequestDto;
+exports.FcmTokenDto = FcmTokenDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'FCM 토큰' }),
+    __metadata("design:type", String)
+], FcmTokenDto.prototype, "fcmToken", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
-        description: '직원 번호',
-        example: '25001',
+        description: '디바이스 타입',
+        enum: fcm_token_entity_1.DeviceType,
+        example: fcm_token_entity_1.DeviceType.PC,
     }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", typeof (_a = typeof fcm_token_entity_1.DeviceType !== "undefined" && fcm_token_entity_1.DeviceType) === "function" ? _a : Object)
+], FcmTokenDto.prototype, "deviceType", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '생성일' }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], FcmTokenDto.prototype, "createdAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '수정일' }),
+    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
+], FcmTokenDto.prototype, "updatedAt", void 0);
+class FcmTokensResponseDto {
+}
+exports.FcmTokensResponseDto = FcmTokensResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직원 ID' }),
     __metadata("design:type", String)
-], FcmUnsubscribeRequestDto.prototype, "employeeNumber", void 0);
+], FcmTokensResponseDto.prototype, "employeeId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직원 번호' }),
+    __metadata("design:type", String)
+], FcmTokensResponseDto.prototype, "employeeNumber", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'FCM 토큰 목록',
+        type: [FcmTokenDto],
+    }),
+    __metadata("design:type", Array)
+], FcmTokensResponseDto.prototype, "tokens", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/fcm-token-management/dto/fcm-unsubscribe-request.dto.ts":
+/*!*****************************************************************************************!*\
+  !*** ./src/modules/application/fcm-token-management/dto/fcm-unsubscribe-request.dto.ts ***!
+  \*****************************************************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.FcmUnsubscribeRequestDto = void 0;
+const base_employee_identifier_dto_1 = __webpack_require__(/*! ./base-employee-identifier.dto */ "./src/modules/application/fcm-token-management/dto/base-employee-identifier.dto.ts");
+class FcmUnsubscribeRequestDto extends base_employee_identifier_dto_1.BaseEmployeeIdentifierDto {
+}
+exports.FcmUnsubscribeRequestDto = FcmUnsubscribeRequestDto;
 
 
 /***/ }),
@@ -1679,12 +1795,75 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(/*! ./base-employee-identifier.dto */ "./src/modules/application/fcm-token-management/dto/base-employee-identifier.dto.ts"), exports);
 __exportStar(__webpack_require__(/*! ./fcm-subscribe-request.dto */ "./src/modules/application/fcm-token-management/dto/fcm-subscribe-request.dto.ts"), exports);
 __exportStar(__webpack_require__(/*! ./fcm-subscribe-response.dto */ "./src/modules/application/fcm-token-management/dto/fcm-subscribe-response.dto.ts"), exports);
 __exportStar(__webpack_require__(/*! ./fcm-token-request.dto */ "./src/modules/application/fcm-token-management/dto/fcm-token-request.dto.ts"), exports);
 __exportStar(__webpack_require__(/*! ./fcm-token-response.dto */ "./src/modules/application/fcm-token-management/dto/fcm-token-response.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./fcm-tokens-response.dto */ "./src/modules/application/fcm-token-management/dto/fcm-tokens-response.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./multiple-fcm-tokens-response.dto */ "./src/modules/application/fcm-token-management/dto/multiple-fcm-tokens-response.dto.ts"), exports);
 __exportStar(__webpack_require__(/*! ./fcm-unsubscribe-request.dto */ "./src/modules/application/fcm-token-management/dto/fcm-unsubscribe-request.dto.ts"), exports);
 __exportStar(__webpack_require__(/*! ./fcm-unsubscribe-response.dto */ "./src/modules/application/fcm-token-management/dto/fcm-unsubscribe-response.dto.ts"), exports);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/fcm-token-management/dto/multiple-fcm-tokens-response.dto.ts":
+/*!**********************************************************************************************!*\
+  !*** ./src/modules/application/fcm-token-management/dto/multiple-fcm-tokens-response.dto.ts ***!
+  \**********************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.MultipleFcmTokensResponseDto = exports.FlatFcmTokenDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const fcm_tokens_response_dto_1 = __webpack_require__(/*! ./fcm-tokens-response.dto */ "./src/modules/application/fcm-token-management/dto/fcm-tokens-response.dto.ts");
+class FlatFcmTokenDto extends fcm_tokens_response_dto_1.FcmTokenDto {
+}
+exports.FlatFcmTokenDto = FlatFcmTokenDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직원 ID' }),
+    __metadata("design:type", String)
+], FlatFcmTokenDto.prototype, "employeeId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직원 번호' }),
+    __metadata("design:type", String)
+], FlatFcmTokenDto.prototype, "employeeNumber", void 0);
+class MultipleFcmTokensResponseDto {
+}
+exports.MultipleFcmTokensResponseDto = MultipleFcmTokensResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '직원별로 그룹핑된 토큰 정보',
+        type: [fcm_tokens_response_dto_1.FcmTokensResponseDto],
+    }),
+    __metadata("design:type", Array)
+], MultipleFcmTokensResponseDto.prototype, "byEmployee", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '모든 토큰의 flat한 배열',
+        type: [FlatFcmTokenDto],
+    }),
+    __metadata("design:type", Array)
+], MultipleFcmTokensResponseDto.prototype, "allTokens", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '총 직원 수' }),
+    __metadata("design:type", Number)
+], MultipleFcmTokensResponseDto.prototype, "totalEmployees", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '총 토큰 수' }),
+    __metadata("design:type", Number)
+], MultipleFcmTokensResponseDto.prototype, "totalTokens", void 0);
 
 
 /***/ }),
@@ -1746,87 +1925,109 @@ exports.FcmTokenManagementApplicationService = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const organization_management_context_service_1 = __webpack_require__(/*! ../../context/organization-management/organization-management-context.service */ "./src/modules/context/organization-management/organization-management-context.service.ts");
 const fcm_token_management_context_service_1 = __webpack_require__(/*! ../../context/fcm-token-management/fcm-token-management-context.service */ "./src/modules/context/fcm-token-management/fcm-token-management-context.service.ts");
-const fcm_token_entity_1 = __webpack_require__(/*! ../../domain/fcm-token/fcm-token.entity */ "./src/modules/domain/fcm-token/fcm-token.entity.ts");
 let FcmTokenManagementApplicationService = class FcmTokenManagementApplicationService {
     constructor(organizationContextService, fcmTokenManagementContextService) {
         this.organizationContextService = organizationContextService;
         this.fcmTokenManagementContextService = fcmTokenManagementContextService;
     }
-    async FCM토큰을_구독한다(employeeNumber, requestDto) {
+    async getEmployeeFromIdentifier(dto) {
+        if (!dto.employeeId && !dto.employeeNumber) {
+            throw new common_1.BadRequestException('employeeId 또는 employeeNumber 중 하나는 반드시 제공되어야 합니다.');
+        }
+        try {
+            if (dto.employeeId) {
+                return await this.organizationContextService.직원_ID값으로_직원정보를_조회한다(dto.employeeId);
+            }
+            if (dto.employeeNumber) {
+                return await this.organizationContextService.직원_사번으로_직원정보를_조회한다(dto.employeeNumber);
+            }
+        }
+        catch (error) {
+            throw new common_1.NotFoundException('직원 정보를 찾을 수 없습니다.');
+        }
+        throw new common_1.BadRequestException('유효한 직원 식별자가 제공되지 않았습니다.');
+    }
+    async FCM토큰을_구독한다(requestDto) {
         const { fcmToken, deviceType } = requestDto;
-        try {
-            const employee = await this.organizationContextService.직원_사번으로_직원정보를_조회한다(employeeNumber);
-            let fcmDeviceType = fcm_token_entity_1.DeviceType.PC;
-            if (deviceType === 'mobile') {
-                fcmDeviceType = fcm_token_entity_1.DeviceType.ANDROID;
-            }
-            else if (deviceType === 'pc') {
-                fcmDeviceType = fcm_token_entity_1.DeviceType.PC;
-            }
-            await this.fcmTokenManagementContextService.FCM토큰을_직원에게_등록한다(employee.id, fcmToken, fcmDeviceType);
-            return {
-                success: true,
-                message: 'FCM 토큰이 성공적으로 등록되었습니다.',
-                fcmToken: fcmToken,
-            };
-        }
-        catch (error) {
-            throw new common_1.NotFoundException('직원 정보를 찾을 수 없습니다.');
-        }
+        const employee = await this.getEmployeeFromIdentifier(requestDto);
+        await this.fcmTokenManagementContextService.FCM토큰을_직원에게_등록한다(employee.id, fcmToken, deviceType);
+        return {
+            success: true,
+            message: 'FCM 토큰이 성공적으로 등록되었습니다.',
+            fcmToken: fcmToken,
+        };
     }
-    async FCM토큰을_조회한다(employeeNumber) {
-        try {
-            const employee = await this.organizationContextService.직원_사번으로_직원정보를_조회한다(employeeNumber);
-            const fcmTokens = await this.fcmTokenManagementContextService.직원의_활성_FCM토큰_목록을_조회한다(employee.id);
-            return {
-                employeeId: employee.id,
-                employeeNumber: employee.employeeNumber,
-                fcmToken: fcmTokens.length > 0 ? fcmTokens[0].fcmToken : null,
-                updatedAt: new Date(),
-            };
-        }
-        catch (error) {
-            throw new common_1.NotFoundException('직원 정보를 찾을 수 없습니다.');
-        }
+    async FCM토큰을_조회한다(requestDto) {
+        const employee = await this.getEmployeeFromIdentifier(requestDto);
+        const employeeFcmTokens = await this.fcmTokenManagementContextService.직원의_활성_FCM토큰_목록을_조회한다(employee.id);
+        const tokens = employeeFcmTokens.map((employeeFcmToken) => ({
+            fcmToken: employeeFcmToken.fcmToken,
+            deviceType: employeeFcmToken.deviceType,
+            createdAt: employeeFcmToken.createdAt,
+            updatedAt: employeeFcmToken.updatedAt,
+        }));
+        return {
+            employeeId: employee.id,
+            employeeNumber: employee.employeeNumber,
+            tokens: tokens,
+        };
     }
-    async FCM토큰_구독을_해지한다(employeeNumber) {
-        try {
-            const employee = await this.organizationContextService.직원_사번으로_직원정보를_조회한다(employeeNumber);
-            await this.fcmTokenManagementContextService.직원의_모든_FCM토큰을_제거한다(employee.id);
-            return {
-                success: true,
-                message: 'FCM 토큰 구독이 성공적으로 해지되었습니다.',
-            };
-        }
-        catch (error) {
-            throw new common_1.NotFoundException('직원 정보를 찾을 수 없습니다.');
-        }
+    async FCM토큰_구독을_해지한다(requestDto) {
+        const employee = await this.getEmployeeFromIdentifier(requestDto);
+        await this.fcmTokenManagementContextService.직원의_모든_FCM토큰을_제거한다(employee.id);
+        return {
+            success: true,
+            message: 'FCM 토큰 구독이 성공적으로 해지되었습니다.',
+        };
     }
     async 여러_직원의_FCM토큰을_조회한다(employeeNumbers) {
-        try {
-            const results = [];
-            for (const employeeNumber of employeeNumbers) {
-                try {
-                    const employee = await this.organizationContextService.직원_사번으로_직원정보를_조회한다(employeeNumber);
-                    const fcmTokens = await this.fcmTokenManagementContextService.직원의_활성_FCM토큰_목록을_조회한다(employee.id);
-                    if (fcmTokens.length > 0) {
-                        results.push({
-                            employeeId: employee.id,
-                            employeeNumber: employee.employeeNumber,
-                            fcmToken: fcmTokens[0].fcmToken,
-                            updatedAt: new Date(),
-                        });
-                    }
-                }
-                catch (error) {
-                    console.warn(`직원번호 ${employeeNumber} 조회 실패:`, error);
+        return this.여러_직원의_FCM토큰을_통합_조회한다(employeeNumbers, 'number');
+    }
+    async 여러_직원의_FCM토큰을_ID로_조회한다(employeeIds) {
+        return this.여러_직원의_FCM토큰을_통합_조회한다(employeeIds, 'id');
+    }
+    async 여러_직원의_FCM토큰을_통합_조회한다(identifiers, type) {
+        const byEmployee = [];
+        const allTokens = [];
+        for (const identifier of identifiers) {
+            try {
+                const employee = type === 'id'
+                    ? await this.organizationContextService.직원_ID값으로_직원정보를_조회한다(identifier)
+                    : await this.organizationContextService.직원_사번으로_직원정보를_조회한다(identifier);
+                const employeeFcmTokens = await this.fcmTokenManagementContextService.직원의_활성_FCM토큰_목록을_조회한다(employee.id);
+                if (employeeFcmTokens.length > 0) {
+                    const tokens = employeeFcmTokens.map((employeeFcmToken) => ({
+                        fcmToken: employeeFcmToken.fcmToken,
+                        deviceType: employeeFcmToken.deviceType,
+                        createdAt: employeeFcmToken.createdAt,
+                        updatedAt: employeeFcmToken.updatedAt,
+                    }));
+                    byEmployee.push({
+                        employeeId: employee.id,
+                        employeeNumber: employee.employeeNumber,
+                        tokens: tokens,
+                    });
+                    const flatTokens = employeeFcmTokens.map((employeeFcmToken) => ({
+                        employeeId: employee.id,
+                        employeeNumber: employee.employeeNumber,
+                        fcmToken: employeeFcmToken.fcmToken,
+                        deviceType: employeeFcmToken.deviceType,
+                        createdAt: employeeFcmToken.createdAt,
+                        updatedAt: employeeFcmToken.updatedAt,
+                    }));
+                    allTokens.push(...flatTokens);
                 }
             }
-            return results;
+            catch (error) {
+                console.warn(`${type} ${identifier} 조회 실패:`, error);
+            }
         }
-        catch (error) {
-            throw new common_1.NotFoundException('직원 정보를 조회할 수 없습니다.');
-        }
+        return {
+            byEmployee: byEmployee,
+            allTokens: allTokens,
+            totalEmployees: byEmployee.length,
+            totalTokens: allTokens.length,
+        };
     }
 };
 exports.FcmTokenManagementApplicationService = FcmTokenManagementApplicationService;
