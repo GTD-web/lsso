@@ -8,6 +8,8 @@ import { DomainWebhookEventLogModule } from '../../domain/webhook-event-log/webh
 import { DomainSystemWebhookModule } from '../../domain/system-webhook/system-webhook.module';
 import { DomainSystemRoleModule } from '../../domain/system-role/system-role.module';
 import { DomainEmployeeSystemRoleModule } from '../../domain/employee-system-role/employee-system-role.module';
+import { DomainDepartmentModule } from '../../domain/department/department.module';
+import { DomainEmployeeDepartmentPositionModule } from '../../domain/employee-department-position/employee-department-position.module';
 
 @Module({
     imports: [
@@ -17,6 +19,8 @@ import { DomainEmployeeSystemRoleModule } from '../../domain/employee-system-rol
         DomainSystemWebhookModule,
         DomainSystemRoleModule,
         DomainEmployeeSystemRoleModule,
+        DomainDepartmentModule,
+        DomainEmployeeDepartmentPositionModule,
     ],
     providers: [SystemManagementContextService],
     exports: [SystemManagementContextService],

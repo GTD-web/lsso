@@ -1,16 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { DeviceType } from '../../../domain/fcm-token/fcm-token.entity';
 
 export class FcmTokenDto {
     @ApiProperty({ description: 'FCM 토큰' })
     fcmToken: string;
 
     @ApiProperty({
-        description: '디바이스 타입',
-        enum: DeviceType,
-        example: DeviceType.PC,
+        description: '디바이스 타입 (예: android, ios, pc, web)',
+        type: String,
+        example: 'pc',
     })
-    deviceType: DeviceType;
+    deviceType: string;
 
     @ApiProperty({ description: '생성일' })
     createdAt: Date;

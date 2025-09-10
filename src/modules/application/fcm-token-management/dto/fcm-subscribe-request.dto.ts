@@ -1,7 +1,6 @@
-import { IsString, IsNotEmpty, IsEnum } from 'class-validator';
+import { IsString, IsNotEmpty } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseEmployeeIdentifierDto } from './base-employee-identifier.dto';
-import { DeviceType } from '../../../domain/fcm-token/fcm-token.entity';
 
 export class FcmSubscribeRequestDto extends BaseEmployeeIdentifierDto {
     @ApiProperty({
@@ -14,10 +13,9 @@ export class FcmSubscribeRequestDto extends BaseEmployeeIdentifierDto {
 
     @ApiProperty({
         description: '기기 타입',
-        example: DeviceType.PC,
-        enum: DeviceType,
+        example: 'pc',
     })
-    @IsEnum(DeviceType)
+    @IsString()
     @IsNotEmpty()
-    deviceType: DeviceType;
+    deviceType: string;
 }

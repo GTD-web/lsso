@@ -2,7 +2,7 @@ import { Injectable, ConflictException } from '@nestjs/common';
 import { DomainFcmTokenRepository } from './fcm-token.repository';
 import { BaseService } from '../../../../libs/common/services/base.service';
 import { FcmToken } from './fcm-token.entity';
-import { DeviceType } from './fcm-token.entity';
+// DeviceType enum 제거 - 이제 문자열로 처리
 
 @Injectable()
 export class DomainFcmTokenService extends BaseService<FcmToken> {
@@ -17,8 +17,60 @@ export class DomainFcmTokenService extends BaseService<FcmToken> {
         });
     }
 
-    // FCM 토큰 생성 또는 조회
-    async createOrFind(fcmToken: string, deviceType: DeviceType = DeviceType.PC, deviceInfo?: any): Promise<FcmToken> {
+    // 직원ID와 디바이스 타입으로 기존 FCM 토큰 조회
+    async findByEmployeeAndDeviceType(employeeId: string, deviceType: string): Promise<FcmToken | null> {
+        return this.fcmTokenRepository.findByEmployeeAndDeviceType(employeeId, deviceType);
+    }
+
+    /**
+     * 직원ID와 디바이스 타입으로 FCM 토큰 생성 또는 업데이트
+     * 기존에 해당 직원의 같은 디바이스 타입 토큰이 있으면 fcmToken 값을 업데이트
+     * 없으면 새로 생성
+     */
+    async createOrFindByEmployeeAndDevice(
+        employeeId: string,
+        fcmToken: string,
+        deviceType: string = 'pc',
+        deviceInfo?: any,
+    ): Promise<FcmToken> {
+        // 직원ID + 디바이스 타입으로 기존 토큰 조회
+        const existingToken = await this.findByEmployeeAndDeviceType(employeeId, deviceType);
+
+        if (existingToken) {
+            // 기존 토큰이 있으면 fcmToken 값과 디바이스 정보 업데이트
+            return this.fcmTokenRepository.update(existingToken.id, {
+                fcmToken,
+                deviceInfo,
+                isActive: true,
+            });
+        }
+
+        // 기존 토큰이 없으면 새로 생성
+        try {
+            return await this.fcmTokenRepository.save({
+                fcmToken,
+                deviceType,
+                deviceInfo,
+                isActive: true,
+            });
+        } catch (error) {
+            // 중복 키 오류인 경우 다시 조회해서 반환
+            if (error.code === '23505') {
+                // PostgreSQL unique constraint error
+                const token = await this.findByFcmToken(fcmToken);
+                if (token) {
+                    return token;
+                }
+            }
+            throw error;
+        }
+    }
+
+    /**
+     * @deprecated 기존 메서드는 fcmToken으로만 중복 체크합니다. createOrFindByEmployeeAndDevice 사용을 권장합니다.
+     * FCM 토큰 생성 또는 조회 (기존 방식)
+     */
+    async createOrFind(fcmToken: string, deviceType: string = 'pc', deviceInfo?: any): Promise<FcmToken> {
         const existingToken = await this.findByFcmToken(fcmToken);
 
         if (existingToken) {
@@ -51,7 +103,7 @@ export class DomainFcmTokenService extends BaseService<FcmToken> {
     }
 
     // 디바이스 타입별 활성 토큰 조회
-    async findByDeviceType(deviceType: DeviceType): Promise<FcmToken[]> {
+    async findByDeviceType(deviceType: string): Promise<FcmToken[]> {
         return this.fcmTokenRepository.findAll({
             where: { deviceType, isActive: true },
         });
@@ -102,32 +154,36 @@ export class DomainFcmTokenService extends BaseService<FcmToken> {
     }
 
     // 디바이스 타입별 토큰 수 조회
-    async countTokensByDeviceType(): Promise<Record<DeviceType, number>> {
+    async countTokensByDeviceType(): Promise<Record<string, number>> {
         const counts = await Promise.all([
             this.fcmTokenRepository.count({
-                where: { deviceType: DeviceType.ANDROID, isActive: true },
+                where: { deviceType: 'android', isActive: true },
             }),
             this.fcmTokenRepository.count({
-                where: { deviceType: DeviceType.IOS, isActive: true },
+                where: { deviceType: 'ios', isActive: true },
             }),
             this.fcmTokenRepository.count({
-                where: { deviceType: DeviceType.PC, isActive: true },
+                where: { deviceType: 'pc', isActive: true },
+            }),
+            this.fcmTokenRepository.count({
+                where: { deviceType: 'web', isActive: true },
             }),
         ]);
 
         return {
-            [DeviceType.ANDROID]: counts[0],
-            [DeviceType.IOS]: counts[1],
-            [DeviceType.PC]: counts[2],
+            android: counts[0],
+            ios: counts[1],
+            pc: counts[2],
+            web: counts[3],
         };
     }
 
     // 디바이스 타입별 통계 조회 (컨텍스트용)
-    async getStatisticsByDeviceType(): Promise<{ deviceType: DeviceType; count: number }[]> {
+    async getStatisticsByDeviceType(): Promise<{ deviceType: string; count: number }[]> {
         const counts = await this.countTokensByDeviceType();
 
         return Object.entries(counts).map(([deviceType, count]) => ({
-            deviceType: deviceType as DeviceType,
+            deviceType,
             count,
         }));
     }

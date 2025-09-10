@@ -3,7 +3,7 @@ import { DomainEmployeeService } from '../../domain/employee/employee.service';
 import { DomainFcmTokenService } from '../../domain/fcm-token/fcm-token.service';
 import { DomainEmployeeFcmTokenService } from '../../domain/employee-fcm-token/employee-fcm-token.service';
 import { Employee } from '../../domain/employee/employee.entity';
-import { FcmToken, DeviceType } from '../../domain/fcm-token/fcm-token.entity';
+import { FcmToken } from '../../domain/fcm-token/fcm-token.entity';
 import { EmployeeFcmToken } from '../../domain/employee-fcm-token/employee-fcm-token.entity';
 
 @Injectable()
@@ -17,7 +17,7 @@ export class FcmTokenManagementContextService {
     async FCM토큰을_직원에게_등록한다(
         employeeId: string,
         fcmToken: string,
-        deviceType: DeviceType = DeviceType.PC,
+        deviceType: string = 'pc',
         deviceInfo?: any,
     ): Promise<EmployeeFcmToken> {
         // 직원 존재 확인
@@ -26,8 +26,13 @@ export class FcmTokenManagementContextService {
             throw new NotFoundException('존재하지 않는 직원입니다.');
         }
 
-        // FCM 토큰 생성 또는 조회
-        const fcmTokenEntity = await this.FCM토큰서비스.createOrFind(fcmToken, deviceType, deviceInfo);
+        // 직원ID + 디바이스 타입으로 기존 토큰 확인 및 생성/업데이트
+        const fcmTokenEntity = await this.FCM토큰서비스.createOrFindByEmployeeAndDevice(
+            employeeId,
+            fcmToken,
+            deviceType,
+            deviceInfo,
+        );
 
         // 직원과 FCM 토큰 관계 생성 또는 업데이트
         const relation = await this.직원FCM토큰서비스.createOrUpdateRelation(employeeId, fcmTokenEntity.id);
@@ -69,7 +74,7 @@ export class FcmTokenManagementContextService {
         return this.FCM토큰서비스.update(fcmTokenEntity.id, { isActive });
     }
 
-    async FCM토큰을_업데이트한다(fcmToken: string, deviceType?: DeviceType, deviceInfo?: any): Promise<FcmToken> {
+    async FCM토큰을_업데이트한다(fcmToken: string, deviceType?: string, deviceInfo?: any): Promise<FcmToken> {
         const fcmTokenEntity = await this.FCM토큰서비스.findByFcmToken(fcmToken);
         if (!fcmTokenEntity) {
             throw new NotFoundException('존재하지 않는 FCM 토큰입니다.');
@@ -106,7 +111,7 @@ export class FcmTokenManagementContextService {
         await this.직원FCM토큰서비스.deleteAllByEmployeeId(employeeId);
     }
 
-    async 디바이스_타입별_FCM토큰_통계를_조회한다(): Promise<{ deviceType: DeviceType; count: number }[]> {
+    async 디바이스_타입별_FCM토큰_통계를_조회한다(): Promise<{ deviceType: string; count: number }[]> {
         return this.FCM토큰서비스.getStatisticsByDeviceType();
     }
 

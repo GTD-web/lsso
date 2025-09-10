@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { FcmTokenDto, FcmTokensResponseDto } from './fcm-tokens-response.dto';
-import { DeviceType } from '../../../domain/fcm-token/fcm-token.entity';
 
 export class FlatFcmTokenDto extends FcmTokenDto {
     @ApiProperty({ description: '직원 ID' })
