@@ -4,6 +4,9 @@ import { Entities } from '../database/entities';
 import { join } from 'path';
 
 export const typeOrmConfig = (configService: ConfigService): TypeOrmModuleOptions => {
+    const isProduction = configService.get('NODE_ENV') === 'production';
+    const isVercel = configService.get('database.port') === 6543;
+
     return {
         type: 'postgres',
         host: configService.get('database.host'),
@@ -13,13 +16,13 @@ export const typeOrmConfig = (configService: ConfigService): TypeOrmModuleOption
         database: configService.get('database.database'),
         entities: Entities,
         schema: configService.get('database.schema'),
-        // synchronize: configService.get('NODE_ENV') !== 'production',
-        // logging: configService.get('NODE_ENV') !== 'production',
-        // migrations: [join(__dirname, 'libs/migrations/*.ts')],
-        // migrationsRun: configService.get('database.port') === 6543,
-        // ssl: configService.get('database.port') === 6543,
+        // synchronize: false, // 마이그레이션 사용을 위해 false로 설정
+        // logging: !isProduction,
+        // migrations: [join(__dirname, '../common/migrations/*.ts')],
+        // migrationsRun: isVercel, // Vercel 환경에서 자동 마이그레이션
+        // ssl: isVercel,
         // extra: {
-        //     ssl: configService.get('database.port') === 6543 ? { rejectUnauthorized: false } : null,
+        //     ssl: isVercel ? { rejectUnauthorized: false } : null,
         // },
     };
 };

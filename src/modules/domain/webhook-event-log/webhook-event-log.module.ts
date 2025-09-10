@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DomainWebhookEventLogService } from './webhook-event-log.service';
 import { DomainWebhookEventLogRepository } from './webhook-event-log.repository';
-import { WebhookEventLog } from '../../../../libs/database/entities';
+import { WebhookEventLog } from './webhook-event-log.entity';
 
 @Module({
     imports: [TypeOrmModule.forFeature([WebhookEventLog])],

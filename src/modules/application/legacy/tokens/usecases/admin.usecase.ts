@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { TokensService } from '../services/tokens.service';
-import { Token } from '../../../../../../libs/database/entities/token.entity';
+import { Token } from '../../../../../../libs/database/entities';
 import { CreateTokenDto, RenewTokenDto } from '../dto';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../../users/services/users.service';

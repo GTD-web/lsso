@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { DepartmentType } from 'libs/database/entities/department.entity';
+import { DepartmentType } from '../../../../../libs/database/entities';
 
 // 부서 상세 정보
 export class DepartmentDetailDto {

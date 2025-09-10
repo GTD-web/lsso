@@ -52,6 +52,10 @@ export class LoginResponseDto {
     @ApiPropertyOptional({ description: '직급명' })
     rank?: string;
 
-    @ApiProperty({ description: '시스템명' })
-    system: string;
+    @ApiProperty({
+        description: '시스템별 역할 목록',
+        type: 'object',
+        example: { rms: ['resourceManager'], lrim: ['interviewee'] },
+    })
+    systemRoles: Record<string, string[]>;
 }

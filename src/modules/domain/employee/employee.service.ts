@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DomainEmployeeRepository } from './employee.repository';
 import { BaseService } from '../../../../libs/common/services/base.service';
-import { Employee } from '../../../../libs/database/entities';
+import { Employee } from './employee.entity';
 import { EmployeeStatus } from '../../../../libs/common/enums';
 import { In, Not } from 'typeorm';
 import * as bcrypt from '@node-rs/bcrypt';

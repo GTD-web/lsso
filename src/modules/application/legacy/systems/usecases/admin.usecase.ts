@@ -1,5 +1,5 @@
 import { ILike } from 'typeorm';
-import { System } from '../../../../../../libs/database/entities/system.entity';
+import { System } from '../../../../../../libs/database/entities';
 import { IRepositoryOptions } from '../../../../../../libs/common/interfaces/repository.interface';
 import { Injectable } from '@nestjs/common';
 import { SystemsService } from '../services/systems.service';

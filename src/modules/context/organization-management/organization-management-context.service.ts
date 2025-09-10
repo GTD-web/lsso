@@ -5,10 +5,7 @@ import { DomainPositionService } from '../../domain/position/position.service';
 import { DomainRankService } from '../../domain/rank/rank.service';
 import { DomainEmployeeDepartmentPositionService } from '../../domain/employee-department-position/employee-department-position.service';
 import { DomainEmployeeRankHistoryService } from '../../domain/employee-rank-history/employee-rank-history.service';
-import { Department } from '../../../../libs/database/entities/department.entity';
-import { Employee } from '../../../../libs/database/entities/employee.entity';
-import { Position } from '../../../../libs/database/entities/position.entity';
-import { Rank } from '../../../../libs/database/entities/rank.entity';
+import { Department, Employee, Position, Rank } from '../../../../libs/database/entities';
 
 @Injectable()
 export class OrganizationContextService {
@@ -101,18 +98,6 @@ export class OrganizationContextService {
         }
 
         return resultMap;
-    }
-
-    async 직원의_FCM토큰을_업데이트한다(employeeId: string, fcmToken: string): Promise<Employee> {
-        return this.직원서비스.update(employeeId, {
-            fcmToken: fcmToken,
-        });
-    }
-
-    async 직원의_FCM토큰을_제거한다(employeeId: string): Promise<Employee> {
-        return this.직원서비스.update(employeeId, {
-            fcmToken: null,
-        });
     }
 
     async 부서_계층구조를_조회한다(

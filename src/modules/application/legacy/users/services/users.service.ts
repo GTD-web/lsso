@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Employee } from '../../../../../../libs/database/entities/employee.entity';
+import { Employee } from '../../../../../../libs/database/entities';
 import { IRepositoryOptions } from '../../../../../../libs/common/interfaces/repository.interface';
 import { DomainEmployeeService } from '../../../../domain/employee/employee.service';
 import { DomainDepartmentService } from '../../../../domain/department/department.service';

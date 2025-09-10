@@ -8,7 +8,7 @@ import {
     BeforeInsert,
     BeforeUpdate,
 } from 'typeorm';
-import { Token } from '../../../../../../libs/database/entities/token.entity';
+import { Token } from '../../../../../../libs/database/entities';
 import * as bcrypt from '@node-rs/bcrypt';
 
 @Entity('admins')

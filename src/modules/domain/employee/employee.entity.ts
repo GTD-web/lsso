@@ -8,9 +8,10 @@ import {
     OneToMany,
     JoinColumn,
 } from 'typeorm';
-import { Gender, EmployeeStatus } from '../../common/enums';
-import { Rank } from './rank.entity';
-import { EmployeeDepartmentPosition } from './employee-department-position.entity';
+import { Gender, EmployeeStatus } from '../../../../libs/common/enums';
+import { Rank } from '../rank/rank.entity';
+import { EmployeeDepartmentPosition } from '../employee-department-position/employee-department-position.entity';
+import { EmployeeFcmToken } from '../employee-fcm-token/employee-fcm-token.entity';
 
 @Entity('employees')
 export class Employee {
@@ -70,12 +71,13 @@ export class Employee {
     @Column({ comment: '초기 비밀번호 설정 여부', default: false })
     isInitialPasswordSet: boolean;
 
-    @Column({ comment: 'FCM 토큰', nullable: true })
-    fcmToken?: string;
-
     // 매니저 관계는 EmployeeDepartmentPosition에서 관리
     @OneToMany(() => EmployeeDepartmentPosition, (edp) => edp.employee)
     departmentPositions?: EmployeeDepartmentPosition[];
+
+    // FCM 토큰 관계 (중간테이블을 통한 관리)
+    @OneToMany(() => EmployeeFcmToken, (eft) => eft.employee)
+    fcmTokens?: EmployeeFcmToken[];
 
     @CreateDateColumn({ comment: '생성일' })
     createdAt: Date;

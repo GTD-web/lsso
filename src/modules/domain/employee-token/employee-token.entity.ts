@@ -8,8 +8,8 @@ import {
     JoinColumn,
     Index,
 } from 'typeorm';
-import { Employee } from './employee.entity';
-import { Token } from './token.entity';
+import { Employee } from '../employee/employee.entity';
+import { Token } from '../token/token.entity';
 
 @Entity('employee_tokens')
 @Index(['employeeId', 'tokenId'], { unique: true })

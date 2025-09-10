@@ -1,21 +1,26 @@
-import { Employee } from './employee.entity';
-import { Department } from './department.entity';
-import { Position } from './position.entity';
-import { Rank } from './rank.entity';
-import { EmployeeDepartmentPosition } from './employee-department-position.entity';
-import { EmployeeRankHistory } from './employee-rank-history.entity';
-import { Webhook } from './webhook.entity';
-import { WebhookEventLog } from './webhook-event-log.entity';
-import { System } from './system.entity';
-import { Token } from './token.entity';
-import { EmployeeToken } from './employee-token.entity';
-import { SystemWebhook } from './system-webhook.entity';
-import { Log } from './log.entity';
-import { User } from './user.entity';
+import { Employee } from '../../../src/modules/domain/employee/employee.entity';
+import { Department, DepartmentType } from '../../../src/modules/domain/department/department.entity';
+import { Position } from '../../../src/modules/domain/position/position.entity';
+import { Rank } from '../../../src/modules/domain/rank/rank.entity';
+import { EmployeeDepartmentPosition } from '../../../src/modules/domain/employee-department-position/employee-department-position.entity';
+import { EmployeeRankHistory } from '../../../src/modules/domain/employee-rank-history/employee-rank-history.entity';
+import { Webhook } from '../../../src/modules/domain/webhook/webhook.entity';
+import { WebhookEventLog } from '../../../src/modules/domain/webhook-event-log/webhook-event-log.entity';
+import { System } from '../../../src/modules/domain/system/system.entity';
+import { Token } from '../../../src/modules/domain/token/token.entity';
+import { EmployeeToken } from '../../../src/modules/domain/employee-token/employee-token.entity';
+import { SystemWebhook } from '../../../src/modules/domain/system-webhook/system-webhook.entity';
+import { Log } from '../../../src/modules/domain/log/log.entity';
+import { User } from '../../../src/modules/domain/user/user.entity';
+import { FcmToken, DeviceType } from '../../../src/modules/domain/fcm-token/fcm-token.entity';
+import { EmployeeFcmToken } from '../../../src/modules/domain/employee-fcm-token/employee-fcm-token.entity';
+import { SystemRole } from '../../../src/modules/domain/system-role/system-role.entity';
+import { EmployeeSystemRole } from '../../../src/modules/domain/employee-system-role/employee-system-role.entity';
 
 export {
     Employee,
     Department,
+    DepartmentType,
     Position,
     Rank,
     EmployeeDepartmentPosition,
@@ -28,6 +33,11 @@ export {
     SystemWebhook,
     Log,
     User,
+    FcmToken,
+    EmployeeFcmToken,
+    DeviceType,
+    SystemRole,
+    EmployeeSystemRole,
 };
 
 export const Entities = [
@@ -45,4 +55,8 @@ export const Entities = [
     SystemWebhook,
     Log,
     User,
+    FcmToken,
+    EmployeeFcmToken,
+    SystemRole,
+    EmployeeSystemRole,
 ];

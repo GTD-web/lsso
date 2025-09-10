@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { DepartmentType } from 'libs/database/entities/department.entity';
+import { DepartmentType } from '../../../../../libs/database/entities';
 import { EmployeeResponseDto } from './employee-response.dto';
 
 export class DepartmentWithEmployeesDto {

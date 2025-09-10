@@ -1,4 +1,4 @@
-import { Log } from '../../../../../../libs/database/entities/log.entity';
+import { Log } from '../../../../../../libs/database/entities';
 
 // 시스템 상태 정보 타입
 export interface SystemStatus {

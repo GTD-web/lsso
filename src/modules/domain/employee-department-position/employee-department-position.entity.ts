@@ -9,9 +9,9 @@ import {
     Index,
     Unique,
 } from 'typeorm';
-import { Employee } from './employee.entity';
-import { Department } from './department.entity';
-import { Position } from './position.entity';
+import { Employee } from '../employee/employee.entity';
+import { Department } from '../department/department.entity';
+import { Position } from '../position/position.entity';
 
 export enum ManagerType {
     DIRECT = 'direct', // 직접 상사
