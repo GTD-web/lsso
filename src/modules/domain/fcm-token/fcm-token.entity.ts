@@ -1,11 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Index } from 'typeorm';
 
-export enum DeviceType {
-    ANDROID = 'ANDROID',
-    IOS = 'IOS',
-    PC = 'PC',
-}
-
 @Entity('fcm_tokens')
 @Index(['fcmToken'], { unique: true })
 @Index(['isActive'])
@@ -17,12 +11,12 @@ export class FcmToken {
     fcmToken: string;
 
     @Column({
-        type: 'enum',
-        enum: DeviceType,
-        comment: '디바이스 타입',
-        default: DeviceType.PC,
+        type: 'varchar',
+        length: 50,
+        comment: '디바이스 타입 (예: android, ios, pc, web)',
+        default: 'pc',
     })
-    deviceType: DeviceType;
+    deviceType: string;
 
     @Column({ type: 'json', comment: '디바이스 정보', nullable: true })
     deviceInfo?: {

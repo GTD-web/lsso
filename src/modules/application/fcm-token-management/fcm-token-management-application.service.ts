@@ -11,7 +11,7 @@ import {
     FcmUnsubscribeResponseDto,
     BaseEmployeeIdentifierDto,
 } from './dto';
-import { DeviceType } from '../../domain/fcm-token/fcm-token.entity';
+// DeviceType enum 제거 - 이제 문자열로 처리
 import { Employee } from '../../domain/employee/employee.entity';
 
 @Injectable()
@@ -31,20 +31,67 @@ export class FcmTokenManagementApplicationService {
         }
 
         try {
-            // employeeId가 있으면 우선 사용
+            // 둘 다 제공된 경우 정합성 체크
+            if (dto.employeeId && dto.employeeNumber) {
+                return await this.validateAndGetEmployeeWithBothIdentifiers(dto.employeeId, dto.employeeNumber);
+            }
+
+            // employeeId만 있는 경우
             if (dto.employeeId) {
                 return await this.organizationContextService.직원_ID값으로_직원정보를_조회한다(dto.employeeId);
             }
 
-            // employeeNumber로 조회
+            // employeeNumber만 있는 경우
             if (dto.employeeNumber) {
                 return await this.organizationContextService.직원_사번으로_직원정보를_조회한다(dto.employeeNumber);
             }
         } catch (error) {
+            if (error instanceof BadRequestException) {
+                throw error; // 정합성 체크 에러는 그대로 전파
+            }
             throw new NotFoundException('직원 정보를 찾을 수 없습니다.');
         }
 
         throw new BadRequestException('유효한 직원 식별자가 제공되지 않았습니다.');
+    }
+
+    /**
+     * employeeId와 employeeNumber가 둘 다 제공된 경우 정합성을 체크합니다
+     */
+    private async validateAndGetEmployeeWithBothIdentifiers(
+        employeeId: string,
+        employeeNumber: string,
+    ): Promise<Employee> {
+        // 병렬로 두 조회를 실행
+        const [employeeById, employeeByNumber] = await Promise.all([
+            this.organizationContextService.직원_ID값으로_직원정보를_조회한다(employeeId).catch(() => null),
+            this.organizationContextService.직원_사번으로_직원정보를_조회한다(employeeNumber).catch(() => null),
+        ]);
+
+        // 둘 중 하나라도 조회되지 않은 경우
+        if (!employeeById && !employeeByNumber) {
+            throw new NotFoundException('제공된 employeeId와 employeeNumber로 직원 정보를 찾을 수 없습니다.');
+        }
+
+        if (!employeeById) {
+            throw new NotFoundException(`employeeId '${employeeId}'로 직원 정보를 찾을 수 없습니다.`);
+        }
+
+        if (!employeeByNumber) {
+            throw new NotFoundException(`employeeNumber '${employeeNumber}'로 직원 정보를 찾을 수 없습니다.`);
+        }
+
+        // 정합성 체크: 두 조회 결과가 같은 직원인지 확인
+        if (employeeById.id !== employeeByNumber.id) {
+            throw new BadRequestException(
+                `employeeId '${employeeId}'와 employeeNumber '${employeeNumber}'가 서로 다른 직원을 가리킵니다. ` +
+                    `employeeId는 '${employeeById.employeeNumber}' 직원을, ` +
+                    `employeeNumber는 '${employeeByNumber.id}' 직원을 가리킵니다.`,
+            );
+        }
+
+        // 정합성 체크 통과 - employeeId로 조회한 결과 반환
+        return employeeById;
     }
 
     async FCM토큰을_구독한다(requestDto: FcmSubscribeRequestDto): Promise<FcmSubscribeResponseDto> {

@@ -3,7 +3,7 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class BaseEmployeeIdentifierDto {
     @ApiPropertyOptional({
-        description: '직원 ID (UUID)',
+        description: '직원 ID (UUID). employeeNumber와 함께 제공되면 정합성을 체크합니다.',
         example: '123e4567-e89b-12d3-a456-426614174000',
     })
     @IsOptional()
@@ -12,33 +12,11 @@ export class BaseEmployeeIdentifierDto {
     employeeId?: string;
 
     @ApiPropertyOptional({
-        description: '직원 번호',
+        description: '직원 번호. employeeId와 함께 제공되면 같은 직원을 가리키는지 검증합니다.',
         example: '25001',
     })
     @IsOptional()
     @IsString()
     @ValidateIf((obj) => !obj.employeeId || obj.employeeNumber)
     employeeNumber?: string;
-
-    /**
-     * employeeId와 employeeNumber 중 하나는 반드시 제공되어야 함을 검증
-     */
-    validate(): void {
-        if (!this.employeeId && !this.employeeNumber) {
-            throw new Error('employeeId 또는 employeeNumber 중 하나는 반드시 제공되어야 합니다.');
-        }
-    }
-
-    /**
-     * employeeId가 있으면 employeeId를 우선 반환, 없으면 employeeNumber 반환
-     */
-    getIdentifier(): { type: 'id' | 'number'; value: string } {
-        if (this.employeeId) {
-            return { type: 'id', value: this.employeeId };
-        }
-        if (this.employeeNumber) {
-            return { type: 'number', value: this.employeeNumber };
-        }
-        throw new Error('employeeId 또는 employeeNumber 중 하나는 반드시 제공되어야 합니다.');
-    }
 }

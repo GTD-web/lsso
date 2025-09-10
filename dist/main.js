@@ -702,7 +702,7 @@ exports.typeOrmConfig = typeOrmConfig;
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Entities = exports.EmployeeSystemRole = exports.SystemRole = exports.DeviceType = exports.EmployeeFcmToken = exports.FcmToken = exports.User = exports.Log = exports.SystemWebhook = exports.EmployeeToken = exports.Token = exports.System = exports.WebhookEventLog = exports.Webhook = exports.EmployeeRankHistory = exports.EmployeeDepartmentPosition = exports.Rank = exports.Position = exports.DepartmentType = exports.Department = exports.Employee = void 0;
+exports.Entities = exports.EmployeeSystemRole = exports.SystemRole = exports.EmployeeFcmToken = exports.FcmToken = exports.User = exports.Log = exports.SystemWebhook = exports.EmployeeToken = exports.Token = exports.System = exports.WebhookEventLog = exports.Webhook = exports.EmployeeRankHistory = exports.EmployeeDepartmentPosition = exports.Rank = exports.Position = exports.DepartmentType = exports.Department = exports.Employee = void 0;
 const employee_entity_1 = __webpack_require__(/*! ../../../src/modules/domain/employee/employee.entity */ "./src/modules/domain/employee/employee.entity.ts");
 Object.defineProperty(exports, "Employee", ({ enumerable: true, get: function () { return employee_entity_1.Employee; } }));
 const department_entity_1 = __webpack_require__(/*! ../../../src/modules/domain/department/department.entity */ "./src/modules/domain/department/department.entity.ts");
@@ -734,7 +734,6 @@ const user_entity_1 = __webpack_require__(/*! ../../../src/modules/domain/user/u
 Object.defineProperty(exports, "User", ({ enumerable: true, get: function () { return user_entity_1.User; } }));
 const fcm_token_entity_1 = __webpack_require__(/*! ../../../src/modules/domain/fcm-token/fcm-token.entity */ "./src/modules/domain/fcm-token/fcm-token.entity.ts");
 Object.defineProperty(exports, "FcmToken", ({ enumerable: true, get: function () { return fcm_token_entity_1.FcmToken; } }));
-Object.defineProperty(exports, "DeviceType", ({ enumerable: true, get: function () { return fcm_token_entity_1.DeviceType; } }));
 const employee_fcm_token_entity_1 = __webpack_require__(/*! ../../../src/modules/domain/employee-fcm-token/employee-fcm-token.entity */ "./src/modules/domain/employee-fcm-token/employee-fcm-token.entity.ts");
 Object.defineProperty(exports, "EmployeeFcmToken", ({ enumerable: true, get: function () { return employee_fcm_token_entity_1.EmployeeFcmToken; } }));
 const system_role_entity_1 = __webpack_require__(/*! ../../../src/modules/domain/system-role/system-role.entity */ "./src/modules/domain/system-role/system-role.entity.ts");
@@ -1312,14 +1311,15 @@ __decorate([
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     (0, swagger_1.ApiOperation)({
         summary: 'FCM 토큰 구독',
-        description: '사용자의 FCM 토큰을 등록하거나 업데이트합니다.',
+        description: '사용자의 FCM 토큰을 등록하거나 업데이트합니다. ' +
+            'employeeId와 employeeNumber가 둘 다 제공된 경우 정합성을 체크합니다.',
     }),
     (0, swagger_1.ApiResponse)({
         status: 200,
         description: 'FCM 토큰 구독 성공',
         type: dto_1.FcmSubscribeResponseDto,
     }),
-    (0, swagger_1.ApiResponse)({ status: 400, description: '잘못된 요청 형식' }),
+    (0, swagger_1.ApiResponse)({ status: 400, description: '잘못된 요청 형식 또는 employeeId와 employeeNumber 정합성 오류' }),
     (0, swagger_1.ApiResponse)({ status: 404, description: '직원 정보를 찾을 수 없음' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -1331,7 +1331,8 @@ __decorate([
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     (0, swagger_1.ApiOperation)({
         summary: 'FCM 토큰 조회',
-        description: 'employeeId 또는 employeeNumber로 직원의 모든 FCM 토큰을 조회합니다.',
+        description: 'employeeId 또는 employeeNumber로 직원의 모든 FCM 토큰을 조회합니다. ' +
+            '둘 다 제공된 경우 같은 직원을 가리키는지 정합성을 체크합니다.',
     }),
     (0, swagger_1.ApiQuery)({
         name: 'employeeId',
@@ -1352,7 +1353,7 @@ __decorate([
         description: 'FCM 토큰 조회 성공',
         type: dto_1.FcmTokensResponseDto,
     }),
-    (0, swagger_1.ApiResponse)({ status: 400, description: '잘못된 요청 형식' }),
+    (0, swagger_1.ApiResponse)({ status: 400, description: '잘못된 요청 형식 또는 employeeId와 employeeNumber 정합성 오류' }),
     (0, swagger_1.ApiResponse)({ status: 404, description: '직원 정보를 찾을 수 없음' }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
@@ -1364,14 +1365,14 @@ __decorate([
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     (0, swagger_1.ApiOperation)({
         summary: 'FCM 토큰 구독 해지',
-        description: '직원번호로 FCM 토큰 구독을 해지합니다.',
+        description: 'employeeId 또는 employeeNumber로 FCM 토큰 구독을 해지합니다. ' + '둘 다 제공된 경우 정합성을 체크합니다.',
     }),
     (0, swagger_1.ApiResponse)({
         status: 200,
         description: 'FCM 토큰 구독 해지 성공',
         type: dto_1.FcmUnsubscribeResponseDto,
     }),
-    (0, swagger_1.ApiResponse)({ status: 400, description: '잘못된 요청 형식' }),
+    (0, swagger_1.ApiResponse)({ status: 400, description: '잘못된 요청 형식 또는 employeeId와 employeeNumber 정합성 오류' }),
     (0, swagger_1.ApiResponse)({ status: 404, description: '직원 정보를 찾을 수 없음' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -1442,25 +1443,11 @@ exports.BaseEmployeeIdentifierDto = void 0;
 const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
 const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
 class BaseEmployeeIdentifierDto {
-    validate() {
-        if (!this.employeeId && !this.employeeNumber) {
-            throw new Error('employeeId 또는 employeeNumber 중 하나는 반드시 제공되어야 합니다.');
-        }
-    }
-    getIdentifier() {
-        if (this.employeeId) {
-            return { type: 'id', value: this.employeeId };
-        }
-        if (this.employeeNumber) {
-            return { type: 'number', value: this.employeeNumber };
-        }
-        throw new Error('employeeId 또는 employeeNumber 중 하나는 반드시 제공되어야 합니다.');
-    }
 }
 exports.BaseEmployeeIdentifierDto = BaseEmployeeIdentifierDto;
 __decorate([
     (0, swagger_1.ApiPropertyOptional)({
-        description: '직원 ID (UUID)',
+        description: '직원 ID (UUID). employeeNumber와 함께 제공되면 정합성을 체크합니다.',
         example: '123e4567-e89b-12d3-a456-426614174000',
     }),
     (0, class_validator_1.IsOptional)(),
@@ -1470,7 +1457,7 @@ __decorate([
 ], BaseEmployeeIdentifierDto.prototype, "employeeId", void 0);
 __decorate([
     (0, swagger_1.ApiPropertyOptional)({
-        description: '직원 번호',
+        description: '직원 번호. employeeId와 함께 제공되면 같은 직원을 가리키는지 검증합니다.',
         example: '25001',
     }),
     (0, class_validator_1.IsOptional)(),
@@ -1498,13 +1485,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.FcmSubscribeRequestDto = void 0;
 const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
 const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
 const base_employee_identifier_dto_1 = __webpack_require__(/*! ./base-employee-identifier.dto */ "./src/modules/application/fcm-token-management/dto/base-employee-identifier.dto.ts");
-const fcm_token_entity_1 = __webpack_require__(/*! ../../../domain/fcm-token/fcm-token.entity */ "./src/modules/domain/fcm-token/fcm-token.entity.ts");
 class FcmSubscribeRequestDto extends base_employee_identifier_dto_1.BaseEmployeeIdentifierDto {
 }
 exports.FcmSubscribeRequestDto = FcmSubscribeRequestDto;
@@ -1520,12 +1505,11 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: '기기 타입',
-        example: fcm_token_entity_1.DeviceType.PC,
-        enum: fcm_token_entity_1.DeviceType,
+        example: 'pc',
     }),
-    (0, class_validator_1.IsEnum)(fcm_token_entity_1.DeviceType),
+    (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", typeof (_a = typeof fcm_token_entity_1.DeviceType !== "undefined" && fcm_token_entity_1.DeviceType) === "function" ? _a : Object)
+    __metadata("design:type", String)
 ], FcmSubscribeRequestDto.prototype, "deviceType", void 0);
 
 
@@ -1666,11 +1650,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a, _b, _c;
+var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.FcmTokensResponseDto = exports.FcmTokenDto = void 0;
 const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const fcm_token_entity_1 = __webpack_require__(/*! ../../../domain/fcm-token/fcm-token.entity */ "./src/modules/domain/fcm-token/fcm-token.entity.ts");
 class FcmTokenDto {
 }
 exports.FcmTokenDto = FcmTokenDto;
@@ -1680,19 +1663,19 @@ __decorate([
 ], FcmTokenDto.prototype, "fcmToken", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
-        description: '디바이스 타입',
-        enum: fcm_token_entity_1.DeviceType,
-        example: fcm_token_entity_1.DeviceType.PC,
+        description: '디바이스 타입 (예: android, ios, pc, web)',
+        type: String,
+        example: 'pc',
     }),
-    __metadata("design:type", typeof (_a = typeof fcm_token_entity_1.DeviceType !== "undefined" && fcm_token_entity_1.DeviceType) === "function" ? _a : Object)
+    __metadata("design:type", String)
 ], FcmTokenDto.prototype, "deviceType", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '생성일' }),
-    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
 ], FcmTokenDto.prototype, "createdAt", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '수정일' }),
-    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
 ], FcmTokenDto.prototype, "updatedAt", void 0);
 class FcmTokensResponseDto {
 }
@@ -1935,6 +1918,9 @@ let FcmTokenManagementApplicationService = class FcmTokenManagementApplicationSe
             throw new common_1.BadRequestException('employeeId 또는 employeeNumber 중 하나는 반드시 제공되어야 합니다.');
         }
         try {
+            if (dto.employeeId && dto.employeeNumber) {
+                return await this.validateAndGetEmployeeWithBothIdentifiers(dto.employeeId, dto.employeeNumber);
+            }
             if (dto.employeeId) {
                 return await this.organizationContextService.직원_ID값으로_직원정보를_조회한다(dto.employeeId);
             }
@@ -1943,9 +1929,33 @@ let FcmTokenManagementApplicationService = class FcmTokenManagementApplicationSe
             }
         }
         catch (error) {
+            if (error instanceof common_1.BadRequestException) {
+                throw error;
+            }
             throw new common_1.NotFoundException('직원 정보를 찾을 수 없습니다.');
         }
         throw new common_1.BadRequestException('유효한 직원 식별자가 제공되지 않았습니다.');
+    }
+    async validateAndGetEmployeeWithBothIdentifiers(employeeId, employeeNumber) {
+        const [employeeById, employeeByNumber] = await Promise.all([
+            this.organizationContextService.직원_ID값으로_직원정보를_조회한다(employeeId).catch(() => null),
+            this.organizationContextService.직원_사번으로_직원정보를_조회한다(employeeNumber).catch(() => null),
+        ]);
+        if (!employeeById && !employeeByNumber) {
+            throw new common_1.NotFoundException('제공된 employeeId와 employeeNumber로 직원 정보를 찾을 수 없습니다.');
+        }
+        if (!employeeById) {
+            throw new common_1.NotFoundException(`employeeId '${employeeId}'로 직원 정보를 찾을 수 없습니다.`);
+        }
+        if (!employeeByNumber) {
+            throw new common_1.NotFoundException(`employeeNumber '${employeeNumber}'로 직원 정보를 찾을 수 없습니다.`);
+        }
+        if (employeeById.id !== employeeByNumber.id) {
+            throw new common_1.BadRequestException(`employeeId '${employeeId}'와 employeeNumber '${employeeNumber}'가 서로 다른 직원을 가리킵니다. ` +
+                `employeeId는 '${employeeById.employeeNumber}' 직원을, ` +
+                `employeeNumber는 '${employeeByNumber.id}' 직원을 가리킵니다.`);
+        }
+        return employeeById;
     }
     async FCM토큰을_구독한다(requestDto) {
         const { fcmToken, deviceType } = requestDto;
@@ -8396,19 +8406,18 @@ const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const employee_service_1 = __webpack_require__(/*! ../../domain/employee/employee.service */ "./src/modules/domain/employee/employee.service.ts");
 const fcm_token_service_1 = __webpack_require__(/*! ../../domain/fcm-token/fcm-token.service */ "./src/modules/domain/fcm-token/fcm-token.service.ts");
 const employee_fcm_token_service_1 = __webpack_require__(/*! ../../domain/employee-fcm-token/employee-fcm-token.service */ "./src/modules/domain/employee-fcm-token/employee-fcm-token.service.ts");
-const fcm_token_entity_1 = __webpack_require__(/*! ../../domain/fcm-token/fcm-token.entity */ "./src/modules/domain/fcm-token/fcm-token.entity.ts");
 let FcmTokenManagementContextService = class FcmTokenManagementContextService {
     constructor(직원서비스, FCM토큰서비스, 직원FCM토큰서비스) {
         this.직원서비스 = 직원서비스;
         this.FCM토큰서비스 = FCM토큰서비스;
         this.직원FCM토큰서비스 = 직원FCM토큰서비스;
     }
-    async FCM토큰을_직원에게_등록한다(employeeId, fcmToken, deviceType = fcm_token_entity_1.DeviceType.PC, deviceInfo) {
+    async FCM토큰을_직원에게_등록한다(employeeId, fcmToken, deviceType = 'pc', deviceInfo) {
         const employee = await this.직원서비스.findByEmployeeId(employeeId);
         if (!employee) {
             throw new common_1.NotFoundException('존재하지 않는 직원입니다.');
         }
-        const fcmTokenEntity = await this.FCM토큰서비스.createOrFind(fcmToken, deviceType, deviceInfo);
+        const fcmTokenEntity = await this.FCM토큰서비스.createOrFindByEmployeeAndDevice(employeeId, fcmToken, deviceType, deviceInfo);
         const relation = await this.직원FCM토큰서비스.createOrUpdateRelation(employeeId, fcmTokenEntity.id);
         return relation;
     }
@@ -9490,6 +9499,8 @@ const webhook_event_log_module_1 = __webpack_require__(/*! ../../domain/webhook-
 const system_webhook_module_1 = __webpack_require__(/*! ../../domain/system-webhook/system-webhook.module */ "./src/modules/domain/system-webhook/system-webhook.module.ts");
 const system_role_module_1 = __webpack_require__(/*! ../../domain/system-role/system-role.module */ "./src/modules/domain/system-role/system-role.module.ts");
 const employee_system_role_module_1 = __webpack_require__(/*! ../../domain/employee-system-role/employee-system-role.module */ "./src/modules/domain/employee-system-role/employee-system-role.module.ts");
+const department_module_1 = __webpack_require__(/*! ../../domain/department/department.module */ "./src/modules/domain/department/department.module.ts");
+const employee_department_position_module_1 = __webpack_require__(/*! ../../domain/employee-department-position/employee-department-position.module */ "./src/modules/domain/employee-department-position/employee-department-position.module.ts");
 let SystemManagementContextModule = class SystemManagementContextModule {
 };
 exports.SystemManagementContextModule = SystemManagementContextModule;
@@ -9502,6 +9513,8 @@ exports.SystemManagementContextModule = SystemManagementContextModule = __decora
             system_webhook_module_1.DomainSystemWebhookModule,
             system_role_module_1.DomainSystemRoleModule,
             employee_system_role_module_1.DomainEmployeeSystemRoleModule,
+            department_module_1.DomainDepartmentModule,
+            employee_department_position_module_1.DomainEmployeeDepartmentPositionModule,
         ],
         providers: [system_management_context_service_1.SystemManagementContextService],
         exports: [system_management_context_service_1.SystemManagementContextService],
@@ -9527,7 +9540,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a, _b, _c, _d, _e, _f;
+var SystemManagementContextService_1;
+var _a, _b, _c, _d, _e, _f, _g, _h;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SystemManagementContextService = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
@@ -9537,14 +9551,106 @@ const webhook_event_log_service_1 = __webpack_require__(/*! ../../domain/webhook
 const system_webhook_service_1 = __webpack_require__(/*! ../../domain/system-webhook/system-webhook.service */ "./src/modules/domain/system-webhook/system-webhook.service.ts");
 const system_role_service_1 = __webpack_require__(/*! ../../domain/system-role/system-role.service */ "./src/modules/domain/system-role/system-role.service.ts");
 const employee_system_role_service_1 = __webpack_require__(/*! ../../domain/employee-system-role/employee-system-role.service */ "./src/modules/domain/employee-system-role/employee-system-role.service.ts");
-let SystemManagementContextService = class SystemManagementContextService {
-    constructor(시스템서비스, 웹훅서비스, 웹훅이벤트로그서비스, 시스템웹훅서비스, 시스템역할서비스, 직원시스템역할서비스) {
+const department_service_1 = __webpack_require__(/*! ../../domain/department/department.service */ "./src/modules/domain/department/department.service.ts");
+const employee_department_position_service_1 = __webpack_require__(/*! ../../domain/employee-department-position/employee-department-position.service */ "./src/modules/domain/employee-department-position/employee-department-position.service.ts");
+let SystemManagementContextService = SystemManagementContextService_1 = class SystemManagementContextService {
+    constructor(시스템서비스, 웹훅서비스, 웹훅이벤트로그서비스, 시스템웹훅서비스, 시스템역할서비스, 직원시스템역할서비스, 부서서비스, 직원부서직책서비스) {
         this.시스템서비스 = 시스템서비스;
         this.웹훅서비스 = 웹훅서비스;
         this.웹훅이벤트로그서비스 = 웹훅이벤트로그서비스;
         this.시스템웹훅서비스 = 시스템웹훅서비스;
         this.시스템역할서비스 = 시스템역할서비스;
         this.직원시스템역할서비스 = 직원시스템역할서비스;
+        this.부서서비스 = 부서서비스;
+        this.직원부서직책서비스 = 직원부서직책서비스;
+        this.logger = new common_1.Logger(SystemManagementContextService_1.name);
+    }
+    async onModuleInit() {
+        try {
+        }
+        catch (error) {
+            this.logger.error('테스트 데이터 생성 중 오류 발생:', error);
+        }
+    }
+    async Web파트_부서에_테스트_역할_부여() {
+        try {
+            this.logger.log('Web파트 부서 직원들에게 테스트 역할 부여 시작...');
+            const systems = await this.시스템서비스.findAll();
+            const rmsSystem = systems.find((system) => system.name === 'RMS-PROD');
+            if (!rmsSystem) {
+                this.logger.warn('RMS-PROD 시스템을 찾을 수 없습니다.');
+                return;
+            }
+            this.logger.log(`RMS-PROD 시스템 찾음: ${rmsSystem.id}`);
+            const departments = await this.부서서비스.findAll();
+            const webDepartment = departments.find((dept) => dept.departmentName === 'Web파트');
+            if (!webDepartment) {
+                this.logger.warn('Web파트 부서를 찾을 수 없습니다.');
+                return;
+            }
+            this.logger.log(`Web파트 부서 찾음: ${webDepartment.id}`);
+            const resourceManagerRole = await this.시스템역할_생성_또는_조회(rmsSystem.id, 'resourceManager', 'Resource Manager', 'RMS 리소스 관리자', ['resource.read', 'resource.write', 'resource.delete']);
+            const systemAdminRole = await this.시스템역할_생성_또는_조회(rmsSystem.id, 'systemAdmin', 'System Administrator', 'RMS 시스템 관리자', ['system.read', 'system.write', 'system.admin', 'user.manage']);
+            this.logger.log(`시스템 역할 준비 완료 - resourceManager: ${resourceManagerRole.id}, systemAdmin: ${systemAdminRole.id}`);
+            const employeeDepartmentPositions = await this.직원부서직책서비스.findByDepartmentId(webDepartment.id);
+            if (employeeDepartmentPositions.length === 0) {
+                this.logger.warn('Web파트 부서에 직원이 없습니다.');
+                return;
+            }
+            this.logger.log(`Web파트 부서 직원 ${employeeDepartmentPositions.length}명 찾음`);
+            let assignedCount = 0;
+            for (const empDeptPos of employeeDepartmentPositions) {
+                try {
+                    await this.역할_할당_시도(empDeptPos.employeeId, resourceManagerRole.id);
+                    await this.역할_할당_시도(empDeptPos.employeeId, systemAdminRole.id);
+                    assignedCount++;
+                }
+                catch (error) {
+                    this.logger.warn(`직원 ${empDeptPos.employeeId} 역할 할당 실패:`, error.message);
+                }
+            }
+            this.logger.log(`Web파트 부서 직원 ${assignedCount}명에게 테스트 역할 할당 완료`);
+        }
+        catch (error) {
+            this.logger.error('Web파트 부서 테스트 역할 부여 중 오류:', error);
+            throw error;
+        }
+    }
+    async 시스템역할_생성_또는_조회(systemId, roleCode, roleName, description, permissions) {
+        try {
+            const existingRole = await this.시스템역할서비스.findBySystemIdAndRoleCode(systemId, roleCode);
+            if (existingRole) {
+                this.logger.log(`기존 시스템 역할 사용: ${roleCode}`);
+                return existingRole;
+            }
+        }
+        catch (error) {
+        }
+        const newRole = await this.시스템역할서비스.createSystemRole({
+            systemId,
+            roleCode,
+            roleName,
+            description,
+            permissions,
+            sortOrder: 0,
+        });
+        this.logger.log(`새 시스템 역할 생성: ${roleCode}`);
+        return newRole;
+    }
+    async 역할_할당_시도(employeeId, systemRoleId) {
+        try {
+            const existing = await this.직원시스템역할서비스.findByEmployeeIdAndSystemRoleId(employeeId, systemRoleId);
+            if (existing) {
+                return;
+            }
+            await this.직원시스템역할서비스.assignRole(employeeId, systemRoleId);
+        }
+        catch (error) {
+            if (error.message?.includes('이미 할당된 역할')) {
+                return;
+            }
+            throw error;
+        }
     }
     async 시스템역할을_생성한다(data) {
         return this.시스템역할서비스.createSystemRole(data);
@@ -9596,9 +9702,9 @@ let SystemManagementContextService = class SystemManagementContextService {
     }
 };
 exports.SystemManagementContextService = SystemManagementContextService;
-exports.SystemManagementContextService = SystemManagementContextService = __decorate([
+exports.SystemManagementContextService = SystemManagementContextService = SystemManagementContextService_1 = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof system_service_1.DomainSystemService !== "undefined" && system_service_1.DomainSystemService) === "function" ? _a : Object, typeof (_b = typeof webhook_service_1.DomainWebhookService !== "undefined" && webhook_service_1.DomainWebhookService) === "function" ? _b : Object, typeof (_c = typeof webhook_event_log_service_1.DomainWebhookEventLogService !== "undefined" && webhook_event_log_service_1.DomainWebhookEventLogService) === "function" ? _c : Object, typeof (_d = typeof system_webhook_service_1.DomainSystemWebhookService !== "undefined" && system_webhook_service_1.DomainSystemWebhookService) === "function" ? _d : Object, typeof (_e = typeof system_role_service_1.DomainSystemRoleService !== "undefined" && system_role_service_1.DomainSystemRoleService) === "function" ? _e : Object, typeof (_f = typeof employee_system_role_service_1.DomainEmployeeSystemRoleService !== "undefined" && employee_system_role_service_1.DomainEmployeeSystemRoleService) === "function" ? _f : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof system_service_1.DomainSystemService !== "undefined" && system_service_1.DomainSystemService) === "function" ? _a : Object, typeof (_b = typeof webhook_service_1.DomainWebhookService !== "undefined" && webhook_service_1.DomainWebhookService) === "function" ? _b : Object, typeof (_c = typeof webhook_event_log_service_1.DomainWebhookEventLogService !== "undefined" && webhook_event_log_service_1.DomainWebhookEventLogService) === "function" ? _c : Object, typeof (_d = typeof system_webhook_service_1.DomainSystemWebhookService !== "undefined" && system_webhook_service_1.DomainSystemWebhookService) === "function" ? _d : Object, typeof (_e = typeof system_role_service_1.DomainSystemRoleService !== "undefined" && system_role_service_1.DomainSystemRoleService) === "function" ? _e : Object, typeof (_f = typeof employee_system_role_service_1.DomainEmployeeSystemRoleService !== "undefined" && employee_system_role_service_1.DomainEmployeeSystemRoleService) === "function" ? _f : Object, typeof (_g = typeof department_service_1.DomainDepartmentService !== "undefined" && department_service_1.DomainDepartmentService) === "function" ? _g : Object, typeof (_h = typeof employee_department_position_service_1.DomainEmployeeDepartmentPositionService !== "undefined" && employee_department_position_service_1.DomainEmployeeDepartmentPositionService) === "function" ? _h : Object])
 ], SystemManagementContextService);
 
 
@@ -11382,14 +11488,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.FcmToken = exports.DeviceType = void 0;
+exports.FcmToken = void 0;
 const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
-var DeviceType;
-(function (DeviceType) {
-    DeviceType["ANDROID"] = "ANDROID";
-    DeviceType["IOS"] = "IOS";
-    DeviceType["PC"] = "PC";
-})(DeviceType || (exports.DeviceType = DeviceType = {}));
 let FcmToken = class FcmToken {
 };
 exports.FcmToken = FcmToken;
@@ -11403,10 +11503,10 @@ __decorate([
 ], FcmToken.prototype, "fcmToken", void 0);
 __decorate([
     (0, typeorm_1.Column)({
-        type: 'enum',
-        enum: DeviceType,
-        comment: '디바이스 타입',
-        default: DeviceType.PC,
+        type: 'varchar',
+        length: 50,
+        comment: '디바이스 타입 (예: android, ios, pc, web)',
+        default: 'pc',
     }),
     __metadata("design:type", String)
 ], FcmToken.prototype, "deviceType", void 0);
@@ -11508,6 +11608,15 @@ let DomainFcmTokenRepository = class DomainFcmTokenRepository extends base_repos
             isActive: false,
         });
     }
+    async findByEmployeeAndDeviceType(employeeId, deviceType) {
+        return this.repository
+            .createQueryBuilder('fcmToken')
+            .innerJoin('employee_fcm_tokens', 'eft', 'eft.fcmTokenId = fcmToken.id')
+            .where('eft.employeeId = :employeeId', { employeeId })
+            .andWhere('fcmToken.deviceType = :deviceType', { deviceType })
+            .andWhere('fcmToken.isActive = :isActive', { isActive: true })
+            .getOne();
+    }
 };
 exports.DomainFcmTokenRepository = DomainFcmTokenRepository;
 exports.DomainFcmTokenRepository = DomainFcmTokenRepository = __decorate([
@@ -11541,7 +11650,6 @@ exports.DomainFcmTokenService = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const fcm_token_repository_1 = __webpack_require__(/*! ./fcm-token.repository */ "./src/modules/domain/fcm-token/fcm-token.repository.ts");
 const base_service_1 = __webpack_require__(/*! ../../../../libs/common/services/base.service */ "./libs/common/services/base.service.ts");
-const fcm_token_entity_1 = __webpack_require__(/*! ./fcm-token.entity */ "./src/modules/domain/fcm-token/fcm-token.entity.ts");
 let DomainFcmTokenService = class DomainFcmTokenService extends base_service_1.BaseService {
     constructor(fcmTokenRepository) {
         super(fcmTokenRepository);
@@ -11552,7 +11660,37 @@ let DomainFcmTokenService = class DomainFcmTokenService extends base_service_1.B
             where: { fcmToken, isActive: true },
         });
     }
-    async createOrFind(fcmToken, deviceType = fcm_token_entity_1.DeviceType.PC, deviceInfo) {
+    async findByEmployeeAndDeviceType(employeeId, deviceType) {
+        return this.fcmTokenRepository.findByEmployeeAndDeviceType(employeeId, deviceType);
+    }
+    async createOrFindByEmployeeAndDevice(employeeId, fcmToken, deviceType = 'pc', deviceInfo) {
+        const existingToken = await this.findByEmployeeAndDeviceType(employeeId, deviceType);
+        if (existingToken) {
+            return this.fcmTokenRepository.update(existingToken.id, {
+                fcmToken,
+                deviceInfo,
+                isActive: true,
+            });
+        }
+        try {
+            return await this.fcmTokenRepository.save({
+                fcmToken,
+                deviceType,
+                deviceInfo,
+                isActive: true,
+            });
+        }
+        catch (error) {
+            if (error.code === '23505') {
+                const token = await this.findByFcmToken(fcmToken);
+                if (token) {
+                    return token;
+                }
+            }
+            throw error;
+        }
+    }
+    async createOrFind(fcmToken, deviceType = 'pc', deviceInfo) {
         const existingToken = await this.findByFcmToken(fcmToken);
         if (existingToken) {
             return this.fcmTokenRepository.update(existingToken.id, {
@@ -11616,25 +11754,29 @@ let DomainFcmTokenService = class DomainFcmTokenService extends base_service_1.B
     async countTokensByDeviceType() {
         const counts = await Promise.all([
             this.fcmTokenRepository.count({
-                where: { deviceType: fcm_token_entity_1.DeviceType.ANDROID, isActive: true },
+                where: { deviceType: 'android', isActive: true },
             }),
             this.fcmTokenRepository.count({
-                where: { deviceType: fcm_token_entity_1.DeviceType.IOS, isActive: true },
+                where: { deviceType: 'ios', isActive: true },
             }),
             this.fcmTokenRepository.count({
-                where: { deviceType: fcm_token_entity_1.DeviceType.PC, isActive: true },
+                where: { deviceType: 'pc', isActive: true },
+            }),
+            this.fcmTokenRepository.count({
+                where: { deviceType: 'web', isActive: true },
             }),
         ]);
         return {
-            [fcm_token_entity_1.DeviceType.ANDROID]: counts[0],
-            [fcm_token_entity_1.DeviceType.IOS]: counts[1],
-            [fcm_token_entity_1.DeviceType.PC]: counts[2],
+            android: counts[0],
+            ios: counts[1],
+            pc: counts[2],
+            web: counts[3],
         };
     }
     async getStatisticsByDeviceType() {
         const counts = await this.countTokensByDeviceType();
         return Object.entries(counts).map(([deviceType, count]) => ({
-            deviceType: deviceType,
+            deviceType,
             count,
         }));
     }

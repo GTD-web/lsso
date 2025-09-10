@@ -33,14 +33,16 @@ export class FcmTokenManagementApplicationController {
     @HttpCode(HttpStatus.OK)
     @ApiOperation({
         summary: 'FCM 토큰 구독',
-        description: '사용자의 FCM 토큰을 등록하거나 업데이트합니다.',
+        description:
+            '사용자의 FCM 토큰을 등록하거나 업데이트합니다. ' +
+            'employeeId와 employeeNumber가 둘 다 제공된 경우 정합성을 체크합니다.',
     })
     @ApiResponse({
         status: 200,
         description: 'FCM 토큰 구독 성공',
         type: FcmSubscribeResponseDto,
     })
-    @ApiResponse({ status: 400, description: '잘못된 요청 형식' })
+    @ApiResponse({ status: 400, description: '잘못된 요청 형식 또는 employeeId와 employeeNumber 정합성 오류' })
     @ApiResponse({ status: 404, description: '직원 정보를 찾을 수 없음' })
     async subscribeFcm(@Body() body: FcmSubscribeRequestDto): Promise<FcmSubscribeResponseDto> {
         return this.fcmTokenManagementApplicationService.FCM토큰을_구독한다(body);
@@ -50,7 +52,9 @@ export class FcmTokenManagementApplicationController {
     @HttpCode(HttpStatus.OK)
     @ApiOperation({
         summary: 'FCM 토큰 조회',
-        description: 'employeeId 또는 employeeNumber로 직원의 모든 FCM 토큰을 조회합니다.',
+        description:
+            'employeeId 또는 employeeNumber로 직원의 모든 FCM 토큰을 조회합니다. ' +
+            '둘 다 제공된 경우 같은 직원을 가리키는지 정합성을 체크합니다.',
     })
     @ApiQuery({
         name: 'employeeId',
@@ -71,7 +75,7 @@ export class FcmTokenManagementApplicationController {
         description: 'FCM 토큰 조회 성공',
         type: FcmTokensResponseDto,
     })
-    @ApiResponse({ status: 400, description: '잘못된 요청 형식' })
+    @ApiResponse({ status: 400, description: '잘못된 요청 형식 또는 employeeId와 employeeNumber 정합성 오류' })
     @ApiResponse({ status: 404, description: '직원 정보를 찾을 수 없음' })
     async getFcmToken(@Query() baseEmployeeIdentifierDto: BaseEmployeeIdentifierDto): Promise<FcmTokensResponseDto> {
         return this.fcmTokenManagementApplicationService.FCM토큰을_조회한다(baseEmployeeIdentifierDto);
@@ -81,14 +85,15 @@ export class FcmTokenManagementApplicationController {
     @HttpCode(HttpStatus.OK)
     @ApiOperation({
         summary: 'FCM 토큰 구독 해지',
-        description: '직원번호로 FCM 토큰 구독을 해지합니다.',
+        description:
+            'employeeId 또는 employeeNumber로 FCM 토큰 구독을 해지합니다. ' + '둘 다 제공된 경우 정합성을 체크합니다.',
     })
     @ApiResponse({
         status: 200,
         description: 'FCM 토큰 구독 해지 성공',
         type: FcmUnsubscribeResponseDto,
     })
-    @ApiResponse({ status: 400, description: '잘못된 요청 형식' })
+    @ApiResponse({ status: 400, description: '잘못된 요청 형식 또는 employeeId와 employeeNumber 정합성 오류' })
     @ApiResponse({ status: 404, description: '직원 정보를 찾을 수 없음' })
     async unsubscribeFcm(@Body() body: FcmUnsubscribeRequestDto): Promise<FcmUnsubscribeResponseDto> {
         return this.fcmTokenManagementApplicationService.FCM토큰_구독을_해지한다(body);
