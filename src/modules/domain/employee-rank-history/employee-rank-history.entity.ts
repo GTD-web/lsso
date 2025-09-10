@@ -8,8 +8,8 @@ import {
     JoinColumn,
     Index,
 } from 'typeorm';
-import { Employee } from './employee.entity';
-import { Rank } from './rank.entity';
+import { Employee } from '../employee/employee.entity';
+import { Rank } from '../rank/rank.entity';
 
 export enum PromotionType {
     INITIAL = 'initial', // 최초 입사시 직급 부여

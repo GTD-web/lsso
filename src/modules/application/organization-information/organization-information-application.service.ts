@@ -12,10 +12,7 @@ import {
     DepartmentHierarchyResponseDto,
     DepartmentWithEmployeesDto,
 } from './dto';
-import { Employee } from '../../../../libs/database/entities/employee.entity';
-import { Department } from '../../../../libs/database/entities/department.entity';
-import { Position } from '../../../../libs/database/entities/position.entity';
-import { Rank } from '../../../../libs/database/entities/rank.entity';
+import { Employee, Department, Position, Rank } from '../../../../libs/database/entities';
 
 @Injectable()
 export class OrganizationInformationApplicationService {

@@ -1,5 +1,5 @@
 import { Like } from 'typeorm';
-import { Employee } from '../../../../../../libs/database/entities/employee.entity';
+import { Employee } from '../../../../../../libs/database/entities';
 import { IRepositoryOptions } from '../../../../../../libs/common/interfaces/repository.interface';
 import { UsersService } from '../services/users.service';
 import { Injectable, NotFoundException } from '@nestjs/common';

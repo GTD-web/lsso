@@ -3,9 +3,7 @@ import { DomainEmployeeService } from '../../domain/employee/employee.service';
 import { DomainTokenService } from '../../domain/token/token.service';
 import { DomainSystemService } from '../../domain/system/system.service';
 import { DomainEmployeeTokenService } from '../../domain/employee-token/employee-token.service';
-import { Employee } from '../../../../libs/database/entities/employee.entity';
-import { Token } from '../../../../libs/database/entities/token.entity';
-import { System } from '../../../../libs/database/entities/system.entity';
+import { Employee, Token, System } from '../../../../libs/database/entities';
 
 @Injectable()
 export class AuthorizationContextService {

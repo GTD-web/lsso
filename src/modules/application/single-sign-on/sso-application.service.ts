@@ -11,8 +11,7 @@ import {
     CheckPasswordRequestDto,
     CheckPasswordResponseDto,
 } from './dto';
-import { Employee } from '../../../../libs/database/entities/employee.entity';
-import { Token } from '../../../../libs/database/entities/token.entity';
+import { Employee, Token } from '../../../../libs/database/entities';
 
 @Injectable()
 export class SsoApplicationService {
@@ -22,14 +21,14 @@ export class SsoApplicationService {
         private readonly organizationContextService: OrganizationContextService,
     ) {}
 
-    async login(authHeader: string, body: LoginRequestDto): Promise<LoginResponseDto> {
-        // 시스템을 인증한다.
-        const result = this.BASIC_헤더_파싱하기(authHeader);
-        if (!result) {
-            throw new UnauthorizedException('유효하지 않은 인증정보입니다.');
-        }
-        const { clientId, clientSecret } = result;
-        const system = await this.authorizationContextService.시스템을_인증한다(clientId, clientSecret);
+    async login(body: LoginRequestDto, authHeader?: string): Promise<LoginResponseDto> {
+        // 시스템을 인증한다. - deprecated
+        // const result = this.BASIC_헤더_파싱하기(authHeader);
+        // if (!result) {
+        //     throw new UnauthorizedException('유효하지 않은 인증정보입니다.');
+        // }
+        // const { clientId, clientSecret } = result;
+        // const system = await this.authorizationContextService.시스템을_인증한다(clientId, clientSecret);
 
         const { grant_type, email, password, refresh_token } = body;
 
@@ -48,6 +47,25 @@ export class SsoApplicationService {
         const { department, position, rank } = await this.organizationContextService.직원의_부서_직책_직급을_조회한다(
             employee,
         );
+
+        // 직원의 모든 시스템 역할 정보를 조회한다.
+        const employeeSystemRoles = await this.systemManagementContextService.직원의_시스템역할목록을_조회한다(
+            employee.id,
+        );
+
+        // 시스템별로 역할을 그룹핑한다.
+        const systemRolesMap: Record<string, string[]> = {};
+        for (const employeeSystemRole of employeeSystemRoles) {
+            if (employeeSystemRole.systemRole && employeeSystemRole.systemRole.system) {
+                const systemCode = employeeSystemRole.systemRole.system.name;
+                const roleCode = employeeSystemRole.systemRole.roleCode;
+
+                if (!systemRolesMap[systemCode]) {
+                    systemRolesMap[systemCode] = [];
+                }
+                systemRolesMap[systemCode].push(roleCode);
+            }
+        }
 
         const token = await this.authorizationContextService.토큰정보를_생성한다(employee);
         return {
@@ -68,7 +86,7 @@ export class SsoApplicationService {
             department: department?.departmentName || '',
             position: position?.positionTitle || '',
             rank: rank?.rankName || '',
-            system: system.name,
+            systemRoles: systemRolesMap,
         };
     }
 

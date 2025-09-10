@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Token } from '../../../../../../libs/database/entities/token.entity';
-import { EmployeeToken } from '../../../../../../libs/database/entities/employee-token.entity';
+import { Token, EmployeeToken } from '../../../../../../libs/database/entities';
 import { DomainTokenService } from '../../../../domain/token/token.service';
 import { DomainEmployeeTokenService } from '../../../../domain/employee-token/employee-token.service';
 import { UsersService } from '../../users/services/users.service';

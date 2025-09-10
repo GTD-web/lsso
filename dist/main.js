@@ -435,6 +435,20 @@ let BaseRepository = class BaseRepository {
             : this.repository;
         await repository.delete(entityId);
     }
+    async count(repositoryOptions) {
+        const repository = repositoryOptions?.queryRunner
+            ? repositoryOptions.queryRunner.manager.getRepository(this.repository.target)
+            : this.repository;
+        return repository.count({
+            where: repositoryOptions?.where,
+            relations: repositoryOptions?.relations,
+            select: repositoryOptions?.select,
+            order: repositoryOptions?.order,
+            skip: repositoryOptions?.skip,
+            take: repositoryOptions?.take,
+            withDeleted: repositoryOptions?.withDeleted,
+        });
+    }
 };
 exports.BaseRepository = BaseRepository;
 exports.BaseRepository = BaseRepository = __decorate([
@@ -662,6 +676,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.typeOrmConfig = void 0;
 const entities_1 = __webpack_require__(/*! ../database/entities */ "./libs/database/entities/index.ts");
 const typeOrmConfig = (configService) => {
+    const isProduction = configService.get('NODE_ENV') === 'production';
+    const isVercel = configService.get('database.port') === 6543;
     return {
         type: 'postgres',
         host: configService.get('database.host'),
@@ -678,415 +694,6 @@ exports.typeOrmConfig = typeOrmConfig;
 
 /***/ }),
 
-/***/ "./libs/database/entities/department.entity.ts":
-/*!*****************************************************!*\
-  !*** ./libs/database/entities/department.entity.ts ***!
-  \*****************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Department = exports.DepartmentType = void 0;
-const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
-var DepartmentType;
-(function (DepartmentType) {
-    DepartmentType["COMPANY"] = "COMPANY";
-    DepartmentType["DIVISION"] = "DIVISION";
-    DepartmentType["DEPARTMENT"] = "DEPARTMENT";
-    DepartmentType["TEAM"] = "TEAM";
-})(DepartmentType || (exports.DepartmentType = DepartmentType = {}));
-let Department = class Department {
-};
-exports.Department = Department;
-__decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
-    __metadata("design:type", String)
-], Department.prototype, "id", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '부서명' }),
-    __metadata("design:type", String)
-], Department.prototype, "departmentName", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ unique: true, comment: '부서 코드' }),
-    __metadata("design:type", String)
-], Department.prototype, "departmentCode", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '유형', type: 'enum', enum: DepartmentType, default: DepartmentType.DEPARTMENT }),
-    __metadata("design:type", String)
-], Department.prototype, "type", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '상위 부서 ID', type: 'uuid', nullable: true }),
-    __metadata("design:type", String)
-], Department.prototype, "parentDepartmentId", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '정렬 순서', default: 0 }),
-    __metadata("design:type", Number)
-], Department.prototype, "order", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)(() => Department, (department) => department.childDepartments, { nullable: true }),
-    (0, typeorm_1.JoinColumn)({ name: 'parentDepartmentId' }),
-    __metadata("design:type", Department)
-], Department.prototype, "parentDepartment", void 0);
-__decorate([
-    (0, typeorm_1.OneToMany)(() => Department, (department) => department.parentDepartment),
-    __metadata("design:type", Array)
-], Department.prototype, "childDepartments", void 0);
-__decorate([
-    (0, typeorm_1.CreateDateColumn)({ comment: '생성일' }),
-    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
-], Department.prototype, "createdAt", void 0);
-__decorate([
-    (0, typeorm_1.UpdateDateColumn)({ comment: '수정일' }),
-    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
-], Department.prototype, "updatedAt", void 0);
-exports.Department = Department = __decorate([
-    (0, typeorm_1.Entity)('departments')
-], Department);
-
-
-/***/ }),
-
-/***/ "./libs/database/entities/employee-department-position.entity.ts":
-/*!***********************************************************************!*\
-  !*** ./libs/database/entities/employee-department-position.entity.ts ***!
-  \***********************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b, _c, _d, _e;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.EmployeeDepartmentPosition = exports.ManagerType = void 0;
-const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
-const employee_entity_1 = __webpack_require__(/*! ./employee.entity */ "./libs/database/entities/employee.entity.ts");
-const department_entity_1 = __webpack_require__(/*! ./department.entity */ "./libs/database/entities/department.entity.ts");
-const position_entity_1 = __webpack_require__(/*! ./position.entity */ "./libs/database/entities/position.entity.ts");
-var ManagerType;
-(function (ManagerType) {
-    ManagerType["DIRECT"] = "direct";
-    ManagerType["FUNCTIONAL"] = "functional";
-    ManagerType["PROJECT"] = "project";
-    ManagerType["TEMPORARY"] = "temporary";
-    ManagerType["DEPUTY"] = "deputy";
-})(ManagerType || (exports.ManagerType = ManagerType = {}));
-let EmployeeDepartmentPosition = class EmployeeDepartmentPosition {
-};
-exports.EmployeeDepartmentPosition = EmployeeDepartmentPosition;
-__decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
-    __metadata("design:type", String)
-], EmployeeDepartmentPosition.prototype, "id", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '직원 ID', type: 'uuid' }),
-    __metadata("design:type", String)
-], EmployeeDepartmentPosition.prototype, "employeeId", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '부서 ID', type: 'uuid' }),
-    __metadata("design:type", String)
-], EmployeeDepartmentPosition.prototype, "departmentId", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '직책 ID', type: 'uuid' }),
-    __metadata("design:type", String)
-], EmployeeDepartmentPosition.prototype, "positionId", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '관리자 권한 여부', type: 'boolean', default: false }),
-    __metadata("design:type", Boolean)
-], EmployeeDepartmentPosition.prototype, "isManager", void 0);
-__decorate([
-    (0, typeorm_1.CreateDateColumn)({ comment: '생성일' }),
-    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
-], EmployeeDepartmentPosition.prototype, "createdAt", void 0);
-__decorate([
-    (0, typeorm_1.UpdateDateColumn)({ comment: '수정일' }),
-    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
-], EmployeeDepartmentPosition.prototype, "updatedAt", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)(() => employee_entity_1.Employee),
-    (0, typeorm_1.JoinColumn)({ name: 'employeeId' }),
-    __metadata("design:type", typeof (_c = typeof employee_entity_1.Employee !== "undefined" && employee_entity_1.Employee) === "function" ? _c : Object)
-], EmployeeDepartmentPosition.prototype, "employee", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)(() => department_entity_1.Department),
-    (0, typeorm_1.JoinColumn)({ name: 'departmentId' }),
-    __metadata("design:type", typeof (_d = typeof department_entity_1.Department !== "undefined" && department_entity_1.Department) === "function" ? _d : Object)
-], EmployeeDepartmentPosition.prototype, "department", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)(() => position_entity_1.Position),
-    (0, typeorm_1.JoinColumn)({ name: 'positionId' }),
-    __metadata("design:type", typeof (_e = typeof position_entity_1.Position !== "undefined" && position_entity_1.Position) === "function" ? _e : Object)
-], EmployeeDepartmentPosition.prototype, "position", void 0);
-exports.EmployeeDepartmentPosition = EmployeeDepartmentPosition = __decorate([
-    (0, typeorm_1.Entity)('employee_department_positions'),
-    (0, typeorm_1.Unique)(['employeeId', 'departmentId']),
-    (0, typeorm_1.Index)(['employeeId']),
-    (0, typeorm_1.Index)(['departmentId']),
-    (0, typeorm_1.Index)(['positionId'])
-], EmployeeDepartmentPosition);
-
-
-/***/ }),
-
-/***/ "./libs/database/entities/employee-rank-history.entity.ts":
-/*!****************************************************************!*\
-  !*** ./libs/database/entities/employee-rank-history.entity.ts ***!
-  \****************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b, _c, _d;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.EmployeeRankHistory = exports.PromotionType = void 0;
-const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
-const employee_entity_1 = __webpack_require__(/*! ./employee.entity */ "./libs/database/entities/employee.entity.ts");
-const rank_entity_1 = __webpack_require__(/*! ./rank.entity */ "./libs/database/entities/rank.entity.ts");
-var PromotionType;
-(function (PromotionType) {
-    PromotionType["INITIAL"] = "initial";
-    PromotionType["PROMOTION"] = "promotion";
-    PromotionType["DEMOTION"] = "demotion";
-    PromotionType["ADJUSTMENT"] = "adjustment";
-})(PromotionType || (exports.PromotionType = PromotionType = {}));
-let EmployeeRankHistory = class EmployeeRankHistory {
-};
-exports.EmployeeRankHistory = EmployeeRankHistory;
-__decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
-    __metadata("design:type", String)
-], EmployeeRankHistory.prototype, "id", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '직원 ID', type: 'uuid' }),
-    __metadata("design:type", String)
-], EmployeeRankHistory.prototype, "employeeId", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '직급 ID', type: 'uuid' }),
-    __metadata("design:type", String)
-], EmployeeRankHistory.prototype, "rankId", void 0);
-__decorate([
-    (0, typeorm_1.CreateDateColumn)({ comment: '생성일' }),
-    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
-], EmployeeRankHistory.prototype, "createdAt", void 0);
-__decorate([
-    (0, typeorm_1.UpdateDateColumn)({ comment: '수정일' }),
-    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
-], EmployeeRankHistory.prototype, "updatedAt", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)(() => employee_entity_1.Employee),
-    (0, typeorm_1.JoinColumn)({ name: 'employeeId' }),
-    __metadata("design:type", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
-], EmployeeRankHistory.prototype, "employee", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)(() => rank_entity_1.Rank),
-    (0, typeorm_1.JoinColumn)({ name: 'rankId' }),
-    __metadata("design:type", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
-], EmployeeRankHistory.prototype, "rank", void 0);
-exports.EmployeeRankHistory = EmployeeRankHistory = __decorate([
-    (0, typeorm_1.Entity)('employee_rank_histories'),
-    (0, typeorm_1.Index)(['employeeId', 'rankId'])
-], EmployeeRankHistory);
-
-
-/***/ }),
-
-/***/ "./libs/database/entities/employee-token.entity.ts":
-/*!*********************************************************!*\
-  !*** ./libs/database/entities/employee-token.entity.ts ***!
-  \*********************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.EmployeeToken = void 0;
-const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
-const employee_entity_1 = __webpack_require__(/*! ./employee.entity */ "./libs/database/entities/employee.entity.ts");
-const token_entity_1 = __webpack_require__(/*! ./token.entity */ "./libs/database/entities/token.entity.ts");
-let EmployeeToken = class EmployeeToken {
-};
-exports.EmployeeToken = EmployeeToken;
-__decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
-    __metadata("design:type", String)
-], EmployeeToken.prototype, "id", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ type: 'uuid', comment: '직원 ID' }),
-    __metadata("design:type", String)
-], EmployeeToken.prototype, "employeeId", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ type: 'uuid', comment: '토큰 ID' }),
-    __metadata("design:type", String)
-], EmployeeToken.prototype, "tokenId", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)(() => employee_entity_1.Employee),
-    (0, typeorm_1.JoinColumn)({ name: 'employeeId' }),
-    __metadata("design:type", typeof (_a = typeof employee_entity_1.Employee !== "undefined" && employee_entity_1.Employee) === "function" ? _a : Object)
-], EmployeeToken.prototype, "employee", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)(() => token_entity_1.Token),
-    (0, typeorm_1.JoinColumn)({ name: 'tokenId' }),
-    __metadata("design:type", typeof (_b = typeof token_entity_1.Token !== "undefined" && token_entity_1.Token) === "function" ? _b : Object)
-], EmployeeToken.prototype, "token", void 0);
-exports.EmployeeToken = EmployeeToken = __decorate([
-    (0, typeorm_1.Entity)('employee_tokens'),
-    (0, typeorm_1.Index)(['employeeId', 'tokenId'], { unique: true }),
-    (0, typeorm_1.Index)(['employeeId']),
-    (0, typeorm_1.Index)(['tokenId'])
-], EmployeeToken);
-
-
-/***/ }),
-
-/***/ "./libs/database/entities/employee.entity.ts":
-/*!***************************************************!*\
-  !*** ./libs/database/entities/employee.entity.ts ***!
-  \***************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b, _c, _d, _e, _f, _g, _h;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Employee = void 0;
-const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
-const enums_1 = __webpack_require__(/*! ../../common/enums */ "./libs/common/enums/index.ts");
-const rank_entity_1 = __webpack_require__(/*! ./rank.entity */ "./libs/database/entities/rank.entity.ts");
-const employee_department_position_entity_1 = __webpack_require__(/*! ./employee-department-position.entity */ "./libs/database/entities/employee-department-position.entity.ts");
-let Employee = class Employee {
-};
-exports.Employee = Employee;
-__decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
-    __metadata("design:type", String)
-], Employee.prototype, "id", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ unique: true, comment: '사번' }),
-    __metadata("design:type", String)
-], Employee.prototype, "employeeNumber", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '이름' }),
-    __metadata("design:type", String)
-], Employee.prototype, "name", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ unique: true, comment: '이메일' }),
-    __metadata("design:type", String)
-], Employee.prototype, "email", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '비밀번호', nullable: true }),
-    __metadata("design:type", String)
-], Employee.prototype, "password", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '전화번호', nullable: true }),
-    __metadata("design:type", String)
-], Employee.prototype, "phoneNumber", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '생년월일', type: 'date', nullable: true }),
-    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
-], Employee.prototype, "dateOfBirth", void 0);
-__decorate([
-    (0, typeorm_1.Column)({
-        comment: '성별',
-        type: 'enum',
-        enum: enums_1.Gender,
-        nullable: true,
-    }),
-    __metadata("design:type", typeof (_b = typeof enums_1.Gender !== "undefined" && enums_1.Gender) === "function" ? _b : Object)
-], Employee.prototype, "gender", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '입사일', type: 'date' }),
-    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
-], Employee.prototype, "hireDate", void 0);
-__decorate([
-    (0, typeorm_1.Column)({
-        comment: '재직 상태',
-        type: 'enum',
-        enum: enums_1.EmployeeStatus,
-        default: enums_1.EmployeeStatus.Active,
-    }),
-    __metadata("design:type", typeof (_d = typeof enums_1.EmployeeStatus !== "undefined" && enums_1.EmployeeStatus) === "function" ? _d : Object)
-], Employee.prototype, "status", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '현재 직급 ID', type: 'uuid', nullable: true }),
-    __metadata("design:type", String)
-], Employee.prototype, "currentRankId", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)(() => rank_entity_1.Rank, { eager: true }),
-    (0, typeorm_1.JoinColumn)({ name: 'currentRankId' }),
-    __metadata("design:type", typeof (_e = typeof rank_entity_1.Rank !== "undefined" && rank_entity_1.Rank) === "function" ? _e : Object)
-], Employee.prototype, "currentRank", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '퇴사일', type: 'date', nullable: true }),
-    __metadata("design:type", typeof (_f = typeof Date !== "undefined" && Date) === "function" ? _f : Object)
-], Employee.prototype, "terminationDate", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '초기 비밀번호 설정 여부', default: false }),
-    __metadata("design:type", Boolean)
-], Employee.prototype, "isInitialPasswordSet", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: 'FCM 토큰', nullable: true }),
-    __metadata("design:type", String)
-], Employee.prototype, "fcmToken", void 0);
-__decorate([
-    (0, typeorm_1.OneToMany)(() => employee_department_position_entity_1.EmployeeDepartmentPosition, (edp) => edp.employee),
-    __metadata("design:type", Array)
-], Employee.prototype, "departmentPositions", void 0);
-__decorate([
-    (0, typeorm_1.CreateDateColumn)({ comment: '생성일' }),
-    __metadata("design:type", typeof (_g = typeof Date !== "undefined" && Date) === "function" ? _g : Object)
-], Employee.prototype, "createdAt", void 0);
-__decorate([
-    (0, typeorm_1.UpdateDateColumn)({ comment: '수정일' }),
-    __metadata("design:type", typeof (_h = typeof Date !== "undefined" && Date) === "function" ? _h : Object)
-], Employee.prototype, "updatedAt", void 0);
-exports.Employee = Employee = __decorate([
-    (0, typeorm_1.Entity)('employees')
-], Employee);
-
-
-/***/ }),
-
 /***/ "./libs/database/entities/index.ts":
 /*!*****************************************!*\
   !*** ./libs/database/entities/index.ts ***!
@@ -1095,35 +702,45 @@ exports.Employee = Employee = __decorate([
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Entities = exports.User = exports.Log = exports.SystemWebhook = exports.EmployeeToken = exports.Token = exports.System = exports.WebhookEventLog = exports.Webhook = exports.EmployeeRankHistory = exports.EmployeeDepartmentPosition = exports.Rank = exports.Position = exports.Department = exports.Employee = void 0;
-const employee_entity_1 = __webpack_require__(/*! ./employee.entity */ "./libs/database/entities/employee.entity.ts");
+exports.Entities = exports.EmployeeSystemRole = exports.SystemRole = exports.DeviceType = exports.EmployeeFcmToken = exports.FcmToken = exports.User = exports.Log = exports.SystemWebhook = exports.EmployeeToken = exports.Token = exports.System = exports.WebhookEventLog = exports.Webhook = exports.EmployeeRankHistory = exports.EmployeeDepartmentPosition = exports.Rank = exports.Position = exports.DepartmentType = exports.Department = exports.Employee = void 0;
+const employee_entity_1 = __webpack_require__(/*! ../../../src/modules/domain/employee/employee.entity */ "./src/modules/domain/employee/employee.entity.ts");
 Object.defineProperty(exports, "Employee", ({ enumerable: true, get: function () { return employee_entity_1.Employee; } }));
-const department_entity_1 = __webpack_require__(/*! ./department.entity */ "./libs/database/entities/department.entity.ts");
+const department_entity_1 = __webpack_require__(/*! ../../../src/modules/domain/department/department.entity */ "./src/modules/domain/department/department.entity.ts");
 Object.defineProperty(exports, "Department", ({ enumerable: true, get: function () { return department_entity_1.Department; } }));
-const position_entity_1 = __webpack_require__(/*! ./position.entity */ "./libs/database/entities/position.entity.ts");
+Object.defineProperty(exports, "DepartmentType", ({ enumerable: true, get: function () { return department_entity_1.DepartmentType; } }));
+const position_entity_1 = __webpack_require__(/*! ../../../src/modules/domain/position/position.entity */ "./src/modules/domain/position/position.entity.ts");
 Object.defineProperty(exports, "Position", ({ enumerable: true, get: function () { return position_entity_1.Position; } }));
-const rank_entity_1 = __webpack_require__(/*! ./rank.entity */ "./libs/database/entities/rank.entity.ts");
+const rank_entity_1 = __webpack_require__(/*! ../../../src/modules/domain/rank/rank.entity */ "./src/modules/domain/rank/rank.entity.ts");
 Object.defineProperty(exports, "Rank", ({ enumerable: true, get: function () { return rank_entity_1.Rank; } }));
-const employee_department_position_entity_1 = __webpack_require__(/*! ./employee-department-position.entity */ "./libs/database/entities/employee-department-position.entity.ts");
+const employee_department_position_entity_1 = __webpack_require__(/*! ../../../src/modules/domain/employee-department-position/employee-department-position.entity */ "./src/modules/domain/employee-department-position/employee-department-position.entity.ts");
 Object.defineProperty(exports, "EmployeeDepartmentPosition", ({ enumerable: true, get: function () { return employee_department_position_entity_1.EmployeeDepartmentPosition; } }));
-const employee_rank_history_entity_1 = __webpack_require__(/*! ./employee-rank-history.entity */ "./libs/database/entities/employee-rank-history.entity.ts");
+const employee_rank_history_entity_1 = __webpack_require__(/*! ../../../src/modules/domain/employee-rank-history/employee-rank-history.entity */ "./src/modules/domain/employee-rank-history/employee-rank-history.entity.ts");
 Object.defineProperty(exports, "EmployeeRankHistory", ({ enumerable: true, get: function () { return employee_rank_history_entity_1.EmployeeRankHistory; } }));
-const webhook_entity_1 = __webpack_require__(/*! ./webhook.entity */ "./libs/database/entities/webhook.entity.ts");
+const webhook_entity_1 = __webpack_require__(/*! ../../../src/modules/domain/webhook/webhook.entity */ "./src/modules/domain/webhook/webhook.entity.ts");
 Object.defineProperty(exports, "Webhook", ({ enumerable: true, get: function () { return webhook_entity_1.Webhook; } }));
-const webhook_event_log_entity_1 = __webpack_require__(/*! ./webhook-event-log.entity */ "./libs/database/entities/webhook-event-log.entity.ts");
+const webhook_event_log_entity_1 = __webpack_require__(/*! ../../../src/modules/domain/webhook-event-log/webhook-event-log.entity */ "./src/modules/domain/webhook-event-log/webhook-event-log.entity.ts");
 Object.defineProperty(exports, "WebhookEventLog", ({ enumerable: true, get: function () { return webhook_event_log_entity_1.WebhookEventLog; } }));
-const system_entity_1 = __webpack_require__(/*! ./system.entity */ "./libs/database/entities/system.entity.ts");
+const system_entity_1 = __webpack_require__(/*! ../../../src/modules/domain/system/system.entity */ "./src/modules/domain/system/system.entity.ts");
 Object.defineProperty(exports, "System", ({ enumerable: true, get: function () { return system_entity_1.System; } }));
-const token_entity_1 = __webpack_require__(/*! ./token.entity */ "./libs/database/entities/token.entity.ts");
+const token_entity_1 = __webpack_require__(/*! ../../../src/modules/domain/token/token.entity */ "./src/modules/domain/token/token.entity.ts");
 Object.defineProperty(exports, "Token", ({ enumerable: true, get: function () { return token_entity_1.Token; } }));
-const employee_token_entity_1 = __webpack_require__(/*! ./employee-token.entity */ "./libs/database/entities/employee-token.entity.ts");
+const employee_token_entity_1 = __webpack_require__(/*! ../../../src/modules/domain/employee-token/employee-token.entity */ "./src/modules/domain/employee-token/employee-token.entity.ts");
 Object.defineProperty(exports, "EmployeeToken", ({ enumerable: true, get: function () { return employee_token_entity_1.EmployeeToken; } }));
-const system_webhook_entity_1 = __webpack_require__(/*! ./system-webhook.entity */ "./libs/database/entities/system-webhook.entity.ts");
+const system_webhook_entity_1 = __webpack_require__(/*! ../../../src/modules/domain/system-webhook/system-webhook.entity */ "./src/modules/domain/system-webhook/system-webhook.entity.ts");
 Object.defineProperty(exports, "SystemWebhook", ({ enumerable: true, get: function () { return system_webhook_entity_1.SystemWebhook; } }));
-const log_entity_1 = __webpack_require__(/*! ./log.entity */ "./libs/database/entities/log.entity.ts");
+const log_entity_1 = __webpack_require__(/*! ../../../src/modules/domain/log/log.entity */ "./src/modules/domain/log/log.entity.ts");
 Object.defineProperty(exports, "Log", ({ enumerable: true, get: function () { return log_entity_1.Log; } }));
-const user_entity_1 = __webpack_require__(/*! ./user.entity */ "./libs/database/entities/user.entity.ts");
+const user_entity_1 = __webpack_require__(/*! ../../../src/modules/domain/user/user.entity */ "./src/modules/domain/user/user.entity.ts");
 Object.defineProperty(exports, "User", ({ enumerable: true, get: function () { return user_entity_1.User; } }));
+const fcm_token_entity_1 = __webpack_require__(/*! ../../../src/modules/domain/fcm-token/fcm-token.entity */ "./src/modules/domain/fcm-token/fcm-token.entity.ts");
+Object.defineProperty(exports, "FcmToken", ({ enumerable: true, get: function () { return fcm_token_entity_1.FcmToken; } }));
+Object.defineProperty(exports, "DeviceType", ({ enumerable: true, get: function () { return fcm_token_entity_1.DeviceType; } }));
+const employee_fcm_token_entity_1 = __webpack_require__(/*! ../../../src/modules/domain/employee-fcm-token/employee-fcm-token.entity */ "./src/modules/domain/employee-fcm-token/employee-fcm-token.entity.ts");
+Object.defineProperty(exports, "EmployeeFcmToken", ({ enumerable: true, get: function () { return employee_fcm_token_entity_1.EmployeeFcmToken; } }));
+const system_role_entity_1 = __webpack_require__(/*! ../../../src/modules/domain/system-role/system-role.entity */ "./src/modules/domain/system-role/system-role.entity.ts");
+Object.defineProperty(exports, "SystemRole", ({ enumerable: true, get: function () { return system_role_entity_1.SystemRole; } }));
+const employee_system_role_entity_1 = __webpack_require__(/*! ../../../src/modules/domain/employee-system-role/employee-system-role.entity */ "./src/modules/domain/employee-system-role/employee-system-role.entity.ts");
+Object.defineProperty(exports, "EmployeeSystemRole", ({ enumerable: true, get: function () { return employee_system_role_entity_1.EmployeeSystemRole; } }));
 exports.Entities = [
     employee_entity_1.Employee,
     department_entity_1.Department,
@@ -1139,810 +756,11 @@ exports.Entities = [
     system_webhook_entity_1.SystemWebhook,
     log_entity_1.Log,
     user_entity_1.User,
+    fcm_token_entity_1.FcmToken,
+    employee_fcm_token_entity_1.EmployeeFcmToken,
+    system_role_entity_1.SystemRole,
+    employee_system_role_entity_1.EmployeeSystemRole,
 ];
-
-
-/***/ }),
-
-/***/ "./libs/database/entities/log.entity.ts":
-/*!**********************************************!*\
-  !*** ./libs/database/entities/log.entity.ts ***!
-  \**********************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Log = void 0;
-const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
-let Log = class Log {
-};
-exports.Log = Log;
-__decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
-    __metadata("design:type", String)
-], Log.prototype, "id", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '호스트 정보' }),
-    __metadata("design:type", String)
-], Log.prototype, "host", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: 'HTTP 메서드' }),
-    __metadata("design:type", String)
-], Log.prototype, "method", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '요청 URL' }),
-    __metadata("design:type", String)
-], Log.prototype, "url", void 0);
-__decorate([
-    (0, typeorm_1.Column)({
-        type: 'jsonb',
-        nullable: true,
-        comment: '요청 파라미터',
-    }),
-    __metadata("design:type", Object)
-], Log.prototype, "params", void 0);
-__decorate([
-    (0, typeorm_1.Column)({
-        type: 'jsonb',
-        nullable: true,
-        comment: '쿼리 파라미터',
-    }),
-    __metadata("design:type", Object)
-], Log.prototype, "query", void 0);
-__decorate([
-    (0, typeorm_1.Column)({
-        type: 'jsonb',
-        nullable: true,
-        comment: '요청 본문',
-    }),
-    __metadata("design:type", Object)
-], Log.prototype, "body", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: 'IP 주소' }),
-    __metadata("design:type", String)
-], Log.prototype, "ip", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '사용자 에이전트' }),
-    __metadata("design:type", String)
-], Log.prototype, "userAgent", void 0);
-__decorate([
-    (0, typeorm_1.Column)({
-        type: 'timestamp with time zone',
-        nullable: true,
-        comment: '요청 시작 시간',
-    }),
-    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
-], Log.prototype, "requestTimestamp", void 0);
-__decorate([
-    (0, typeorm_1.Column)({
-        type: 'timestamp with time zone',
-        nullable: true,
-        comment: '응답 완료 시간',
-    }),
-    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
-], Log.prototype, "responseTimestamp", void 0);
-__decorate([
-    (0, typeorm_1.Column)({
-        nullable: true,
-        comment: '응답 시간 (밀리초)',
-    }),
-    __metadata("design:type", Number)
-], Log.prototype, "responseTime", void 0);
-__decorate([
-    (0, typeorm_1.Column)({
-        nullable: true,
-        comment: 'HTTP 상태 코드',
-    }),
-    __metadata("design:type", Number)
-], Log.prototype, "statusCode", void 0);
-__decorate([
-    (0, typeorm_1.Column)({
-        type: 'jsonb',
-        nullable: true,
-        comment: '응답 데이터',
-    }),
-    __metadata("design:type", Object)
-], Log.prototype, "response", void 0);
-__decorate([
-    (0, typeorm_1.Column)({
-        nullable: true,
-        comment: '시스템 구분자',
-    }),
-    __metadata("design:type", String)
-], Log.prototype, "system", void 0);
-__decorate([
-    (0, typeorm_1.Column)({
-        type: 'jsonb',
-        nullable: true,
-        comment: '에러 정보',
-    }),
-    __metadata("design:type", Object)
-], Log.prototype, "error", void 0);
-__decorate([
-    (0, typeorm_1.Column)({
-        default: false,
-        comment: '에러 발생 여부',
-    }),
-    __metadata("design:type", Boolean)
-], Log.prototype, "isError", void 0);
-exports.Log = Log = __decorate([
-    (0, typeorm_1.Entity)('logs'),
-    (0, typeorm_1.Index)(['requestTimestamp']),
-    (0, typeorm_1.Index)(['isError']),
-    (0, typeorm_1.Index)(['statusCode']),
-    (0, typeorm_1.Index)(['system']),
-    (0, typeorm_1.Index)(['method', 'url'])
-], Log);
-
-
-/***/ }),
-
-/***/ "./libs/database/entities/position.entity.ts":
-/*!***************************************************!*\
-  !*** ./libs/database/entities/position.entity.ts ***!
-  \***************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Position = void 0;
-const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
-let Position = class Position {
-};
-exports.Position = Position;
-__decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
-    __metadata("design:type", String)
-], Position.prototype, "id", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '직책명 (예: 부서장, 파트장, 팀장, 직원)' }),
-    __metadata("design:type", String)
-], Position.prototype, "positionTitle", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ unique: true, comment: '직책 코드 (예: DEPT_HEAD, PART_HEAD, TEAM_LEADER, STAFF)' }),
-    __metadata("design:type", String)
-], Position.prototype, "positionCode", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '직책 레벨 (낮을수록 상위 직책)' }),
-    __metadata("design:type", Number)
-], Position.prototype, "level", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '관리 권한 여부', default: false }),
-    __metadata("design:type", Boolean)
-], Position.prototype, "hasManagementAuthority", void 0);
-exports.Position = Position = __decorate([
-    (0, typeorm_1.Entity)('positions')
-], Position);
-
-
-/***/ }),
-
-/***/ "./libs/database/entities/rank.entity.ts":
-/*!***********************************************!*\
-  !*** ./libs/database/entities/rank.entity.ts ***!
-  \***********************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Rank = void 0;
-const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
-let Rank = class Rank {
-};
-exports.Rank = Rank;
-__decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
-    __metadata("design:type", String)
-], Rank.prototype, "id", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '직급명' }),
-    __metadata("design:type", String)
-], Rank.prototype, "rankName", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ unique: true, comment: '직급 코드' }),
-    __metadata("design:type", String)
-], Rank.prototype, "rankCode", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '직급 레벨 (낮을수록 상위 직급)' }),
-    __metadata("design:type", Number)
-], Rank.prototype, "level", void 0);
-exports.Rank = Rank = __decorate([
-    (0, typeorm_1.Entity)('ranks')
-], Rank);
-
-
-/***/ }),
-
-/***/ "./libs/database/entities/system-webhook.entity.ts":
-/*!*********************************************************!*\
-  !*** ./libs/database/entities/system-webhook.entity.ts ***!
-  \*********************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SystemWebhook = void 0;
-const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
-let SystemWebhook = class SystemWebhook {
-};
-exports.SystemWebhook = SystemWebhook;
-__decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
-    __metadata("design:type", String)
-], SystemWebhook.prototype, "id", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ type: 'uuid', comment: '시스템 ID' }),
-    __metadata("design:type", String)
-], SystemWebhook.prototype, "systemId", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ type: 'uuid', comment: '웹훅 ID' }),
-    __metadata("design:type", String)
-], SystemWebhook.prototype, "webhookId", void 0);
-__decorate([
-    (0, typeorm_1.Column)({
-        nullable: true,
-        comment: '마지막 실행일시',
-    }),
-    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
-], SystemWebhook.prototype, "lastExecutedAt", void 0);
-__decorate([
-    (0, typeorm_1.Column)({
-        default: 0,
-        comment: '총 실행 횟수',
-    }),
-    __metadata("design:type", Number)
-], SystemWebhook.prototype, "executionCount", void 0);
-__decorate([
-    (0, typeorm_1.Column)({
-        default: 0,
-        comment: '성공 횟수',
-    }),
-    __metadata("design:type", Number)
-], SystemWebhook.prototype, "successCount", void 0);
-__decorate([
-    (0, typeorm_1.Column)({
-        default: 0,
-        comment: '실패 횟수',
-    }),
-    __metadata("design:type", Number)
-], SystemWebhook.prototype, "failureCount", void 0);
-__decorate([
-    (0, typeorm_1.CreateDateColumn)({ comment: '생성일시' }),
-    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
-], SystemWebhook.prototype, "createdAt", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)('System', { onDelete: 'CASCADE' }),
-    (0, typeorm_1.JoinColumn)({ name: 'systemId' }),
-    __metadata("design:type", Object)
-], SystemWebhook.prototype, "system", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)('Webhook', { onDelete: 'CASCADE' }),
-    (0, typeorm_1.JoinColumn)({ name: 'webhookId' }),
-    __metadata("design:type", Object)
-], SystemWebhook.prototype, "webhook", void 0);
-exports.SystemWebhook = SystemWebhook = __decorate([
-    (0, typeorm_1.Entity)('system_webhooks'),
-    (0, typeorm_1.Index)(['systemId', 'webhookId'], { unique: true }),
-    (0, typeorm_1.Index)(['systemId']),
-    (0, typeorm_1.Index)(['webhookId'])
-], SystemWebhook);
-
-
-/***/ }),
-
-/***/ "./libs/database/entities/system.entity.ts":
-/*!*************************************************!*\
-  !*** ./libs/database/entities/system.entity.ts ***!
-  \*************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b, _c;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.System = void 0;
-const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
-let System = class System {
-};
-exports.System = System;
-__decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
-    __metadata("design:type", String)
-], System.prototype, "id", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ unique: true, comment: '클라이언트 ID' }),
-    __metadata("design:type", String)
-], System.prototype, "clientId", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '클라이언트 시크릿' }),
-    __metadata("design:type", String)
-], System.prototype, "clientSecret", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ unique: true, comment: '시스템 이름' }),
-    __metadata("design:type", String)
-], System.prototype, "name", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ nullable: true, comment: '시스템 설명' }),
-    __metadata("design:type", String)
-], System.prototype, "description", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '도메인' }),
-    __metadata("design:type", String)
-], System.prototype, "domain", void 0);
-__decorate([
-    (0, typeorm_1.Column)({
-        type: 'jsonb',
-        default: [],
-        comment: '허용된 오리진 목록',
-    }),
-    __metadata("design:type", Array)
-], System.prototype, "allowedOrigin", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ nullable: true, comment: '헬스체크 URL' }),
-    __metadata("design:type", String)
-], System.prototype, "healthCheckUrl", void 0);
-__decorate([
-    (0, typeorm_1.Column)({
-        default: true,
-        comment: '활성화 상태',
-    }),
-    __metadata("design:type", Boolean)
-], System.prototype, "isActive", void 0);
-__decorate([
-    (0, typeorm_1.CreateDateColumn)({ comment: '생성일시' }),
-    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
-], System.prototype, "createdAt", void 0);
-__decorate([
-    (0, typeorm_1.UpdateDateColumn)({ comment: '수정일시' }),
-    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
-], System.prototype, "updatedAt", void 0);
-__decorate([
-    (0, typeorm_1.DeleteDateColumn)({ comment: '삭제일시' }),
-    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
-], System.prototype, "deletedAt", void 0);
-exports.System = System = __decorate([
-    (0, typeorm_1.Entity)('systems')
-], System);
-
-
-/***/ }),
-
-/***/ "./libs/database/entities/token.entity.ts":
-/*!************************************************!*\
-  !*** ./libs/database/entities/token.entity.ts ***!
-  \************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b, _c, _d, _e, _f;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Token = void 0;
-const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
-const user_entity_1 = __webpack_require__(/*! ./user.entity */ "./libs/database/entities/user.entity.ts");
-let Token = class Token {
-};
-exports.Token = Token;
-__decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
-    __metadata("design:type", String)
-], Token.prototype, "id", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '액세스 토큰' }),
-    __metadata("design:type", String)
-], Token.prototype, "accessToken", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '토큰 만료일시' }),
-    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
-], Token.prototype, "tokenExpiresAt", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '리프레시 토큰', nullable: true }),
-    __metadata("design:type", String)
-], Token.prototype, "refreshToken", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '리프레시 토큰 만료일시', nullable: true }),
-    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
-], Token.prototype, "refreshTokenExpiresAt", void 0);
-__decorate([
-    (0, typeorm_1.Column)({
-        nullable: true,
-        comment: '클라이언트 정보 (브라우저, 앱 등)',
-    }),
-    __metadata("design:type", String)
-], Token.prototype, "clientInfo", void 0);
-__decorate([
-    (0, typeorm_1.Column)({
-        nullable: true,
-        comment: 'IP 주소',
-    }),
-    __metadata("design:type", String)
-], Token.prototype, "ipAddress", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
-], Token.prototype, "lastAccess", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ default: true }),
-    __metadata("design:type", Boolean)
-], Token.prototype, "isActive", void 0);
-__decorate([
-    (0, typeorm_1.CreateDateColumn)({ comment: '생성일시' }),
-    __metadata("design:type", typeof (_d = typeof Date !== "undefined" && Date) === "function" ? _d : Object)
-], Token.prototype, "createdAt", void 0);
-__decorate([
-    (0, typeorm_1.UpdateDateColumn)(),
-    __metadata("design:type", typeof (_e = typeof Date !== "undefined" && Date) === "function" ? _e : Object)
-], Token.prototype, "updatedAt", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", String)
-], Token.prototype, "userId", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)(() => user_entity_1.User, (user) => user.tokens, { onDelete: 'CASCADE' }),
-    (0, typeorm_1.JoinColumn)({ name: 'userId' }),
-    __metadata("design:type", typeof (_f = typeof user_entity_1.User !== "undefined" && user_entity_1.User) === "function" ? _f : Object)
-], Token.prototype, "user", void 0);
-exports.Token = Token = __decorate([
-    (0, typeorm_1.Entity)('tokens')
-], Token);
-
-
-/***/ }),
-
-/***/ "./libs/database/entities/user.entity.ts":
-/*!***********************************************!*\
-  !*** ./libs/database/entities/user.entity.ts ***!
-  \***********************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b, _c, _d;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.User = void 0;
-const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
-const token_entity_1 = __webpack_require__(/*! ./token.entity */ "./libs/database/entities/token.entity.ts");
-let User = class User {
-};
-exports.User = User;
-__decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
-    __metadata("design:type", String)
-], User.prototype, "id", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ unique: true, comment: '사번' }),
-    __metadata("design:type", String)
-], User.prototype, "employeeNumber", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '이름' }),
-    __metadata("design:type", String)
-], User.prototype, "name", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ unique: true, comment: '이메일' }),
-    __metadata("design:type", String)
-], User.prototype, "email", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '비밀번호' }),
-    __metadata("design:type", String)
-], User.prototype, "password", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '전화번호', nullable: true }),
-    __metadata("design:type", String)
-], User.prototype, "phoneNumber", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '생년월일', nullable: true }),
-    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
-], User.prototype, "dateOfBirth", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '성별', nullable: true }),
-    __metadata("design:type", String)
-], User.prototype, "gender", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '입사일', nullable: true }),
-    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
-], User.prototype, "hireDate", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '재직 상태', nullable: true }),
-    __metadata("design:type", String)
-], User.prototype, "status", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '부서', nullable: true }),
-    __metadata("design:type", String)
-], User.prototype, "department", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '직위', nullable: true }),
-    __metadata("design:type", String)
-], User.prototype, "position", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '직급', nullable: true }),
-    __metadata("design:type", String)
-], User.prototype, "rank", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '초기 비밀번호 설정 여부', default: false }),
-    __metadata("design:type", Boolean)
-], User.prototype, "isInitialPasswordSet", void 0);
-__decorate([
-    (0, typeorm_1.CreateDateColumn)(),
-    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
-], User.prototype, "createdAt", void 0);
-__decorate([
-    (0, typeorm_1.UpdateDateColumn)(),
-    __metadata("design:type", typeof (_d = typeof Date !== "undefined" && Date) === "function" ? _d : Object)
-], User.prototype, "updatedAt", void 0);
-__decorate([
-    (0, typeorm_1.OneToMany)(() => token_entity_1.Token, (token) => token.user),
-    __metadata("design:type", Array)
-], User.prototype, "tokens", void 0);
-exports.User = User = __decorate([
-    (0, typeorm_1.Entity)('users')
-], User);
-
-
-/***/ }),
-
-/***/ "./libs/database/entities/webhook-event-log.entity.ts":
-/*!************************************************************!*\
-  !*** ./libs/database/entities/webhook-event-log.entity.ts ***!
-  \************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b, _c;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.WebhookEventLog = void 0;
-const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
-let WebhookEventLog = class WebhookEventLog {
-};
-exports.WebhookEventLog = WebhookEventLog;
-__decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
-    __metadata("design:type", String)
-], WebhookEventLog.prototype, "id", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ type: 'uuid', comment: '웹훅 ID' }),
-    __metadata("design:type", String)
-], WebhookEventLog.prototype, "webhookId", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '이벤트 유형' }),
-    __metadata("design:type", String)
-], WebhookEventLog.prototype, "eventType", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ type: 'uuid', comment: '엔티티 ID' }),
-    __metadata("design:type", String)
-], WebhookEventLog.prototype, "entityId", void 0);
-__decorate([
-    (0, typeorm_1.Column)({
-        comment: '페이로드 데이터 (JSON 형식)',
-        type: 'jsonb',
-    }),
-    __metadata("design:type", typeof (_a = typeof Record !== "undefined" && Record) === "function" ? _a : Object)
-], WebhookEventLog.prototype, "payload", void 0);
-__decorate([
-    (0, typeorm_1.Column)({
-        comment: '응답 상태 코드',
-        type: 'int',
-        nullable: true,
-    }),
-    __metadata("design:type", Number)
-], WebhookEventLog.prototype, "responseCode", void 0);
-__decorate([
-    (0, typeorm_1.Column)({
-        comment: '응답 본문',
-        type: 'text',
-        nullable: true,
-    }),
-    __metadata("design:type", String)
-], WebhookEventLog.prototype, "responseBody", void 0);
-__decorate([
-    (0, typeorm_1.Column)({
-        comment: '시도 횟수',
-        type: 'int',
-        default: 1,
-    }),
-    __metadata("design:type", Number)
-], WebhookEventLog.prototype, "attemptCount", void 0);
-__decorate([
-    (0, typeorm_1.Column)({
-        comment: '성공 여부',
-        type: 'boolean',
-        default: false,
-    }),
-    __metadata("design:type", Boolean)
-], WebhookEventLog.prototype, "isSuccess", void 0);
-__decorate([
-    (0, typeorm_1.Column)({
-        comment: '마지막 시도 시간',
-        type: 'timestamp with time zone',
-        default: () => 'CURRENT_TIMESTAMP',
-    }),
-    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
-], WebhookEventLog.prototype, "lastAttemptAt", void 0);
-__decorate([
-    (0, typeorm_1.CreateDateColumn)({ comment: '생성일시' }),
-    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
-], WebhookEventLog.prototype, "createdAt", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)('Webhook', { onDelete: 'CASCADE' }),
-    (0, typeorm_1.JoinColumn)({ name: 'webhookId' }),
-    __metadata("design:type", Object)
-], WebhookEventLog.prototype, "webhook", void 0);
-exports.WebhookEventLog = WebhookEventLog = __decorate([
-    (0, typeorm_1.Entity)('webhook_event_logs'),
-    (0, typeorm_1.Index)(['webhookId']),
-    (0, typeorm_1.Index)(['eventType']),
-    (0, typeorm_1.Index)(['entityId']),
-    (0, typeorm_1.Index)(['isSuccess']),
-    (0, typeorm_1.Index)(['createdAt'])
-], WebhookEventLog);
-
-
-/***/ }),
-
-/***/ "./libs/database/entities/webhook.entity.ts":
-/*!**************************************************!*\
-  !*** ./libs/database/entities/webhook.entity.ts ***!
-  \**************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b, _c;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Webhook = void 0;
-const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
-let Webhook = class Webhook {
-};
-exports.Webhook = Webhook;
-__decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
-    __metadata("design:type", String)
-], Webhook.prototype, "id", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '웹훅 이름' }),
-    __metadata("design:type", String)
-], Webhook.prototype, "webhookName", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '설명', nullable: true }),
-    __metadata("design:type", String)
-], Webhook.prototype, "description", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '대상 URL' }),
-    __metadata("design:type", String)
-], Webhook.prototype, "targetUrl", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '이벤트 유형' }),
-    __metadata("design:type", String)
-], Webhook.prototype, "eventType", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '엔티티 유형' }),
-    __metadata("design:type", String)
-], Webhook.prototype, "entityType", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '시크릿 키', nullable: true }),
-    __metadata("design:type", String)
-], Webhook.prototype, "secretKey", void 0);
-__decorate([
-    (0, typeorm_1.Column)({
-        comment: '헤더 정보 (JSON 형식)',
-        type: 'jsonb',
-        nullable: true,
-    }),
-    __metadata("design:type", typeof (_a = typeof Record !== "undefined" && Record) === "function" ? _a : Object)
-], Webhook.prototype, "headers", void 0);
-__decorate([
-    (0, typeorm_1.Column)({
-        comment: '활성화 상태',
-        type: 'boolean',
-        default: true,
-    }),
-    __metadata("design:type", Boolean)
-], Webhook.prototype, "isActive", void 0);
-__decorate([
-    (0, typeorm_1.Column)({
-        comment: '재시도 횟수',
-        type: 'int',
-        default: 3,
-    }),
-    __metadata("design:type", Number)
-], Webhook.prototype, "retryCount", void 0);
-__decorate([
-    (0, typeorm_1.Column)({
-        comment: '타임아웃 시간(초)',
-        type: 'int',
-        default: 30,
-    }),
-    __metadata("design:type", Number)
-], Webhook.prototype, "timeoutSeconds", void 0);
-__decorate([
-    (0, typeorm_1.CreateDateColumn)({ comment: '생성일시' }),
-    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
-], Webhook.prototype, "createdAt", void 0);
-__decorate([
-    (0, typeorm_1.UpdateDateColumn)({ comment: '수정일시' }),
-    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
-], Webhook.prototype, "updatedAt", void 0);
-exports.Webhook = Webhook = __decorate([
-    (0, typeorm_1.Entity)('webhooks')
-], Webhook);
 
 
 /***/ }),
@@ -2450,34 +1268,32 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
+var _a, _b, _c, _d, _e, _f, _g, _h;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.FcmTokenManagementApplicationController = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
 const fcm_token_management_application_service_1 = __webpack_require__(/*! ../fcm-token-management-application.service */ "./src/modules/application/fcm-token-management/fcm-token-management-application.service.ts");
 const dto_1 = __webpack_require__(/*! ../dto */ "./src/modules/application/fcm-token-management/dto/index.ts");
-const jwt_auth_guard_1 = __webpack_require__(/*! ../../../../../libs/common/guards/jwt-auth.guard */ "./libs/common/guards/jwt-auth.guard.ts");
-const user_decorator_1 = __webpack_require__(/*! ../../../../../libs/common/decorators/user.decorator */ "./libs/common/decorators/user.decorator.ts");
 let FcmTokenManagementApplicationController = class FcmTokenManagementApplicationController {
     constructor(fcmTokenManagementApplicationService) {
         this.fcmTokenManagementApplicationService = fcmTokenManagementApplicationService;
     }
-    async subscribeFcm(user, body) {
-        return this.fcmTokenManagementApplicationService.FCM토큰을_구독한다(user.id, body);
+    async subscribeFcm(body) {
+        return this.fcmTokenManagementApplicationService.FCM토큰을_구독한다(body.employeeNumber, body);
     }
-    async getFcmToken(user) {
-        return this.fcmTokenManagementApplicationService.FCM토큰을_조회한다(user.id);
+    async getFcmToken(body) {
+        return this.fcmTokenManagementApplicationService.FCM토큰을_조회한다(body.employeeNumber);
     }
-    async unsubscribeFcm(user) {
-        return this.fcmTokenManagementApplicationService.FCM토큰_구독을_해지한다(user.id);
+    async unsubscribeFcm(body) {
+        return this.fcmTokenManagementApplicationService.FCM토큰_구독을_해지한다(body.employeeNumber);
     }
-    async getFcmTokens(user, employeeIds) {
-        const employeeIdsArray = employeeIds
+    async getFcmTokens(employeeNumbers) {
+        const employeeNumbersArray = employeeNumbers
             .split(',')
-            .map((id) => id.trim())
-            .filter((id) => id.length > 0);
-        return this.fcmTokenManagementApplicationService.여러_직원의_FCM토큰을_조회한다(employeeIdsArray);
+            .map((num) => num.trim())
+            .filter((num) => num.length > 0);
+        return this.fcmTokenManagementApplicationService.여러_직원의_FCM토큰을_조회한다(employeeNumbersArray);
     }
 };
 exports.FcmTokenManagementApplicationController = FcmTokenManagementApplicationController;
@@ -2494,51 +1310,49 @@ __decorate([
         type: dto_1.FcmSubscribeResponseDto,
     }),
     (0, swagger_1.ApiResponse)({ status: 400, description: '잘못된 요청 형식' }),
-    (0, swagger_1.ApiResponse)({ status: 401, description: '인증이 필요합니다' }),
     (0, swagger_1.ApiResponse)({ status: 404, description: '직원 정보를 찾을 수 없음' }),
-    __param(0, (0, user_decorator_1.User)()),
-    __param(1, (0, common_1.Body)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_b = typeof user_decorator_1.AuthenticatedUser !== "undefined" && user_decorator_1.AuthenticatedUser) === "function" ? _b : Object, typeof (_c = typeof dto_1.FcmSubscribeRequestDto !== "undefined" && dto_1.FcmSubscribeRequestDto) === "function" ? _c : Object]),
-    __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
+    __metadata("design:paramtypes", [typeof (_b = typeof dto_1.FcmSubscribeRequestDto !== "undefined" && dto_1.FcmSubscribeRequestDto) === "function" ? _b : Object]),
+    __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
 ], FcmTokenManagementApplicationController.prototype, "subscribeFcm", null);
 __decorate([
-    (0, common_1.Get)('token'),
+    (0, common_1.Post)('token'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     (0, swagger_1.ApiOperation)({
         summary: 'FCM 토큰 조회',
-        description: '현재 사용자의 FCM 토큰을 조회합니다.',
+        description: '직원번호로 FCM 토큰을 조회합니다.',
     }),
     (0, swagger_1.ApiResponse)({
         status: 200,
         description: 'FCM 토큰 조회 성공',
         type: dto_1.FcmTokenResponseDto,
     }),
-    (0, swagger_1.ApiResponse)({ status: 401, description: '인증이 필요합니다' }),
+    (0, swagger_1.ApiResponse)({ status: 400, description: '잘못된 요청 형식' }),
     (0, swagger_1.ApiResponse)({ status: 404, description: '직원 정보를 찾을 수 없음' }),
-    __param(0, (0, user_decorator_1.User)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_e = typeof user_decorator_1.AuthenticatedUser !== "undefined" && user_decorator_1.AuthenticatedUser) === "function" ? _e : Object]),
-    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
+    __metadata("design:paramtypes", [typeof (_d = typeof dto_1.FcmTokenRequestDto !== "undefined" && dto_1.FcmTokenRequestDto) === "function" ? _d : Object]),
+    __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
 ], FcmTokenManagementApplicationController.prototype, "getFcmToken", null);
 __decorate([
-    (0, common_1.Delete)('unsubscribe'),
+    (0, common_1.Post)('unsubscribe'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     (0, swagger_1.ApiOperation)({
         summary: 'FCM 토큰 구독 해지',
-        description: '사용자의 FCM 토큰 구독을 해지합니다.',
+        description: '직원번호로 FCM 토큰 구독을 해지합니다.',
     }),
     (0, swagger_1.ApiResponse)({
         status: 200,
         description: 'FCM 토큰 구독 해지 성공',
         type: dto_1.FcmUnsubscribeResponseDto,
     }),
-    (0, swagger_1.ApiResponse)({ status: 401, description: '인증이 필요합니다' }),
+    (0, swagger_1.ApiResponse)({ status: 400, description: '잘못된 요청 형식' }),
     (0, swagger_1.ApiResponse)({ status: 404, description: '직원 정보를 찾을 수 없음' }),
-    __param(0, (0, user_decorator_1.User)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_g = typeof user_decorator_1.AuthenticatedUser !== "undefined" && user_decorator_1.AuthenticatedUser) === "function" ? _g : Object]),
-    __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
+    __metadata("design:paramtypes", [typeof (_f = typeof dto_1.FcmUnsubscribeRequestDto !== "undefined" && dto_1.FcmUnsubscribeRequestDto) === "function" ? _f : Object]),
+    __metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
 ], FcmTokenManagementApplicationController.prototype, "unsubscribeFcm", null);
 __decorate([
     (0, common_1.Get)('tokens'),
@@ -2548,29 +1362,26 @@ __decorate([
         description: '알림서버에서 사용할 여러 직원의 FCM 토큰을 조회합니다.',
     }),
     (0, swagger_1.ApiQuery)({
-        name: 'employeeIds',
-        description: '직원 ID 배열 (쉼표로 구분)',
+        name: 'employeeNumbers',
+        description: '직원번호 배열 (쉼표로 구분)',
         required: true,
         type: String,
-        example: 'emp123,emp456,emp789',
+        example: '25001,25002,25003',
     }),
     (0, swagger_1.ApiResponse)({
         status: 200,
         description: 'FCM 토큰 목록 조회 성공',
         type: [dto_1.FcmTokenResponseDto],
     }),
-    (0, swagger_1.ApiResponse)({ status: 401, description: '인증이 필요합니다' }),
+    (0, swagger_1.ApiResponse)({ status: 400, description: '잘못된 요청 형식' }),
     (0, swagger_1.ApiResponse)({ status: 404, description: '직원 정보를 조회할 수 없음' }),
-    __param(0, (0, user_decorator_1.User)()),
-    __param(1, (0, common_1.Query)('employeeIds')),
+    __param(0, (0, common_1.Query)('employeeNumbers')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_j = typeof user_decorator_1.AuthenticatedUser !== "undefined" && user_decorator_1.AuthenticatedUser) === "function" ? _j : Object, String]),
-    __metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
 ], FcmTokenManagementApplicationController.prototype, "getFcmTokens", null);
 exports.FcmTokenManagementApplicationController = FcmTokenManagementApplicationController = __decorate([
     (0, swagger_1.ApiTags)('FCM 토큰 관리 API'),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Controller)('fcm'),
     __metadata("design:paramtypes", [typeof (_a = typeof fcm_token_management_application_service_1.FcmTokenManagementApplicationService !== "undefined" && fcm_token_management_application_service_1.FcmTokenManagementApplicationService) === "function" ? _a : Object])
 ], FcmTokenManagementApplicationController);
@@ -2603,6 +1414,15 @@ class FcmSubscribeRequestDto {
 exports.FcmSubscribeRequestDto = FcmSubscribeRequestDto;
 __decorate([
     (0, swagger_1.ApiProperty)({
+        description: '직원 번호',
+        example: '25001',
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], FcmSubscribeRequestDto.prototype, "employeeNumber", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
         description: 'FCM 토큰',
         example: 'eGb1fxhAPTM6F-XYvVQFNu:APA91bEniVqcKgVLvVeS5Z5FZ5Z5Z5Z5Z5Z5Z5Z5Z5Z',
     }),
@@ -2610,6 +1430,15 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], FcmSubscribeRequestDto.prototype, "fcmToken", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '기기 타입',
+        example: 'pc, mobile',
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], FcmSubscribeRequestDto.prototype, "deviceType", void 0);
 
 
 /***/ }),
@@ -2657,6 +1486,42 @@ __decorate([
     }),
     __metadata("design:type", String)
 ], FcmSubscribeResponseDto.prototype, "fcmToken", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/fcm-token-management/dto/fcm-token-request.dto.ts":
+/*!***********************************************************************************!*\
+  !*** ./src/modules/application/fcm-token-management/dto/fcm-token-request.dto.ts ***!
+  \***********************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.FcmTokenRequestDto = void 0;
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+class FcmTokenRequestDto {
+}
+exports.FcmTokenRequestDto = FcmTokenRequestDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '직원 번호',
+        example: '25001',
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], FcmTokenRequestDto.prototype, "employeeNumber", void 0);
 
 
 /***/ }),
@@ -2712,6 +1577,42 @@ __decorate([
     }),
     __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
 ], FcmTokenResponseDto.prototype, "updatedAt", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/fcm-token-management/dto/fcm-unsubscribe-request.dto.ts":
+/*!*****************************************************************************************!*\
+  !*** ./src/modules/application/fcm-token-management/dto/fcm-unsubscribe-request.dto.ts ***!
+  \*****************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.FcmUnsubscribeRequestDto = void 0;
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+class FcmUnsubscribeRequestDto {
+}
+exports.FcmUnsubscribeRequestDto = FcmUnsubscribeRequestDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '직원 번호',
+        example: '25001',
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], FcmUnsubscribeRequestDto.prototype, "employeeNumber", void 0);
 
 
 /***/ }),
@@ -2780,7 +1681,9 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 __exportStar(__webpack_require__(/*! ./fcm-subscribe-request.dto */ "./src/modules/application/fcm-token-management/dto/fcm-subscribe-request.dto.ts"), exports);
 __exportStar(__webpack_require__(/*! ./fcm-subscribe-response.dto */ "./src/modules/application/fcm-token-management/dto/fcm-subscribe-response.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./fcm-token-request.dto */ "./src/modules/application/fcm-token-management/dto/fcm-token-request.dto.ts"), exports);
 __exportStar(__webpack_require__(/*! ./fcm-token-response.dto */ "./src/modules/application/fcm-token-management/dto/fcm-token-response.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./fcm-unsubscribe-request.dto */ "./src/modules/application/fcm-token-management/dto/fcm-unsubscribe-request.dto.ts"), exports);
 __exportStar(__webpack_require__(/*! ./fcm-unsubscribe-response.dto */ "./src/modules/application/fcm-token-management/dto/fcm-unsubscribe-response.dto.ts"), exports);
 
 
@@ -2802,32 +1705,18 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.FcmTokenManagementApplicationModule = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const passport_1 = __webpack_require__(/*! @nestjs/passport */ "@nestjs/passport");
-const jwt_1 = __webpack_require__(/*! @nestjs/jwt */ "@nestjs/jwt");
-const config_1 = __webpack_require__(/*! @nestjs/config */ "@nestjs/config");
 const fcm_token_management_application_service_1 = __webpack_require__(/*! ./fcm-token-management-application.service */ "./src/modules/application/fcm-token-management/fcm-token-management-application.service.ts");
 const fcm_token_management_application_controller_1 = __webpack_require__(/*! ./controllers/fcm-token-management-application.controller */ "./src/modules/application/fcm-token-management/controllers/fcm-token-management-application.controller.ts");
 const organization_management_context_module_1 = __webpack_require__(/*! ../../context/organization-management/organization-management-context.module */ "./src/modules/context/organization-management/organization-management-context.module.ts");
-const authorization_context_module_1 = __webpack_require__(/*! ../../context/authorization/authorization-context.module */ "./src/modules/context/authorization/authorization-context.module.ts");
-const jwt_strategy_1 = __webpack_require__(/*! ../../../../libs/common/strategies/jwt.strategy */ "./libs/common/strategies/jwt.strategy.ts");
-const jwt_auth_guard_1 = __webpack_require__(/*! ../../../../libs/common/guards/jwt-auth.guard */ "./libs/common/guards/jwt-auth.guard.ts");
-const jwt_config_1 = __webpack_require__(/*! ../../../../libs/configs/jwt.config */ "./libs/configs/jwt.config.ts");
+const fcm_token_management_context_module_1 = __webpack_require__(/*! ../../context/fcm-token-management/fcm-token-management-context.module */ "./src/modules/context/fcm-token-management/fcm-token-management-context.module.ts");
 let FcmTokenManagementApplicationModule = class FcmTokenManagementApplicationModule {
 };
 exports.FcmTokenManagementApplicationModule = FcmTokenManagementApplicationModule;
 exports.FcmTokenManagementApplicationModule = FcmTokenManagementApplicationModule = __decorate([
     (0, common_1.Module)({
-        imports: [
-            organization_management_context_module_1.OrganizationManagementContextModule,
-            authorization_context_module_1.AuthorizationContextModule,
-            passport_1.PassportModule,
-            jwt_1.JwtModule.registerAsync({
-                useFactory: jwt_config_1.jwtConfig,
-                inject: [config_1.ConfigService],
-            }),
-        ],
+        imports: [organization_management_context_module_1.OrganizationManagementContextModule, fcm_token_management_context_module_1.FcmTokenManagementContextModule],
         controllers: [fcm_token_management_application_controller_1.FcmTokenManagementApplicationController],
-        providers: [fcm_token_management_application_service_1.FcmTokenManagementApplicationService, jwt_strategy_1.JwtStrategy, jwt_auth_guard_1.JwtAuthGuard],
+        providers: [fcm_token_management_application_service_1.FcmTokenManagementApplicationService],
         exports: [fcm_token_management_application_service_1.FcmTokenManagementApplicationService],
     })
 ], FcmTokenManagementApplicationModule);
@@ -2851,20 +1740,30 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a;
+var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.FcmTokenManagementApplicationService = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const organization_management_context_service_1 = __webpack_require__(/*! ../../context/organization-management/organization-management-context.service */ "./src/modules/context/organization-management/organization-management-context.service.ts");
+const fcm_token_management_context_service_1 = __webpack_require__(/*! ../../context/fcm-token-management/fcm-token-management-context.service */ "./src/modules/context/fcm-token-management/fcm-token-management-context.service.ts");
+const fcm_token_entity_1 = __webpack_require__(/*! ../../domain/fcm-token/fcm-token.entity */ "./src/modules/domain/fcm-token/fcm-token.entity.ts");
 let FcmTokenManagementApplicationService = class FcmTokenManagementApplicationService {
-    constructor(organizationContextService) {
+    constructor(organizationContextService, fcmTokenManagementContextService) {
         this.organizationContextService = organizationContextService;
+        this.fcmTokenManagementContextService = fcmTokenManagementContextService;
     }
-    async FCM토큰을_구독한다(employeeId, requestDto) {
-        const { fcmToken } = requestDto;
+    async FCM토큰을_구독한다(employeeNumber, requestDto) {
+        const { fcmToken, deviceType } = requestDto;
         try {
-            const employee = await this.organizationContextService.직원_ID값으로_직원정보를_조회한다(employeeId);
-            await this.organizationContextService.직원의_FCM토큰을_업데이트한다(employee.id, fcmToken);
+            const employee = await this.organizationContextService.직원_사번으로_직원정보를_조회한다(employeeNumber);
+            let fcmDeviceType = fcm_token_entity_1.DeviceType.PC;
+            if (deviceType === 'mobile') {
+                fcmDeviceType = fcm_token_entity_1.DeviceType.ANDROID;
+            }
+            else if (deviceType === 'pc') {
+                fcmDeviceType = fcm_token_entity_1.DeviceType.PC;
+            }
+            await this.fcmTokenManagementContextService.FCM토큰을_직원에게_등록한다(employee.id, fcmToken, fcmDeviceType);
             return {
                 success: true,
                 message: 'FCM 토큰이 성공적으로 등록되었습니다.',
@@ -2875,24 +1774,25 @@ let FcmTokenManagementApplicationService = class FcmTokenManagementApplicationSe
             throw new common_1.NotFoundException('직원 정보를 찾을 수 없습니다.');
         }
     }
-    async FCM토큰을_조회한다(employeeId) {
+    async FCM토큰을_조회한다(employeeNumber) {
         try {
-            const employee = await this.organizationContextService.직원_ID값으로_직원정보를_조회한다(employeeId);
+            const employee = await this.organizationContextService.직원_사번으로_직원정보를_조회한다(employeeNumber);
+            const fcmTokens = await this.fcmTokenManagementContextService.직원의_활성_FCM토큰_목록을_조회한다(employee.id);
             return {
                 employeeId: employee.id,
                 employeeNumber: employee.employeeNumber,
-                fcmToken: employee.fcmToken,
-                updatedAt: employee.updatedAt,
+                fcmToken: fcmTokens.length > 0 ? fcmTokens[0].fcmToken : null,
+                updatedAt: new Date(),
             };
         }
         catch (error) {
             throw new common_1.NotFoundException('직원 정보를 찾을 수 없습니다.');
         }
     }
-    async FCM토큰_구독을_해지한다(employeeId) {
+    async FCM토큰_구독을_해지한다(employeeNumber) {
         try {
-            const employee = await this.organizationContextService.직원_ID값으로_직원정보를_조회한다(employeeId);
-            await this.organizationContextService.직원의_FCM토큰을_제거한다(employee.id);
+            const employee = await this.organizationContextService.직원_사번으로_직원정보를_조회한다(employeeNumber);
+            await this.fcmTokenManagementContextService.직원의_모든_FCM토큰을_제거한다(employee.id);
             return {
                 success: true,
                 message: 'FCM 토큰 구독이 성공적으로 해지되었습니다.',
@@ -2902,17 +1802,27 @@ let FcmTokenManagementApplicationService = class FcmTokenManagementApplicationSe
             throw new common_1.NotFoundException('직원 정보를 찾을 수 없습니다.');
         }
     }
-    async 여러_직원의_FCM토큰을_조회한다(employeeIds) {
+    async 여러_직원의_FCM토큰을_조회한다(employeeNumbers) {
         try {
-            const employees = await this.organizationContextService.여러_직원_ID값으로_직원정보를_조회한다(employeeIds, false);
-            return employees
-                .filter((employee) => employee.fcmToken)
-                .map((employee) => ({
-                employeeId: employee.id,
-                employeeNumber: employee.employeeNumber,
-                fcmToken: employee.fcmToken,
-                updatedAt: employee.updatedAt,
-            }));
+            const results = [];
+            for (const employeeNumber of employeeNumbers) {
+                try {
+                    const employee = await this.organizationContextService.직원_사번으로_직원정보를_조회한다(employeeNumber);
+                    const fcmTokens = await this.fcmTokenManagementContextService.직원의_활성_FCM토큰_목록을_조회한다(employee.id);
+                    if (fcmTokens.length > 0) {
+                        results.push({
+                            employeeId: employee.id,
+                            employeeNumber: employee.employeeNumber,
+                            fcmToken: fcmTokens[0].fcmToken,
+                            updatedAt: new Date(),
+                        });
+                    }
+                }
+                catch (error) {
+                    console.warn(`직원번호 ${employeeNumber} 조회 실패:`, error);
+                }
+            }
+            return results;
         }
         catch (error) {
             throw new common_1.NotFoundException('직원 정보를 조회할 수 없습니다.');
@@ -2922,7 +1832,7 @@ let FcmTokenManagementApplicationService = class FcmTokenManagementApplicationSe
 exports.FcmTokenManagementApplicationService = FcmTokenManagementApplicationService;
 exports.FcmTokenManagementApplicationService = FcmTokenManagementApplicationService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof organization_management_context_service_1.OrganizationContextService !== "undefined" && organization_management_context_service_1.OrganizationContextService) === "function" ? _a : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof organization_management_context_service_1.OrganizationContextService !== "undefined" && organization_management_context_service_1.OrganizationContextService) === "function" ? _a : Object, typeof (_b = typeof fcm_token_management_context_service_1.FcmTokenManagementContextService !== "undefined" && fcm_token_management_context_service_1.FcmTokenManagementContextService) === "function" ? _b : Object])
 ], FcmTokenManagementApplicationService);
 
 
@@ -7567,7 +6477,7 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DepartmentHierarchyResponseDto = exports.DepartmentWithEmployeesDto = void 0;
 const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const department_entity_1 = __webpack_require__(/*! libs/database/entities/department.entity */ "./libs/database/entities/department.entity.ts");
+const entities_1 = __webpack_require__(/*! ../../../../../libs/database/entities */ "./libs/database/entities/index.ts");
 const employee_response_dto_1 = __webpack_require__(/*! ./employee-response.dto */ "./src/modules/application/organization-information/dto/employee-response.dto.ts");
 class DepartmentWithEmployeesDto {
 }
@@ -7585,8 +6495,8 @@ __decorate([
     __metadata("design:type", String)
 ], DepartmentWithEmployeesDto.prototype, "departmentCode", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ description: '부서 유형', enum: department_entity_1.DepartmentType }),
-    __metadata("design:type", typeof (_a = typeof department_entity_1.DepartmentType !== "undefined" && department_entity_1.DepartmentType) === "function" ? _a : Object)
+    (0, swagger_1.ApiProperty)({ description: '부서 유형', enum: entities_1.DepartmentType }),
+    __metadata("design:type", typeof (_a = typeof entities_1.DepartmentType !== "undefined" && entities_1.DepartmentType) === "function" ? _a : Object)
 ], DepartmentWithEmployeesDto.prototype, "type", void 0);
 __decorate([
     (0, swagger_1.ApiPropertyOptional)({ description: '상위 부서 ID' }),
@@ -7745,7 +6655,7 @@ var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.EmployeeResponseDto = exports.RankDetailDto = exports.PositionDetailDto = exports.DepartmentDetailDto = void 0;
 const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const department_entity_1 = __webpack_require__(/*! libs/database/entities/department.entity */ "./libs/database/entities/department.entity.ts");
+const entities_1 = __webpack_require__(/*! ../../../../../libs/database/entities */ "./libs/database/entities/index.ts");
 class DepartmentDetailDto {
 }
 exports.DepartmentDetailDto = DepartmentDetailDto;
@@ -7762,8 +6672,8 @@ __decorate([
     __metadata("design:type", String)
 ], DepartmentDetailDto.prototype, "departmentCode", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ description: '부서 유형', enum: department_entity_1.DepartmentType }),
-    __metadata("design:type", typeof (_a = typeof department_entity_1.DepartmentType !== "undefined" && department_entity_1.DepartmentType) === "function" ? _a : Object)
+    (0, swagger_1.ApiProperty)({ description: '부서 유형', enum: entities_1.DepartmentType }),
+    __metadata("design:type", typeof (_a = typeof entities_1.DepartmentType !== "undefined" && entities_1.DepartmentType) === "function" ? _a : Object)
 ], DepartmentDetailDto.prototype, "type", void 0);
 __decorate([
     (0, swagger_1.ApiPropertyOptional)({ description: '상위 부서 ID' }),
@@ -8366,8 +7276,8 @@ let SsoApplicationController = class SsoApplicationController {
     constructor(ssoApplicationService) {
         this.ssoApplicationService = ssoApplicationService;
     }
-    async login(authHeader, body) {
-        const result = await this.ssoApplicationService.login(authHeader, body);
+    async login(body) {
+        const result = await this.ssoApplicationService.login(body);
         return result;
     }
     async verifyToken(authHeader) {
@@ -8382,17 +7292,11 @@ let SsoApplicationController = class SsoApplicationController {
 };
 exports.SsoApplicationController = SsoApplicationController;
 __decorate([
-    (0, swagger_1.ApiBasicAuth)(),
     (0, common_1.Post)('login'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     (0, swagger_1.ApiOperation)({
         summary: '로그인 및 토큰 발급',
         description: '외부 시스템이 Basic Auth로 인증한 후, 사용자 이메일/비밀번호를 검증하고 액세스 토큰을 발급합니다.',
-    }),
-    (0, swagger_1.ApiHeader)({
-        name: 'basic-auth',
-        description: 'Basic Auth 헤더, 형식: Basic base64(clientId:clientSecret)',
-        required: false,
     }),
     (0, swagger_1.ApiBody)({ type: dto_1.LoginRequestDto }),
     (0, swagger_1.ApiResponse)({
@@ -8403,10 +7307,9 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 400, description: '잘못된 요청 형식' }),
     (0, swagger_1.ApiResponse)({ status: 401, description: '시스템 인증 실패 또는 사용자 로그인 실패' }),
     (0, swagger_1.ApiResponse)({ status: 404, description: '사용자 또는 시스템을 찾을 수 없음' }),
-    __param(0, (0, common_1.Headers)('Authorization')),
-    __param(1, (0, common_1.Body)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, typeof (_b = typeof dto_1.LoginRequestDto !== "undefined" && dto_1.LoginRequestDto) === "function" ? _b : Object]),
+    __metadata("design:paramtypes", [typeof (_b = typeof dto_1.LoginRequestDto !== "undefined" && dto_1.LoginRequestDto) === "function" ? _b : Object]),
     __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
 ], SsoApplicationController.prototype, "login", null);
 __decorate([
@@ -8711,7 +7614,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a, _b, _c, _d;
+var _a, _b, _c, _d, _e;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LoginResponseDto = void 0;
 const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
@@ -8787,9 +7690,13 @@ __decorate([
     __metadata("design:type", String)
 ], LoginResponseDto.prototype, "rank", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ description: '시스템명' }),
-    __metadata("design:type", String)
-], LoginResponseDto.prototype, "system", void 0);
+    (0, swagger_1.ApiProperty)({
+        description: '시스템별 역할 목록',
+        type: 'object',
+        example: { rms: ['resourceManager'], lrim: ['interviewee'] },
+    }),
+    __metadata("design:type", typeof (_e = typeof Record !== "undefined" && Record) === "function" ? _e : Object)
+], LoginResponseDto.prototype, "systemRoles", void 0);
 
 
 /***/ }),
@@ -8916,13 +7823,7 @@ let SsoApplicationService = class SsoApplicationService {
         this.systemManagementContextService = systemManagementContextService;
         this.organizationContextService = organizationContextService;
     }
-    async login(authHeader, body) {
-        const result = this.BASIC_헤더_파싱하기(authHeader);
-        if (!result) {
-            throw new common_1.UnauthorizedException('유효하지 않은 인증정보입니다.');
-        }
-        const { clientId, clientSecret } = result;
-        const system = await this.authorizationContextService.시스템을_인증한다(clientId, clientSecret);
+    async login(body, authHeader) {
         const { grant_type, email, password, refresh_token } = body;
         let employee;
         switch (grant_type) {
@@ -8936,6 +7837,18 @@ let SsoApplicationService = class SsoApplicationService {
                 throw new common_1.BadRequestException('지원하지 않는 grant_type입니다.');
         }
         const { department, position, rank } = await this.organizationContextService.직원의_부서_직책_직급을_조회한다(employee);
+        const employeeSystemRoles = await this.systemManagementContextService.직원의_시스템역할목록을_조회한다(employee.id);
+        const systemRolesMap = {};
+        for (const employeeSystemRole of employeeSystemRoles) {
+            if (employeeSystemRole.systemRole && employeeSystemRole.systemRole.system) {
+                const systemCode = employeeSystemRole.systemRole.system.name;
+                const roleCode = employeeSystemRole.systemRole.roleCode;
+                if (!systemRolesMap[systemCode]) {
+                    systemRolesMap[systemCode] = [];
+                }
+                systemRolesMap[systemCode].push(roleCode);
+            }
+        }
         const token = await this.authorizationContextService.토큰정보를_생성한다(employee);
         return {
             tokenType: 'Bearer',
@@ -8955,7 +7868,7 @@ let SsoApplicationService = class SsoApplicationService {
             department: department?.departmentName || '',
             position: position?.positionTitle || '',
             rank: rank?.rankName || '',
-            system: system.name,
+            systemRoles: systemRolesMap,
         };
     }
     async verifyToken(authHeader) {
@@ -9221,6 +8134,157 @@ exports.AuthorizationContextService = AuthorizationContextService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [typeof (_a = typeof employee_service_1.DomainEmployeeService !== "undefined" && employee_service_1.DomainEmployeeService) === "function" ? _a : Object, typeof (_b = typeof token_service_1.DomainTokenService !== "undefined" && token_service_1.DomainTokenService) === "function" ? _b : Object, typeof (_c = typeof system_service_1.DomainSystemService !== "undefined" && system_service_1.DomainSystemService) === "function" ? _c : Object, typeof (_d = typeof employee_token_service_1.DomainEmployeeTokenService !== "undefined" && employee_token_service_1.DomainEmployeeTokenService) === "function" ? _d : Object])
 ], AuthorizationContextService);
+
+
+/***/ }),
+
+/***/ "./src/modules/context/fcm-token-management/fcm-token-management-context.module.ts":
+/*!*****************************************************************************************!*\
+  !*** ./src/modules/context/fcm-token-management/fcm-token-management-context.module.ts ***!
+  \*****************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.FcmTokenManagementContextModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const fcm_token_management_context_service_1 = __webpack_require__(/*! ./fcm-token-management-context.service */ "./src/modules/context/fcm-token-management/fcm-token-management-context.service.ts");
+const employee_module_1 = __webpack_require__(/*! ../../domain/employee/employee.module */ "./src/modules/domain/employee/employee.module.ts");
+const fcm_token_module_1 = __webpack_require__(/*! ../../domain/fcm-token/fcm-token.module */ "./src/modules/domain/fcm-token/fcm-token.module.ts");
+const employee_fcm_token_module_1 = __webpack_require__(/*! ../../domain/employee-fcm-token/employee-fcm-token.module */ "./src/modules/domain/employee-fcm-token/employee-fcm-token.module.ts");
+let FcmTokenManagementContextModule = class FcmTokenManagementContextModule {
+};
+exports.FcmTokenManagementContextModule = FcmTokenManagementContextModule;
+exports.FcmTokenManagementContextModule = FcmTokenManagementContextModule = __decorate([
+    (0, common_1.Module)({
+        imports: [employee_module_1.DomainEmployeeModule, fcm_token_module_1.DomainFcmTokenModule, employee_fcm_token_module_1.DomainEmployeeFcmTokenModule],
+        providers: [fcm_token_management_context_service_1.FcmTokenManagementContextService],
+        exports: [fcm_token_management_context_service_1.FcmTokenManagementContextService],
+    })
+], FcmTokenManagementContextModule);
+
+
+/***/ }),
+
+/***/ "./src/modules/context/fcm-token-management/fcm-token-management-context.service.ts":
+/*!******************************************************************************************!*\
+  !*** ./src/modules/context/fcm-token-management/fcm-token-management-context.service.ts ***!
+  \******************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b, _c;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.FcmTokenManagementContextService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const employee_service_1 = __webpack_require__(/*! ../../domain/employee/employee.service */ "./src/modules/domain/employee/employee.service.ts");
+const fcm_token_service_1 = __webpack_require__(/*! ../../domain/fcm-token/fcm-token.service */ "./src/modules/domain/fcm-token/fcm-token.service.ts");
+const employee_fcm_token_service_1 = __webpack_require__(/*! ../../domain/employee-fcm-token/employee-fcm-token.service */ "./src/modules/domain/employee-fcm-token/employee-fcm-token.service.ts");
+const fcm_token_entity_1 = __webpack_require__(/*! ../../domain/fcm-token/fcm-token.entity */ "./src/modules/domain/fcm-token/fcm-token.entity.ts");
+let FcmTokenManagementContextService = class FcmTokenManagementContextService {
+    constructor(직원서비스, FCM토큰서비스, 직원FCM토큰서비스) {
+        this.직원서비스 = 직원서비스;
+        this.FCM토큰서비스 = FCM토큰서비스;
+        this.직원FCM토큰서비스 = 직원FCM토큰서비스;
+    }
+    async FCM토큰을_직원에게_등록한다(employeeId, fcmToken, deviceType = fcm_token_entity_1.DeviceType.PC, deviceInfo) {
+        const employee = await this.직원서비스.findByEmployeeId(employeeId);
+        if (!employee) {
+            throw new common_1.NotFoundException('존재하지 않는 직원입니다.');
+        }
+        const fcmTokenEntity = await this.FCM토큰서비스.createOrFind(fcmToken, deviceType, deviceInfo);
+        const relation = await this.직원FCM토큰서비스.createOrUpdateRelation(employeeId, fcmTokenEntity.id);
+        return relation;
+    }
+    async FCM토큰을_직원으로부터_해제한다(employeeId, fcmToken) {
+        const fcmTokenEntity = await this.FCM토큰서비스.findByFcmToken(fcmToken);
+        if (!fcmTokenEntity) {
+            throw new common_1.NotFoundException('존재하지 않는 FCM 토큰입니다.');
+        }
+        await this.직원FCM토큰서비스.deleteRelation(employeeId, fcmTokenEntity.id);
+    }
+    async 직원의_활성_FCM토큰_목록을_조회한다(employeeId) {
+        const employee = await this.직원서비스.findByEmployeeId(employeeId);
+        if (!employee) {
+            throw new common_1.NotFoundException('존재하지 않는 직원입니다.');
+        }
+        const relations = await this.직원FCM토큰서비스.findByEmployeeId(employeeId);
+        return relations.map((relation) => relation.fcmToken).filter((token) => token);
+    }
+    async FCM토큰의_활성_상태를_변경한다(fcmToken, isActive) {
+        const fcmTokenEntity = await this.FCM토큰서비스.findByFcmToken(fcmToken);
+        if (!fcmTokenEntity) {
+            throw new common_1.NotFoundException('존재하지 않는 FCM 토큰입니다.');
+        }
+        return this.FCM토큰서비스.update(fcmTokenEntity.id, { isActive });
+    }
+    async FCM토큰을_업데이트한다(fcmToken, deviceType, deviceInfo) {
+        const fcmTokenEntity = await this.FCM토큰서비스.findByFcmToken(fcmToken);
+        if (!fcmTokenEntity) {
+            throw new common_1.NotFoundException('존재하지 않는 FCM 토큰입니다.');
+        }
+        const updateData = {};
+        if (deviceType !== undefined)
+            updateData.deviceType = deviceType;
+        if (deviceInfo !== undefined)
+            updateData.deviceInfo = deviceInfo;
+        return this.FCM토큰서비스.update(fcmTokenEntity.id, updateData);
+    }
+    async 특정_FCM토큰을_사용하는_직원들을_조회한다(fcmToken) {
+        const fcmTokenEntity = await this.FCM토큰서비스.findByFcmToken(fcmToken);
+        if (!fcmTokenEntity) {
+            throw new common_1.NotFoundException('존재하지 않는 FCM 토큰입니다.');
+        }
+        const relations = await this.직원FCM토큰서비스.findByFcmTokenId(fcmTokenEntity.id);
+        return relations.map((relation) => relation.employee).filter((employee) => employee);
+    }
+    async 직원의_모든_FCM토큰을_제거한다(employeeId) {
+        const employee = await this.직원서비스.findByEmployeeId(employeeId);
+        if (!employee) {
+            throw new common_1.NotFoundException('존재하지 않는 직원입니다.');
+        }
+        await this.직원FCM토큰서비스.deleteAllByEmployeeId(employeeId);
+    }
+    async 디바이스_타입별_FCM토큰_통계를_조회한다() {
+        return this.FCM토큰서비스.getStatisticsByDeviceType();
+    }
+    async 오래된_FCM토큰을_정리한다(days = 30) {
+        const cutoffDate = new Date();
+        cutoffDate.setDate(cutoffDate.getDate() - days);
+        return this.직원FCM토큰서비스.deleteOldTokens(cutoffDate);
+    }
+    async FCM토큰_사용_현황을_업데이트한다(fcmToken) {
+        const fcmTokenEntity = await this.FCM토큰서비스.findByFcmToken(fcmToken);
+        if (!fcmTokenEntity) {
+            throw new common_1.NotFoundException('존재하지 않는 FCM 토큰입니다.');
+        }
+        await this.직원FCM토큰서비스.updateTokenUsage(fcmTokenEntity.id);
+    }
+    async 직원의_기본_FCM토큰을_설정한다(employeeId, fcmToken) {
+        await this.직원의_모든_FCM토큰을_제거한다(employeeId);
+        return this.FCM토큰을_직원에게_등록한다(employeeId, fcmToken);
+    }
+};
+exports.FcmTokenManagementContextService = FcmTokenManagementContextService;
+exports.FcmTokenManagementContextService = FcmTokenManagementContextService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof employee_service_1.DomainEmployeeService !== "undefined" && employee_service_1.DomainEmployeeService) === "function" ? _a : Object, typeof (_b = typeof fcm_token_service_1.DomainFcmTokenService !== "undefined" && fcm_token_service_1.DomainFcmTokenService) === "function" ? _b : Object, typeof (_c = typeof employee_fcm_token_service_1.DomainEmployeeFcmTokenService !== "undefined" && employee_fcm_token_service_1.DomainEmployeeFcmTokenService) === "function" ? _c : Object])
+], FcmTokenManagementContextService);
 
 
 /***/ }),
@@ -10048,16 +9112,6 @@ let OrganizationContextService = class OrganizationContextService {
         }
         return resultMap;
     }
-    async 직원의_FCM토큰을_업데이트한다(employeeId, fcmToken) {
-        return this.직원서비스.update(employeeId, {
-            fcmToken: fcmToken,
-        });
-    }
-    async 직원의_FCM토큰을_제거한다(employeeId) {
-        return this.직원서비스.update(employeeId, {
-            fcmToken: null,
-        });
-    }
     async 부서_계층구조를_조회한다(rootDepartmentId, maxDepth, includeEmptyDepartments = true) {
         let rootDepartments;
         if (rootDepartmentId) {
@@ -10233,12 +9287,21 @@ const system_module_1 = __webpack_require__(/*! ../../domain/system/system.modul
 const webhook_module_1 = __webpack_require__(/*! ../../domain/webhook/webhook.module */ "./src/modules/domain/webhook/webhook.module.ts");
 const webhook_event_log_module_1 = __webpack_require__(/*! ../../domain/webhook-event-log/webhook-event-log.module */ "./src/modules/domain/webhook-event-log/webhook-event-log.module.ts");
 const system_webhook_module_1 = __webpack_require__(/*! ../../domain/system-webhook/system-webhook.module */ "./src/modules/domain/system-webhook/system-webhook.module.ts");
+const system_role_module_1 = __webpack_require__(/*! ../../domain/system-role/system-role.module */ "./src/modules/domain/system-role/system-role.module.ts");
+const employee_system_role_module_1 = __webpack_require__(/*! ../../domain/employee-system-role/employee-system-role.module */ "./src/modules/domain/employee-system-role/employee-system-role.module.ts");
 let SystemManagementContextModule = class SystemManagementContextModule {
 };
 exports.SystemManagementContextModule = SystemManagementContextModule;
 exports.SystemManagementContextModule = SystemManagementContextModule = __decorate([
     (0, common_1.Module)({
-        imports: [system_module_1.DomainSystemModule, webhook_module_1.DomainWebhookModule, webhook_event_log_module_1.DomainWebhookEventLogModule, system_webhook_module_1.DomainSystemWebhookModule],
+        imports: [
+            system_module_1.DomainSystemModule,
+            webhook_module_1.DomainWebhookModule,
+            webhook_event_log_module_1.DomainWebhookEventLogModule,
+            system_webhook_module_1.DomainSystemWebhookModule,
+            system_role_module_1.DomainSystemRoleModule,
+            employee_system_role_module_1.DomainEmployeeSystemRoleModule,
+        ],
         providers: [system_management_context_service_1.SystemManagementContextService],
         exports: [system_management_context_service_1.SystemManagementContextService],
     })
@@ -10263,7 +9326,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a, _b, _c, _d;
+var _a, _b, _c, _d, _e, _f;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SystemManagementContextService = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
@@ -10271,19 +9334,149 @@ const system_service_1 = __webpack_require__(/*! ../../domain/system/system.serv
 const webhook_service_1 = __webpack_require__(/*! ../../domain/webhook/webhook.service */ "./src/modules/domain/webhook/webhook.service.ts");
 const webhook_event_log_service_1 = __webpack_require__(/*! ../../domain/webhook-event-log/webhook-event-log.service */ "./src/modules/domain/webhook-event-log/webhook-event-log.service.ts");
 const system_webhook_service_1 = __webpack_require__(/*! ../../domain/system-webhook/system-webhook.service */ "./src/modules/domain/system-webhook/system-webhook.service.ts");
+const system_role_service_1 = __webpack_require__(/*! ../../domain/system-role/system-role.service */ "./src/modules/domain/system-role/system-role.service.ts");
+const employee_system_role_service_1 = __webpack_require__(/*! ../../domain/employee-system-role/employee-system-role.service */ "./src/modules/domain/employee-system-role/employee-system-role.service.ts");
 let SystemManagementContextService = class SystemManagementContextService {
-    constructor(시스템서비스, 웹훅서비스, 웹훅이벤트로그서비스, 시스템웹훅서비스) {
+    constructor(시스템서비스, 웹훅서비스, 웹훅이벤트로그서비스, 시스템웹훅서비스, 시스템역할서비스, 직원시스템역할서비스) {
         this.시스템서비스 = 시스템서비스;
         this.웹훅서비스 = 웹훅서비스;
         this.웹훅이벤트로그서비스 = 웹훅이벤트로그서비스;
         this.시스템웹훅서비스 = 시스템웹훅서비스;
+        this.시스템역할서비스 = 시스템역할서비스;
+        this.직원시스템역할서비스 = 직원시스템역할서비스;
+    }
+    async 시스템역할을_생성한다(data) {
+        return this.시스템역할서비스.createSystemRole(data);
+    }
+    async 시스템의_역할목록을_조회한다(systemId) {
+        return this.시스템역할서비스.findBySystemId(systemId);
+    }
+    async 시스템역할을_ID로_조회한다(systemRoleId) {
+        return this.시스템역할서비스.findById(systemRoleId);
+    }
+    async 시스템역할을_수정한다(systemRoleId, data) {
+        return this.시스템역할서비스.updateSystemRole(systemRoleId, data);
+    }
+    async 시스템역할을_비활성화한다(systemRoleId) {
+        return this.시스템역할서비스.deactivateSystemRole(systemRoleId);
+    }
+    async 직원에게_시스템역할을_할당한다(employeeId, systemRoleId) {
+        return this.직원시스템역할서비스.assignRole(employeeId, systemRoleId);
+    }
+    async 직원의_시스템역할을_해제한다(employeeId, systemRoleId) {
+        return this.직원시스템역할서비스.unassignRole(employeeId, systemRoleId);
+    }
+    async 직원의_모든_시스템역할을_해제한다(employeeId) {
+        return this.직원시스템역할서비스.unassignAllRolesByEmployeeId(employeeId);
+    }
+    async 시스템역할의_모든_할당을_해제한다(systemRoleId) {
+        return this.직원시스템역할서비스.unassignAllRolesBySystemRoleId(systemRoleId);
+    }
+    async 직원의_시스템역할목록을_조회한다(employeeId) {
+        return this.직원시스템역할서비스.findByEmployeeId(employeeId);
+    }
+    async 시스템역할의_직원목록을_조회한다(systemRoleId) {
+        return this.직원시스템역할서비스.findBySystemRoleId(systemRoleId);
+    }
+    async 직원이_시스템역할을_가지고있는지_확인한다(employeeId, systemRoleId) {
+        const assignment = await this.직원시스템역할서비스.findByEmployeeIdAndSystemRoleId(employeeId, systemRoleId);
+        return !!assignment;
+    }
+    async 직원의_시스템역할ID목록을_조회한다(employeeId) {
+        return this.직원시스템역할서비스.getSystemRoleIdsByEmployeeId(employeeId);
+    }
+    async 시스템역할의_직원ID목록을_조회한다(systemRoleId) {
+        return this.직원시스템역할서비스.getEmployeeIdsBySystemRoleId(systemRoleId);
+    }
+    async 직원이_시스템에서_가진_역할목록을_조회한다(employeeId) {
+        const employeeSystemRoles = await this.직원시스템역할서비스.findByEmployeeId(employeeId);
+        const systemRoles = employeeSystemRoles.map((esr) => esr.systemRole).filter(Boolean);
+        return systemRoles;
     }
 };
 exports.SystemManagementContextService = SystemManagementContextService;
 exports.SystemManagementContextService = SystemManagementContextService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof system_service_1.DomainSystemService !== "undefined" && system_service_1.DomainSystemService) === "function" ? _a : Object, typeof (_b = typeof webhook_service_1.DomainWebhookService !== "undefined" && webhook_service_1.DomainWebhookService) === "function" ? _b : Object, typeof (_c = typeof webhook_event_log_service_1.DomainWebhookEventLogService !== "undefined" && webhook_event_log_service_1.DomainWebhookEventLogService) === "function" ? _c : Object, typeof (_d = typeof system_webhook_service_1.DomainSystemWebhookService !== "undefined" && system_webhook_service_1.DomainSystemWebhookService) === "function" ? _d : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof system_service_1.DomainSystemService !== "undefined" && system_service_1.DomainSystemService) === "function" ? _a : Object, typeof (_b = typeof webhook_service_1.DomainWebhookService !== "undefined" && webhook_service_1.DomainWebhookService) === "function" ? _b : Object, typeof (_c = typeof webhook_event_log_service_1.DomainWebhookEventLogService !== "undefined" && webhook_event_log_service_1.DomainWebhookEventLogService) === "function" ? _c : Object, typeof (_d = typeof system_webhook_service_1.DomainSystemWebhookService !== "undefined" && system_webhook_service_1.DomainSystemWebhookService) === "function" ? _d : Object, typeof (_e = typeof system_role_service_1.DomainSystemRoleService !== "undefined" && system_role_service_1.DomainSystemRoleService) === "function" ? _e : Object, typeof (_f = typeof employee_system_role_service_1.DomainEmployeeSystemRoleService !== "undefined" && employee_system_role_service_1.DomainEmployeeSystemRoleService) === "function" ? _f : Object])
 ], SystemManagementContextService);
+
+
+/***/ }),
+
+/***/ "./src/modules/domain/department/department.entity.ts":
+/*!************************************************************!*\
+  !*** ./src/modules/domain/department/department.entity.ts ***!
+  \************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Department = exports.DepartmentType = void 0;
+const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
+var DepartmentType;
+(function (DepartmentType) {
+    DepartmentType["COMPANY"] = "COMPANY";
+    DepartmentType["DIVISION"] = "DIVISION";
+    DepartmentType["DEPARTMENT"] = "DEPARTMENT";
+    DepartmentType["TEAM"] = "TEAM";
+})(DepartmentType || (exports.DepartmentType = DepartmentType = {}));
+let Department = class Department {
+};
+exports.Department = Department;
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
+    __metadata("design:type", String)
+], Department.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '부서명' }),
+    __metadata("design:type", String)
+], Department.prototype, "departmentName", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ unique: true, comment: '부서 코드' }),
+    __metadata("design:type", String)
+], Department.prototype, "departmentCode", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '유형', type: 'enum', enum: DepartmentType, default: DepartmentType.DEPARTMENT }),
+    __metadata("design:type", String)
+], Department.prototype, "type", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '상위 부서 ID', type: 'uuid', nullable: true }),
+    __metadata("design:type", String)
+], Department.prototype, "parentDepartmentId", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '정렬 순서', default: 0 }),
+    __metadata("design:type", Number)
+], Department.prototype, "order", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => Department, (department) => department.childDepartments, { nullable: true }),
+    (0, typeorm_1.JoinColumn)({ name: 'parentDepartmentId' }),
+    __metadata("design:type", Department)
+], Department.prototype, "parentDepartment", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => Department, (department) => department.parentDepartment),
+    __metadata("design:type", Array)
+], Department.prototype, "childDepartments", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)({ comment: '생성일' }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], Department.prototype, "createdAt", void 0);
+__decorate([
+    (0, typeorm_1.UpdateDateColumn)({ comment: '수정일' }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], Department.prototype, "updatedAt", void 0);
+exports.Department = Department = __decorate([
+    (0, typeorm_1.Entity)('departments')
+], Department);
 
 
 /***/ }),
@@ -10307,13 +9500,13 @@ const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
 const department_service_1 = __webpack_require__(/*! ./department.service */ "./src/modules/domain/department/department.service.ts");
 const department_repository_1 = __webpack_require__(/*! ./department.repository */ "./src/modules/domain/department/department.repository.ts");
-const entities_1 = __webpack_require__(/*! ../../../../libs/database/entities */ "./libs/database/entities/index.ts");
+const department_entity_1 = __webpack_require__(/*! ./department.entity */ "./src/modules/domain/department/department.entity.ts");
 let DomainDepartmentModule = class DomainDepartmentModule {
 };
 exports.DomainDepartmentModule = DomainDepartmentModule;
 exports.DomainDepartmentModule = DomainDepartmentModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([entities_1.Department])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([department_entity_1.Department])],
         providers: [department_service_1.DomainDepartmentService, department_repository_1.DomainDepartmentRepository],
         exports: [department_service_1.DomainDepartmentService],
     })
@@ -10464,6 +9657,94 @@ exports.DomainDepartmentService = DomainDepartmentService = DomainDepartmentServ
 
 /***/ }),
 
+/***/ "./src/modules/domain/employee-department-position/employee-department-position.entity.ts":
+/*!************************************************************************************************!*\
+  !*** ./src/modules/domain/employee-department-position/employee-department-position.entity.ts ***!
+  \************************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b, _c, _d, _e;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EmployeeDepartmentPosition = exports.ManagerType = void 0;
+const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
+const employee_entity_1 = __webpack_require__(/*! ../employee/employee.entity */ "./src/modules/domain/employee/employee.entity.ts");
+const department_entity_1 = __webpack_require__(/*! ../department/department.entity */ "./src/modules/domain/department/department.entity.ts");
+const position_entity_1 = __webpack_require__(/*! ../position/position.entity */ "./src/modules/domain/position/position.entity.ts");
+var ManagerType;
+(function (ManagerType) {
+    ManagerType["DIRECT"] = "direct";
+    ManagerType["FUNCTIONAL"] = "functional";
+    ManagerType["PROJECT"] = "project";
+    ManagerType["TEMPORARY"] = "temporary";
+    ManagerType["DEPUTY"] = "deputy";
+})(ManagerType || (exports.ManagerType = ManagerType = {}));
+let EmployeeDepartmentPosition = class EmployeeDepartmentPosition {
+};
+exports.EmployeeDepartmentPosition = EmployeeDepartmentPosition;
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
+    __metadata("design:type", String)
+], EmployeeDepartmentPosition.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '직원 ID', type: 'uuid' }),
+    __metadata("design:type", String)
+], EmployeeDepartmentPosition.prototype, "employeeId", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '부서 ID', type: 'uuid' }),
+    __metadata("design:type", String)
+], EmployeeDepartmentPosition.prototype, "departmentId", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '직책 ID', type: 'uuid' }),
+    __metadata("design:type", String)
+], EmployeeDepartmentPosition.prototype, "positionId", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '관리자 권한 여부', type: 'boolean', default: false }),
+    __metadata("design:type", Boolean)
+], EmployeeDepartmentPosition.prototype, "isManager", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)({ comment: '생성일' }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], EmployeeDepartmentPosition.prototype, "createdAt", void 0);
+__decorate([
+    (0, typeorm_1.UpdateDateColumn)({ comment: '수정일' }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], EmployeeDepartmentPosition.prototype, "updatedAt", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => employee_entity_1.Employee),
+    (0, typeorm_1.JoinColumn)({ name: 'employeeId' }),
+    __metadata("design:type", typeof (_c = typeof employee_entity_1.Employee !== "undefined" && employee_entity_1.Employee) === "function" ? _c : Object)
+], EmployeeDepartmentPosition.prototype, "employee", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => department_entity_1.Department),
+    (0, typeorm_1.JoinColumn)({ name: 'departmentId' }),
+    __metadata("design:type", typeof (_d = typeof department_entity_1.Department !== "undefined" && department_entity_1.Department) === "function" ? _d : Object)
+], EmployeeDepartmentPosition.prototype, "department", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => position_entity_1.Position),
+    (0, typeorm_1.JoinColumn)({ name: 'positionId' }),
+    __metadata("design:type", typeof (_e = typeof position_entity_1.Position !== "undefined" && position_entity_1.Position) === "function" ? _e : Object)
+], EmployeeDepartmentPosition.prototype, "position", void 0);
+exports.EmployeeDepartmentPosition = EmployeeDepartmentPosition = __decorate([
+    (0, typeorm_1.Entity)('employee_department_positions'),
+    (0, typeorm_1.Unique)(['employeeId', 'departmentId']),
+    (0, typeorm_1.Index)(['employeeId']),
+    (0, typeorm_1.Index)(['departmentId']),
+    (0, typeorm_1.Index)(['positionId'])
+], EmployeeDepartmentPosition);
+
+
+/***/ }),
+
 /***/ "./src/modules/domain/employee-department-position/employee-department-position.module.ts":
 /*!************************************************************************************************!*\
   !*** ./src/modules/domain/employee-department-position/employee-department-position.module.ts ***!
@@ -10483,13 +9764,13 @@ const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
 const employee_department_position_service_1 = __webpack_require__(/*! ./employee-department-position.service */ "./src/modules/domain/employee-department-position/employee-department-position.service.ts");
 const employee_department_position_repository_1 = __webpack_require__(/*! ./employee-department-position.repository */ "./src/modules/domain/employee-department-position/employee-department-position.repository.ts");
-const entities_1 = __webpack_require__(/*! ../../../../libs/database/entities */ "./libs/database/entities/index.ts");
+const employee_department_position_entity_1 = __webpack_require__(/*! ./employee-department-position.entity */ "./src/modules/domain/employee-department-position/employee-department-position.entity.ts");
 let DomainEmployeeDepartmentPositionModule = class DomainEmployeeDepartmentPositionModule {
 };
 exports.DomainEmployeeDepartmentPositionModule = DomainEmployeeDepartmentPositionModule;
 exports.DomainEmployeeDepartmentPositionModule = DomainEmployeeDepartmentPositionModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([entities_1.EmployeeDepartmentPosition])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([employee_department_position_entity_1.EmployeeDepartmentPosition])],
         providers: [employee_department_position_service_1.DomainEmployeeDepartmentPositionService, employee_department_position_repository_1.DomainEmployeeDepartmentPositionRepository],
         exports: [employee_department_position_service_1.DomainEmployeeDepartmentPositionService],
     })
@@ -10662,6 +9943,338 @@ exports.DomainEmployeeDepartmentPositionService = DomainEmployeeDepartmentPositi
 
 /***/ }),
 
+/***/ "./src/modules/domain/employee-fcm-token/employee-fcm-token.entity.ts":
+/*!****************************************************************************!*\
+  !*** ./src/modules/domain/employee-fcm-token/employee-fcm-token.entity.ts ***!
+  \****************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b, _c, _d;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EmployeeFcmToken = void 0;
+const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
+const employee_entity_1 = __webpack_require__(/*! ../employee/employee.entity */ "./src/modules/domain/employee/employee.entity.ts");
+const fcm_token_entity_1 = __webpack_require__(/*! ../fcm-token/fcm-token.entity */ "./src/modules/domain/fcm-token/fcm-token.entity.ts");
+let EmployeeFcmToken = class EmployeeFcmToken {
+};
+exports.EmployeeFcmToken = EmployeeFcmToken;
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
+    __metadata("design:type", String)
+], EmployeeFcmToken.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'uuid', comment: '직원 ID' }),
+    __metadata("design:type", String)
+], EmployeeFcmToken.prototype, "employeeId", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'uuid', comment: 'FCM 토큰 ID' }),
+    __metadata("design:type", String)
+], EmployeeFcmToken.prototype, "fcmTokenId", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)({ comment: '연결 생성일' }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], EmployeeFcmToken.prototype, "createdAt", void 0);
+__decorate([
+    (0, typeorm_1.UpdateDateColumn)({ comment: '연결 수정일' }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], EmployeeFcmToken.prototype, "updatedAt", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => employee_entity_1.Employee),
+    (0, typeorm_1.JoinColumn)({ name: 'employeeId' }),
+    __metadata("design:type", typeof (_c = typeof employee_entity_1.Employee !== "undefined" && employee_entity_1.Employee) === "function" ? _c : Object)
+], EmployeeFcmToken.prototype, "employee", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => fcm_token_entity_1.FcmToken),
+    (0, typeorm_1.JoinColumn)({ name: 'fcmTokenId' }),
+    __metadata("design:type", typeof (_d = typeof fcm_token_entity_1.FcmToken !== "undefined" && fcm_token_entity_1.FcmToken) === "function" ? _d : Object)
+], EmployeeFcmToken.prototype, "fcmToken", void 0);
+exports.EmployeeFcmToken = EmployeeFcmToken = __decorate([
+    (0, typeorm_1.Entity)('employee_fcm_tokens'),
+    (0, typeorm_1.Index)(['employeeId', 'fcmTokenId'], { unique: true }),
+    (0, typeorm_1.Index)(['employeeId']),
+    (0, typeorm_1.Index)(['fcmTokenId'])
+], EmployeeFcmToken);
+
+
+/***/ }),
+
+/***/ "./src/modules/domain/employee-fcm-token/employee-fcm-token.module.ts":
+/*!****************************************************************************!*\
+  !*** ./src/modules/domain/employee-fcm-token/employee-fcm-token.module.ts ***!
+  \****************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DomainEmployeeFcmTokenModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
+const employee_fcm_token_service_1 = __webpack_require__(/*! ./employee-fcm-token.service */ "./src/modules/domain/employee-fcm-token/employee-fcm-token.service.ts");
+const employee_fcm_token_repository_1 = __webpack_require__(/*! ./employee-fcm-token.repository */ "./src/modules/domain/employee-fcm-token/employee-fcm-token.repository.ts");
+const employee_fcm_token_entity_1 = __webpack_require__(/*! ./employee-fcm-token.entity */ "./src/modules/domain/employee-fcm-token/employee-fcm-token.entity.ts");
+let DomainEmployeeFcmTokenModule = class DomainEmployeeFcmTokenModule {
+};
+exports.DomainEmployeeFcmTokenModule = DomainEmployeeFcmTokenModule;
+exports.DomainEmployeeFcmTokenModule = DomainEmployeeFcmTokenModule = __decorate([
+    (0, common_1.Module)({
+        imports: [typeorm_1.TypeOrmModule.forFeature([employee_fcm_token_entity_1.EmployeeFcmToken])],
+        providers: [employee_fcm_token_service_1.DomainEmployeeFcmTokenService, employee_fcm_token_repository_1.DomainEmployeeFcmTokenRepository],
+        exports: [employee_fcm_token_service_1.DomainEmployeeFcmTokenService],
+    })
+], DomainEmployeeFcmTokenModule);
+
+
+/***/ }),
+
+/***/ "./src/modules/domain/employee-fcm-token/employee-fcm-token.repository.ts":
+/*!********************************************************************************!*\
+  !*** ./src/modules/domain/employee-fcm-token/employee-fcm-token.repository.ts ***!
+  \********************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DomainEmployeeFcmTokenRepository = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
+const typeorm_2 = __webpack_require__(/*! typeorm */ "typeorm");
+const employee_fcm_token_entity_1 = __webpack_require__(/*! ./employee-fcm-token.entity */ "./src/modules/domain/employee-fcm-token/employee-fcm-token.entity.ts");
+const base_repository_1 = __webpack_require__(/*! ../../../../libs/common/repositories/base.repository */ "./libs/common/repositories/base.repository.ts");
+let DomainEmployeeFcmTokenRepository = class DomainEmployeeFcmTokenRepository extends base_repository_1.BaseRepository {
+    constructor(repository) {
+        super(repository);
+    }
+};
+exports.DomainEmployeeFcmTokenRepository = DomainEmployeeFcmTokenRepository;
+exports.DomainEmployeeFcmTokenRepository = DomainEmployeeFcmTokenRepository = __decorate([
+    (0, common_1.Injectable)(),
+    __param(0, (0, typeorm_1.InjectRepository)(employee_fcm_token_entity_1.EmployeeFcmToken)),
+    __metadata("design:paramtypes", [typeof (_a = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _a : Object])
+], DomainEmployeeFcmTokenRepository);
+
+
+/***/ }),
+
+/***/ "./src/modules/domain/employee-fcm-token/employee-fcm-token.service.ts":
+/*!*****************************************************************************!*\
+  !*** ./src/modules/domain/employee-fcm-token/employee-fcm-token.service.ts ***!
+  \*****************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DomainEmployeeFcmTokenService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const employee_fcm_token_repository_1 = __webpack_require__(/*! ./employee-fcm-token.repository */ "./src/modules/domain/employee-fcm-token/employee-fcm-token.repository.ts");
+const base_service_1 = __webpack_require__(/*! ../../../../libs/common/services/base.service */ "./libs/common/services/base.service.ts");
+let DomainEmployeeFcmTokenService = class DomainEmployeeFcmTokenService extends base_service_1.BaseService {
+    constructor(employeeFcmTokenRepository) {
+        super(employeeFcmTokenRepository);
+        this.employeeFcmTokenRepository = employeeFcmTokenRepository;
+    }
+    async findByEmployeeId(employeeId) {
+        return this.employeeFcmTokenRepository.findAll({
+            where: { employeeId },
+            relations: ['fcmToken'],
+        });
+    }
+    async findByFcmTokenId(fcmTokenId) {
+        return this.employeeFcmTokenRepository.findAll({
+            where: { fcmTokenId },
+            relations: ['employee'],
+        });
+    }
+    async createOrUpdateRelation(employeeId, fcmTokenId) {
+        const existingRelation = await this.employeeFcmTokenRepository.findOne({
+            where: { employeeId, fcmTokenId },
+        });
+        if (existingRelation) {
+            return this.employeeFcmTokenRepository.update(existingRelation.id, {
+                updatedAt: new Date(),
+            });
+        }
+        return this.employeeFcmTokenRepository.save({
+            employeeId,
+            fcmTokenId,
+        });
+    }
+    async deleteRelation(employeeId, fcmTokenId) {
+        const relation = await this.employeeFcmTokenRepository.findOne({
+            where: { employeeId, fcmTokenId },
+        });
+        if (relation) {
+            await this.employeeFcmTokenRepository.delete(relation.id);
+        }
+    }
+    async deleteAllByEmployeeId(employeeId) {
+        const relations = await this.findByEmployeeId(employeeId);
+        for (const relation of relations) {
+            await this.employeeFcmTokenRepository.delete(relation.id);
+        }
+    }
+    async updateUsage(employeeId, fcmTokenId) {
+        const relation = await this.employeeFcmTokenRepository.findOne({
+            where: { employeeId, fcmTokenId },
+        });
+        if (!relation) {
+            throw new common_1.NotFoundException('직원과 FCM 토큰의 관계를 찾을 수 없습니다.');
+        }
+        return this.employeeFcmTokenRepository.update(relation.id, {
+            updatedAt: new Date(),
+        });
+    }
+    async countEmployeesByFcmToken(fcmTokenId) {
+        return this.employeeFcmTokenRepository.count({
+            where: { fcmTokenId },
+        });
+    }
+    async countFcmTokensByEmployee(employeeId) {
+        return this.employeeFcmTokenRepository.count({
+            where: { employeeId },
+        });
+    }
+    async deleteOldTokens(cutoffDate) {
+        const relations = await this.employeeFcmTokenRepository.findAll({
+            where: {},
+        });
+        let count = 0;
+        for (const relation of relations) {
+            if (relation.updatedAt && relation.updatedAt < cutoffDate) {
+                await this.employeeFcmTokenRepository.delete(relation.id);
+                count++;
+            }
+        }
+        return count;
+    }
+    async updateTokenUsage(fcmTokenId) {
+        const relations = await this.employeeFcmTokenRepository.findAll({
+            where: { fcmTokenId },
+        });
+        for (const relation of relations) {
+            await this.employeeFcmTokenRepository.update(relation.id, {
+                updatedAt: new Date(),
+            });
+        }
+    }
+};
+exports.DomainEmployeeFcmTokenService = DomainEmployeeFcmTokenService;
+exports.DomainEmployeeFcmTokenService = DomainEmployeeFcmTokenService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof employee_fcm_token_repository_1.DomainEmployeeFcmTokenRepository !== "undefined" && employee_fcm_token_repository_1.DomainEmployeeFcmTokenRepository) === "function" ? _a : Object])
+], DomainEmployeeFcmTokenService);
+
+
+/***/ }),
+
+/***/ "./src/modules/domain/employee-rank-history/employee-rank-history.entity.ts":
+/*!**********************************************************************************!*\
+  !*** ./src/modules/domain/employee-rank-history/employee-rank-history.entity.ts ***!
+  \**********************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b, _c, _d;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EmployeeRankHistory = exports.PromotionType = void 0;
+const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
+const employee_entity_1 = __webpack_require__(/*! ../employee/employee.entity */ "./src/modules/domain/employee/employee.entity.ts");
+const rank_entity_1 = __webpack_require__(/*! ../rank/rank.entity */ "./src/modules/domain/rank/rank.entity.ts");
+var PromotionType;
+(function (PromotionType) {
+    PromotionType["INITIAL"] = "initial";
+    PromotionType["PROMOTION"] = "promotion";
+    PromotionType["DEMOTION"] = "demotion";
+    PromotionType["ADJUSTMENT"] = "adjustment";
+})(PromotionType || (exports.PromotionType = PromotionType = {}));
+let EmployeeRankHistory = class EmployeeRankHistory {
+};
+exports.EmployeeRankHistory = EmployeeRankHistory;
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
+    __metadata("design:type", String)
+], EmployeeRankHistory.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '직원 ID', type: 'uuid' }),
+    __metadata("design:type", String)
+], EmployeeRankHistory.prototype, "employeeId", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '직급 ID', type: 'uuid' }),
+    __metadata("design:type", String)
+], EmployeeRankHistory.prototype, "rankId", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)({ comment: '생성일' }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], EmployeeRankHistory.prototype, "createdAt", void 0);
+__decorate([
+    (0, typeorm_1.UpdateDateColumn)({ comment: '수정일' }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], EmployeeRankHistory.prototype, "updatedAt", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => employee_entity_1.Employee),
+    (0, typeorm_1.JoinColumn)({ name: 'employeeId' }),
+    __metadata("design:type", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
+], EmployeeRankHistory.prototype, "employee", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => rank_entity_1.Rank),
+    (0, typeorm_1.JoinColumn)({ name: 'rankId' }),
+    __metadata("design:type", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
+], EmployeeRankHistory.prototype, "rank", void 0);
+exports.EmployeeRankHistory = EmployeeRankHistory = __decorate([
+    (0, typeorm_1.Entity)('employee_rank_histories'),
+    (0, typeorm_1.Index)(['employeeId', 'rankId'])
+], EmployeeRankHistory);
+
+
+/***/ }),
+
 /***/ "./src/modules/domain/employee-rank-history/employee-rank-history.module.ts":
 /*!**********************************************************************************!*\
   !*** ./src/modules/domain/employee-rank-history/employee-rank-history.module.ts ***!
@@ -10681,13 +10294,13 @@ const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
 const employee_rank_history_service_1 = __webpack_require__(/*! ./employee-rank-history.service */ "./src/modules/domain/employee-rank-history/employee-rank-history.service.ts");
 const employee_rank_history_repository_1 = __webpack_require__(/*! ./employee-rank-history.repository */ "./src/modules/domain/employee-rank-history/employee-rank-history.repository.ts");
-const entities_1 = __webpack_require__(/*! ../../../../libs/database/entities */ "./libs/database/entities/index.ts");
+const employee_rank_history_entity_1 = __webpack_require__(/*! ./employee-rank-history.entity */ "./src/modules/domain/employee-rank-history/employee-rank-history.entity.ts");
 let DomainEmployeeRankHistoryModule = class DomainEmployeeRankHistoryModule {
 };
 exports.DomainEmployeeRankHistoryModule = DomainEmployeeRankHistoryModule;
 exports.DomainEmployeeRankHistoryModule = DomainEmployeeRankHistoryModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([entities_1.EmployeeRankHistory])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([employee_rank_history_entity_1.EmployeeRankHistory])],
         providers: [employee_rank_history_service_1.DomainEmployeeRankHistoryService, employee_rank_history_repository_1.DomainEmployeeRankHistoryRepository],
         exports: [employee_rank_history_service_1.DomainEmployeeRankHistoryService],
     })
@@ -10825,6 +10438,307 @@ exports.DomainEmployeeRankHistoryService = DomainEmployeeRankHistoryService = __
 
 /***/ }),
 
+/***/ "./src/modules/domain/employee-system-role/employee-system-role.entity.ts":
+/*!********************************************************************************!*\
+  !*** ./src/modules/domain/employee-system-role/employee-system-role.entity.ts ***!
+  \********************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b, _c, _d;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EmployeeSystemRole = void 0;
+const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
+const employee_entity_1 = __webpack_require__(/*! ../employee/employee.entity */ "./src/modules/domain/employee/employee.entity.ts");
+const system_role_entity_1 = __webpack_require__(/*! ../system-role/system-role.entity */ "./src/modules/domain/system-role/system-role.entity.ts");
+let EmployeeSystemRole = class EmployeeSystemRole {
+};
+exports.EmployeeSystemRole = EmployeeSystemRole;
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
+    __metadata("design:type", String)
+], EmployeeSystemRole.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'uuid', comment: '직원 ID' }),
+    __metadata("design:type", String)
+], EmployeeSystemRole.prototype, "employeeId", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => employee_entity_1.Employee, { onDelete: 'CASCADE' }),
+    (0, typeorm_1.JoinColumn)({ name: 'employeeId' }),
+    __metadata("design:type", typeof (_a = typeof employee_entity_1.Employee !== "undefined" && employee_entity_1.Employee) === "function" ? _a : Object)
+], EmployeeSystemRole.prototype, "employee", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'uuid', comment: '시스템 역할 ID' }),
+    __metadata("design:type", String)
+], EmployeeSystemRole.prototype, "systemRoleId", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => system_role_entity_1.SystemRole, { onDelete: 'CASCADE' }),
+    (0, typeorm_1.JoinColumn)({ name: 'systemRoleId' }),
+    __metadata("design:type", typeof (_b = typeof system_role_entity_1.SystemRole !== "undefined" && system_role_entity_1.SystemRole) === "function" ? _b : Object)
+], EmployeeSystemRole.prototype, "systemRole", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)({ comment: '생성일' }),
+    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
+], EmployeeSystemRole.prototype, "createdAt", void 0);
+__decorate([
+    (0, typeorm_1.UpdateDateColumn)({ comment: '수정일' }),
+    __metadata("design:type", typeof (_d = typeof Date !== "undefined" && Date) === "function" ? _d : Object)
+], EmployeeSystemRole.prototype, "updatedAt", void 0);
+exports.EmployeeSystemRole = EmployeeSystemRole = __decorate([
+    (0, typeorm_1.Entity)('employee_system_roles'),
+    (0, typeorm_1.Index)(['employeeId', 'systemRoleId'], { unique: true }),
+    (0, typeorm_1.Index)(['employeeId']),
+    (0, typeorm_1.Index)(['systemRoleId']),
+    (0, typeorm_1.Index)(['createdAt'])
+], EmployeeSystemRole);
+
+
+/***/ }),
+
+/***/ "./src/modules/domain/employee-system-role/employee-system-role.module.ts":
+/*!********************************************************************************!*\
+  !*** ./src/modules/domain/employee-system-role/employee-system-role.module.ts ***!
+  \********************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DomainEmployeeSystemRoleModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
+const employee_system_role_entity_1 = __webpack_require__(/*! ./employee-system-role.entity */ "./src/modules/domain/employee-system-role/employee-system-role.entity.ts");
+const employee_system_role_repository_1 = __webpack_require__(/*! ./employee-system-role.repository */ "./src/modules/domain/employee-system-role/employee-system-role.repository.ts");
+const employee_system_role_service_1 = __webpack_require__(/*! ./employee-system-role.service */ "./src/modules/domain/employee-system-role/employee-system-role.service.ts");
+let DomainEmployeeSystemRoleModule = class DomainEmployeeSystemRoleModule {
+};
+exports.DomainEmployeeSystemRoleModule = DomainEmployeeSystemRoleModule;
+exports.DomainEmployeeSystemRoleModule = DomainEmployeeSystemRoleModule = __decorate([
+    (0, common_1.Module)({
+        imports: [typeorm_1.TypeOrmModule.forFeature([employee_system_role_entity_1.EmployeeSystemRole])],
+        providers: [employee_system_role_repository_1.DomainEmployeeSystemRoleRepository, employee_system_role_service_1.DomainEmployeeSystemRoleService],
+        exports: [employee_system_role_service_1.DomainEmployeeSystemRoleService],
+    })
+], DomainEmployeeSystemRoleModule);
+
+
+/***/ }),
+
+/***/ "./src/modules/domain/employee-system-role/employee-system-role.repository.ts":
+/*!************************************************************************************!*\
+  !*** ./src/modules/domain/employee-system-role/employee-system-role.repository.ts ***!
+  \************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DomainEmployeeSystemRoleRepository = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
+const typeorm_2 = __webpack_require__(/*! typeorm */ "typeorm");
+const employee_system_role_entity_1 = __webpack_require__(/*! ./employee-system-role.entity */ "./src/modules/domain/employee-system-role/employee-system-role.entity.ts");
+const base_repository_1 = __webpack_require__(/*! ../../../../libs/common/repositories/base.repository */ "./libs/common/repositories/base.repository.ts");
+let DomainEmployeeSystemRoleRepository = class DomainEmployeeSystemRoleRepository extends base_repository_1.BaseRepository {
+    constructor(repository) {
+        super(repository);
+    }
+};
+exports.DomainEmployeeSystemRoleRepository = DomainEmployeeSystemRoleRepository;
+exports.DomainEmployeeSystemRoleRepository = DomainEmployeeSystemRoleRepository = __decorate([
+    (0, common_1.Injectable)(),
+    __param(0, (0, typeorm_1.InjectRepository)(employee_system_role_entity_1.EmployeeSystemRole)),
+    __metadata("design:paramtypes", [typeof (_a = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _a : Object])
+], DomainEmployeeSystemRoleRepository);
+
+
+/***/ }),
+
+/***/ "./src/modules/domain/employee-system-role/employee-system-role.service.ts":
+/*!*********************************************************************************!*\
+  !*** ./src/modules/domain/employee-system-role/employee-system-role.service.ts ***!
+  \*********************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DomainEmployeeSystemRoleService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const employee_system_role_repository_1 = __webpack_require__(/*! ./employee-system-role.repository */ "./src/modules/domain/employee-system-role/employee-system-role.repository.ts");
+const base_service_1 = __webpack_require__(/*! ../../../../libs/common/services/base.service */ "./libs/common/services/base.service.ts");
+let DomainEmployeeSystemRoleService = class DomainEmployeeSystemRoleService extends base_service_1.BaseService {
+    constructor(employeeSystemRoleRepository) {
+        super(employeeSystemRoleRepository);
+        this.employeeSystemRoleRepository = employeeSystemRoleRepository;
+    }
+    async findByEmployeeId(employeeId) {
+        return this.employeeSystemRoleRepository.findAll({
+            where: { employeeId },
+            relations: ['systemRole', 'systemRole.system'],
+        });
+    }
+    async findBySystemRoleId(systemRoleId) {
+        return this.employeeSystemRoleRepository.findAll({
+            where: { systemRoleId },
+            relations: ['employee'],
+        });
+    }
+    async findByEmployeeIdAndSystemRoleId(employeeId, systemRoleId) {
+        return this.employeeSystemRoleRepository.findOne({
+            where: { employeeId, systemRoleId },
+            relations: ['systemRole'],
+        });
+    }
+    async assignRole(employeeId, systemRoleId) {
+        const existing = await this.findByEmployeeIdAndSystemRoleId(employeeId, systemRoleId);
+        if (existing) {
+            throw new common_1.BadRequestException('이미 할당된 역할입니다.');
+        }
+        return this.employeeSystemRoleRepository.save({
+            employeeId,
+            systemRoleId,
+        });
+    }
+    async unassignRole(employeeId, systemRoleId) {
+        const employeeSystemRole = await this.findByEmployeeIdAndSystemRoleId(employeeId, systemRoleId);
+        if (!employeeSystemRole) {
+            throw new common_1.NotFoundException('할당된 역할을 찾을 수 없습니다.');
+        }
+        await this.employeeSystemRoleRepository.delete(employeeSystemRole.id);
+    }
+    async unassignAllRolesByEmployeeId(employeeId) {
+        const roles = await this.findByEmployeeId(employeeId);
+        if (roles.length > 0) {
+            for (const role of roles) {
+                await this.employeeSystemRoleRepository.delete(role.id);
+            }
+        }
+    }
+    async unassignAllRolesBySystemRoleId(systemRoleId) {
+        const assignments = await this.findBySystemRoleId(systemRoleId);
+        if (assignments.length > 0) {
+            for (const assignment of assignments) {
+                await this.employeeSystemRoleRepository.delete(assignment.id);
+            }
+        }
+    }
+    async getEmployeeIdsBySystemRoleId(systemRoleId) {
+        const assignments = await this.employeeSystemRoleRepository.findAll({
+            where: { systemRoleId },
+            select: { employeeId: true },
+        });
+        return assignments.map((assignment) => assignment.employeeId);
+    }
+    async getSystemRoleIdsByEmployeeId(employeeId) {
+        const assignments = await this.employeeSystemRoleRepository.findAll({
+            where: { employeeId },
+            select: { systemRoleId: true },
+        });
+        return assignments.map((assignment) => assignment.systemRoleId);
+    }
+};
+exports.DomainEmployeeSystemRoleService = DomainEmployeeSystemRoleService;
+exports.DomainEmployeeSystemRoleService = DomainEmployeeSystemRoleService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof employee_system_role_repository_1.DomainEmployeeSystemRoleRepository !== "undefined" && employee_system_role_repository_1.DomainEmployeeSystemRoleRepository) === "function" ? _a : Object])
+], DomainEmployeeSystemRoleService);
+
+
+/***/ }),
+
+/***/ "./src/modules/domain/employee-token/employee-token.entity.ts":
+/*!********************************************************************!*\
+  !*** ./src/modules/domain/employee-token/employee-token.entity.ts ***!
+  \********************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EmployeeToken = void 0;
+const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
+const employee_entity_1 = __webpack_require__(/*! ../employee/employee.entity */ "./src/modules/domain/employee/employee.entity.ts");
+const token_entity_1 = __webpack_require__(/*! ../token/token.entity */ "./src/modules/domain/token/token.entity.ts");
+let EmployeeToken = class EmployeeToken {
+};
+exports.EmployeeToken = EmployeeToken;
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
+    __metadata("design:type", String)
+], EmployeeToken.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'uuid', comment: '직원 ID' }),
+    __metadata("design:type", String)
+], EmployeeToken.prototype, "employeeId", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'uuid', comment: '토큰 ID' }),
+    __metadata("design:type", String)
+], EmployeeToken.prototype, "tokenId", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => employee_entity_1.Employee),
+    (0, typeorm_1.JoinColumn)({ name: 'employeeId' }),
+    __metadata("design:type", typeof (_a = typeof employee_entity_1.Employee !== "undefined" && employee_entity_1.Employee) === "function" ? _a : Object)
+], EmployeeToken.prototype, "employee", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => token_entity_1.Token),
+    (0, typeorm_1.JoinColumn)({ name: 'tokenId' }),
+    __metadata("design:type", typeof (_b = typeof token_entity_1.Token !== "undefined" && token_entity_1.Token) === "function" ? _b : Object)
+], EmployeeToken.prototype, "token", void 0);
+exports.EmployeeToken = EmployeeToken = __decorate([
+    (0, typeorm_1.Entity)('employee_tokens'),
+    (0, typeorm_1.Index)(['employeeId', 'tokenId'], { unique: true }),
+    (0, typeorm_1.Index)(['employeeId']),
+    (0, typeorm_1.Index)(['tokenId'])
+], EmployeeToken);
+
+
+/***/ }),
+
 /***/ "./src/modules/domain/employee-token/employee-token.module.ts":
 /*!********************************************************************!*\
   !*** ./src/modules/domain/employee-token/employee-token.module.ts ***!
@@ -10844,13 +10758,13 @@ const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
 const employee_token_service_1 = __webpack_require__(/*! ./employee-token.service */ "./src/modules/domain/employee-token/employee-token.service.ts");
 const employee_token_repository_1 = __webpack_require__(/*! ./employee-token.repository */ "./src/modules/domain/employee-token/employee-token.repository.ts");
-const entities_1 = __webpack_require__(/*! ../../../../libs/database/entities */ "./libs/database/entities/index.ts");
+const employee_token_entity_1 = __webpack_require__(/*! ./employee-token.entity */ "./src/modules/domain/employee-token/employee-token.entity.ts");
 let DomainEmployeeTokenModule = class DomainEmployeeTokenModule {
 };
 exports.DomainEmployeeTokenModule = DomainEmployeeTokenModule;
 exports.DomainEmployeeTokenModule = DomainEmployeeTokenModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([entities_1.EmployeeToken])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([employee_token_entity_1.EmployeeToken])],
         providers: [employee_token_service_1.DomainEmployeeTokenService, employee_token_repository_1.DomainEmployeeTokenRepository],
         exports: [employee_token_service_1.DomainEmployeeTokenService],
     })
@@ -10961,6 +10875,123 @@ exports.DomainEmployeeTokenService = DomainEmployeeTokenService = __decorate([
 
 /***/ }),
 
+/***/ "./src/modules/domain/employee/employee.entity.ts":
+/*!********************************************************!*\
+  !*** ./src/modules/domain/employee/employee.entity.ts ***!
+  \********************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b, _c, _d, _e, _f, _g, _h;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Employee = void 0;
+const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
+const enums_1 = __webpack_require__(/*! ../../../../libs/common/enums */ "./libs/common/enums/index.ts");
+const rank_entity_1 = __webpack_require__(/*! ../rank/rank.entity */ "./src/modules/domain/rank/rank.entity.ts");
+const employee_department_position_entity_1 = __webpack_require__(/*! ../employee-department-position/employee-department-position.entity */ "./src/modules/domain/employee-department-position/employee-department-position.entity.ts");
+const employee_fcm_token_entity_1 = __webpack_require__(/*! ../employee-fcm-token/employee-fcm-token.entity */ "./src/modules/domain/employee-fcm-token/employee-fcm-token.entity.ts");
+let Employee = class Employee {
+};
+exports.Employee = Employee;
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
+    __metadata("design:type", String)
+], Employee.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ unique: true, comment: '사번' }),
+    __metadata("design:type", String)
+], Employee.prototype, "employeeNumber", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '이름' }),
+    __metadata("design:type", String)
+], Employee.prototype, "name", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ unique: true, comment: '이메일' }),
+    __metadata("design:type", String)
+], Employee.prototype, "email", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '비밀번호', nullable: true }),
+    __metadata("design:type", String)
+], Employee.prototype, "password", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '전화번호', nullable: true }),
+    __metadata("design:type", String)
+], Employee.prototype, "phoneNumber", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '생년월일', type: 'date', nullable: true }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], Employee.prototype, "dateOfBirth", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        comment: '성별',
+        type: 'enum',
+        enum: enums_1.Gender,
+        nullable: true,
+    }),
+    __metadata("design:type", typeof (_b = typeof enums_1.Gender !== "undefined" && enums_1.Gender) === "function" ? _b : Object)
+], Employee.prototype, "gender", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '입사일', type: 'date' }),
+    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
+], Employee.prototype, "hireDate", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        comment: '재직 상태',
+        type: 'enum',
+        enum: enums_1.EmployeeStatus,
+        default: enums_1.EmployeeStatus.Active,
+    }),
+    __metadata("design:type", typeof (_d = typeof enums_1.EmployeeStatus !== "undefined" && enums_1.EmployeeStatus) === "function" ? _d : Object)
+], Employee.prototype, "status", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '현재 직급 ID', type: 'uuid', nullable: true }),
+    __metadata("design:type", String)
+], Employee.prototype, "currentRankId", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => rank_entity_1.Rank, { eager: true }),
+    (0, typeorm_1.JoinColumn)({ name: 'currentRankId' }),
+    __metadata("design:type", typeof (_e = typeof rank_entity_1.Rank !== "undefined" && rank_entity_1.Rank) === "function" ? _e : Object)
+], Employee.prototype, "currentRank", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '퇴사일', type: 'date', nullable: true }),
+    __metadata("design:type", typeof (_f = typeof Date !== "undefined" && Date) === "function" ? _f : Object)
+], Employee.prototype, "terminationDate", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '초기 비밀번호 설정 여부', default: false }),
+    __metadata("design:type", Boolean)
+], Employee.prototype, "isInitialPasswordSet", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => employee_department_position_entity_1.EmployeeDepartmentPosition, (edp) => edp.employee),
+    __metadata("design:type", Array)
+], Employee.prototype, "departmentPositions", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => employee_fcm_token_entity_1.EmployeeFcmToken, (eft) => eft.employee),
+    __metadata("design:type", Array)
+], Employee.prototype, "fcmTokens", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)({ comment: '생성일' }),
+    __metadata("design:type", typeof (_g = typeof Date !== "undefined" && Date) === "function" ? _g : Object)
+], Employee.prototype, "createdAt", void 0);
+__decorate([
+    (0, typeorm_1.UpdateDateColumn)({ comment: '수정일' }),
+    __metadata("design:type", typeof (_h = typeof Date !== "undefined" && Date) === "function" ? _h : Object)
+], Employee.prototype, "updatedAt", void 0);
+exports.Employee = Employee = __decorate([
+    (0, typeorm_1.Entity)('employees')
+], Employee);
+
+
+/***/ }),
+
 /***/ "./src/modules/domain/employee/employee.module.ts":
 /*!********************************************************!*\
   !*** ./src/modules/domain/employee/employee.module.ts ***!
@@ -10980,13 +11011,13 @@ const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
 const employee_service_1 = __webpack_require__(/*! ./employee.service */ "./src/modules/domain/employee/employee.service.ts");
 const employee_repository_1 = __webpack_require__(/*! ./employee.repository */ "./src/modules/domain/employee/employee.repository.ts");
-const entities_1 = __webpack_require__(/*! ../../../../libs/database/entities */ "./libs/database/entities/index.ts");
+const employee_entity_1 = __webpack_require__(/*! ./employee.entity */ "./src/modules/domain/employee/employee.entity.ts");
 let DomainEmployeeModule = class DomainEmployeeModule {
 };
 exports.DomainEmployeeModule = DomainEmployeeModule;
 exports.DomainEmployeeModule = DomainEmployeeModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([entities_1.Employee])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([employee_entity_1.Employee])],
         providers: [employee_service_1.DomainEmployeeService, employee_repository_1.DomainEmployeeRepository],
         exports: [employee_service_1.DomainEmployeeService],
     })
@@ -11020,7 +11051,7 @@ exports.DomainEmployeeRepository = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
 const typeorm_2 = __webpack_require__(/*! typeorm */ "typeorm");
-const entities_1 = __webpack_require__(/*! ../../../../libs/database/entities */ "./libs/database/entities/index.ts");
+const employee_entity_1 = __webpack_require__(/*! ./employee.entity */ "./src/modules/domain/employee/employee.entity.ts");
 const base_repository_1 = __webpack_require__(/*! ../../../../libs/common/repositories/base.repository */ "./libs/common/repositories/base.repository.ts");
 let DomainEmployeeRepository = class DomainEmployeeRepository extends base_repository_1.BaseRepository {
     constructor(repository) {
@@ -11030,7 +11061,7 @@ let DomainEmployeeRepository = class DomainEmployeeRepository extends base_repos
 exports.DomainEmployeeRepository = DomainEmployeeRepository;
 exports.DomainEmployeeRepository = DomainEmployeeRepository = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, typeorm_1.InjectRepository)(entities_1.Employee)),
+    __param(0, (0, typeorm_1.InjectRepository)(employee_entity_1.Employee)),
     __metadata("design:paramtypes", [typeof (_a = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _a : Object])
 ], DomainEmployeeRepository);
 
@@ -11132,6 +11163,433 @@ exports.DomainEmployeeService = DomainEmployeeService = __decorate([
 
 /***/ }),
 
+/***/ "./src/modules/domain/fcm-token/fcm-token.entity.ts":
+/*!**********************************************************!*\
+  !*** ./src/modules/domain/fcm-token/fcm-token.entity.ts ***!
+  \**********************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.FcmToken = exports.DeviceType = void 0;
+const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
+var DeviceType;
+(function (DeviceType) {
+    DeviceType["ANDROID"] = "ANDROID";
+    DeviceType["IOS"] = "IOS";
+    DeviceType["PC"] = "PC";
+})(DeviceType || (exports.DeviceType = DeviceType = {}));
+let FcmToken = class FcmToken {
+};
+exports.FcmToken = FcmToken;
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
+    __metadata("design:type", String)
+], FcmToken.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'text', comment: 'FCM 토큰 값', unique: true }),
+    __metadata("design:type", String)
+], FcmToken.prototype, "fcmToken", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        type: 'enum',
+        enum: DeviceType,
+        comment: '디바이스 타입',
+        default: DeviceType.PC,
+    }),
+    __metadata("design:type", String)
+], FcmToken.prototype, "deviceType", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'json', comment: '디바이스 정보', nullable: true }),
+    __metadata("design:type", Object)
+], FcmToken.prototype, "deviceInfo", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'boolean', comment: '활성화 상태', default: true }),
+    __metadata("design:type", Boolean)
+], FcmToken.prototype, "isActive", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)({ comment: '생성일' }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], FcmToken.prototype, "createdAt", void 0);
+__decorate([
+    (0, typeorm_1.UpdateDateColumn)({ comment: '수정일' }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], FcmToken.prototype, "updatedAt", void 0);
+exports.FcmToken = FcmToken = __decorate([
+    (0, typeorm_1.Entity)('fcm_tokens'),
+    (0, typeorm_1.Index)(['fcmToken'], { unique: true }),
+    (0, typeorm_1.Index)(['isActive'])
+], FcmToken);
+
+
+/***/ }),
+
+/***/ "./src/modules/domain/fcm-token/fcm-token.module.ts":
+/*!**********************************************************!*\
+  !*** ./src/modules/domain/fcm-token/fcm-token.module.ts ***!
+  \**********************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DomainFcmTokenModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
+const fcm_token_service_1 = __webpack_require__(/*! ./fcm-token.service */ "./src/modules/domain/fcm-token/fcm-token.service.ts");
+const fcm_token_repository_1 = __webpack_require__(/*! ./fcm-token.repository */ "./src/modules/domain/fcm-token/fcm-token.repository.ts");
+const fcm_token_entity_1 = __webpack_require__(/*! ./fcm-token.entity */ "./src/modules/domain/fcm-token/fcm-token.entity.ts");
+let DomainFcmTokenModule = class DomainFcmTokenModule {
+};
+exports.DomainFcmTokenModule = DomainFcmTokenModule;
+exports.DomainFcmTokenModule = DomainFcmTokenModule = __decorate([
+    (0, common_1.Module)({
+        imports: [typeorm_1.TypeOrmModule.forFeature([fcm_token_entity_1.FcmToken])],
+        providers: [fcm_token_service_1.DomainFcmTokenService, fcm_token_repository_1.DomainFcmTokenRepository],
+        exports: [fcm_token_service_1.DomainFcmTokenService],
+    })
+], DomainFcmTokenModule);
+
+
+/***/ }),
+
+/***/ "./src/modules/domain/fcm-token/fcm-token.repository.ts":
+/*!**************************************************************!*\
+  !*** ./src/modules/domain/fcm-token/fcm-token.repository.ts ***!
+  \**************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DomainFcmTokenRepository = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
+const typeorm_2 = __webpack_require__(/*! typeorm */ "typeorm");
+const entities_1 = __webpack_require__(/*! ../../../../libs/database/entities */ "./libs/database/entities/index.ts");
+const base_repository_1 = __webpack_require__(/*! ../../../../libs/common/repositories/base.repository */ "./libs/common/repositories/base.repository.ts");
+let DomainFcmTokenRepository = class DomainFcmTokenRepository extends base_repository_1.BaseRepository {
+    constructor(repository) {
+        super(repository);
+    }
+    deleteInactiveTokens(repositoryOptions) {
+        const repository = repositoryOptions?.queryRunner
+            ? repositoryOptions.queryRunner.manager.getRepository(this.repository.target)
+            : this.repository;
+        return repository.delete({
+            isActive: false,
+        });
+    }
+};
+exports.DomainFcmTokenRepository = DomainFcmTokenRepository;
+exports.DomainFcmTokenRepository = DomainFcmTokenRepository = __decorate([
+    (0, common_1.Injectable)(),
+    __param(0, (0, typeorm_1.InjectRepository)(entities_1.FcmToken)),
+    __metadata("design:paramtypes", [typeof (_a = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _a : Object])
+], DomainFcmTokenRepository);
+
+
+/***/ }),
+
+/***/ "./src/modules/domain/fcm-token/fcm-token.service.ts":
+/*!***********************************************************!*\
+  !*** ./src/modules/domain/fcm-token/fcm-token.service.ts ***!
+  \***********************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DomainFcmTokenService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const fcm_token_repository_1 = __webpack_require__(/*! ./fcm-token.repository */ "./src/modules/domain/fcm-token/fcm-token.repository.ts");
+const base_service_1 = __webpack_require__(/*! ../../../../libs/common/services/base.service */ "./libs/common/services/base.service.ts");
+const fcm_token_entity_1 = __webpack_require__(/*! ./fcm-token.entity */ "./src/modules/domain/fcm-token/fcm-token.entity.ts");
+let DomainFcmTokenService = class DomainFcmTokenService extends base_service_1.BaseService {
+    constructor(fcmTokenRepository) {
+        super(fcmTokenRepository);
+        this.fcmTokenRepository = fcmTokenRepository;
+    }
+    async findByFcmToken(fcmToken) {
+        return this.fcmTokenRepository.findOne({
+            where: { fcmToken, isActive: true },
+        });
+    }
+    async createOrFind(fcmToken, deviceType = fcm_token_entity_1.DeviceType.PC, deviceInfo) {
+        const existingToken = await this.findByFcmToken(fcmToken);
+        if (existingToken) {
+            return this.fcmTokenRepository.update(existingToken.id, {
+                deviceType,
+                deviceInfo,
+                isActive: true,
+            });
+        }
+        try {
+            return await this.fcmTokenRepository.save({
+                fcmToken,
+                deviceType,
+                deviceInfo,
+                isActive: true,
+            });
+        }
+        catch (error) {
+            if (error.code === '23505') {
+                const token = await this.findByFcmToken(fcmToken);
+                if (token) {
+                    return token;
+                }
+            }
+            throw error;
+        }
+    }
+    async findByDeviceType(deviceType) {
+        return this.fcmTokenRepository.findAll({
+            where: { deviceType, isActive: true },
+        });
+    }
+    async deactivateToken(fcmToken) {
+        const token = await this.findByFcmToken(fcmToken);
+        if (!token) {
+            throw new common_1.ConflictException('FCM 토큰을 찾을 수 없습니다.');
+        }
+        return this.fcmTokenRepository.update(token.id, {
+            isActive: false,
+        });
+    }
+    async cleanupInactiveTokens() {
+        await this.fcmTokenRepository.deleteInactiveTokens({
+            where: { isActive: false },
+        });
+    }
+    validateFcmToken(fcmToken) {
+        if (!fcmToken || typeof fcmToken !== 'string') {
+            return false;
+        }
+        if (fcmToken.length < 140) {
+            return false;
+        }
+        const fcmTokenPattern = /^[A-Za-z0-9:_-]+$/;
+        return fcmTokenPattern.test(fcmToken);
+    }
+    async countActiveTokens() {
+        return this.fcmTokenRepository.count({
+            where: { isActive: true },
+        });
+    }
+    async countTokensByDeviceType() {
+        const counts = await Promise.all([
+            this.fcmTokenRepository.count({
+                where: { deviceType: fcm_token_entity_1.DeviceType.ANDROID, isActive: true },
+            }),
+            this.fcmTokenRepository.count({
+                where: { deviceType: fcm_token_entity_1.DeviceType.IOS, isActive: true },
+            }),
+            this.fcmTokenRepository.count({
+                where: { deviceType: fcm_token_entity_1.DeviceType.PC, isActive: true },
+            }),
+        ]);
+        return {
+            [fcm_token_entity_1.DeviceType.ANDROID]: counts[0],
+            [fcm_token_entity_1.DeviceType.IOS]: counts[1],
+            [fcm_token_entity_1.DeviceType.PC]: counts[2],
+        };
+    }
+    async getStatisticsByDeviceType() {
+        const counts = await this.countTokensByDeviceType();
+        return Object.entries(counts).map(([deviceType, count]) => ({
+            deviceType: deviceType,
+            count,
+        }));
+    }
+};
+exports.DomainFcmTokenService = DomainFcmTokenService;
+exports.DomainFcmTokenService = DomainFcmTokenService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof fcm_token_repository_1.DomainFcmTokenRepository !== "undefined" && fcm_token_repository_1.DomainFcmTokenRepository) === "function" ? _a : Object])
+], DomainFcmTokenService);
+
+
+/***/ }),
+
+/***/ "./src/modules/domain/log/log.entity.ts":
+/*!**********************************************!*\
+  !*** ./src/modules/domain/log/log.entity.ts ***!
+  \**********************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Log = void 0;
+const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
+let Log = class Log {
+};
+exports.Log = Log;
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
+    __metadata("design:type", String)
+], Log.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '호스트 정보' }),
+    __metadata("design:type", String)
+], Log.prototype, "host", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: 'HTTP 메서드' }),
+    __metadata("design:type", String)
+], Log.prototype, "method", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '요청 URL' }),
+    __metadata("design:type", String)
+], Log.prototype, "url", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        type: 'jsonb',
+        nullable: true,
+        comment: '요청 파라미터',
+    }),
+    __metadata("design:type", Object)
+], Log.prototype, "params", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        type: 'jsonb',
+        nullable: true,
+        comment: '쿼리 파라미터',
+    }),
+    __metadata("design:type", Object)
+], Log.prototype, "query", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        type: 'jsonb',
+        nullable: true,
+        comment: '요청 본문',
+    }),
+    __metadata("design:type", Object)
+], Log.prototype, "body", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: 'IP 주소' }),
+    __metadata("design:type", String)
+], Log.prototype, "ip", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '사용자 에이전트' }),
+    __metadata("design:type", String)
+], Log.prototype, "userAgent", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        type: 'timestamp with time zone',
+        nullable: true,
+        comment: '요청 시작 시간',
+    }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], Log.prototype, "requestTimestamp", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        type: 'timestamp with time zone',
+        nullable: true,
+        comment: '응답 완료 시간',
+    }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], Log.prototype, "responseTimestamp", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        nullable: true,
+        comment: '응답 시간 (밀리초)',
+    }),
+    __metadata("design:type", Number)
+], Log.prototype, "responseTime", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        nullable: true,
+        comment: 'HTTP 상태 코드',
+    }),
+    __metadata("design:type", Number)
+], Log.prototype, "statusCode", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        type: 'jsonb',
+        nullable: true,
+        comment: '응답 데이터',
+    }),
+    __metadata("design:type", Object)
+], Log.prototype, "response", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        nullable: true,
+        comment: '시스템 구분자',
+    }),
+    __metadata("design:type", String)
+], Log.prototype, "system", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        type: 'jsonb',
+        nullable: true,
+        comment: '에러 정보',
+    }),
+    __metadata("design:type", Object)
+], Log.prototype, "error", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        default: false,
+        comment: '에러 발생 여부',
+    }),
+    __metadata("design:type", Boolean)
+], Log.prototype, "isError", void 0);
+exports.Log = Log = __decorate([
+    (0, typeorm_1.Entity)('logs'),
+    (0, typeorm_1.Index)(['requestTimestamp']),
+    (0, typeorm_1.Index)(['isError']),
+    (0, typeorm_1.Index)(['statusCode']),
+    (0, typeorm_1.Index)(['system']),
+    (0, typeorm_1.Index)(['method', 'url'])
+], Log);
+
+
+/***/ }),
+
 /***/ "./src/modules/domain/log/log.module.ts":
 /*!**********************************************!*\
   !*** ./src/modules/domain/log/log.module.ts ***!
@@ -11151,13 +11609,13 @@ const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
 const log_service_1 = __webpack_require__(/*! ./log.service */ "./src/modules/domain/log/log.service.ts");
 const log_repository_1 = __webpack_require__(/*! ./log.repository */ "./src/modules/domain/log/log.repository.ts");
-const entities_1 = __webpack_require__(/*! ../../../../libs/database/entities */ "./libs/database/entities/index.ts");
+const log_entity_1 = __webpack_require__(/*! ./log.entity */ "./src/modules/domain/log/log.entity.ts");
 let DomainLogModule = class DomainLogModule {
 };
 exports.DomainLogModule = DomainLogModule;
 exports.DomainLogModule = DomainLogModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([entities_1.Log])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([log_entity_1.Log])],
         providers: [log_service_1.DomainLogService, log_repository_1.DomainLogRepository],
         exports: [log_service_1.DomainLogService],
     })
@@ -11278,6 +11736,55 @@ exports.DomainLogService = DomainLogService = __decorate([
 
 /***/ }),
 
+/***/ "./src/modules/domain/position/position.entity.ts":
+/*!********************************************************!*\
+  !*** ./src/modules/domain/position/position.entity.ts ***!
+  \********************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Position = void 0;
+const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
+let Position = class Position {
+};
+exports.Position = Position;
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
+    __metadata("design:type", String)
+], Position.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '직책명 (예: 부서장, 파트장, 팀장, 직원)' }),
+    __metadata("design:type", String)
+], Position.prototype, "positionTitle", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ unique: true, comment: '직책 코드 (예: DEPT_HEAD, PART_HEAD, TEAM_LEADER, STAFF)' }),
+    __metadata("design:type", String)
+], Position.prototype, "positionCode", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '직책 레벨 (낮을수록 상위 직책)' }),
+    __metadata("design:type", Number)
+], Position.prototype, "level", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '관리 권한 여부', default: false }),
+    __metadata("design:type", Boolean)
+], Position.prototype, "hasManagementAuthority", void 0);
+exports.Position = Position = __decorate([
+    (0, typeorm_1.Entity)('positions')
+], Position);
+
+
+/***/ }),
+
 /***/ "./src/modules/domain/position/position.module.ts":
 /*!********************************************************!*\
   !*** ./src/modules/domain/position/position.module.ts ***!
@@ -11297,13 +11804,13 @@ const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
 const position_service_1 = __webpack_require__(/*! ./position.service */ "./src/modules/domain/position/position.service.ts");
 const position_repository_1 = __webpack_require__(/*! ./position.repository */ "./src/modules/domain/position/position.repository.ts");
-const entities_1 = __webpack_require__(/*! ../../../../libs/database/entities */ "./libs/database/entities/index.ts");
+const position_entity_1 = __webpack_require__(/*! ./position.entity */ "./src/modules/domain/position/position.entity.ts");
 let DomainPositionModule = class DomainPositionModule {
 };
 exports.DomainPositionModule = DomainPositionModule;
 exports.DomainPositionModule = DomainPositionModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([entities_1.Position])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([position_entity_1.Position])],
         providers: [position_service_1.DomainPositionService, position_repository_1.DomainPositionRepository],
         exports: [position_service_1.DomainPositionService],
     })
@@ -11437,6 +11944,51 @@ exports.DomainPositionService = DomainPositionService = __decorate([
 
 /***/ }),
 
+/***/ "./src/modules/domain/rank/rank.entity.ts":
+/*!************************************************!*\
+  !*** ./src/modules/domain/rank/rank.entity.ts ***!
+  \************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Rank = void 0;
+const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
+let Rank = class Rank {
+};
+exports.Rank = Rank;
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
+    __metadata("design:type", String)
+], Rank.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '직급명' }),
+    __metadata("design:type", String)
+], Rank.prototype, "rankName", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ unique: true, comment: '직급 코드' }),
+    __metadata("design:type", String)
+], Rank.prototype, "rankCode", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '직급 레벨 (낮을수록 상위 직급)' }),
+    __metadata("design:type", Number)
+], Rank.prototype, "level", void 0);
+exports.Rank = Rank = __decorate([
+    (0, typeorm_1.Entity)('ranks')
+], Rank);
+
+
+/***/ }),
+
 /***/ "./src/modules/domain/rank/rank.module.ts":
 /*!************************************************!*\
   !*** ./src/modules/domain/rank/rank.module.ts ***!
@@ -11456,13 +12008,13 @@ const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
 const rank_service_1 = __webpack_require__(/*! ./rank.service */ "./src/modules/domain/rank/rank.service.ts");
 const rank_repository_1 = __webpack_require__(/*! ./rank.repository */ "./src/modules/domain/rank/rank.repository.ts");
-const entities_1 = __webpack_require__(/*! ../../../../libs/database/entities */ "./libs/database/entities/index.ts");
+const rank_entity_1 = __webpack_require__(/*! ./rank.entity */ "./src/modules/domain/rank/rank.entity.ts");
 let DomainRankModule = class DomainRankModule {
 };
 exports.DomainRankModule = DomainRankModule;
 exports.DomainRankModule = DomainRankModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([entities_1.Rank])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([rank_entity_1.Rank])],
         providers: [rank_service_1.DomainRankService, rank_repository_1.DomainRankRepository],
         exports: [rank_service_1.DomainRankService],
     })
@@ -11592,6 +12144,343 @@ exports.DomainRankService = DomainRankService = __decorate([
 
 /***/ }),
 
+/***/ "./src/modules/domain/system-role/system-role.entity.ts":
+/*!**************************************************************!*\
+  !*** ./src/modules/domain/system-role/system-role.entity.ts ***!
+  \**************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b, _c;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SystemRole = void 0;
+const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
+const system_entity_1 = __webpack_require__(/*! ../system/system.entity */ "./src/modules/domain/system/system.entity.ts");
+const employee_system_role_entity_1 = __webpack_require__(/*! ../employee-system-role/employee-system-role.entity */ "./src/modules/domain/employee-system-role/employee-system-role.entity.ts");
+let SystemRole = class SystemRole {
+};
+exports.SystemRole = SystemRole;
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
+    __metadata("design:type", String)
+], SystemRole.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'uuid', comment: '시스템 ID' }),
+    __metadata("design:type", String)
+], SystemRole.prototype, "systemId", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => system_entity_1.System, { onDelete: 'CASCADE' }),
+    (0, typeorm_1.JoinColumn)({ name: 'systemId' }),
+    __metadata("design:type", typeof (_a = typeof system_entity_1.System !== "undefined" && system_entity_1.System) === "function" ? _a : Object)
+], SystemRole.prototype, "system", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '역할 이름' }),
+    __metadata("design:type", String)
+], SystemRole.prototype, "roleName", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '역할 코드' }),
+    __metadata("design:type", String)
+], SystemRole.prototype, "roleCode", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true, comment: '역할 설명' }),
+    __metadata("design:type", String)
+], SystemRole.prototype, "description", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        type: 'jsonb',
+        default: [],
+        comment: '권한 목록',
+    }),
+    __metadata("design:type", Array)
+], SystemRole.prototype, "permissions", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '정렬 순서', default: 0 }),
+    __metadata("design:type", Number)
+], SystemRole.prototype, "sortOrder", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: true, comment: '활성화 상태' }),
+    __metadata("design:type", Boolean)
+], SystemRole.prototype, "isActive", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => employee_system_role_entity_1.EmployeeSystemRole, (esr) => esr.systemRole),
+    __metadata("design:type", Array)
+], SystemRole.prototype, "employeeSystemRoles", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)({ comment: '생성일' }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], SystemRole.prototype, "createdAt", void 0);
+__decorate([
+    (0, typeorm_1.UpdateDateColumn)({ comment: '수정일' }),
+    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
+], SystemRole.prototype, "updatedAt", void 0);
+exports.SystemRole = SystemRole = __decorate([
+    (0, typeorm_1.Entity)('system_roles'),
+    (0, typeorm_1.Index)(['systemId', 'roleCode'], { unique: true }),
+    (0, typeorm_1.Index)(['systemId', 'isActive'])
+], SystemRole);
+
+
+/***/ }),
+
+/***/ "./src/modules/domain/system-role/system-role.module.ts":
+/*!**************************************************************!*\
+  !*** ./src/modules/domain/system-role/system-role.module.ts ***!
+  \**************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DomainSystemRoleModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
+const system_role_entity_1 = __webpack_require__(/*! ./system-role.entity */ "./src/modules/domain/system-role/system-role.entity.ts");
+const system_role_repository_1 = __webpack_require__(/*! ./system-role.repository */ "./src/modules/domain/system-role/system-role.repository.ts");
+const system_role_service_1 = __webpack_require__(/*! ./system-role.service */ "./src/modules/domain/system-role/system-role.service.ts");
+let DomainSystemRoleModule = class DomainSystemRoleModule {
+};
+exports.DomainSystemRoleModule = DomainSystemRoleModule;
+exports.DomainSystemRoleModule = DomainSystemRoleModule = __decorate([
+    (0, common_1.Module)({
+        imports: [typeorm_1.TypeOrmModule.forFeature([system_role_entity_1.SystemRole])],
+        providers: [system_role_repository_1.DomainSystemRoleRepository, system_role_service_1.DomainSystemRoleService],
+        exports: [system_role_service_1.DomainSystemRoleService],
+    })
+], DomainSystemRoleModule);
+
+
+/***/ }),
+
+/***/ "./src/modules/domain/system-role/system-role.repository.ts":
+/*!******************************************************************!*\
+  !*** ./src/modules/domain/system-role/system-role.repository.ts ***!
+  \******************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DomainSystemRoleRepository = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
+const typeorm_2 = __webpack_require__(/*! typeorm */ "typeorm");
+const system_role_entity_1 = __webpack_require__(/*! ./system-role.entity */ "./src/modules/domain/system-role/system-role.entity.ts");
+const base_repository_1 = __webpack_require__(/*! ../../../../libs/common/repositories/base.repository */ "./libs/common/repositories/base.repository.ts");
+let DomainSystemRoleRepository = class DomainSystemRoleRepository extends base_repository_1.BaseRepository {
+    constructor(repository) {
+        super(repository);
+    }
+};
+exports.DomainSystemRoleRepository = DomainSystemRoleRepository;
+exports.DomainSystemRoleRepository = DomainSystemRoleRepository = __decorate([
+    (0, common_1.Injectable)(),
+    __param(0, (0, typeorm_1.InjectRepository)(system_role_entity_1.SystemRole)),
+    __metadata("design:paramtypes", [typeof (_a = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _a : Object])
+], DomainSystemRoleRepository);
+
+
+/***/ }),
+
+/***/ "./src/modules/domain/system-role/system-role.service.ts":
+/*!***************************************************************!*\
+  !*** ./src/modules/domain/system-role/system-role.service.ts ***!
+  \***************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DomainSystemRoleService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const system_role_repository_1 = __webpack_require__(/*! ./system-role.repository */ "./src/modules/domain/system-role/system-role.repository.ts");
+const base_service_1 = __webpack_require__(/*! ../../../../libs/common/services/base.service */ "./libs/common/services/base.service.ts");
+let DomainSystemRoleService = class DomainSystemRoleService extends base_service_1.BaseService {
+    constructor(systemRoleRepository) {
+        super(systemRoleRepository);
+        this.systemRoleRepository = systemRoleRepository;
+    }
+    async findById(id) {
+        return this.systemRoleRepository.findOne({ where: { id } });
+    }
+    async findBySystemId(systemId) {
+        return this.systemRoleRepository.findAll({
+            where: { systemId, isActive: true },
+            order: { sortOrder: 'ASC', roleName: 'ASC' },
+        });
+    }
+    async findBySystemIdAndRoleCode(systemId, roleCode) {
+        return this.systemRoleRepository.findOne({
+            where: { systemId, roleCode },
+        });
+    }
+    async createSystemRole(data) {
+        const existing = await this.findBySystemIdAndRoleCode(data.systemId, data.roleCode);
+        if (existing) {
+            throw new common_1.BadRequestException(`역할 코드 '${data.roleCode}'는 이미 존재합니다.`);
+        }
+        return this.systemRoleRepository.save({
+            systemId: data.systemId,
+            roleName: data.roleName,
+            roleCode: data.roleCode,
+            description: data.description,
+            permissions: data.permissions || [],
+            sortOrder: data.sortOrder || 0,
+            isActive: true,
+        });
+    }
+    async updateSystemRole(id, data) {
+        const systemRole = await this.systemRoleRepository.findOne({ where: { id } });
+        if (!systemRole) {
+            throw new common_1.NotFoundException('시스템 역할을 찾을 수 없습니다.');
+        }
+        if (data.roleCode && data.roleCode !== systemRole.roleCode) {
+            const existing = await this.findBySystemIdAndRoleCode(systemRole.systemId, data.roleCode);
+            if (existing) {
+                throw new common_1.BadRequestException(`역할 코드 '${data.roleCode}'는 이미 존재합니다.`);
+            }
+        }
+        await this.systemRoleRepository.update(id, data);
+        return this.systemRoleRepository.findOne({ where: { id } });
+    }
+    async deactivateSystemRole(id) {
+        const systemRole = await this.systemRoleRepository.findOne({ where: { id } });
+        if (!systemRole) {
+            throw new common_1.NotFoundException('시스템 역할을 찾을 수 없습니다.');
+        }
+        await this.systemRoleRepository.update(id, { isActive: false });
+    }
+};
+exports.DomainSystemRoleService = DomainSystemRoleService;
+exports.DomainSystemRoleService = DomainSystemRoleService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof system_role_repository_1.DomainSystemRoleRepository !== "undefined" && system_role_repository_1.DomainSystemRoleRepository) === "function" ? _a : Object])
+], DomainSystemRoleService);
+
+
+/***/ }),
+
+/***/ "./src/modules/domain/system-webhook/system-webhook.entity.ts":
+/*!********************************************************************!*\
+  !*** ./src/modules/domain/system-webhook/system-webhook.entity.ts ***!
+  \********************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SystemWebhook = void 0;
+const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
+let SystemWebhook = class SystemWebhook {
+};
+exports.SystemWebhook = SystemWebhook;
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
+    __metadata("design:type", String)
+], SystemWebhook.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'uuid', comment: '시스템 ID' }),
+    __metadata("design:type", String)
+], SystemWebhook.prototype, "systemId", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'uuid', comment: '웹훅 ID' }),
+    __metadata("design:type", String)
+], SystemWebhook.prototype, "webhookId", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        nullable: true,
+        comment: '마지막 실행일시',
+    }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], SystemWebhook.prototype, "lastExecutedAt", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        default: 0,
+        comment: '총 실행 횟수',
+    }),
+    __metadata("design:type", Number)
+], SystemWebhook.prototype, "executionCount", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        default: 0,
+        comment: '성공 횟수',
+    }),
+    __metadata("design:type", Number)
+], SystemWebhook.prototype, "successCount", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        default: 0,
+        comment: '실패 횟수',
+    }),
+    __metadata("design:type", Number)
+], SystemWebhook.prototype, "failureCount", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)({ comment: '생성일시' }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], SystemWebhook.prototype, "createdAt", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)('System', { onDelete: 'CASCADE' }),
+    (0, typeorm_1.JoinColumn)({ name: 'systemId' }),
+    __metadata("design:type", Object)
+], SystemWebhook.prototype, "system", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)('Webhook', { onDelete: 'CASCADE' }),
+    (0, typeorm_1.JoinColumn)({ name: 'webhookId' }),
+    __metadata("design:type", Object)
+], SystemWebhook.prototype, "webhook", void 0);
+exports.SystemWebhook = SystemWebhook = __decorate([
+    (0, typeorm_1.Entity)('system_webhooks'),
+    (0, typeorm_1.Index)(['systemId', 'webhookId'], { unique: true }),
+    (0, typeorm_1.Index)(['systemId']),
+    (0, typeorm_1.Index)(['webhookId'])
+], SystemWebhook);
+
+
+/***/ }),
+
 /***/ "./src/modules/domain/system-webhook/system-webhook.module.ts":
 /*!********************************************************************!*\
   !*** ./src/modules/domain/system-webhook/system-webhook.module.ts ***!
@@ -11611,13 +12500,13 @@ const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
 const system_webhook_service_1 = __webpack_require__(/*! ./system-webhook.service */ "./src/modules/domain/system-webhook/system-webhook.service.ts");
 const system_webhook_repository_1 = __webpack_require__(/*! ./system-webhook.repository */ "./src/modules/domain/system-webhook/system-webhook.repository.ts");
-const entities_1 = __webpack_require__(/*! ../../../../libs/database/entities */ "./libs/database/entities/index.ts");
+const system_webhook_entity_1 = __webpack_require__(/*! ./system-webhook.entity */ "./src/modules/domain/system-webhook/system-webhook.entity.ts");
 let DomainSystemWebhookModule = class DomainSystemWebhookModule {
 };
 exports.DomainSystemWebhookModule = DomainSystemWebhookModule;
 exports.DomainSystemWebhookModule = DomainSystemWebhookModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([entities_1.SystemWebhook])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([system_webhook_entity_1.SystemWebhook])],
         providers: [system_webhook_service_1.DomainSystemWebhookService, system_webhook_repository_1.DomainSystemWebhookRepository],
         exports: [system_webhook_service_1.DomainSystemWebhookService],
     })
@@ -11760,6 +12649,91 @@ exports.DomainSystemWebhookService = DomainSystemWebhookService = __decorate([
 
 /***/ }),
 
+/***/ "./src/modules/domain/system/system.entity.ts":
+/*!****************************************************!*\
+  !*** ./src/modules/domain/system/system.entity.ts ***!
+  \****************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b, _c;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.System = void 0;
+const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
+let System = class System {
+};
+exports.System = System;
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
+    __metadata("design:type", String)
+], System.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ unique: true, comment: '클라이언트 ID' }),
+    __metadata("design:type", String)
+], System.prototype, "clientId", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '클라이언트 시크릿' }),
+    __metadata("design:type", String)
+], System.prototype, "clientSecret", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ unique: true, comment: '시스템 이름' }),
+    __metadata("design:type", String)
+], System.prototype, "name", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true, comment: '시스템 설명' }),
+    __metadata("design:type", String)
+], System.prototype, "description", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '도메인' }),
+    __metadata("design:type", String)
+], System.prototype, "domain", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        type: 'jsonb',
+        default: [],
+        comment: '허용된 오리진 목록',
+    }),
+    __metadata("design:type", Array)
+], System.prototype, "allowedOrigin", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true, comment: '헬스체크 URL' }),
+    __metadata("design:type", String)
+], System.prototype, "healthCheckUrl", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        default: true,
+        comment: '활성화 상태',
+    }),
+    __metadata("design:type", Boolean)
+], System.prototype, "isActive", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)({ comment: '생성일시' }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], System.prototype, "createdAt", void 0);
+__decorate([
+    (0, typeorm_1.UpdateDateColumn)({ comment: '수정일시' }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], System.prototype, "updatedAt", void 0);
+__decorate([
+    (0, typeorm_1.DeleteDateColumn)({ comment: '삭제일시' }),
+    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
+], System.prototype, "deletedAt", void 0);
+exports.System = System = __decorate([
+    (0, typeorm_1.Entity)('systems')
+], System);
+
+
+/***/ }),
+
 /***/ "./src/modules/domain/system/system.module.ts":
 /*!****************************************************!*\
   !*** ./src/modules/domain/system/system.module.ts ***!
@@ -11779,13 +12753,13 @@ const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
 const system_service_1 = __webpack_require__(/*! ./system.service */ "./src/modules/domain/system/system.service.ts");
 const system_repository_1 = __webpack_require__(/*! ./system.repository */ "./src/modules/domain/system/system.repository.ts");
-const entities_1 = __webpack_require__(/*! ../../../../libs/database/entities */ "./libs/database/entities/index.ts");
+const system_entity_1 = __webpack_require__(/*! ./system.entity */ "./src/modules/domain/system/system.entity.ts");
 let DomainSystemModule = class DomainSystemModule {
 };
 exports.DomainSystemModule = DomainSystemModule;
 exports.DomainSystemModule = DomainSystemModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([entities_1.System])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([system_entity_1.System])],
         providers: [system_service_1.DomainSystemService, system_repository_1.DomainSystemRepository],
         exports: [system_service_1.DomainSystemService],
     })
@@ -11922,6 +12896,96 @@ exports.DomainSystemService = DomainSystemService = __decorate([
 
 /***/ }),
 
+/***/ "./src/modules/domain/token/token.entity.ts":
+/*!**************************************************!*\
+  !*** ./src/modules/domain/token/token.entity.ts ***!
+  \**************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b, _c, _d, _e, _f;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Token = void 0;
+const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
+const user_entity_1 = __webpack_require__(/*! ../user/user.entity */ "./src/modules/domain/user/user.entity.ts");
+let Token = class Token {
+};
+exports.Token = Token;
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
+    __metadata("design:type", String)
+], Token.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '액세스 토큰' }),
+    __metadata("design:type", String)
+], Token.prototype, "accessToken", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '토큰 만료일시' }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], Token.prototype, "tokenExpiresAt", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '리프레시 토큰', nullable: true }),
+    __metadata("design:type", String)
+], Token.prototype, "refreshToken", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '리프레시 토큰 만료일시', nullable: true }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], Token.prototype, "refreshTokenExpiresAt", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        nullable: true,
+        comment: '클라이언트 정보 (브라우저, 앱 등)',
+    }),
+    __metadata("design:type", String)
+], Token.prototype, "clientInfo", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        nullable: true,
+        comment: 'IP 주소',
+    }),
+    __metadata("design:type", String)
+], Token.prototype, "ipAddress", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
+], Token.prototype, "lastAccess", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: true }),
+    __metadata("design:type", Boolean)
+], Token.prototype, "isActive", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)({ comment: '생성일시' }),
+    __metadata("design:type", typeof (_d = typeof Date !== "undefined" && Date) === "function" ? _d : Object)
+], Token.prototype, "createdAt", void 0);
+__decorate([
+    (0, typeorm_1.UpdateDateColumn)(),
+    __metadata("design:type", typeof (_e = typeof Date !== "undefined" && Date) === "function" ? _e : Object)
+], Token.prototype, "updatedAt", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Token.prototype, "userId", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => user_entity_1.User, (user) => user.tokens, { onDelete: 'CASCADE' }),
+    (0, typeorm_1.JoinColumn)({ name: 'userId' }),
+    __metadata("design:type", typeof (_f = typeof user_entity_1.User !== "undefined" && user_entity_1.User) === "function" ? _f : Object)
+], Token.prototype, "user", void 0);
+exports.Token = Token = __decorate([
+    (0, typeorm_1.Entity)('tokens')
+], Token);
+
+
+/***/ }),
+
 /***/ "./src/modules/domain/token/token.module.ts":
 /*!**************************************************!*\
   !*** ./src/modules/domain/token/token.module.ts ***!
@@ -11941,14 +13005,14 @@ const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
 const token_service_1 = __webpack_require__(/*! ./token.service */ "./src/modules/domain/token/token.service.ts");
 const token_repository_1 = __webpack_require__(/*! ./token.repository */ "./src/modules/domain/token/token.repository.ts");
-const entities_1 = __webpack_require__(/*! ../../../../libs/database/entities */ "./libs/database/entities/index.ts");
+const token_entity_1 = __webpack_require__(/*! ./token.entity */ "./src/modules/domain/token/token.entity.ts");
 const jwt_1 = __webpack_require__(/*! @nestjs/jwt */ "@nestjs/jwt");
 let DomainTokenModule = class DomainTokenModule {
 };
 exports.DomainTokenModule = DomainTokenModule;
 exports.DomainTokenModule = DomainTokenModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([entities_1.Token]), jwt_1.JwtModule.register({})],
+        imports: [typeorm_1.TypeOrmModule.forFeature([token_entity_1.Token]), jwt_1.JwtModule.register({})],
         providers: [token_service_1.DomainTokenService, token_repository_1.DomainTokenRepository],
         exports: [token_service_1.DomainTokenService, token_repository_1.DomainTokenRepository],
     })
@@ -12080,6 +13144,105 @@ exports.DomainTokenService = DomainTokenService = __decorate([
 
 /***/ }),
 
+/***/ "./src/modules/domain/user/user.entity.ts":
+/*!************************************************!*\
+  !*** ./src/modules/domain/user/user.entity.ts ***!
+  \************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b, _c, _d;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.User = void 0;
+const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
+const token_entity_1 = __webpack_require__(/*! ../token/token.entity */ "./src/modules/domain/token/token.entity.ts");
+let User = class User {
+};
+exports.User = User;
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
+    __metadata("design:type", String)
+], User.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ unique: true, comment: '사번' }),
+    __metadata("design:type", String)
+], User.prototype, "employeeNumber", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '이름' }),
+    __metadata("design:type", String)
+], User.prototype, "name", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ unique: true, comment: '이메일' }),
+    __metadata("design:type", String)
+], User.prototype, "email", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '비밀번호' }),
+    __metadata("design:type", String)
+], User.prototype, "password", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '전화번호', nullable: true }),
+    __metadata("design:type", String)
+], User.prototype, "phoneNumber", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '생년월일', nullable: true }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], User.prototype, "dateOfBirth", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '성별', nullable: true }),
+    __metadata("design:type", String)
+], User.prototype, "gender", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '입사일', nullable: true }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], User.prototype, "hireDate", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '재직 상태', nullable: true }),
+    __metadata("design:type", String)
+], User.prototype, "status", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '부서', nullable: true }),
+    __metadata("design:type", String)
+], User.prototype, "department", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '직위', nullable: true }),
+    __metadata("design:type", String)
+], User.prototype, "position", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '직급', nullable: true }),
+    __metadata("design:type", String)
+], User.prototype, "rank", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '초기 비밀번호 설정 여부', default: false }),
+    __metadata("design:type", Boolean)
+], User.prototype, "isInitialPasswordSet", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)(),
+    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
+], User.prototype, "createdAt", void 0);
+__decorate([
+    (0, typeorm_1.UpdateDateColumn)(),
+    __metadata("design:type", typeof (_d = typeof Date !== "undefined" && Date) === "function" ? _d : Object)
+], User.prototype, "updatedAt", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => token_entity_1.Token, (token) => token.user),
+    __metadata("design:type", Array)
+], User.prototype, "tokens", void 0);
+exports.User = User = __decorate([
+    (0, typeorm_1.Entity)('users')
+], User);
+
+
+/***/ }),
+
 /***/ "./src/modules/domain/user/user.module.ts":
 /*!************************************************!*\
   !*** ./src/modules/domain/user/user.module.ts ***!
@@ -12099,7 +13262,7 @@ const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const user_service_1 = __webpack_require__(/*! ./user.service */ "./src/modules/domain/user/user.service.ts");
 const user_repository_1 = __webpack_require__(/*! ./user.repository */ "./src/modules/domain/user/user.repository.ts");
 const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
-const user_entity_1 = __webpack_require__(/*! ../../../../libs/database/entities/user.entity */ "./libs/database/entities/user.entity.ts");
+const user_entity_1 = __webpack_require__(/*! ./user.entity */ "./src/modules/domain/user/user.entity.ts");
 let DomainUserModule = class DomainUserModule {
 };
 exports.DomainUserModule = DomainUserModule;
@@ -12139,7 +13302,7 @@ exports.DomainUserRepository = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
 const base_repository_1 = __webpack_require__(/*! ../../../../libs/common/repositories/base.repository */ "./libs/common/repositories/base.repository.ts");
-const user_entity_1 = __webpack_require__(/*! ../../../../libs/database/entities/user.entity */ "./libs/database/entities/user.entity.ts");
+const user_entity_1 = __webpack_require__(/*! ./user.entity */ "./src/modules/domain/user/user.entity.ts");
 const typeorm_2 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
 let DomainUserRepository = class DomainUserRepository extends base_repository_1.BaseRepository {
     constructor(repository) {
@@ -12276,6 +13439,113 @@ exports.DomainUserService = DomainUserService = __decorate([
 
 /***/ }),
 
+/***/ "./src/modules/domain/webhook-event-log/webhook-event-log.entity.ts":
+/*!**************************************************************************!*\
+  !*** ./src/modules/domain/webhook-event-log/webhook-event-log.entity.ts ***!
+  \**************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b, _c;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.WebhookEventLog = void 0;
+const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
+let WebhookEventLog = class WebhookEventLog {
+};
+exports.WebhookEventLog = WebhookEventLog;
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
+    __metadata("design:type", String)
+], WebhookEventLog.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'uuid', comment: '웹훅 ID' }),
+    __metadata("design:type", String)
+], WebhookEventLog.prototype, "webhookId", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '이벤트 유형' }),
+    __metadata("design:type", String)
+], WebhookEventLog.prototype, "eventType", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'uuid', comment: '엔티티 ID' }),
+    __metadata("design:type", String)
+], WebhookEventLog.prototype, "entityId", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        comment: '페이로드 데이터 (JSON 형식)',
+        type: 'jsonb',
+    }),
+    __metadata("design:type", typeof (_a = typeof Record !== "undefined" && Record) === "function" ? _a : Object)
+], WebhookEventLog.prototype, "payload", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        comment: '응답 상태 코드',
+        type: 'int',
+        nullable: true,
+    }),
+    __metadata("design:type", Number)
+], WebhookEventLog.prototype, "responseCode", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        comment: '응답 본문',
+        type: 'text',
+        nullable: true,
+    }),
+    __metadata("design:type", String)
+], WebhookEventLog.prototype, "responseBody", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        comment: '시도 횟수',
+        type: 'int',
+        default: 1,
+    }),
+    __metadata("design:type", Number)
+], WebhookEventLog.prototype, "attemptCount", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        comment: '성공 여부',
+        type: 'boolean',
+        default: false,
+    }),
+    __metadata("design:type", Boolean)
+], WebhookEventLog.prototype, "isSuccess", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        comment: '마지막 시도 시간',
+        type: 'timestamp with time zone',
+        default: () => 'CURRENT_TIMESTAMP',
+    }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], WebhookEventLog.prototype, "lastAttemptAt", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)({ comment: '생성일시' }),
+    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
+], WebhookEventLog.prototype, "createdAt", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)('Webhook', { onDelete: 'CASCADE' }),
+    (0, typeorm_1.JoinColumn)({ name: 'webhookId' }),
+    __metadata("design:type", Object)
+], WebhookEventLog.prototype, "webhook", void 0);
+exports.WebhookEventLog = WebhookEventLog = __decorate([
+    (0, typeorm_1.Entity)('webhook_event_logs'),
+    (0, typeorm_1.Index)(['webhookId']),
+    (0, typeorm_1.Index)(['eventType']),
+    (0, typeorm_1.Index)(['entityId']),
+    (0, typeorm_1.Index)(['isSuccess']),
+    (0, typeorm_1.Index)(['createdAt'])
+], WebhookEventLog);
+
+
+/***/ }),
+
 /***/ "./src/modules/domain/webhook-event-log/webhook-event-log.module.ts":
 /*!**************************************************************************!*\
   !*** ./src/modules/domain/webhook-event-log/webhook-event-log.module.ts ***!
@@ -12295,13 +13565,13 @@ const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
 const webhook_event_log_service_1 = __webpack_require__(/*! ./webhook-event-log.service */ "./src/modules/domain/webhook-event-log/webhook-event-log.service.ts");
 const webhook_event_log_repository_1 = __webpack_require__(/*! ./webhook-event-log.repository */ "./src/modules/domain/webhook-event-log/webhook-event-log.repository.ts");
-const entities_1 = __webpack_require__(/*! ../../../../libs/database/entities */ "./libs/database/entities/index.ts");
+const webhook_event_log_entity_1 = __webpack_require__(/*! ./webhook-event-log.entity */ "./src/modules/domain/webhook-event-log/webhook-event-log.entity.ts");
 let DomainWebhookEventLogModule = class DomainWebhookEventLogModule {
 };
 exports.DomainWebhookEventLogModule = DomainWebhookEventLogModule;
 exports.DomainWebhookEventLogModule = DomainWebhookEventLogModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([entities_1.WebhookEventLog])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([webhook_event_log_entity_1.WebhookEventLog])],
         providers: [webhook_event_log_service_1.DomainWebhookEventLogService, webhook_event_log_repository_1.DomainWebhookEventLogRepository],
         exports: [webhook_event_log_service_1.DomainWebhookEventLogService],
     })
@@ -12472,6 +13742,104 @@ exports.DomainWebhookEventLogService = DomainWebhookEventLogService = __decorate
 
 /***/ }),
 
+/***/ "./src/modules/domain/webhook/webhook.entity.ts":
+/*!******************************************************!*\
+  !*** ./src/modules/domain/webhook/webhook.entity.ts ***!
+  \******************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b, _c;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Webhook = void 0;
+const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
+let Webhook = class Webhook {
+};
+exports.Webhook = Webhook;
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
+    __metadata("design:type", String)
+], Webhook.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '웹훅 이름' }),
+    __metadata("design:type", String)
+], Webhook.prototype, "webhookName", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '설명', nullable: true }),
+    __metadata("design:type", String)
+], Webhook.prototype, "description", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '대상 URL' }),
+    __metadata("design:type", String)
+], Webhook.prototype, "targetUrl", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '이벤트 유형' }),
+    __metadata("design:type", String)
+], Webhook.prototype, "eventType", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '엔티티 유형' }),
+    __metadata("design:type", String)
+], Webhook.prototype, "entityType", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '시크릿 키', nullable: true }),
+    __metadata("design:type", String)
+], Webhook.prototype, "secretKey", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        comment: '헤더 정보 (JSON 형식)',
+        type: 'jsonb',
+        nullable: true,
+    }),
+    __metadata("design:type", typeof (_a = typeof Record !== "undefined" && Record) === "function" ? _a : Object)
+], Webhook.prototype, "headers", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        comment: '활성화 상태',
+        type: 'boolean',
+        default: true,
+    }),
+    __metadata("design:type", Boolean)
+], Webhook.prototype, "isActive", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        comment: '재시도 횟수',
+        type: 'int',
+        default: 3,
+    }),
+    __metadata("design:type", Number)
+], Webhook.prototype, "retryCount", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        comment: '타임아웃 시간(초)',
+        type: 'int',
+        default: 30,
+    }),
+    __metadata("design:type", Number)
+], Webhook.prototype, "timeoutSeconds", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)({ comment: '생성일시' }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], Webhook.prototype, "createdAt", void 0);
+__decorate([
+    (0, typeorm_1.UpdateDateColumn)({ comment: '수정일시' }),
+    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
+], Webhook.prototype, "updatedAt", void 0);
+exports.Webhook = Webhook = __decorate([
+    (0, typeorm_1.Entity)('webhooks')
+], Webhook);
+
+
+/***/ }),
+
 /***/ "./src/modules/domain/webhook/webhook.module.ts":
 /*!******************************************************!*\
   !*** ./src/modules/domain/webhook/webhook.module.ts ***!
@@ -12491,13 +13859,13 @@ const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
 const webhook_service_1 = __webpack_require__(/*! ./webhook.service */ "./src/modules/domain/webhook/webhook.service.ts");
 const webhook_repository_1 = __webpack_require__(/*! ./webhook.repository */ "./src/modules/domain/webhook/webhook.repository.ts");
-const entities_1 = __webpack_require__(/*! ../../../../libs/database/entities */ "./libs/database/entities/index.ts");
+const webhook_entity_1 = __webpack_require__(/*! ./webhook.entity */ "./src/modules/domain/webhook/webhook.entity.ts");
 let DomainWebhookModule = class DomainWebhookModule {
 };
 exports.DomainWebhookModule = DomainWebhookModule;
 exports.DomainWebhookModule = DomainWebhookModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([entities_1.Webhook])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([webhook_entity_1.Webhook])],
         providers: [webhook_service_1.DomainWebhookService, webhook_repository_1.DomainWebhookRepository],
         exports: [webhook_service_1.DomainWebhookService],
     })

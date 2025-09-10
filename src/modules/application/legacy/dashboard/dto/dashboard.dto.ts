@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Log } from '../../../../../../libs/database/entities/log.entity';
+import { Log } from '../../../../../../libs/database/entities';
 
 // 시스템 상태 정보 DTO
 export class SystemStatusDto {

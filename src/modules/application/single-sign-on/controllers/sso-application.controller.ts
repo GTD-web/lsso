@@ -27,7 +27,7 @@ import {
 export class SsoApplicationController {
     constructor(private readonly ssoApplicationService: SsoApplicationService) {}
 
-    @ApiBasicAuth()
+    // @ApiBasicAuth()
     @Post('login')
     @HttpCode(HttpStatus.OK)
     @ApiOperation({
@@ -35,11 +35,11 @@ export class SsoApplicationController {
         description:
             '외부 시스템이 Basic Auth로 인증한 후, 사용자 이메일/비밀번호를 검증하고 액세스 토큰을 발급합니다.',
     })
-    @ApiHeader({
-        name: 'basic-auth',
-        description: 'Basic Auth 헤더, 형식: Basic base64(clientId:clientSecret)',
-        required: false,
-    })
+    // @ApiHeader({
+    //     name: 'basic-auth',
+    //     description: 'Basic Auth 헤더, 형식: Basic base64(clientId:clientSecret)',
+    //     required: false,
+    // })
     @ApiBody({ type: LoginRequestDto })
     @ApiResponse({
         status: 200,
@@ -50,10 +50,10 @@ export class SsoApplicationController {
     @ApiResponse({ status: 401, description: '시스템 인증 실패 또는 사용자 로그인 실패' })
     @ApiResponse({ status: 404, description: '사용자 또는 시스템을 찾을 수 없음' })
     async login(
-        @Headers('Authorization') authHeader: string,
         @Body() body: LoginRequestDto,
+        // @Headers('Authorization') authHeader?: string,
     ): Promise<LoginResponseDto> {
-        const result = await this.ssoApplicationService.login(authHeader, body);
+        const result = await this.ssoApplicationService.login(body);
         return result;
     }
 

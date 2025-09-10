@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DomainEmployeeDepartmentPositionRepository } from './employee-department-position.repository';
 import { BaseService } from '../../../../libs/common/services/base.service';
-import { EmployeeDepartmentPosition } from '../../../../libs/database/entities';
+import { EmployeeDepartmentPosition } from './employee-department-position.entity';
 import { In } from 'typeorm';
 
 @Injectable()

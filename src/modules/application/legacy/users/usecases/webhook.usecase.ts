@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Employee } from '../../../../../../libs/database/entities/employee.entity';
+import { Employee } from '../../../../../../libs/database/entities';
 import { EmployeeResponseDto } from '../../../../context/migration/dto/employee-response.dto';
 import { Gender, EmployeeStatus } from '../../../../../../libs/common/enums';
 import axios from 'axios';

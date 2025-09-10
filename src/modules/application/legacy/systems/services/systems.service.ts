@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { System } from '../../../../../../libs/database/entities/system.entity';
+import { System } from '../../../../../../libs/database/entities';
 import { DomainSystemService } from '../../../../domain/system/system.service';
 import { IRepositoryOptions } from '../../../../../../libs/common/interfaces/repository.interface';
 import { CreateSystemDto } from '../dto/create-system.dto';

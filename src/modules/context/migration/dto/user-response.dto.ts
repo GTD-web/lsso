@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { User } from '../../../../../libs/database/entities/user.entity';
+import { User } from '../../../../../libs/database/entities';
 
 export class UserResponseDto {
     @ApiProperty({ description: '사용자 ID' })

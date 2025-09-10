@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Employee } from '../../../../../../libs/database/entities/employee.entity';
+import { Employee } from '../../../../../../libs/database/entities';
 import { EmployeeStatus, Gender } from '../../../../../../libs/common/enums';
 
 export class UserResponseDto {
