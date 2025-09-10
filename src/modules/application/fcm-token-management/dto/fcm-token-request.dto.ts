@@ -1,12 +1,3 @@
-import { IsString, IsNotEmpty } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { BaseEmployeeIdentifierDto } from './base-employee-identifier.dto';
 
-export class FcmTokenRequestDto {
-    @ApiProperty({
-        description: '직원 번호',
-        example: '25001',
-    })
-    @IsString()
-    @IsNotEmpty()
-    employeeNumber: string;
-}
+export class FcmTokenRequestDto extends BaseEmployeeIdentifierDto {}
