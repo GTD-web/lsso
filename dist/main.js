@@ -1370,7 +1370,7 @@ __decorate([
     (0, swagger_1.ApiResponse)({
         status: 200,
         description: 'FCM 토큰 구독 해지 성공',
-        type: dto_1.FcmUnsubscribeResponseDto,
+        type: Boolean,
     }),
     (0, swagger_1.ApiResponse)({ status: 400, description: '잘못된 요청 형식 또는 employeeId와 employeeNumber 정합성 오류' }),
     (0, swagger_1.ApiResponse)({ status: 404, description: '직원 정보를 찾을 수 없음' }),
@@ -1537,20 +1537,6 @@ const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
 class FcmSubscribeResponseDto {
 }
 exports.FcmSubscribeResponseDto = FcmSubscribeResponseDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '구독 성공 여부',
-        example: true,
-    }),
-    __metadata("design:type", Boolean)
-], FcmSubscribeResponseDto.prototype, "success", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '응답 메시지',
-        example: 'FCM 토큰이 성공적으로 등록되었습니다.',
-    }),
-    __metadata("design:type", String)
-], FcmSubscribeResponseDto.prototype, "message", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: '등록된 FCM 토큰',
@@ -1962,8 +1948,6 @@ let FcmTokenManagementApplicationService = class FcmTokenManagementApplicationSe
         const employee = await this.getEmployeeFromIdentifier(requestDto);
         await this.fcmTokenManagementContextService.FCM토큰을_직원에게_등록한다(employee.id, fcmToken, deviceType);
         return {
-            success: true,
-            message: 'FCM 토큰이 성공적으로 등록되었습니다.',
             fcmToken: fcmToken,
         };
     }
@@ -1985,10 +1969,7 @@ let FcmTokenManagementApplicationService = class FcmTokenManagementApplicationSe
     async FCM토큰_구독을_해지한다(requestDto) {
         const employee = await this.getEmployeeFromIdentifier(requestDto);
         await this.fcmTokenManagementContextService.직원의_모든_FCM토큰을_제거한다(employee.id);
-        return {
-            success: true,
-            message: 'FCM 토큰 구독이 성공적으로 해지되었습니다.',
-        };
+        return true;
     }
     async 여러_직원의_FCM토큰을_조회한다(employeeNumbers) {
         return this.여러_직원의_FCM토큰을_통합_조회한다(employeeNumbers, 'number');

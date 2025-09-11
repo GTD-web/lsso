@@ -91,11 +91,11 @@ export class FcmTokenManagementApplicationController {
     @ApiResponse({
         status: 200,
         description: 'FCM 토큰 구독 해지 성공',
-        type: FcmUnsubscribeResponseDto,
+        type: Boolean,
     })
     @ApiResponse({ status: 400, description: '잘못된 요청 형식 또는 employeeId와 employeeNumber 정합성 오류' })
     @ApiResponse({ status: 404, description: '직원 정보를 찾을 수 없음' })
-    async unsubscribeFcm(@Body() body: FcmUnsubscribeRequestDto): Promise<FcmUnsubscribeResponseDto> {
+    async unsubscribeFcm(@Body() body: FcmUnsubscribeRequestDto): Promise<boolean> {
         return this.fcmTokenManagementApplicationService.FCM토큰_구독을_해지한다(body);
     }
 
