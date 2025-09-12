@@ -178,4 +178,11 @@ export class SsoApplicationService {
         const diffMs = expiresAt.getTime() - now.getTime();
         return Math.floor(diffMs / 1000); // 초 단위로 변환
     }
+
+    /**
+     * 만료된 토큰들을 정리합니다
+     */
+    async 만료된_토큰을_정리한다(): Promise<{ deletedCount: number; message: string }> {
+        return await this.authorizationContextService.만료된_토큰을_정리한다();
+    }
 }

@@ -1,6 +1,7 @@
 import {
     Controller,
     Post,
+    Get,
     Body,
     HttpCode,
     Headers,
@@ -129,4 +130,33 @@ export class SsoApplicationController {
     ): Promise<CheckPasswordResponseDto> {
         return this.ssoApplicationService.checkPassword(authHeader, body);
     }
+
+    @Get('cron/clean-up/token')
+    @HttpCode(HttpStatus.OK)
+    @ApiOperation({
+        summary: '만료된 토큰 정리 배치작업',
+        description: '만료된 토큰들을 데이터베이스에서 삭제하는 배치작업을 실행합니다.',
+    })
+    @ApiResponse({
+        status: 200,
+        description: '배치작업 실행 성공',
+        schema: {
+            type: 'object',
+            properties: {
+                deletedCount: {
+                    type: 'number',
+                    description: '삭제된 토큰 개수',
+                },
+                message: {
+                    type: 'string',
+                    description: '실행 결과 메시지',
+                },
+            },
+        },
+    })
+    @ApiResponse({ status: 500, description: '서버 내부 오류' })
+    async cleanUpExpiredTokens(): Promise<{ deletedCount: number; message: string }> {
+        return this.ssoApplicationService.만료된_토큰을_정리한다();
+    }
+
 }

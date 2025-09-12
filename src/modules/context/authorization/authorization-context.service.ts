@@ -113,18 +113,19 @@ export class AuthorizationContextService {
         const now = new Date();
         const tokenExpiresAt = new Date(now.getTime() + expiresInDays * 24 * 60 * 60 * 1000);
         const refreshTokenExpiresAt = new Date(now.getTime() + refreshExpiresInDays * 24 * 60 * 60 * 1000);
-        const existingTokens = await this.직원토큰서비스.findByEmployeeId(employee.id);
+        // const existingTokens = await this.직원토큰서비스.findByEmployeeId(employee.id);
         // 사용자의 기존 토큰 확인
-        if (existingTokens && existingTokens.length > 0) {
-            const existingToken = existingTokens[0];
+        // TODO 추후 논의 후 변경 필요한 부분. 우선 중복세션 허용 - 2025-09-12 김규현
+        // if (existingTokens && existingTokens.length > 0) {
+        //     const existingToken = existingTokens[0];
 
-            return await this.토큰서비스.update(existingToken.tokenId, {
-                accessToken,
-                refreshToken,
-                tokenExpiresAt,
-                refreshTokenExpiresAt,
-            });
-        }
+        //     return await this.토큰서비스.update(existingToken.tokenId, {
+        //         accessToken,
+        //         refreshToken,
+        //         tokenExpiresAt,
+        //         refreshTokenExpiresAt,
+        //     });
+        // }
         // 기존 토큰이 없으면 새로 생성
         const token = await this.토큰서비스.save({
             accessToken,
@@ -146,5 +147,32 @@ export class AuthorizationContextService {
 
     async 비밀번호를_검증한다(employee: Employee, password: string): Promise<boolean> {
         return await this.직원서비스.verifyPassword(password, employee);
+    }
+
+    /**
+     * 만료된 토큰들을 정리합니다
+     */
+    async 만료된_토큰을_정리한다(): Promise<{ deletedCount: number; message: string }> {
+        // 1. 먼저 만료된 토큰들을 조회
+        const expiredTokens = await this.토큰서비스.findExpiredTokens();
+        
+        if (expiredTokens.length === 0) {
+            return {
+                deletedCount: 0,
+                message: '삭제할 만료된 토큰이 없습니다.',
+            };
+        }
+        
+        // 2. 중간테이블(employee-token) 데이터 먼저 삭제
+        const tokenIds = expiredTokens.map(token => token.id);
+        await this.직원토큰서비스.deleteByTokenIds(tokenIds);
+        
+        // 3. 그 다음 토큰 데이터 삭제
+        const result = await this.토큰서비스.deleteExpiredTokens();
+        
+        return {
+            deletedCount: result.deletedCount,
+            message: `만료된 토큰 ${result.deletedCount}개가 성공적으로 삭제되었습니다.`,
+        };
     }
 }

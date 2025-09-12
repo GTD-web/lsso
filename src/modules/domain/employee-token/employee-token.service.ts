@@ -43,4 +43,21 @@ export class DomainEmployeeTokenService extends BaseService<EmployeeToken> {
             ...relationData,
         });
     }
+
+    // 특정 토큰 ID들에 해당하는 중간테이블 데이터 삭제
+    async deleteByTokenIds(tokenIds: string[]): Promise<{ deletedCount: number }> {
+        let deletedCount = 0;
+        for (const tokenId of tokenIds) {
+            const relations = await this.employeeTokenRepository.findAll({
+                where: { tokenId },
+            });
+            
+            for (const relation of relations) {
+                await this.employeeTokenRepository.delete(relation.id);
+                deletedCount++;
+            }
+        }
+        
+        return { deletedCount };
+    }
 }
