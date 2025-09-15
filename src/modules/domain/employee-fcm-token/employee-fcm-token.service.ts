@@ -27,16 +27,16 @@ export class DomainEmployeeFcmTokenService extends BaseService<EmployeeFcmToken>
 
     // 직원과 FCM 토큰 관계 생성 또는 업데이트
     async createOrUpdateRelation(employeeId: string, fcmTokenId: string): Promise<EmployeeFcmToken> {
-        // const existingRelation = await this.employeeFcmTokenRepository.findOne({
-        //     where: { employeeId, fcmTokenId },
-        // });
+        const existingRelation = await this.employeeFcmTokenRepository.findOne({
+            where: { employeeId, fcmTokenId },
+        });
 
-        // if (existingRelation) {
-        //     // 기존 관계가 있으면 updatedAt 갱신하여 반환
-        //     return this.employeeFcmTokenRepository.update(existingRelation.id, {
-        //         updatedAt: new Date(),
-        //     });
-        // }
+        if (existingRelation) {
+            // 기존 관계가 있으면 updatedAt 갱신하여 반환
+            return this.employeeFcmTokenRepository.update(existingRelation.id, {
+                updatedAt: new Date(),
+            });
+        }
 
         // 새로운 관계 생성
         return this.employeeFcmTokenRepository.save({

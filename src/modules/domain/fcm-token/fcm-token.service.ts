@@ -13,7 +13,7 @@ export class DomainFcmTokenService extends BaseService<FcmToken> {
     // FCM 토큰으로 조회
     async findByFcmToken(fcmToken: string): Promise<FcmToken | null> {
         return this.fcmTokenRepository.findOne({
-            where: { fcmToken, isActive: true },
+            where: { fcmToken },
         });
     }
 
@@ -34,16 +34,17 @@ export class DomainFcmTokenService extends BaseService<FcmToken> {
         deviceInfo?: any,
     ): Promise<FcmToken> {
         // 직원ID + 디바이스 타입으로 기존 토큰 조회
-        // const existingToken = await this.findByEmployeeAndDeviceType(employeeId, deviceType);
+        const existingToken = await this.findByFcmToken(fcmToken);
 
-        // if (existingToken) {
-        //     // 기존 토큰이 있으면 fcmToken 값과 디바이스 정보 업데이트
-        //     return this.fcmTokenRepository.update(existingToken.id, {
-        //         fcmToken,
-        //         deviceInfo,
-        //         isActive: true,
-        //     });
-        // }
+        if (existingToken) {
+            // 기존 토큰이 있으면 fcmToken 값과 디바이스 정보 업데이트
+            return this.fcmTokenRepository.update(existingToken.id, {
+                // fcmToken,
+                deviceType,
+                deviceInfo,
+                isActive: true,
+            });
+        }
 
         // 기존 토큰이 없으면 새로 생성
         try {
@@ -55,14 +56,14 @@ export class DomainFcmTokenService extends BaseService<FcmToken> {
             });
         } catch (error) {
             // 중복 키 오류인 경우 다시 조회해서 반환
-            if (error.code === '23505') {
-                // PostgreSQL unique constraint error
-                const token = await this.findByFcmToken(fcmToken);
-                if (token) {
-                    return token;
-                }
-            }
-            throw error;
+            // if (error.code === '23505') {
+            //     // PostgreSQL unique constraint error
+            //     const token = await this.findByFcmToken(fcmToken);
+            //     if (token) {
+            //         return token;
+            //     }
+            // }
+            throw new ConflictException('FCM 토큰을 생성할 수 없습니다.');
         }
     }
 

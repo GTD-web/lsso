@@ -57,7 +57,6 @@ export class FcmTokenManagementContextService {
         if (!employee) {
             throw new NotFoundException('존재하지 않는 직원입니다.');
         }
-
         // 직원의 활성 FCM 토큰 관계 조회
         const relations = await this.직원FCM토큰서비스.findByEmployeeId(employeeId);
 

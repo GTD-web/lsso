@@ -99,10 +99,11 @@ export class FcmTokenManagementApplicationService {
 
         // 직원 정보 조회 (employeeId 우선, 없으면 employeeNumber)
         const employee = await this.getEmployeeFromIdentifier(requestDto);
-
+        console.log('employee', employee);
         // FCM 토큰 등록
         await this.fcmTokenManagementContextService.FCM토큰을_직원에게_등록한다(employee.id, fcmToken, deviceType);
-
+        console.log('fcmToken', fcmToken);
+        console.log('deviceType', deviceType);
         return {
             fcmToken: fcmToken,
         };
@@ -167,11 +168,9 @@ export class FcmTokenManagementApplicationService {
                     type === 'id'
                         ? await this.organizationContextService.직원_ID값으로_직원정보를_조회한다(identifier)
                         : await this.organizationContextService.직원_사번으로_직원정보를_조회한다(identifier);
-
                 // 직원의 FCM 토큰 목록 조회
                 const employeeFcmTokens =
                     await this.fcmTokenManagementContextService.직원의_활성_FCM토큰_목록을_조회한다(employee.id);
-
                 if (employeeFcmTokens.length > 0) {
                     // 직원별 토큰 정보
                     const tokens = employeeFcmTokens.map((employeeFcmToken) => ({
