@@ -30,20 +30,20 @@ export class DomainFcmTokenService extends BaseService<FcmToken> {
     async createOrFindByEmployeeAndDevice(
         employeeId: string,
         fcmToken: string,
-        deviceType: string = 'pc',
+        deviceType: string,
         deviceInfo?: any,
     ): Promise<FcmToken> {
         // 직원ID + 디바이스 타입으로 기존 토큰 조회
-        const existingToken = await this.findByEmployeeAndDeviceType(employeeId, deviceType);
+        // const existingToken = await this.findByEmployeeAndDeviceType(employeeId, deviceType);
 
-        if (existingToken) {
-            // 기존 토큰이 있으면 fcmToken 값과 디바이스 정보 업데이트
-            return this.fcmTokenRepository.update(existingToken.id, {
-                fcmToken,
-                deviceInfo,
-                isActive: true,
-            });
-        }
+        // if (existingToken) {
+        //     // 기존 토큰이 있으면 fcmToken 값과 디바이스 정보 업데이트
+        //     return this.fcmTokenRepository.update(existingToken.id, {
+        //         fcmToken,
+        //         deviceInfo,
+        //         isActive: true,
+        //     });
+        // }
 
         // 기존 토큰이 없으면 새로 생성
         try {

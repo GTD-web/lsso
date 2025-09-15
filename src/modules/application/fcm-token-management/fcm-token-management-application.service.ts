@@ -104,8 +104,6 @@ export class FcmTokenManagementApplicationService {
         await this.fcmTokenManagementContextService.FCM토큰을_직원에게_등록한다(employee.id, fcmToken, deviceType);
 
         return {
-            success: true,
-            message: 'FCM 토큰이 성공적으로 등록되었습니다.',
             fcmToken: fcmToken,
         };
     }
@@ -134,17 +132,14 @@ export class FcmTokenManagementApplicationService {
         };
     }
 
-    async FCM토큰_구독을_해지한다(requestDto: BaseEmployeeIdentifierDto): Promise<FcmUnsubscribeResponseDto> {
+    async FCM토큰_구독을_해지한다(requestDto: BaseEmployeeIdentifierDto): Promise<boolean> {
         // 직원 정보 조회
         const employee = await this.getEmployeeFromIdentifier(requestDto);
 
         // 직원의 모든 FCM 토큰 제거
         await this.fcmTokenManagementContextService.직원의_모든_FCM토큰을_제거한다(employee.id);
 
-        return {
-            success: true,
-            message: 'FCM 토큰 구독이 성공적으로 해지되었습니다.',
-        };
+        return true;
     }
 
     // 알림서버용 API - 여러 직원의 FCM 토큰을 한 번에 조회 (직원번호 기준)

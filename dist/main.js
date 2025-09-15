@@ -1370,7 +1370,7 @@ __decorate([
     (0, swagger_1.ApiResponse)({
         status: 200,
         description: 'FCM 토큰 구독 해지 성공',
-        type: dto_1.FcmUnsubscribeResponseDto,
+        type: Boolean,
     }),
     (0, swagger_1.ApiResponse)({ status: 400, description: '잘못된 요청 형식 또는 employeeId와 employeeNumber 정합성 오류' }),
     (0, swagger_1.ApiResponse)({ status: 404, description: '직원 정보를 찾을 수 없음' }),
@@ -1537,20 +1537,6 @@ const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
 class FcmSubscribeResponseDto {
 }
 exports.FcmSubscribeResponseDto = FcmSubscribeResponseDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '구독 성공 여부',
-        example: true,
-    }),
-    __metadata("design:type", Boolean)
-], FcmSubscribeResponseDto.prototype, "success", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '응답 메시지',
-        example: 'FCM 토큰이 성공적으로 등록되었습니다.',
-    }),
-    __metadata("design:type", String)
-], FcmSubscribeResponseDto.prototype, "message", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: '등록된 FCM 토큰',
@@ -1962,8 +1948,6 @@ let FcmTokenManagementApplicationService = class FcmTokenManagementApplicationSe
         const employee = await this.getEmployeeFromIdentifier(requestDto);
         await this.fcmTokenManagementContextService.FCM토큰을_직원에게_등록한다(employee.id, fcmToken, deviceType);
         return {
-            success: true,
-            message: 'FCM 토큰이 성공적으로 등록되었습니다.',
             fcmToken: fcmToken,
         };
     }
@@ -1985,10 +1969,7 @@ let FcmTokenManagementApplicationService = class FcmTokenManagementApplicationSe
     async FCM토큰_구독을_해지한다(requestDto) {
         const employee = await this.getEmployeeFromIdentifier(requestDto);
         await this.fcmTokenManagementContextService.직원의_모든_FCM토큰을_제거한다(employee.id);
-        return {
-            success: true,
-            message: 'FCM 토큰 구독이 성공적으로 해지되었습니다.',
-        };
+        return true;
     }
     async 여러_직원의_FCM토큰을_조회한다(employeeNumbers) {
         return this.여러_직원의_FCM토큰을_통합_조회한다(employeeNumbers, 'number');
@@ -8453,7 +8434,7 @@ let FcmTokenManagementContextService = class FcmTokenManagementContextService {
         this.FCM토큰서비스 = FCM토큰서비스;
         this.직원FCM토큰서비스 = 직원FCM토큰서비스;
     }
-    async FCM토큰을_직원에게_등록한다(employeeId, fcmToken, deviceType = 'pc', deviceInfo) {
+    async FCM토큰을_직원에게_등록한다(employeeId, fcmToken, deviceType, deviceInfo) {
         const employee = await this.직원서비스.findByEmployeeId(employeeId);
         if (!employee) {
             throw new common_1.NotFoundException('존재하지 않는 직원입니다.');
@@ -8477,58 +8458,12 @@ let FcmTokenManagementContextService = class FcmTokenManagementContextService {
         const relations = await this.직원FCM토큰서비스.findByEmployeeId(employeeId);
         return relations.map((relation) => relation.fcmToken).filter((token) => token);
     }
-    async FCM토큰의_활성_상태를_변경한다(fcmToken, isActive) {
-        const fcmTokenEntity = await this.FCM토큰서비스.findByFcmToken(fcmToken);
-        if (!fcmTokenEntity) {
-            throw new common_1.NotFoundException('존재하지 않는 FCM 토큰입니다.');
-        }
-        return this.FCM토큰서비스.update(fcmTokenEntity.id, { isActive });
-    }
-    async FCM토큰을_업데이트한다(fcmToken, deviceType, deviceInfo) {
-        const fcmTokenEntity = await this.FCM토큰서비스.findByFcmToken(fcmToken);
-        if (!fcmTokenEntity) {
-            throw new common_1.NotFoundException('존재하지 않는 FCM 토큰입니다.');
-        }
-        const updateData = {};
-        if (deviceType !== undefined)
-            updateData.deviceType = deviceType;
-        if (deviceInfo !== undefined)
-            updateData.deviceInfo = deviceInfo;
-        return this.FCM토큰서비스.update(fcmTokenEntity.id, updateData);
-    }
-    async 특정_FCM토큰을_사용하는_직원들을_조회한다(fcmToken) {
-        const fcmTokenEntity = await this.FCM토큰서비스.findByFcmToken(fcmToken);
-        if (!fcmTokenEntity) {
-            throw new common_1.NotFoundException('존재하지 않는 FCM 토큰입니다.');
-        }
-        const relations = await this.직원FCM토큰서비스.findByFcmTokenId(fcmTokenEntity.id);
-        return relations.map((relation) => relation.employee).filter((employee) => employee);
-    }
     async 직원의_모든_FCM토큰을_제거한다(employeeId) {
         const employee = await this.직원서비스.findByEmployeeId(employeeId);
         if (!employee) {
             throw new common_1.NotFoundException('존재하지 않는 직원입니다.');
         }
         await this.직원FCM토큰서비스.deleteAllByEmployeeId(employeeId);
-    }
-    async 디바이스_타입별_FCM토큰_통계를_조회한다() {
-        return this.FCM토큰서비스.getStatisticsByDeviceType();
-    }
-    async 오래된_FCM토큰을_정리한다(days = 30) {
-        const cutoffDate = new Date();
-        cutoffDate.setDate(cutoffDate.getDate() - days);
-        return this.직원FCM토큰서비스.deleteOldTokens(cutoffDate);
-    }
-    async FCM토큰_사용_현황을_업데이트한다(fcmToken) {
-        const fcmTokenEntity = await this.FCM토큰서비스.findByFcmToken(fcmToken);
-        if (!fcmTokenEntity) {
-            throw new common_1.NotFoundException('존재하지 않는 FCM 토큰입니다.');
-        }
-        await this.직원FCM토큰서비스.updateTokenUsage(fcmTokenEntity.id);
-    }
-    async 직원의_기본_FCM토큰을_설정한다(employeeId, fcmToken) {
-        await this.직원의_모든_FCM토큰을_제거한다(employeeId);
-        return this.FCM토큰을_직원에게_등록한다(employeeId, fcmToken);
     }
 };
 exports.FcmTokenManagementContextService = FcmTokenManagementContextService;
@@ -10461,7 +10396,7 @@ let DomainEmployeeFcmTokenService = class DomainEmployeeFcmTokenService extends 
     }
     async findByEmployeeId(employeeId) {
         return this.employeeFcmTokenRepository.findAll({
-            where: { employeeId },
+            where: { employeeId, fcmToken: { deviceType: 'prod' } },
             relations: ['fcmToken'],
         });
     }
@@ -10472,14 +10407,6 @@ let DomainEmployeeFcmTokenService = class DomainEmployeeFcmTokenService extends 
         });
     }
     async createOrUpdateRelation(employeeId, fcmTokenId) {
-        const existingRelation = await this.employeeFcmTokenRepository.findOne({
-            where: { employeeId, fcmTokenId },
-        });
-        if (existingRelation) {
-            return this.employeeFcmTokenRepository.update(existingRelation.id, {
-                updatedAt: new Date(),
-            });
-        }
         return this.employeeFcmTokenRepository.save({
             employeeId,
             fcmTokenId,
@@ -11717,15 +11644,7 @@ let DomainFcmTokenService = class DomainFcmTokenService extends base_service_1.B
     async findByEmployeeAndDeviceType(employeeId, deviceType) {
         return this.fcmTokenRepository.findByEmployeeAndDeviceType(employeeId, deviceType);
     }
-    async createOrFindByEmployeeAndDevice(employeeId, fcmToken, deviceType = 'pc', deviceInfo) {
-        const existingToken = await this.findByEmployeeAndDeviceType(employeeId, deviceType);
-        if (existingToken) {
-            return this.fcmTokenRepository.update(existingToken.id, {
-                fcmToken,
-                deviceInfo,
-                isActive: true,
-            });
-        }
+    async createOrFindByEmployeeAndDevice(employeeId, fcmToken, deviceType, deviceInfo) {
         try {
             return await this.fcmTokenRepository.save({
                 fcmToken,
