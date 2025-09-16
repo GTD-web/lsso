@@ -223,7 +223,7 @@ export class OrganizationInformationApplicationController {
         return this.organizationInformationApplicationService.부서_계층구조별_직원정보를_조회한다(requestDto);
     }
 
-    @Post('cron/sync')
+    @Get('cron/sync')
     @Public()
     @HttpCode(HttpStatus.OK)
     @ApiOperation({

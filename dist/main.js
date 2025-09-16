@@ -1946,7 +1946,10 @@ let FcmTokenManagementApplicationService = class FcmTokenManagementApplicationSe
     async FCM토큰을_구독한다(requestDto) {
         const { fcmToken, deviceType } = requestDto;
         const employee = await this.getEmployeeFromIdentifier(requestDto);
+        console.log('employee', employee);
         await this.fcmTokenManagementContextService.FCM토큰을_직원에게_등록한다(employee.id, fcmToken, deviceType);
+        console.log('fcmToken', fcmToken);
+        console.log('deviceType', deviceType);
         return {
             fcmToken: fcmToken,
         };
@@ -6524,7 +6527,7 @@ __decorate([
     __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
 ], OrganizationInformationApplicationController.prototype, "getDepartmentHierarchy", null);
 __decorate([
-    (0, common_1.Post)('cron/sync'),
+    (0, common_1.Get)('cron/sync'),
     (0, public_decorator_1.Public)(),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     (0, swagger_1.ApiOperation)({
@@ -10396,7 +10399,7 @@ let DomainEmployeeFcmTokenService = class DomainEmployeeFcmTokenService extends 
     }
     async findByEmployeeId(employeeId) {
         return this.employeeFcmTokenRepository.findAll({
-            where: { employeeId, fcmToken: { deviceType: 'prod' } },
+            where: { employeeId },
             relations: ['fcmToken'],
         });
     }
@@ -10407,6 +10410,14 @@ let DomainEmployeeFcmTokenService = class DomainEmployeeFcmTokenService extends 
         });
     }
     async createOrUpdateRelation(employeeId, fcmTokenId) {
+        const existingRelation = await this.employeeFcmTokenRepository.findOne({
+            where: { employeeId, fcmTokenId },
+        });
+        if (existingRelation) {
+            return this.employeeFcmTokenRepository.update(existingRelation.id, {
+                updatedAt: new Date(),
+            });
+        }
         return this.employeeFcmTokenRepository.save({
             employeeId,
             fcmTokenId,
@@ -11638,13 +11649,21 @@ let DomainFcmTokenService = class DomainFcmTokenService extends base_service_1.B
     }
     async findByFcmToken(fcmToken) {
         return this.fcmTokenRepository.findOne({
-            where: { fcmToken, isActive: true },
+            where: { fcmToken },
         });
     }
     async findByEmployeeAndDeviceType(employeeId, deviceType) {
         return this.fcmTokenRepository.findByEmployeeAndDeviceType(employeeId, deviceType);
     }
     async createOrFindByEmployeeAndDevice(employeeId, fcmToken, deviceType, deviceInfo) {
+        const existingToken = await this.findByFcmToken(fcmToken);
+        if (existingToken) {
+            return this.fcmTokenRepository.update(existingToken.id, {
+                deviceType,
+                deviceInfo,
+                isActive: true,
+            });
+        }
         try {
             return await this.fcmTokenRepository.save({
                 fcmToken,
@@ -11654,13 +11673,7 @@ let DomainFcmTokenService = class DomainFcmTokenService extends base_service_1.B
             });
         }
         catch (error) {
-            if (error.code === '23505') {
-                const token = await this.findByFcmToken(fcmToken);
-                if (token) {
-                    return token;
-                }
-            }
-            throw error;
+            throw new common_1.ConflictException('FCM 토큰을 생성할 수 없습니다.');
         }
     }
     async createOrFind(fcmToken, deviceType = 'pc', deviceInfo) {
