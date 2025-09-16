@@ -12,7 +12,7 @@ export class DomainEmployeeFcmTokenService extends BaseService<EmployeeFcmToken>
     // 직원의 FCM 토큰 목록 조회
     async findByEmployeeId(employeeId: string): Promise<EmployeeFcmToken[]> {
         return this.employeeFcmTokenRepository.findAll({
-            where: { employeeId, fcmToken: { deviceType: 'prod' } },
+            where: { employeeId },
             relations: ['fcmToken'],
         });
     }

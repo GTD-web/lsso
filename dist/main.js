@@ -10358,7 +10358,7 @@ let DomainEmployeeFcmTokenService = class DomainEmployeeFcmTokenService extends 
     }
     async findByEmployeeId(employeeId) {
         return this.employeeFcmTokenRepository.findAll({
-            where: { employeeId, fcmToken: { deviceType: 'prod' } },
+            where: { employeeId },
             relations: ['fcmToken'],
         });
     }
