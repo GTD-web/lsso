@@ -44,6 +44,11 @@ export class DomainRankService extends BaseService<Rank> {
         return rank;
     }
 
+    // 직급 코드로 찾기 (컨텍스트용 별칭)
+    async findByRankCode(rankCode: string): Promise<Rank> {
+        return this.findByCode(rankCode);
+    }
+
     // 전체 직급 목록 조회 (레벨 순)
     async findAllRanks(): Promise<Rank[]> {
         return this.rankRepository.findAll({
@@ -64,5 +69,20 @@ export class DomainRankService extends BaseService<Rank> {
         return this.rankRepository.findAll({
             order: { level: 'DESC' },
         });
+    }
+
+    // 직급 생성
+    async createRank(data: { rankName: string; rankCode: string; level: number }): Promise<Rank> {
+        return this.save(data);
+    }
+
+    // 직급 수정
+    async updateRank(rankId: string, data: Partial<Rank>): Promise<Rank> {
+        return this.update(rankId, data);
+    }
+
+    // 직급 삭제
+    async deleteRank(rankId: string): Promise<void> {
+        return this.delete(rankId);
     }
 }

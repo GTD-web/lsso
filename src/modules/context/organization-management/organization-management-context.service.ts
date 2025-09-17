@@ -30,9 +30,11 @@ export class OrganizationContextService {
         employee: Employee,
     ): Promise<{ department: Department; position: Position; rank: Rank }> {
         const 부서직책정보 = await this.직원부서직책서비스.findByEmployeeId(employee.id);
-        const department = await this.부서서비스.findById(부서직책정보.departmentId);
-        const position = await this.직책서비스.findById(부서직책정보.positionId);
-        const rank = await this.직급서비스.findById(employee.currentRankId);
+        const department = 부서직책정보?.departmentId
+            ? await this.부서서비스.findById(부서직책정보.departmentId)
+            : null;
+        const position = 부서직책정보?.positionId ? await this.직책서비스.findById(부서직책정보.positionId) : null;
+        const rank = employee.currentRankId ? await this.직급서비스.findById(employee.currentRankId) : null;
         return { department, position, rank };
     }
 

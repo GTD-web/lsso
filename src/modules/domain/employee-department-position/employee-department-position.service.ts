@@ -25,6 +25,21 @@ export class DomainEmployeeDepartmentPositionService extends BaseService<Employe
         });
     }
 
+    // 직원의 모든 배치 정보 조회
+    async findAllByEmployeeId(employeeId: string): Promise<EmployeeDepartmentPosition[]> {
+        return this.employeeDepartmentPositionRepository.findAll({
+            where: { employeeId },
+            order: { createdAt: 'DESC' },
+        });
+    }
+
+    // ID로 배치 정보 조회
+    async findById(assignmentId: string): Promise<EmployeeDepartmentPosition> {
+        return this.employeeDepartmentPositionRepository.findOne({
+            where: { id: assignmentId },
+        });
+    }
+
     // 부서의 직원-직책 정보 조회
     async findByDepartmentId(departmentId: string): Promise<EmployeeDepartmentPosition[]> {
         return this.employeeDepartmentPositionRepository.findAll({
@@ -127,5 +142,35 @@ export class DomainEmployeeDepartmentPositionService extends BaseService<Employe
             order: { createdAt: 'DESC' },
             take: limit,
         });
+    }
+
+    // 모든 배치 정보 조회
+    async findAllAssignments(): Promise<EmployeeDepartmentPosition[]> {
+        return this.employeeDepartmentPositionRepository.findAll({
+            order: { createdAt: 'DESC' },
+        });
+    }
+
+    // 배치 생성
+    async createAssignment(data: {
+        employeeId: string;
+        departmentId: string;
+        positionId: string;
+        isManager: boolean;
+    }): Promise<EmployeeDepartmentPosition> {
+        return this.save(data);
+    }
+
+    // 배치 수정
+    async updateAssignment(
+        assignmentId: string,
+        data: Partial<EmployeeDepartmentPosition>,
+    ): Promise<EmployeeDepartmentPosition> {
+        return this.update(assignmentId, data);
+    }
+
+    // 배치 삭제
+    async deleteAssignment(assignmentId: string): Promise<void> {
+        return this.delete(assignmentId);
     }
 }

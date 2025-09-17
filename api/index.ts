@@ -1,14 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from '../src/app.module';
-import { setupSwagger } from '../src/common/utils/swagger';
+import { setupSwagger } from 'libs/common/utils/swagger';
 import { ENV } from '../libs/configs/env.config';
 import * as dtos from '../src/dtos.index';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
-import { LoggingInterceptor } from '../src/common/interceptors/logging.interceptor';
-import { LogsService } from '../src/modules/application/legacy/logs/services/logs.service';
-import { SystemsService } from '../src/modules/application/legacy/systems/services/systems.service';
+import { LoggingInterceptor } from 'libs/common/interceptors/logging.interceptor';
+// import { LogsService } from '../src/modules/application/admin/logs/services/logs.service';
+// import { SystemsService } from '../src/modules/application/admin/systems/services/systems.service';
 import * as hbs from 'hbs';
 import { RequestInterceptor } from '../libs/common/interceptors/request.interceptor';
 import { ErrorInterceptor } from '../libs/common/interceptors/error.interceptor';
@@ -42,7 +42,7 @@ async function createApp(): Promise<NestExpressApplication> {
         app.enableCors();
 
         app.useGlobalInterceptors(new RequestInterceptor(), new ErrorInterceptor());
-        app.useGlobalInterceptors(new LoggingInterceptor(app.get(LogsService), app.get(SystemsService)));
+        // app.useGlobalInterceptors(new LoggingInterceptor(app.get(LogsService), app.get(SystemsService)));
 
         // Handlebars 설정 (Vercel에서는 static assets 경로 조정 필요)
         try {

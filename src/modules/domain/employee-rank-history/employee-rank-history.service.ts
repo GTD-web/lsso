@@ -76,4 +76,21 @@ export class DomainEmployeeRankHistoryService extends BaseService<EmployeeRankHi
             take: limit,
         });
     }
+
+    // ID로 직급 이력 조회
+    async findById(historyId: string): Promise<EmployeeRankHistory> {
+        return this.employeeRankHistoryRepository.findOne({
+            where: { id: historyId },
+        });
+    }
+
+    // 직급 이력 생성
+    async createHistory(data: { employeeId: string; rankId: string }): Promise<EmployeeRankHistory> {
+        return this.save(data);
+    }
+
+    // 직급 이력 삭제
+    async deleteHistory(historyId: string): Promise<void> {
+        return this.delete(historyId);
+    }
 }
