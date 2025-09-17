@@ -20,6 +20,10 @@
         {
             "path": "/api/organization/cron/sync",
             "schedule": "0 * * * *"
+        },
+        {
+            "path": "/api/auth/cron/clean-up/token",
+            "schedule": "0 * * * *"
         }
     ]
 }

@@ -8601,7 +8601,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SsoApplicationController = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
@@ -8624,6 +8624,9 @@ let SsoApplicationController = class SsoApplicationController {
     }
     async checkPassword(authHeader, body) {
         return this.ssoApplicationService.checkPassword(authHeader, body);
+    }
+    async cleanUpExpiredTokens() {
+        return this.ssoApplicationService.만료된_토큰을_정리한다();
     }
 };
 exports.SsoApplicationController = SsoApplicationController;
@@ -8723,6 +8726,35 @@ __decorate([
     __metadata("design:paramtypes", [String, typeof (_g = typeof dto_1.CheckPasswordRequestDto !== "undefined" && dto_1.CheckPasswordRequestDto) === "function" ? _g : Object]),
     __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
 ], SsoApplicationController.prototype, "checkPassword", null);
+__decorate([
+    (0, common_1.Get)('cron/clean-up/token'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, swagger_1.ApiOperation)({
+        summary: '만료된 토큰 정리 배치작업',
+        description: '만료된 토큰들을 데이터베이스에서 삭제하는 배치작업을 실행합니다.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: '배치작업 실행 성공',
+        schema: {
+            type: 'object',
+            properties: {
+                deletedCount: {
+                    type: 'number',
+                    description: '삭제된 토큰 개수',
+                },
+                message: {
+                    type: 'string',
+                    description: '실행 결과 메시지',
+                },
+            },
+        },
+    }),
+    (0, swagger_1.ApiResponse)({ status: 500, description: '서버 내부 오류' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
+], SsoApplicationController.prototype, "cleanUpExpiredTokens", null);
 exports.SsoApplicationController = SsoApplicationController = __decorate([
     (0, swagger_1.ApiTags)('외부 시스템 인증 API'),
     (0, common_1.Controller)('auth'),
@@ -9281,6 +9313,9 @@ let SsoApplicationService = class SsoApplicationService {
         const diffMs = expiresAt.getTime() - now.getTime();
         return Math.floor(diffMs / 1000);
     }
+    async 만료된_토큰을_정리한다() {
+        return await this.authorizationContextService.만료된_토큰을_정리한다();
+    }
 };
 exports.SsoApplicationService = SsoApplicationService;
 exports.SsoApplicationService = SsoApplicationService = __decorate([
@@ -9436,6 +9471,7 @@ let AuthorizationContextService = class AuthorizationContextService {
         const tokenExpiresAt = new Date(now.getTime() + expiresInDays * 24 * 60 * 60 * 1000);
         const refreshTokenExpiresAt = new Date(now.getTime() + refreshExpiresInDays * 24 * 60 * 60 * 1000);
         const existingTokens = await this.직원토큰서비스.findByEmployeeId(employee.id);
+
         const token = await this.토큰서비스.save({
             accessToken,
             refreshToken,
@@ -9454,6 +9490,22 @@ let AuthorizationContextService = class AuthorizationContextService {
     }
     async 비밀번호를_검증한다(employee, password) {
         return await this.직원서비스.verifyPassword(password, employee);
+    }
+    async 만료된_토큰을_정리한다() {
+        const expiredTokens = await this.토큰서비스.findExpiredTokens();
+        if (expiredTokens.length === 0) {
+            return {
+                deletedCount: 0,
+                message: '삭제할 만료된 토큰이 없습니다.',
+            };
+        }
+        const tokenIds = expiredTokens.map(token => token.id);
+        await this.직원토큰서비스.deleteByTokenIds(tokenIds);
+        const result = await this.토큰서비스.deleteExpiredTokens();
+        return {
+            deletedCount: result.deletedCount,
+            message: `만료된 토큰 ${result.deletedCount}개가 성공적으로 삭제되었습니다.`,
+        };
     }
 };
 exports.AuthorizationContextService = AuthorizationContextService;
@@ -12765,6 +12817,19 @@ let DomainEmployeeTokenService = class DomainEmployeeTokenService extends base_s
             ...relationData,
         });
     }
+    async deleteByTokenIds(tokenIds) {
+        let deletedCount = 0;
+        for (const tokenId of tokenIds) {
+            const relations = await this.employeeTokenRepository.findAll({
+                where: { tokenId },
+            });
+            for (const relation of relations) {
+                await this.employeeTokenRepository.delete(relation.id);
+                deletedCount++;
+            }
+        }
+        return { deletedCount };
+    }
 };
 exports.DomainEmployeeTokenService = DomainEmployeeTokenService;
 exports.DomainEmployeeTokenService = DomainEmployeeTokenService = __decorate([
@@ -15060,6 +15125,7 @@ const token_repository_1 = __webpack_require__(/*! ./token.repository */ "./src/
 const base_service_1 = __webpack_require__(/*! ../../../../libs/common/services/base.service */ "./libs/common/services/base.service.ts");
 const jwt_1 = __webpack_require__(/*! @nestjs/jwt */ "@nestjs/jwt");
 const config_1 = __webpack_require__(/*! @nestjs/config */ "@nestjs/config");
+const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
 let DomainTokenService = class DomainTokenService extends base_service_1.BaseService {
     constructor(tokenRepository, jwtService, configService) {
         super(tokenRepository);
@@ -15093,8 +15159,27 @@ let DomainTokenService = class DomainTokenService extends base_service_1.BaseSer
     async findExpiredTokens() {
         const now = new Date();
         return this.tokenRepository.findAll({
+            where: {
+                tokenExpiresAt: (0, typeorm_1.LessThan)(now),
+                isActive: true,
+            },
             order: { tokenExpiresAt: 'ASC' },
         });
+    }
+    async deleteExpiredTokens() {
+        const now = new Date();
+        const expiredTokens = await this.tokenRepository.findAll({
+            where: {
+                tokenExpiresAt: (0, typeorm_1.LessThan)(now),
+                isActive: true,
+            },
+        });
+        let deletedCount = 0;
+        for (const token of expiredTokens) {
+            await this.tokenRepository.delete(token.id);
+            deletedCount++;
+        }
+        return { deletedCount };
     }
     generateJwtToken(payload, expiresIn) {
         return this.jwtService.sign(payload, {

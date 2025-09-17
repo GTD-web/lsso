@@ -4,6 +4,7 @@ import { BaseService } from '../../../../libs/common/services/base.service';
 import { Token } from '../../../../libs/database/entities';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { LessThan } from 'typeorm';
 
 @Injectable()
 export class DomainTokenService extends BaseService<Token> {
@@ -48,8 +49,31 @@ export class DomainTokenService extends BaseService<Token> {
     async findExpiredTokens(): Promise<Token[]> {
         const now = new Date();
         return this.tokenRepository.findAll({
+            where: {
+                tokenExpiresAt: LessThan(now),
+                isActive: true,
+            },
             order: { tokenExpiresAt: 'ASC' },
         });
+    }
+
+    // 만료된 토큰들을 삭제 (중간테이블 정리는 Context에서 처리)
+    async deleteExpiredTokens(): Promise<{ deletedCount: number }> {
+        const now = new Date();
+        const expiredTokens = await this.tokenRepository.findAll({
+            where: {
+                tokenExpiresAt: LessThan(now),
+                isActive: true,
+            },
+        });
+        
+        let deletedCount = 0;
+        for (const token of expiredTokens) {
+            await this.tokenRepository.delete(token.id);
+            deletedCount++;
+        }
+        
+        return { deletedCount };
     }
 
     generateJwtToken(payload: any, expiresIn: string): string {
@@ -60,6 +84,7 @@ export class DomainTokenService extends BaseService<Token> {
     }
 
     verifyJwtToken(token: string): any {
+        
         return this.jwtService.verify(token, {
             secret: this.configService.get<string>('GLOBAL_SECRET'),
         });
