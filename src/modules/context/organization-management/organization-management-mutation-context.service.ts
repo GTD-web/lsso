@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { DomainEmployeeService } from '../../domain/employee/employee.service';
 import { DomainDepartmentService } from '../../domain/department/department.service';
 import { DomainPositionService } from '../../domain/position/position.service';
@@ -236,14 +236,14 @@ export class OrganizationManagementMutationContextService {
                 배치정보.employeeId,
                 배치정보.departmentId,
             );
-            if (existingAssignment) {
-                throw new Error('이미 해당 부서에 배치되어 있습니다.');
-            }
+            // 배치가 존재하면 중복 에러 발생
+            throw new Error('이미 해당 부서에 배치되어 있습니다.');
         } catch (error) {
-            // 배치 정보가 없는 경우 - 정상적인 상황
-            if (error.message !== '이미 해당 부서에 배치되어 있습니다.') {
-                // 다른 에러가 아닌 경우만 계속 진행
+            // NotFoundException인 경우 - 배치가 없으므로 정상적으로 진행
+            if (error instanceof NotFoundException) {
+                // 배치가 없으므로 새로 생성 가능
             } else {
+                // 다른 시스템 에러는 그대로 전파
                 throw error;
             }
         }

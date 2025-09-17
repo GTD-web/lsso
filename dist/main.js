@@ -10697,12 +10697,10 @@ let OrganizationManagementMutationContextService = class OrganizationManagementM
     async 직원을_부서에_배치한다(배치정보) {
         try {
             const existingAssignment = await this.직원부서직책서비스.findByEmployeeAndDepartment(배치정보.employeeId, 배치정보.departmentId);
-            if (existingAssignment) {
-                throw new Error('이미 해당 부서에 배치되어 있습니다.');
-            }
+            throw new Error('이미 해당 부서에 배치되어 있습니다.');
         }
         catch (error) {
-            if (error.message !== '이미 해당 부서에 배치되어 있습니다.') {
+            if (error instanceof common_1.NotFoundException) {
             }
             else {
                 throw error;
