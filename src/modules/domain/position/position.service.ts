@@ -45,6 +45,11 @@ export class DomainPositionService extends BaseService<Position> {
         return position;
     }
 
+    // 직책 코드로 찾기 (컨텍스트용 별칭)
+    async findByPositionCode(positionCode: string): Promise<Position> {
+        return this.findByCode(positionCode);
+    }
+
     // 레벨별 직책 조회
     async findByLevel(level: number): Promise<Position[]> {
         return this.positionRepository.findAll({
@@ -66,5 +71,25 @@ export class DomainPositionService extends BaseService<Position> {
         return this.positionRepository.findAll({
             order: { level: 'ASC', positionTitle: 'ASC' },
         });
+    }
+
+    // 직책 생성
+    async createPosition(data: {
+        positionTitle: string;
+        positionCode: string;
+        level: number;
+        hasManagementAuthority: boolean;
+    }): Promise<Position> {
+        return this.save(data);
+    }
+
+    // 직책 수정
+    async updatePosition(positionId: string, data: Partial<Position>): Promise<Position> {
+        return this.update(positionId, data);
+    }
+
+    // 직책 삭제
+    async deletePosition(positionId: string): Promise<void> {
+        return this.delete(positionId);
     }
 }

@@ -3,7 +3,7 @@ import { ApiOperation, ApiResponse, ApiTags, ApiParam, ApiQuery } from '@nestjs/
 import { LogsAdminUseCase } from '../usecases/admin.usecase';
 import { Log } from '../../../../../../libs/database/entities';
 import { LogFilterDto } from '../dto/log-filter.dto';
-import { ApiResponseDto } from '../../../../../common/dto/api-response.dto';
+import { ApiResponseDto } from 'libs/common/dto/api-response.dto';
 import { LogResponseDto } from '../dto/log-response.dto';
 import { LogsResponseDto } from '../dto/logs-response.dto';
 

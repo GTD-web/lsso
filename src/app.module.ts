@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_FILTER } from '@nestjs/core';
-import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { HttpExceptionFilter } from 'libs/common/filters/http-exception.filter';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { typeOrmConfig } from '../libs/configs/typeorm.config';
@@ -19,6 +19,7 @@ import { TokensModule } from './modules/application/legacy/tokens/tokens.module'
 import { MailModule } from './modules/application/legacy/mail/mail.module';
 import { OrganizationInformationApplicationModule } from './modules/application/organization-information/organization-information-application.module';
 import { FcmTokenManagementApplicationModule } from './modules/application/fcm-token-management/fcm-token-management-application.module';
+import { AdminModule } from './modules/application/admin/admin.module';
 
 @Module({
     imports: [
@@ -36,6 +37,9 @@ import { FcmTokenManagementApplicationModule } from './modules/application/fcm-t
         OrganizationInformationApplicationModule,
         FcmTokenManagementApplicationModule,
         MigrationModule,
+        AdminModule,
+
+        // Legacy Modules
         AuthModule,
         UsersModule,
         LogsModule,

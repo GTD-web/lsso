@@ -99,4 +99,50 @@ export class DomainEmployeeService extends BaseService<Employee> {
             order: { employeeNumber: 'ASC' },
         });
     }
+
+    /**
+     * 직급 ID로 직원들 조회
+     */
+    async findByRankId(rankId: string): Promise<Employee[]> {
+        return this.employeeRepository.findAll({
+            where: { currentRankId: rankId },
+            order: { employeeNumber: 'ASC' },
+        });
+    }
+
+    /**
+     * 직원 생성
+     */
+    async createEmployee(data: {
+        employeeNumber: string;
+        name: string;
+        email: string;
+        phoneNumber?: string;
+        dateOfBirth?: Date;
+        gender?: any;
+        hireDate: Date;
+        status: EmployeeStatus;
+        currentRankId?: string;
+        isInitialPasswordSet: boolean;
+    }): Promise<Employee> {
+        return this.save({
+            ...data,
+            password: this.hashPassword(data.employeeNumber),
+            isInitialPasswordSet: true,
+        });
+    }
+
+    /**
+     * 직원 정보 수정
+     */
+    async updateEmployee(employeeId: string, data: Partial<Employee>): Promise<Employee> {
+        return this.update(employeeId, data);
+    }
+
+    /**
+     * 직원 삭제
+     */
+    async deleteEmployee(employeeId: string): Promise<void> {
+        return this.delete(employeeId);
+    }
 }

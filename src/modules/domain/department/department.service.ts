@@ -65,6 +65,11 @@ export class DomainDepartmentService extends BaseService<Department> {
         return department;
     }
 
+    // 부서 코드로 찾기 (컨텍스트용 별칭)
+    async findByDepartmentCode(departmentCode: string): Promise<Department> {
+        return this.findByCode(departmentCode);
+    }
+
     // 전체 부서 목록 조회
     async findAllDepartments(): Promise<Department[]> {
         return this.departmentRepository.findAll({
@@ -86,5 +91,34 @@ export class DomainDepartmentService extends BaseService<Department> {
             relations: ['childDepartments'],
             order: { order: 'ASC' },
         });
+    }
+
+    // 하위 부서 조회
+    async findChildDepartments(departmentId: string): Promise<Department[]> {
+        return this.departmentRepository.findAll({
+            where: { parentDepartmentId: departmentId },
+            order: { order: 'ASC' },
+        });
+    }
+
+    // 부서 생성
+    async createDepartment(data: {
+        departmentName: string;
+        departmentCode: string;
+        type: any;
+        parentDepartmentId?: string;
+        order?: number;
+    }): Promise<Department> {
+        return this.save(data);
+    }
+
+    // 부서 수정
+    async updateDepartment(departmentId: string, data: Partial<Department>): Promise<Department> {
+        return this.update(departmentId, data);
+    }
+
+    // 부서 삭제
+    async deleteDepartment(departmentId: string): Promise<void> {
+        return this.delete(departmentId);
     }
 }
