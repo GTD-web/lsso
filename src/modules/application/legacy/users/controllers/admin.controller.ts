@@ -2,7 +2,7 @@ import { Controller, Get, Param, Query, UseGuards, NotFoundException, Post, Body
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam, ApiQuery, ApiBody } from '@nestjs/swagger';
 import { UsersService } from '../services/users.service';
 import { UserResponseDto } from '../dto/user-response.dto';
-import { ApiResponseDto } from 'libs/common/dto/api-response.dto';
+import { ApiResponseDto } from '../../../../../../libs/common/dto/api-response.dto';
 import { AdminUsecase } from '../usecases/admin.usecase';
 
 @ApiTags('관리자 사용자 API')

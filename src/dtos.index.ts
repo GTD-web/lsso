@@ -4,4 +4,4 @@
 // export * from './modules/application/admin/systems/dto';
 // export * from 'src/logs/dto';
 // export * from 'src/tokens/dto';
-export * from 'libs/common/dto';
+export * from '../libs/common/dto';

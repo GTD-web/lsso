@@ -1,13 +1,13 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
-import { setupSwagger } from 'libs/common/utils/swagger';
+import { setupSwagger } from '../libs/common/utils/swagger';
 import { ENV } from '../libs/configs/env.config';
 import * as dtos from './dtos.index';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { LoggingInterceptor } from 'libs/common/interceptors/logging.interceptor';
+import { LoggingInterceptor } from '../libs/common/interceptors/logging.interceptor';
 import { LogsService } from './modules/application/legacy/logs/services/logs.service';
 import { SystemsService } from './modules/application/legacy/systems/services/systems.service';
 import * as hbs from 'hbs';
