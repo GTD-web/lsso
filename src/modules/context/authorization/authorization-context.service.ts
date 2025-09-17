@@ -115,16 +115,17 @@ export class AuthorizationContextService {
         const refreshTokenExpiresAt = new Date(now.getTime() + refreshExpiresInDays * 24 * 60 * 60 * 1000);
         const existingTokens = await this.직원토큰서비스.findByEmployeeId(employee.id);
         // 사용자의 기존 토큰 확인
-        if (existingTokens && existingTokens.length > 0) {
-            const existingToken = existingTokens[0];
+        // TODO 추후 논의 후 변경 필요한 부분. 우선 중복세션 허용 - 2025-09-12 김규현
+        // if (existingTokens && existingTokens.length > 0) {
+        //     const existingToken = existingTokens[0];
 
-            return await this.토큰서비스.update(existingToken.tokenId, {
-                accessToken,
-                refreshToken,
-                tokenExpiresAt,
-                refreshTokenExpiresAt,
-            });
-        }
+        //     return await this.토큰서비스.update(existingToken.tokenId, {
+        //         accessToken,
+        //         refreshToken,
+        //         tokenExpiresAt,
+        //         refreshTokenExpiresAt,
+        //     });
+        // }
         // 기존 토큰이 없으면 새로 생성
         const token = await this.토큰서비스.save({
             accessToken,
