@@ -13,7 +13,7 @@ import {
 } from '../dto/admin';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { Request } from 'express';
-import { ApiResponseDto } from 'libs/common/dto/api-response.dto';
+import { ApiResponseDto } from '../../../../../../libs/common/dto/api-response.dto';
 
 interface RequestWithUser extends Request {
     user: {

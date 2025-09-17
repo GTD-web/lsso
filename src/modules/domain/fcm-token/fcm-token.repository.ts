@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository } from 'typeorm';
 import { FcmToken } from '../../../../libs/database/entities';
 import { BaseRepository } from '../../../../libs/common/repositories/base.repository';
-import { IRepositoryOptions } from 'libs/common/interfaces/repository.interface';
+import { IRepositoryOptions } from '../../../../libs/common/interfaces/repository.interface';
 
 @Injectable()
 export class DomainFcmTokenRepository extends BaseRepository<FcmToken> {

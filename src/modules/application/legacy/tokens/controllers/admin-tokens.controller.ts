@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Param, Put, Delete, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
 import { TokenResponseDto, CreateTokenDto, UpdateTokenStatusDto, RenewTokenDto } from '../dto';
-import { ApiResponseDto } from 'libs/common/dto/api-response.dto';
+import { ApiResponseDto } from '../../../../../../libs/common/dto/api-response.dto';
 import { AdminTokensUsecase } from '../usecases/admin.usecase';
 
 @ApiTags('관리자 토큰 API')

@@ -15,7 +15,7 @@ import { ApiBody, ApiOperation, ApiResponse, ApiTags, ApiParam, ApiQuery } from 
 import { CreateSystemDto } from '../dto/create-system.dto';
 import { UpdateSystemDto } from '../dto/update-system.dto';
 import { ResponseSystemDto } from '../dto/response-system.dto';
-import { ApiResponseDto } from 'libs/common/dto/api-response.dto';
+import { ApiResponseDto } from '../../../../../../libs/common/dto/api-response.dto';
 import { AdminUsecase } from '../usecases/admin.usecase';
 
 @ApiTags('관리자 시스템 API')
