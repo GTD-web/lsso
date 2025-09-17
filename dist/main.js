@@ -427,6 +427,97 @@ exports.ErrorInterceptor = ErrorInterceptor = __decorate([
 
 /***/ }),
 
+/***/ "./libs/common/interceptors/logging.interceptor.ts":
+/*!*********************************************************!*\
+  !*** ./libs/common/interceptors/logging.interceptor.ts ***!
+  \*********************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LoggingInterceptor = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const operators_1 = __webpack_require__(/*! rxjs/operators */ "rxjs/operators");
+let LoggingInterceptor = class LoggingInterceptor {
+    constructor(logsService, systemService) {
+        this.logsService = logsService;
+        this.systemService = systemService;
+    }
+    async intercept(context, next) {
+        const startTime = Date.now();
+        const ctx = context.switchToHttp();
+        const request = ctx.getRequest();
+        const passUrl = ['/api/admin', '/api/domain', '/api/webhook', '/api/auth/verify'];
+        if (passUrl.some((url) => request.url.startsWith(url))) {
+            return next.handle();
+        }
+        let ip = Array.isArray(request.headers['x-forwarded-for'])
+            ? request.headers['x-forwarded-for'][0]
+            : request.headers['x-forwarded-for'] || request.socket.remoteAddress || '';
+        if (ip.includes(',')) {
+            ip = ip.split(',')[0];
+        }
+        if (ip === '::ffff:127.0.0.1' || ip === '::1') {
+            ip = '127.0.0.1';
+        }
+        const logData = {
+            origin: request.headers.origin,
+            host: request.headers.host,
+            method: request.method,
+            url: request.url,
+            params: request.params,
+            query: request.query,
+            body: request.body,
+            ip: ip,
+            userAgent: request.get('user-agent'),
+            requestTimestamp: new Date(),
+            responseTimestamp: null,
+            responseTime: null,
+            statusCode: null,
+            response: null,
+            system: null,
+            error: null,
+            isError: false,
+        };
+        return next.handle().pipe((0, operators_1.tap)(async (response) => {
+            logData.responseTimestamp = new Date();
+            logData.responseTime = logData.responseTimestamp - startTime;
+            logData.statusCode = context.switchToHttp().getResponse().statusCode;
+            logData.response = request.method !== 'GET' ? response : null;
+            logData.system = response?.system || null;
+        }), (0, operators_1.catchError)(async (error) => {
+            logData.responseTimestamp = new Date();
+            logData.responseTime = logData.responseTimestamp - startTime;
+            logData.statusCode = error.status || 500;
+            logData.system = error?.response?.system || null;
+            logData.error = {
+                message: error.message,
+            };
+            logData.isError = true;
+            throw error;
+        }), (0, operators_1.finalize)(() => {
+            this.logsService.create(logData);
+        }));
+    }
+};
+exports.LoggingInterceptor = LoggingInterceptor;
+exports.LoggingInterceptor = LoggingInterceptor = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [Object, Object])
+], LoggingInterceptor);
+
+
+/***/ }),
+
 /***/ "./libs/common/interceptors/request.interceptor.ts":
 /*!*********************************************************!*\
   !*** ./libs/common/interceptors/request.interceptor.ts ***!
@@ -1026,7 +1117,7 @@ const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const config_1 = __webpack_require__(/*! @nestjs/config */ "@nestjs/config");
 const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
 const core_1 = __webpack_require__(/*! @nestjs/core */ "@nestjs/core");
-const http_exception_filter_1 = __webpack_require__(/*! libs/common/filters/http-exception.filter */ "./libs/common/filters/http-exception.filter.ts");
+const http_exception_filter_1 = __webpack_require__(/*! ../libs/common/filters/http-exception.filter */ "./libs/common/filters/http-exception.filter.ts");
 const app_controller_1 = __webpack_require__(/*! ./app.controller */ "./src/app.controller.ts");
 const app_service_1 = __webpack_require__(/*! ./app.service */ "./src/app.service.ts");
 const typeorm_config_1 = __webpack_require__(/*! ../libs/configs/typeorm.config */ "./libs/configs/typeorm.config.ts");
@@ -9470,8 +9561,6 @@ let AuthorizationContextService = class AuthorizationContextService {
         const now = new Date();
         const tokenExpiresAt = new Date(now.getTime() + expiresInDays * 24 * 60 * 60 * 1000);
         const refreshTokenExpiresAt = new Date(now.getTime() + refreshExpiresInDays * 24 * 60 * 60 * 1000);
-        const existingTokens = await this.직원토큰서비스.findByEmployeeId(employee.id);
-
         const token = await this.토큰서비스.save({
             accessToken,
             refreshToken,
@@ -16336,6 +16425,9 @@ const app_module_1 = __webpack_require__(/*! ./app.module */ "./src/app.module.t
 const swagger_1 = __webpack_require__(/*! libs/common/utils/swagger */ "./libs/common/utils/swagger.ts");
 const dtos = __webpack_require__(/*! ./dtos.index */ "./src/dtos.index.ts");
 const path_1 = __webpack_require__(/*! path */ "path");
+const logging_interceptor_1 = __webpack_require__(/*! libs/common/interceptors/logging.interceptor */ "./libs/common/interceptors/logging.interceptor.ts");
+const logs_service_1 = __webpack_require__(/*! ./modules/application/legacy/logs/services/logs.service */ "./src/modules/application/legacy/logs/services/logs.service.ts");
+const systems_service_1 = __webpack_require__(/*! ./modules/application/legacy/systems/services/systems.service */ "./src/modules/application/legacy/systems/services/systems.service.ts");
 const hbs = __webpack_require__(/*! hbs */ "hbs");
 const request_interceptor_1 = __webpack_require__(/*! ../libs/common/interceptors/request.interceptor */ "./libs/common/interceptors/request.interceptor.ts");
 const error_interceptor_1 = __webpack_require__(/*! ../libs/common/interceptors/error.interceptor */ "./libs/common/interceptors/error.interceptor.ts");
@@ -16356,6 +16448,7 @@ async function bootstrap() {
     (0, swagger_1.setupSwagger)(app, [...Object.values(dtos)]);
     app.enableCors();
     app.useGlobalInterceptors(new request_interceptor_1.RequestInterceptor(), new error_interceptor_1.ErrorInterceptor());
+    app.useGlobalInterceptors(new logging_interceptor_1.LoggingInterceptor(app.get(logs_service_1.LogsService), app.get(systems_service_1.SystemsService)));
     app.useStaticAssets((0, path_1.join)(__dirname, '..', 'public'));
     app.setBaseViewsDir((0, path_1.join)(__dirname, '..', 'src', 'views'));
     app.setViewEngine('hbs');

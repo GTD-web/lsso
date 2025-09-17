@@ -8,8 +8,8 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { LoggingInterceptor } from 'libs/common/interceptors/logging.interceptor';
-// import { LogsService } from './modules/application/admin/logs/services/logs.service';
-// import { SystemsService } from './modules/application/admin/systems/services/systems.service';
+import { LogsService } from './modules/application/legacy/logs/services/logs.service';
+import { SystemsService } from './modules/application/legacy/systems/services/systems.service';
 import * as hbs from 'hbs';
 import { RequestInterceptor } from '../libs/common/interceptors/request.interceptor';
 import { ErrorInterceptor } from '../libs/common/interceptors/error.interceptor';
@@ -44,7 +44,7 @@ async function bootstrap() {
     app.enableCors();
 
     app.useGlobalInterceptors(new RequestInterceptor(), new ErrorInterceptor());
-    // app.useGlobalInterceptors(new LoggingInterceptor(app.get(LogsService), app.get(SystemsService)));
+    app.useGlobalInterceptors(new LoggingInterceptor(app.get(LogsService), app.get(SystemsService)));
 
     // Handlebars 설정
     app.useStaticAssets(join(__dirname, '..', 'public'));
