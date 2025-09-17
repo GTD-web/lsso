@@ -9470,8 +9470,6 @@ let AuthorizationContextService = class AuthorizationContextService {
         const now = new Date();
         const tokenExpiresAt = new Date(now.getTime() + expiresInDays * 24 * 60 * 60 * 1000);
         const refreshTokenExpiresAt = new Date(now.getTime() + refreshExpiresInDays * 24 * 60 * 60 * 1000);
-        const existingTokens = await this.직원토큰서비스.findByEmployeeId(employee.id);
-
         const token = await this.토큰서비스.save({
             accessToken,
             refreshToken,
