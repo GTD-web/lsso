@@ -111,13 +111,13 @@ export class OrganizationController {
         return await this.organizationApplicationService.직원수정(id, updateEmployeeDto);
     }
 
-    // @Delete('employees/:id')
-    // @ApiOperation({ summary: '직원 삭제' })
-    // @ApiParam({ name: 'id', description: '직원 ID' })
-    // @ApiResponse({ status: 200 })
-    // async deleteEmployee(@Param('id') id: string): Promise<void> {
-    //     return await this.organizationApplicationService.직원삭제(id);
-    // }
+    @Delete('employees/:id')
+    @ApiOperation({ summary: '직원 삭제' })
+    @ApiParam({ name: 'id', description: '직원 ID' })
+    @ApiResponse({ status: 200 })
+    async deleteEmployee(@Param('id') id: string): Promise<void> {
+        return await this.organizationApplicationService.직원삭제(id);
+    }
 
     // 직책 관리 API
     @Get('positions')
