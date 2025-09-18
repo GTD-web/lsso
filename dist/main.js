@@ -2313,7 +2313,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OrganizationController = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
@@ -2351,6 +2351,9 @@ let OrganizationController = class OrganizationController {
     }
     async updateEmployee(id, updateEmployeeDto) {
         return await this.organizationApplicationService.직원수정(id, updateEmployeeDto);
+    }
+    async deleteEmployee(id) {
+        return await this.organizationApplicationService.직원삭제(id);
     }
     async getPositions() {
         return await this.organizationApplicationService.직책목록조회();
@@ -2487,12 +2490,22 @@ __decorate([
     __metadata("design:returntype", typeof (_p = typeof Promise !== "undefined" && Promise) === "function" ? _p : Object)
 ], OrganizationController.prototype, "updateEmployee", null);
 __decorate([
+    (0, common_1.Delete)('employees/:id'),
+    (0, swagger_1.ApiOperation)({ summary: '직원 삭제' }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: '직원 ID' }),
+    (0, swagger_1.ApiResponse)({ status: 200 }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", typeof (_q = typeof Promise !== "undefined" && Promise) === "function" ? _q : Object)
+], OrganizationController.prototype, "deleteEmployee", null);
+__decorate([
     (0, common_1.Get)('positions'),
     (0, swagger_1.ApiOperation)({ summary: '직책 목록 조회' }),
     (0, swagger_1.ApiResponse)({ status: 200, type: [dto_1.PositionResponseDto] }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_q = typeof Promise !== "undefined" && Promise) === "function" ? _q : Object)
+    __metadata("design:returntype", typeof (_r = typeof Promise !== "undefined" && Promise) === "function" ? _r : Object)
 ], OrganizationController.prototype, "getPositions", null);
 __decorate([
     (0, common_1.Post)('positions'),
@@ -2501,8 +2514,8 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 201, type: dto_1.PositionResponseDto }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_r = typeof dto_1.CreatePositionRequestDto !== "undefined" && dto_1.CreatePositionRequestDto) === "function" ? _r : Object]),
-    __metadata("design:returntype", typeof (_s = typeof Promise !== "undefined" && Promise) === "function" ? _s : Object)
+    __metadata("design:paramtypes", [typeof (_s = typeof dto_1.CreatePositionRequestDto !== "undefined" && dto_1.CreatePositionRequestDto) === "function" ? _s : Object]),
+    __metadata("design:returntype", typeof (_t = typeof Promise !== "undefined" && Promise) === "function" ? _t : Object)
 ], OrganizationController.prototype, "createPosition", null);
 __decorate([
     (0, common_1.Put)('positions/:id'),
@@ -2513,8 +2526,8 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, typeof (_t = typeof dto_1.UpdatePositionRequestDto !== "undefined" && dto_1.UpdatePositionRequestDto) === "function" ? _t : Object]),
-    __metadata("design:returntype", typeof (_u = typeof Promise !== "undefined" && Promise) === "function" ? _u : Object)
+    __metadata("design:paramtypes", [String, typeof (_u = typeof dto_1.UpdatePositionRequestDto !== "undefined" && dto_1.UpdatePositionRequestDto) === "function" ? _u : Object]),
+    __metadata("design:returntype", typeof (_v = typeof Promise !== "undefined" && Promise) === "function" ? _v : Object)
 ], OrganizationController.prototype, "updatePosition", null);
 __decorate([
     (0, common_1.Delete)('positions/:id'),
@@ -2524,7 +2537,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_v = typeof Promise !== "undefined" && Promise) === "function" ? _v : Object)
+    __metadata("design:returntype", typeof (_w = typeof Promise !== "undefined" && Promise) === "function" ? _w : Object)
 ], OrganizationController.prototype, "deletePosition", null);
 __decorate([
     (0, common_1.Get)('ranks'),
@@ -2532,7 +2545,7 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 200, type: [dto_1.RankResponseDto] }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_w = typeof Promise !== "undefined" && Promise) === "function" ? _w : Object)
+    __metadata("design:returntype", typeof (_x = typeof Promise !== "undefined" && Promise) === "function" ? _x : Object)
 ], OrganizationController.prototype, "getRanks", null);
 __decorate([
     (0, common_1.Post)('ranks'),
@@ -2541,8 +2554,8 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 201, type: dto_1.RankResponseDto }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_x = typeof dto_1.CreateRankRequestDto !== "undefined" && dto_1.CreateRankRequestDto) === "function" ? _x : Object]),
-    __metadata("design:returntype", typeof (_y = typeof Promise !== "undefined" && Promise) === "function" ? _y : Object)
+    __metadata("design:paramtypes", [typeof (_y = typeof dto_1.CreateRankRequestDto !== "undefined" && dto_1.CreateRankRequestDto) === "function" ? _y : Object]),
+    __metadata("design:returntype", typeof (_z = typeof Promise !== "undefined" && Promise) === "function" ? _z : Object)
 ], OrganizationController.prototype, "createRank", null);
 __decorate([
     (0, common_1.Put)('ranks/:id'),
@@ -2553,8 +2566,8 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, typeof (_z = typeof dto_1.UpdateRankRequestDto !== "undefined" && dto_1.UpdateRankRequestDto) === "function" ? _z : Object]),
-    __metadata("design:returntype", typeof (_0 = typeof Promise !== "undefined" && Promise) === "function" ? _0 : Object)
+    __metadata("design:paramtypes", [String, typeof (_0 = typeof dto_1.UpdateRankRequestDto !== "undefined" && dto_1.UpdateRankRequestDto) === "function" ? _0 : Object]),
+    __metadata("design:returntype", typeof (_1 = typeof Promise !== "undefined" && Promise) === "function" ? _1 : Object)
 ], OrganizationController.prototype, "updateRank", null);
 __decorate([
     (0, common_1.Delete)('ranks/:id'),
@@ -2564,7 +2577,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_1 = typeof Promise !== "undefined" && Promise) === "function" ? _1 : Object)
+    __metadata("design:returntype", typeof (_2 = typeof Promise !== "undefined" && Promise) === "function" ? _2 : Object)
 ], OrganizationController.prototype, "deleteRank", null);
 __decorate([
     (0, common_1.Post)('employee-assignments'),
@@ -2573,8 +2586,8 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 201, type: dto_1.EmployeeAssignmentResponseDto }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_2 = typeof dto_1.AssignEmployeeRequestDto !== "undefined" && dto_1.AssignEmployeeRequestDto) === "function" ? _2 : Object]),
-    __metadata("design:returntype", typeof (_3 = typeof Promise !== "undefined" && Promise) === "function" ? _3 : Object)
+    __metadata("design:paramtypes", [typeof (_3 = typeof dto_1.AssignEmployeeRequestDto !== "undefined" && dto_1.AssignEmployeeRequestDto) === "function" ? _3 : Object]),
+    __metadata("design:returntype", typeof (_4 = typeof Promise !== "undefined" && Promise) === "function" ? _4 : Object)
 ], OrganizationController.prototype, "assignEmployee", null);
 __decorate([
     (0, common_1.Put)('employee-assignments/:id'),
@@ -2585,8 +2598,8 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, typeof (_4 = typeof dto_1.UpdateEmployeeAssignmentRequestDto !== "undefined" && dto_1.UpdateEmployeeAssignmentRequestDto) === "function" ? _4 : Object]),
-    __metadata("design:returntype", typeof (_5 = typeof Promise !== "undefined" && Promise) === "function" ? _5 : Object)
+    __metadata("design:paramtypes", [String, typeof (_5 = typeof dto_1.UpdateEmployeeAssignmentRequestDto !== "undefined" && dto_1.UpdateEmployeeAssignmentRequestDto) === "function" ? _5 : Object]),
+    __metadata("design:returntype", typeof (_6 = typeof Promise !== "undefined" && Promise) === "function" ? _6 : Object)
 ], OrganizationController.prototype, "updateEmployeeAssignment", null);
 __decorate([
     (0, common_1.Delete)('employee-assignments/:id'),
@@ -2596,7 +2609,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_6 = typeof Promise !== "undefined" && Promise) === "function" ? _6 : Object)
+    __metadata("design:returntype", typeof (_7 = typeof Promise !== "undefined" && Promise) === "function" ? _7 : Object)
 ], OrganizationController.prototype, "removeEmployeeAssignment", null);
 __decorate([
     (0, common_1.Get)('employees/:id/assignments'),
@@ -2606,7 +2619,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_7 = typeof Promise !== "undefined" && Promise) === "function" ? _7 : Object)
+    __metadata("design:returntype", typeof (_8 = typeof Promise !== "undefined" && Promise) === "function" ? _8 : Object)
 ], OrganizationController.prototype, "getEmployeeAssignments", null);
 __decorate([
     (0, common_1.Post)('employees/:id/rank-promotion'),
@@ -2617,8 +2630,8 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, typeof (_8 = typeof dto_1.PromoteEmployeeRequestDto !== "undefined" && dto_1.PromoteEmployeeRequestDto) === "function" ? _8 : Object]),
-    __metadata("design:returntype", typeof (_9 = typeof Promise !== "undefined" && Promise) === "function" ? _9 : Object)
+    __metadata("design:paramtypes", [String, typeof (_9 = typeof dto_1.PromoteEmployeeRequestDto !== "undefined" && dto_1.PromoteEmployeeRequestDto) === "function" ? _9 : Object]),
+    __metadata("design:returntype", typeof (_10 = typeof Promise !== "undefined" && Promise) === "function" ? _10 : Object)
 ], OrganizationController.prototype, "promoteEmployee", null);
 __decorate([
     (0, common_1.Get)('employees/:id/rank-history'),
@@ -2628,7 +2641,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_10 = typeof Promise !== "undefined" && Promise) === "function" ? _10 : Object)
+    __metadata("design:returntype", typeof (_11 = typeof Promise !== "undefined" && Promise) === "function" ? _11 : Object)
 ], OrganizationController.prototype, "getEmployeeRankHistory", null);
 exports.OrganizationController = OrganizationController = __decorate([
     (0, swagger_1.ApiTags)('조직 관리'),
