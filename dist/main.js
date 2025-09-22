@@ -9337,7 +9337,7 @@ let SsoApplicationService = class SsoApplicationService {
             gender: employee.gender,
             hireDate: employee.hireDate,
             status: employee.status,
-            department: department?.departmentName || '',
+            department: department?.departmentCode || '',
             position: position?.positionTitle || '',
             rank: rank?.rankName || '',
             systemRoles: systemRolesMap,
@@ -10395,6 +10395,12 @@ let MigrationService = class MigrationService {
                     employeeId: existingEmployee.id,
                 },
             });
+            if (existingEmployeeDepartmentPosition) {
+                await this.employeeDepartmentPositionService.update(existingEmployeeDepartmentPosition.id, {
+                    departmentId: department?.id,
+                    positionId: position?.id,
+                });
+            }
             if (!existingEmployeeDepartmentPosition && department && position) {
                 await this.employeeDepartmentPositionService.save({
                     employeeId: savedEmployee.id,

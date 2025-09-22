@@ -203,6 +203,13 @@ export class MigrationService {
                 },
             });
 
+            if (existingEmployeeDepartmentPosition) {
+                await this.employeeDepartmentPositionService.update(existingEmployeeDepartmentPosition.id, {
+                    departmentId: department?.id,
+                    positionId: position?.id,
+                });
+            }
+
             if (!existingEmployeeDepartmentPosition && department && position) {
                 await this.employeeDepartmentPositionService.save({
                     employeeId: savedEmployee.id,
