@@ -38,11 +38,17 @@ async function createApp(): Promise<NestExpressApplication> {
         setupSwagger(app, [...Object.values(dtos)]);
 
         // CORS setup
+        const ALLOW_ORIGINS = [
+            'https://lsso-admin-git-dev-lumir-tech7s-projects.vercel.app',
+            'https://lsso-admin.vercel.app',
+            'http://localhost:3000',
+            // 필요하면 스테이징/프로덕션 도메인 추가
+        ];
+
         app.enableCors({
-            origin: '*',
-            methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+            origin: ALLOW_ORIGINS,
+            methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
             allowedHeaders: ['Content-Type', 'Authorization'],
-            credentials: true,
         });
 
         app.useGlobalInterceptors(new RequestInterceptor(), new ErrorInterceptor());
