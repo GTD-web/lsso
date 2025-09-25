@@ -13919,7 +13919,7 @@ async function bootstrap() {
     (0, swagger_1.setupSwagger)(app, [...Object.values(dtos)]);
     app.enableCors({
         origin: '*',
-        methods: ['GET', 'POST', 'PUT', 'DELETE'],
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
         allowedHeaders: ['Content-Type', 'Authorization'],
         credentials: true,
     });
