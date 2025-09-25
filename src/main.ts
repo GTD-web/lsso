@@ -21,10 +21,7 @@ async function bootstrap() {
     const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
     // CORS setup
-    app.enableCors({
-        origin: '*',
-        methods: 'GET,HEAD,POST,PATCH,PUT,DELETE,OPTIONS',
-    });
+    app.enableCors();
 
     // Global pipes
     app.useGlobalPipes(

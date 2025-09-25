@@ -27,7 +27,7 @@ import { jwtConfig } from '../../../../libs/configs/jwt.config';
         }),
     ],
     controllers: [OrganizationInformationApplicationController],
-    providers: [OrganizationInformationApplicationService, JwtStrategy, JwtAuthGuard],
+    providers: [OrganizationInformationApplicationService], //JwtStrategy, JwtAuthGuard
     exports: [OrganizationInformationApplicationService],
 })
 export class OrganizationInformationApplicationModule {}

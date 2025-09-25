@@ -20,17 +20,7 @@ async function createApp(): Promise<NestExpressApplication> {
 
         const app = await NestFactory.create<NestExpressApplication>(AppModule);
         // CORS setup
-        const ALLOW_ORIGINS = [
-            'https://lsso-admin-git-dev-lumir-tech7s-projects.vercel.app',
-            'https://lsso-admin.vercel.app',
-            'http://localhost:3000',
-            // 필요하면 스테이징/프로덕션 도메인 추가
-        ];
-
-        app.enableCors({
-            origin: '*',
-            methods: 'GET,HEAD,POST,PATCH,PUT,DELETE,OPTIONS',
-        });
+        // app.enableCors();
         // Global pipes
         app.useGlobalPipes(
             new ValidationPipe({
@@ -75,18 +65,6 @@ async function createApp(): Promise<NestExpressApplication> {
 // Vercel용 handler export
 export default async function handler(req: any, res: any) {
     try {
-        console.log('Vercel handler called');
-        if (req.method === 'OPTIONS') {
-            const origin = req.headers.origin || '*';
-            res.setHeader('Access-Control-Allow-Origin', origin);
-            res.setHeader('Vary', 'Origin');
-            res.setHeader('Access-Control-Allow-Credentials', 'true');
-            res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS,HEAD');
-            res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-            res.setHeader('Access-Control-Max-Age', '600');
-            return res.status(204).end();
-        }
-
         const app = await createApp();
         const server = app.getHttpAdapter().getInstance();
 
