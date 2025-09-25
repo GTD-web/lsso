@@ -318,62 +318,6 @@ exports.HttpExceptionFilter = HttpExceptionFilter = __decorate([
 
 /***/ }),
 
-/***/ "./libs/common/guards/jwt-auth.guard.ts":
-/*!**********************************************!*\
-  !*** ./libs/common/guards/jwt-auth.guard.ts ***!
-  \**********************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.JwtAuthGuard = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const passport_1 = __webpack_require__(/*! @nestjs/passport */ "@nestjs/passport");
-const core_1 = __webpack_require__(/*! @nestjs/core */ "@nestjs/core");
-const public_decorator_1 = __webpack_require__(/*! ../decorators/public.decorator */ "./libs/common/decorators/public.decorator.ts");
-let JwtAuthGuard = class JwtAuthGuard extends (0, passport_1.AuthGuard)('jwt') {
-    constructor(reflector) {
-        super();
-        this.reflector = reflector;
-    }
-    canActivate(context) {
-        const isPublic = this.reflector.getAllAndOverride(public_decorator_1.IS_PUBLIC_KEY, [
-            context.getHandler(),
-            context.getClass(),
-        ]);
-        if (isPublic) {
-            return true;
-        }
-        return super.canActivate(context);
-    }
-    handleRequest(err, user, info, context) {
-        if (err || !user) {
-            throw err || new common_1.UnauthorizedException('인증이 필요합니다.');
-        }
-        const request = context.switchToHttp().getRequest();
-        request.user = user;
-        return user;
-    }
-};
-exports.JwtAuthGuard = JwtAuthGuard;
-exports.JwtAuthGuard = JwtAuthGuard = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof core_1.Reflector !== "undefined" && core_1.Reflector) === "function" ? _a : Object])
-], JwtAuthGuard);
-
-
-/***/ }),
-
 /***/ "./libs/common/interceptors/error.interceptor.ts":
 /*!*******************************************************!*\
   !*** ./libs/common/interceptors/error.interceptor.ts ***!
@@ -1187,8 +1131,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AdminModule = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const jwt_1 = __webpack_require__(/*! @nestjs/jwt */ "@nestjs/jwt");
-const config_1 = __webpack_require__(/*! @nestjs/config */ "@nestjs/config");
 const organization_module_1 = __webpack_require__(/*! ./organization/organization.module */ "./src/modules/application/admin/organization/organization.module.ts");
 const system_module_1 = __webpack_require__(/*! ./system/system.module */ "./src/modules/application/admin/system/system.module.ts");
 const log_module_1 = __webpack_require__(/*! ./log/log.module */ "./src/modules/application/admin/log/log.module.ts");
@@ -1198,14 +1140,6 @@ exports.AdminModule = AdminModule;
 exports.AdminModule = AdminModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            jwt_1.JwtModule.registerAsync({
-                imports: [config_1.ConfigModule],
-                inject: [config_1.ConfigService],
-                useFactory: (configService) => ({
-                    secret: configService.get('GLOBAL_SECRET'),
-                    signOptions: { expiresIn: '1h' },
-                }),
-            }),
             organization_module_1.OrganizationModule,
             system_module_1.SystemModule,
             log_module_1.LogModule,
@@ -1829,7 +1763,6 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LogController = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const jwt_auth_guard_1 = __webpack_require__(/*! ../../../../../libs/common/guards/jwt-auth.guard */ "./libs/common/guards/jwt-auth.guard.ts");
 const log_application_service_1 = __webpack_require__(/*! ./log-application.service */ "./src/modules/application/admin/log/log-application.service.ts");
 const dto_1 = __webpack_require__(/*! ./dto */ "./src/modules/application/admin/log/dto/index.ts");
 let LogController = class LogController {
@@ -1883,7 +1816,6 @@ __decorate([
 exports.LogController = LogController = __decorate([
     (0, swagger_1.ApiTags)('Admin - 로그 관리'),
     (0, swagger_1.ApiBearerAuth)(),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Controller)('admin/logs'),
     __metadata("design:paramtypes", [typeof (_a = typeof log_application_service_1.LogApplicationService !== "undefined" && log_application_service_1.LogApplicationService) === "function" ? _a : Object])
 ], LogController);
@@ -2953,7 +2885,6 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OrganizationController = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const jwt_auth_guard_1 = __webpack_require__(/*! ../../../../../libs/common/guards/jwt-auth.guard */ "./libs/common/guards/jwt-auth.guard.ts");
 const organization_application_service_1 = __webpack_require__(/*! ./organization-application.service */ "./src/modules/application/admin/organization/organization-application.service.ts");
 const dto_1 = __webpack_require__(/*! ./dto */ "./src/modules/application/admin/organization/dto/index.ts");
 let OrganizationController = class OrganizationController {
@@ -3281,7 +3212,6 @@ __decorate([
 exports.OrganizationController = OrganizationController = __decorate([
     (0, swagger_1.ApiTags)('Admin - 조직 관리'),
     (0, swagger_1.ApiBearerAuth)(),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Controller)('admin/organizations'),
     __metadata("design:paramtypes", [typeof (_a = typeof organization_application_service_1.OrganizationApplicationService !== "undefined" && organization_application_service_1.OrganizationApplicationService) === "function" ? _a : Object])
 ], OrganizationController);
@@ -4039,7 +3969,6 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SystemRoleController = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const jwt_auth_guard_1 = __webpack_require__(/*! ../../../../../libs/common/guards/jwt-auth.guard */ "./libs/common/guards/jwt-auth.guard.ts");
 const system_application_service_1 = __webpack_require__(/*! ./system-application.service */ "./src/modules/application/admin/system/system-application.service.ts");
 const dto_1 = __webpack_require__(/*! ./dto */ "./src/modules/application/admin/system/dto/index.ts");
 let SystemRoleController = class SystemRoleController {
@@ -4124,7 +4053,6 @@ __decorate([
 exports.SystemRoleController = SystemRoleController = __decorate([
     (0, swagger_1.ApiTags)('Admin - 시스템 역할 관리'),
     (0, swagger_1.ApiBearerAuth)(),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Controller)('admin/system-roles'),
     __metadata("design:paramtypes", [typeof (_a = typeof system_application_service_1.SystemApplicationService !== "undefined" && system_application_service_1.SystemApplicationService) === "function" ? _a : Object])
 ], SystemRoleController);
@@ -4156,7 +4084,6 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SystemController = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const jwt_auth_guard_1 = __webpack_require__(/*! ../../../../../libs/common/guards/jwt-auth.guard */ "./libs/common/guards/jwt-auth.guard.ts");
 const system_application_service_1 = __webpack_require__(/*! ./system-application.service */ "./src/modules/application/admin/system/system-application.service.ts");
 const dto_1 = __webpack_require__(/*! ./dto */ "./src/modules/application/admin/system/dto/index.ts");
 let SystemController = class SystemController {
@@ -4276,7 +4203,6 @@ __decorate([
 exports.SystemController = SystemController = __decorate([
     (0, swagger_1.ApiTags)('Admin - 시스템 관리'),
     (0, swagger_1.ApiBearerAuth)(),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Controller)('admin/systems'),
     __metadata("design:paramtypes", [typeof (_a = typeof system_application_service_1.SystemApplicationService !== "undefined" && system_application_service_1.SystemApplicationService) === "function" ? _a : Object])
 ], SystemController);
@@ -13863,6 +13789,7 @@ async function bootstrap() {
         'https://lsso-admin-git-dev-lumir-tech7s-projects.vercel.app',
         'https://portal.lumir.space/',
         'https://lsms.lumir.space/',
+        'https://lsso-dev.vercel.app',
         'http://localhost:3000',
     ];
     app.enableCors({

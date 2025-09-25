@@ -27,6 +27,7 @@ async function bootstrap() {
         'https://lsso-admin-git-dev-lumir-tech7s-projects.vercel.app',
         'https://portal.lumir.space/',
         'https://lsms.lumir.space/',
+        'https://lsso-dev.vercel.app',
         'http://localhost:3000',
         // 필요하면 스테이징/프로덕션 도메인 추가
     ];

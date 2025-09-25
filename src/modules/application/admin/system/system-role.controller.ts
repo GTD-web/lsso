@@ -6,7 +6,6 @@ import { CreateSystemRoleDto, UpdateSystemRoleDto, SystemRoleResponseDto } from 
 
 @ApiTags('Admin - 시스템 역할 관리')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
 @Controller('admin/system-roles')
 export class SystemRoleController {
     constructor(private readonly systemApplicationService: SystemApplicationService) {}

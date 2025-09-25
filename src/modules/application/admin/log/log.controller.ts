@@ -6,7 +6,6 @@ import { LogFilterDto, LogResponseDto, LogsResponseDto } from './dto';
 
 @ApiTags('Admin - 로그 관리')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
 @Controller('admin/logs')
 export class LogController {
     constructor(private readonly logApplicationService: LogApplicationService) {}
