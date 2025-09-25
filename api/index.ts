@@ -7,7 +7,7 @@ import * as dtos from '../src/dtos.index';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import { LoggingInterceptor } from '../libs/common/interceptors/logging.interceptor';
-import { LogsService } from '../src/modules/application/legacy/logs/services/logs.service';
+import { LogApplicationService } from '../src/modules/application/admin/log/log-application.service';
 import * as hbs from 'hbs';
 import { RequestInterceptor } from '../libs/common/interceptors/request.interceptor';
 import { ErrorInterceptor } from '../libs/common/interceptors/error.interceptor';
@@ -41,7 +41,7 @@ async function createApp(): Promise<NestExpressApplication> {
         app.enableCors();
 
         app.useGlobalInterceptors(new RequestInterceptor(), new ErrorInterceptor());
-        app.useGlobalInterceptors(new LoggingInterceptor(app.get(LogsService)));
+        app.useGlobalInterceptors(new LoggingInterceptor(app.get(LogApplicationService)));
 
         // Handlebars 설정 (Vercel에서는 static assets 경로 조정 필요)
         try {
