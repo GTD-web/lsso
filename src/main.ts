@@ -38,7 +38,12 @@ async function bootstrap() {
     setupSwagger(app, [...Object.values(dtos)]);
 
     // CORS setup
-    app.enableCors();
+    app.enableCors({
+        origin: '*',
+        methods: ['GET', 'POST', 'PUT', 'DELETE'],
+        allowedHeaders: ['Content-Type', 'Authorization'],
+        credentials: true,
+    });
 
     app.useGlobalInterceptors(new RequestInterceptor(), new ErrorInterceptor());
     app.useGlobalInterceptors(new LoggingInterceptor(app.get(LogApplicationService)));
