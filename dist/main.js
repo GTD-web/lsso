@@ -1189,10 +1189,7 @@ exports.AdminModule = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const jwt_1 = __webpack_require__(/*! @nestjs/jwt */ "@nestjs/jwt");
 const config_1 = __webpack_require__(/*! @nestjs/config */ "@nestjs/config");
-const passport_1 = __webpack_require__(/*! @nestjs/passport */ "@nestjs/passport");
-const organization_controller_1 = __webpack_require__(/*! ./organization/organization.controller */ "./src/modules/application/admin/organization/organization.controller.ts");
-const organization_application_service_1 = __webpack_require__(/*! ./organization/organization-application.service */ "./src/modules/application/admin/organization/organization-application.service.ts");
-const organization_management_context_module_1 = __webpack_require__(/*! ../../context/organization-management/organization-management-context.module */ "./src/modules/context/organization-management/organization-management-context.module.ts");
+const organization_module_1 = __webpack_require__(/*! ./organization/organization.module */ "./src/modules/application/admin/organization/organization.module.ts");
 const system_module_1 = __webpack_require__(/*! ./system/system.module */ "./src/modules/application/admin/system/system.module.ts");
 const log_module_1 = __webpack_require__(/*! ./log/log.module */ "./src/modules/application/admin/log/log.module.ts");
 let AdminModule = class AdminModule {
@@ -1209,14 +1206,13 @@ exports.AdminModule = AdminModule = __decorate([
                     signOptions: { expiresIn: '1h' },
                 }),
             }),
-            passport_1.PassportModule.register({ defaultStrategy: 'jwt' }),
-            organization_management_context_module_1.OrganizationManagementContextModule,
+            organization_module_1.OrganizationModule,
             system_module_1.SystemModule,
             log_module_1.LogModule,
         ],
-        controllers: [organization_controller_1.OrganizationController],
-        providers: [organization_application_service_1.OrganizationApplicationService],
-        exports: [organization_application_service_1.OrganizationApplicationService, system_module_1.SystemModule, log_module_1.LogModule],
+        controllers: [],
+        providers: [],
+        exports: [organization_module_1.OrganizationModule, system_module_1.SystemModule, log_module_1.LogModule],
     })
 ], AdminModule);
 
@@ -3289,6 +3285,42 @@ exports.OrganizationController = OrganizationController = __decorate([
     (0, common_1.Controller)('admin/organizations'),
     __metadata("design:paramtypes", [typeof (_a = typeof organization_application_service_1.OrganizationApplicationService !== "undefined" && organization_application_service_1.OrganizationApplicationService) === "function" ? _a : Object])
 ], OrganizationController);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/admin/organization/organization.module.ts":
+/*!***************************************************************************!*\
+  !*** ./src/modules/application/admin/organization/organization.module.ts ***!
+  \***************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.OrganizationModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const organization_controller_1 = __webpack_require__(/*! ./organization.controller */ "./src/modules/application/admin/organization/organization.controller.ts");
+const organization_application_service_1 = __webpack_require__(/*! ./organization-application.service */ "./src/modules/application/admin/organization/organization-application.service.ts");
+const organization_management_context_module_1 = __webpack_require__(/*! ../../../context/organization-management/organization-management-context.module */ "./src/modules/context/organization-management/organization-management-context.module.ts");
+let OrganizationModule = class OrganizationModule {
+};
+exports.OrganizationModule = OrganizationModule;
+exports.OrganizationModule = OrganizationModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            organization_management_context_module_1.OrganizationManagementContextModule,
+        ],
+        controllers: [organization_controller_1.OrganizationController],
+        providers: [organization_application_service_1.OrganizationApplicationService],
+        exports: [organization_application_service_1.OrganizationApplicationService],
+    })
+], OrganizationModule);
 
 
 /***/ }),
@@ -13826,7 +13858,17 @@ async function bootstrap() {
         return;
     }
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
-    app.enableCors();
+    const ALLOW_ORIGINS = [
+        'https://lsso-admin.vercel.app',
+        'https://lsso-admin-git-dev-lumir-tech7s-projects.vercel.app',
+        'https://portal.lumir.space/',
+        'https://lsms.lumir.space/',
+        'http://localhost:3000',
+    ];
+    app.enableCors({
+        origin: ALLOW_ORIGINS,
+        methods: 'GET,HEAD,POST,PATCH,PUT,DELETE,OPTIONS',
+    });
     app.useGlobalPipes(new common_1.ValidationPipe({
         whitelist: true,
         transform: true,

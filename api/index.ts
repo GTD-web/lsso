@@ -77,6 +77,33 @@ async function createApp(): Promise<NestExpressApplication> {
 // Vercel용 handler export
 export default async function handler(req: any, res: any) {
     try {
+        // 수동 CORS 처리 (Vercel serverless 환경 대응)
+        const origin = req.headers.origin;
+        const allowedOrigins = [
+            'https://lsso-admin.vercel.app',
+            'https://lsso-admin-git-dev-lumir-tech7s-projects.vercel.app',
+            'https://portal.lumir.space',
+            'https://lsms.lumir.space',
+            'http://localhost:3000',
+        ];
+
+        // Origin 체크 및 CORS 헤더 설정
+        if (allowedOrigins.includes(origin) || !origin) {
+            res.setHeader('Access-Control-Allow-Origin', origin || '*');
+        }
+
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept, Origin, X-Requested-With');
+        res.setHeader('Access-Control-Max-Age', '86400'); // 24시간 preflight 캐시
+
+        // OPTIONS 요청 (preflight) 처리
+        if (req.method === 'OPTIONS') {
+            res.status(200).end();
+            return;
+        }
+
+        console.log(`Vercel Handler: ${req.method} ${req.url} from origin: ${origin}`);
+
         const app = await createApp();
         const server = app.getHttpAdapter().getInstance();
 
@@ -84,6 +111,21 @@ export default async function handler(req: any, res: any) {
         return server(req, res);
     } catch (error) {
         console.error('Vercel handler error:', error);
+
+        // CORS 헤더를 에러 응답에도 추가
+        const origin = req.headers.origin;
+        const allowedOrigins = [
+            'https://lsso-admin.vercel.app',
+            'https://lsso-admin-git-dev-lumir-tech7s-projects.vercel.app',
+            'https://portal.lumir.space',
+            'https://lsms.lumir.space',
+            // 'http://localhost:3000',
+        ];
+
+        if (allowedOrigins.includes(origin) || !origin) {
+            res.setHeader('Access-Control-Allow-Origin', origin || '*');
+        }
+
         res.status(500).json({
             error: 'Internal Server Error',
             message: error.message,

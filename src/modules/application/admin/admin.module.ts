@@ -4,9 +4,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 
 // 조직관리 관련 imports
-import { OrganizationController } from './organization/organization.controller';
-import { OrganizationApplicationService } from './organization/organization-application.service';
-import { OrganizationManagementContextModule } from '../../context/organization-management/organization-management-context.module';
+import { OrganizationModule } from './organization/organization.module';
 
 // 시스템관리 관련 imports
 import { SystemModule } from './system/system.module';
@@ -25,10 +23,10 @@ import { LogModule } from './log/log.module';
                 signOptions: { expiresIn: '1h' },
             }),
         }),
-        PassportModule.register({ defaultStrategy: 'jwt' }),
+        // PassportModule.register({ defaultStrategy: 'jwt' }),
 
-        // 조직관리 컨텍스트 모듈
-        OrganizationManagementContextModule,
+        // 조직관리 모듈
+        OrganizationModule,
 
         // 시스템관리 모듈
         SystemModule,
@@ -36,8 +34,8 @@ import { LogModule } from './log/log.module';
         // 로그관리 모듈
         LogModule,
     ],
-    controllers: [OrganizationController],
-    providers: [OrganizationApplicationService],
-    exports: [OrganizationApplicationService, SystemModule, LogModule],
+    controllers: [],
+    providers: [],
+    exports: [OrganizationModule, SystemModule, LogModule],
 })
 export class AdminModule {}
