@@ -88,7 +88,6 @@ async function createApp(): Promise<NestExpressApplication> {
 export default async function handler(req: any, res: any) {
     try {
         // 수동 CORS 처리 (Vercel serverless 환경 대응)
-        console.log(`Vercel Handler: ${req.method} ${req.url} from origin: ${origin}`);
 
         const app = await createApp();
         const server = app.getHttpAdapter().getInstance();
