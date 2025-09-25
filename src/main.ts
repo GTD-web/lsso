@@ -21,7 +21,20 @@ async function bootstrap() {
     const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
     // CORS setup
-    app.enableCors();
+    // CORS setup
+    const ALLOW_ORIGINS = [
+        'https://lsso-admin.vercel.app',
+        'https://lsso-admin-git-dev-lumir-tech7s-projects.vercel.app',
+        'https://portal.lumir.space/',
+        'https://lsms.lumir.space/',
+        'http://localhost:3000',
+        // 필요하면 스테이징/프로덕션 도메인 추가
+    ];
+
+    app.enableCors({
+        origin: ALLOW_ORIGINS,
+        methods: 'GET,HEAD,POST,PATCH,PUT,DELETE,OPTIONS',
+    });
 
     // Global pipes
     app.useGlobalPipes(

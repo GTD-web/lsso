@@ -119,7 +119,7 @@ export default async function handler(req: any, res: any) {
             'https://lsso-admin-git-dev-lumir-tech7s-projects.vercel.app',
             'https://portal.lumir.space',
             'https://lsms.lumir.space',
-            'http://localhost:3000',
+            // 'http://localhost:3000',
         ];
 
         if (allowedOrigins.includes(origin) || !origin) {
