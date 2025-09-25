@@ -38,7 +38,12 @@ async function createApp(): Promise<NestExpressApplication> {
         setupSwagger(app, [...Object.values(dtos)]);
 
         // CORS setup
-        app.enableCors();
+        app.enableCors({
+            origin: '*',
+            methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+            allowedHeaders: ['Content-Type', 'Authorization'],
+            credentials: true,
+        });
 
         app.useGlobalInterceptors(new RequestInterceptor(), new ErrorInterceptor());
         app.useGlobalInterceptors(new LoggingInterceptor(app.get(LogApplicationService)));
