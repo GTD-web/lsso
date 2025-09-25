@@ -46,8 +46,24 @@ async function createApp(): Promise<NestExpressApplication> {
         ];
 
         app.enableCors({
-            origin: ALLOW_ORIGINS,
-            methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
+            origin: '*',
+            // methods: 'GET,HEAD,POST,PATCH,PUT,DELETE,OPTIONS',
+            // origin: function (origin, callback) {
+            //     const whitelist = [
+            //         'https://lsso-admin-git-dev-lumir-tech7s-projects.vercel.app',
+            //         'https://lsso-admin.vercel.app',
+            //         'http://localhost:3000',
+            //     ];
+            //     if (!origin || whitelist.includes(origin)) {
+            //         callback(null, true);
+            //     } else {
+            //         callback(new Error('Not allowed by CORS'));
+            //     }
+            // },
+            methods: 'GET,HEAD,POST,PATCH,PUT,DELETE,OPTIONS',
+            allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+            credentials: true,
+            maxAge: 600,
         });
 
         app.useGlobalInterceptors(new RequestInterceptor(), new ErrorInterceptor());

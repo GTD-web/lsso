@@ -40,7 +40,7 @@ async function bootstrap() {
     // CORS setup
     app.enableCors({
         origin: '*',
-        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+        methods: 'GET,HEAD,POST,PATCH,PUT,DELETE,OPTIONS',
     });
 
     app.useGlobalInterceptors(new RequestInterceptor(), new ErrorInterceptor());

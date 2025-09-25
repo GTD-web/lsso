@@ -13919,7 +13919,7 @@ async function bootstrap() {
     (0, swagger_1.setupSwagger)(app, [...Object.values(dtos)]);
     app.enableCors({
         origin: '*',
-        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+        methods: 'GET,HEAD,POST,PATCH,PUT,DELETE,OPTIONS',
     });
     app.useGlobalInterceptors(new request_interceptor_1.RequestInterceptor(), new error_interceptor_1.ErrorInterceptor());
     app.useGlobalInterceptors(new logging_interceptor_1.LoggingInterceptor(app.get(log_application_service_1.LogApplicationService)));
