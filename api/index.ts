@@ -48,7 +48,6 @@ async function createApp(): Promise<NestExpressApplication> {
         app.enableCors({
             origin: ALLOW_ORIGINS,
             methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
-            allowedHeaders: ['Content-Type', 'Authorization'],
         });
 
         app.useGlobalInterceptors(new RequestInterceptor(), new ErrorInterceptor());
