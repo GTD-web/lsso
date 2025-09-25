@@ -19,7 +19,18 @@ async function createApp(): Promise<NestExpressApplication> {
         console.log('Creating new NestJS app for Vercel...');
 
         const app = await NestFactory.create<NestExpressApplication>(AppModule);
+        // CORS setup
+        const ALLOW_ORIGINS = [
+            'https://lsso-admin-git-dev-lumir-tech7s-projects.vercel.app',
+            'https://lsso-admin.vercel.app',
+            'http://localhost:3000',
+            // 필요하면 스테이징/프로덕션 도메인 추가
+        ];
 
+        app.enableCors({
+            origin: '*',
+            methods: 'GET,HEAD,POST,PATCH,PUT,DELETE,OPTIONS',
+        });
         // Global pipes
         app.useGlobalPipes(
             new ValidationPipe({
@@ -36,35 +47,6 @@ async function createApp(): Promise<NestExpressApplication> {
 
         // Swagger setup
         setupSwagger(app, [...Object.values(dtos)]);
-
-        // CORS setup
-        const ALLOW_ORIGINS = [
-            'https://lsso-admin-git-dev-lumir-tech7s-projects.vercel.app',
-            'https://lsso-admin.vercel.app',
-            'http://localhost:3000',
-            // 필요하면 스테이징/프로덕션 도메인 추가
-        ];
-
-        app.enableCors({
-            origin: '*',
-            // methods: 'GET,HEAD,POST,PATCH,PUT,DELETE,OPTIONS',
-            // origin: function (origin, callback) {
-            //     const whitelist = [
-            //         'https://lsso-admin-git-dev-lumir-tech7s-projects.vercel.app',
-            //         'https://lsso-admin.vercel.app',
-            //         'http://localhost:3000',
-            //     ];
-            //     if (!origin || whitelist.includes(origin)) {
-            //         callback(null, true);
-            //     } else {
-            //         callback(new Error('Not allowed by CORS'));
-            //     }
-            // },
-            methods: 'GET,HEAD,POST,PATCH,PUT,DELETE,OPTIONS',
-            allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-            credentials: true,
-            maxAge: 600,
-        });
 
         app.useGlobalInterceptors(new RequestInterceptor(), new ErrorInterceptor());
         app.useGlobalInterceptors(new LoggingInterceptor(app.get(LogApplicationService)));

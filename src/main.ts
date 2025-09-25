@@ -20,6 +20,12 @@ async function bootstrap() {
 
     const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
+    // CORS setup
+    app.enableCors({
+        origin: '*',
+        methods: 'GET,HEAD,POST,PATCH,PUT,DELETE,OPTIONS',
+    });
+
     // Global pipes
     app.useGlobalPipes(
         new ValidationPipe({
@@ -36,12 +42,6 @@ async function bootstrap() {
 
     // Swagger setup
     setupSwagger(app, [...Object.values(dtos)]);
-
-    // CORS setup
-    app.enableCors({
-        origin: '*',
-        methods: 'GET,HEAD,POST,PATCH,PUT,DELETE,OPTIONS',
-    });
 
     app.useGlobalInterceptors(new RequestInterceptor(), new ErrorInterceptor());
     app.useGlobalInterceptors(new LoggingInterceptor(app.get(LogApplicationService)));
