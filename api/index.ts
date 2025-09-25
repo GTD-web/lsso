@@ -75,6 +75,18 @@ async function createApp(): Promise<NestExpressApplication> {
 // Vercel용 handler export
 export default async function handler(req: any, res: any) {
     try {
+        console.log('Vercel handler called');
+        if (req.method === 'OPTIONS') {
+            const origin = req.headers.origin || '*';
+            res.setHeader('Access-Control-Allow-Origin', origin);
+            res.setHeader('Vary', 'Origin');
+            res.setHeader('Access-Control-Allow-Credentials', 'true');
+            res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS,HEAD');
+            res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+            res.setHeader('Access-Control-Max-Age', '600');
+            return res.status(204).end();
+        }
+
         const app = await createApp();
         const server = app.getHttpAdapter().getInstance();
 
