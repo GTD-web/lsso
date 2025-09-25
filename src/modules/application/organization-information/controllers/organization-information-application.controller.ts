@@ -14,7 +14,7 @@ import { User, AuthenticatedUser } from '../../../../../libs/common/decorators/u
 import { Public } from '../../../../../libs/common/decorators/public.decorator';
 import { MigrationService } from '../../../context/migration/migration.service';
 
-@ApiTags('조직 정보 API')
+@ApiTags('Client - 조직 정보 API')
 // @ApiBearerAuth()
 // @UseGuards(JwtAuthGuard)
 @Controller('organization')

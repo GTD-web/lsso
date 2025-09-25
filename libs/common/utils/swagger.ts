@@ -27,6 +27,17 @@ export function setupSwagger(app: INestApplication, dtos: any[]) {
         ],
         swaggerOptions: {
             docExpansion: 'none',
+            tagsSorter: (a: string, b: string) => {
+                const isAEnglish = /^[A-Za-z]/.test(a);
+                const isBEnglish = /^[A-Za-z]/.test(b);
+
+                if (isAEnglish && !isBEnglish) return -1; // 알파벳(A-Z) 먼저
+                if (!isAEnglish && isBEnglish) return 1; // 한글(가-힣) 뒤로
+
+                return a.localeCompare(b, 'en'); // 같은 언어일 경우 알파벳순 정렬
+            },
+
+            persistAuthorization: true,
         },
     });
 }

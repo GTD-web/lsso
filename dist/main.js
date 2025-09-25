@@ -443,14 +443,15 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LoggingInterceptor = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const operators_1 = __webpack_require__(/*! rxjs/operators */ "rxjs/operators");
+const log_application_service_1 = __webpack_require__(/*! src/modules/application/admin/log/log-application.service */ "./src/modules/application/admin/log/log-application.service.ts");
 let LoggingInterceptor = class LoggingInterceptor {
-    constructor(logsService, systemService) {
+    constructor(logsService) {
         this.logsService = logsService;
-        this.systemService = systemService;
     }
     async intercept(context, next) {
         const startTime = Date.now();
@@ -505,14 +506,14 @@ let LoggingInterceptor = class LoggingInterceptor {
             logData.isError = true;
             throw error;
         }), (0, operators_1.finalize)(() => {
-            this.logsService.create(logData);
+            this.logsService.로그생성(logData);
         }));
     }
 };
 exports.LoggingInterceptor = LoggingInterceptor;
 exports.LoggingInterceptor = LoggingInterceptor = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [Object, Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof log_application_service_1.LogApplicationService !== "undefined" && log_application_service_1.LogApplicationService) === "function" ? _a : Object])
 ], LoggingInterceptor);
 
 
@@ -842,6 +843,16 @@ function setupSwagger(app, dtos) {
         ],
         swaggerOptions: {
             docExpansion: 'none',
+            tagsSorter: (a, b) => {
+                const isAEnglish = /^[A-Za-z]/.test(a);
+                const isBEnglish = /^[A-Za-z]/.test(b);
+                if (isAEnglish && !isBEnglish)
+                    return -1;
+                if (!isAEnglish && isBEnglish)
+                    return 1;
+                return a.localeCompare(b, 'en');
+            },
+            persistAuthorization: true,
         },
     });
 }
@@ -1126,12 +1137,6 @@ const env_config_1 = __webpack_require__(/*! ../libs/configs/env.config */ "./li
 const entities_1 = __webpack_require__(/*! ../libs/database/entities */ "./libs/database/entities/index.ts");
 const sso_application_module_1 = __webpack_require__(/*! ./modules/application/single-sign-on/sso-application.module */ "./src/modules/application/single-sign-on/sso-application.module.ts");
 const migration_module_1 = __webpack_require__(/*! ./modules/context/migration/migration.module */ "./src/modules/context/migration/migration.module.ts");
-const auth_module_1 = __webpack_require__(/*! ./modules/application/legacy/auth/auth.module */ "./src/modules/application/legacy/auth/auth.module.ts");
-const users_module_1 = __webpack_require__(/*! ./modules/application/legacy/users/users.module */ "./src/modules/application/legacy/users/users.module.ts");
-const logs_module_1 = __webpack_require__(/*! ./modules/application/legacy/logs/logs.module */ "./src/modules/application/legacy/logs/logs.module.ts");
-const systems_module_1 = __webpack_require__(/*! ./modules/application/legacy/systems/systems.module */ "./src/modules/application/legacy/systems/systems.module.ts");
-const tokens_module_1 = __webpack_require__(/*! ./modules/application/legacy/tokens/tokens.module */ "./src/modules/application/legacy/tokens/tokens.module.ts");
-const mail_module_1 = __webpack_require__(/*! ./modules/application/legacy/mail/mail.module */ "./src/modules/application/legacy/mail/mail.module.ts");
 const organization_information_application_module_1 = __webpack_require__(/*! ./modules/application/organization-information/organization-information-application.module */ "./src/modules/application/organization-information/organization-information-application.module.ts");
 const fcm_token_management_application_module_1 = __webpack_require__(/*! ./modules/application/fcm-token-management/fcm-token-management-application.module */ "./src/modules/application/fcm-token-management/fcm-token-management-application.module.ts");
 const admin_module_1 = __webpack_require__(/*! ./modules/application/admin/admin.module */ "./src/modules/application/admin/admin.module.ts");
@@ -1155,12 +1160,6 @@ exports.AppModule = AppModule = __decorate([
             fcm_token_management_application_module_1.FcmTokenManagementApplicationModule,
             migration_module_1.MigrationModule,
             admin_module_1.AdminModule,
-            auth_module_1.AuthModule,
-            users_module_1.UsersModule,
-            logs_module_1.LogsModule,
-            systems_module_1.SystemsModule,
-            tokens_module_1.TokensModule,
-            mail_module_1.MailModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [
@@ -1264,6 +1263,8 @@ const passport_1 = __webpack_require__(/*! @nestjs/passport */ "@nestjs/passport
 const organization_controller_1 = __webpack_require__(/*! ./organization/organization.controller */ "./src/modules/application/admin/organization/organization.controller.ts");
 const organization_application_service_1 = __webpack_require__(/*! ./organization/organization-application.service */ "./src/modules/application/admin/organization/organization-application.service.ts");
 const organization_management_context_module_1 = __webpack_require__(/*! ../../context/organization-management/organization-management-context.module */ "./src/modules/context/organization-management/organization-management-context.module.ts");
+const system_module_1 = __webpack_require__(/*! ./system/system.module */ "./src/modules/application/admin/system/system.module.ts");
+const log_module_1 = __webpack_require__(/*! ./log/log.module */ "./src/modules/application/admin/log/log.module.ts");
 let AdminModule = class AdminModule {
 };
 exports.AdminModule = AdminModule;
@@ -1280,12 +1281,720 @@ exports.AdminModule = AdminModule = __decorate([
             }),
             passport_1.PassportModule.register({ defaultStrategy: 'jwt' }),
             organization_management_context_module_1.OrganizationManagementContextModule,
+            system_module_1.SystemModule,
+            log_module_1.LogModule,
         ],
         controllers: [organization_controller_1.OrganizationController],
         providers: [organization_application_service_1.OrganizationApplicationService],
-        exports: [organization_application_service_1.OrganizationApplicationService],
+        exports: [organization_application_service_1.OrganizationApplicationService, system_module_1.SystemModule, log_module_1.LogModule],
     })
 ], AdminModule);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/admin/log/dto/create-log.dto.ts":
+/*!*****************************************************************!*\
+  !*** ./src/modules/application/admin/log/dto/create-log.dto.ts ***!
+  \*****************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CreateLogDto = void 0;
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+class CreateLogDto {
+}
+exports.CreateLogDto = CreateLogDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateLogDto.prototype, "method", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateLogDto.prototype, "url", void 0);
+__decorate([
+    (0, class_validator_1.IsObject)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Object)
+], CreateLogDto.prototype, "params", void 0);
+__decorate([
+    (0, class_validator_1.IsObject)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Object)
+], CreateLogDto.prototype, "query", void 0);
+__decorate([
+    (0, class_validator_1.IsObject)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Object)
+], CreateLogDto.prototype, "body", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateLogDto.prototype, "ip", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateLogDto.prototype, "host", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateLogDto.prototype, "userAgent", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateLogDto.prototype, "system", void 0);
+__decorate([
+    (0, class_validator_1.IsDate)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], CreateLogDto.prototype, "requestTimestamp", void 0);
+__decorate([
+    (0, class_validator_1.IsDate)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], CreateLogDto.prototype, "responseTimestamp", void 0);
+__decorate([
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], CreateLogDto.prototype, "responseTime", void 0);
+__decorate([
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], CreateLogDto.prototype, "statusCode", void 0);
+__decorate([
+    (0, class_validator_1.IsObject)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Object)
+], CreateLogDto.prototype, "response", void 0);
+__decorate([
+    (0, class_validator_1.IsObject)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Object)
+], CreateLogDto.prototype, "error", void 0);
+__decorate([
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], CreateLogDto.prototype, "isError", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/admin/log/dto/index.ts":
+/*!********************************************************!*\
+  !*** ./src/modules/application/admin/log/dto/index.ts ***!
+  \********************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(/*! ./create-log.dto */ "./src/modules/application/admin/log/dto/create-log.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./log-filter.dto */ "./src/modules/application/admin/log/dto/log-filter.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./log-response.dto */ "./src/modules/application/admin/log/dto/log-response.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./logs-response.dto */ "./src/modules/application/admin/log/dto/logs-response.dto.ts"), exports);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/admin/log/dto/log-filter.dto.ts":
+/*!*****************************************************************!*\
+  !*** ./src/modules/application/admin/log/dto/log-filter.dto.ts ***!
+  \*****************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LogFilterDto = exports.SortDirection = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const class_transformer_1 = __webpack_require__(/*! class-transformer */ "class-transformer");
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+var SortDirection;
+(function (SortDirection) {
+    SortDirection["ASC"] = "ASC";
+    SortDirection["DESC"] = "DESC";
+})(SortDirection || (exports.SortDirection = SortDirection = {}));
+class LogFilterDto {
+    constructor() {
+        this.page = 1;
+        this.limit = 10;
+        this.errorsOnly = false;
+        this.sortBy = 'requestTimestamp';
+        this.sortDirection = SortDirection.DESC;
+    }
+}
+exports.LogFilterDto = LogFilterDto;
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '페이지 번호', default: 1 }),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], LogFilterDto.prototype, "page", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '페이지당 항목 수', default: 10 }),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], LogFilterDto.prototype, "limit", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '시작 날짜' }),
+    (0, class_transformer_1.Type)(() => Date),
+    (0, class_validator_1.IsDate)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], LogFilterDto.prototype, "startDate", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '종료 날짜' }),
+    (0, class_transformer_1.Type)(() => Date),
+    (0, class_validator_1.IsDate)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], LogFilterDto.prototype, "endDate", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: 'HTTP 메서드' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], LogFilterDto.prototype, "method", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: 'URL 경로' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], LogFilterDto.prototype, "url", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: 'HTTP 상태 코드' }),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], LogFilterDto.prototype, "statusCode", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '호스트' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], LogFilterDto.prototype, "host", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: 'IP 주소' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], LogFilterDto.prototype, "ip", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '시스템 구분자' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], LogFilterDto.prototype, "system", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '에러만 조회 (상태코드 >= 400)', default: false }),
+    (0, class_transformer_1.Type)(() => Boolean),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], LogFilterDto.prototype, "errorsOnly", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        description: '정렬 기준',
+        default: 'requestTimestamp',
+        enum: ['requestTimestamp', 'method', 'url', 'statusCode', 'responseTime', 'ip', 'host'],
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], LogFilterDto.prototype, "sortBy", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        description: '정렬 방향',
+        default: SortDirection.DESC,
+        enum: SortDirection,
+    }),
+    (0, class_validator_1.IsEnum)(SortDirection),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], LogFilterDto.prototype, "sortDirection", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/admin/log/dto/log-response.dto.ts":
+/*!*******************************************************************!*\
+  !*** ./src/modules/application/admin/log/dto/log-response.dto.ts ***!
+  \*******************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b, _c, _d;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LogResponseDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+class LogResponseDto {
+}
+exports.LogResponseDto = LogResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '로그 ID' }),
+    __metadata("design:type", String)
+], LogResponseDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '요청 시간' }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], LogResponseDto.prototype, "requestTimestamp", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '응답 완료 시간' }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], LogResponseDto.prototype, "responseTimestamp", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'HTTP 메서드' }),
+    __metadata("design:type", String)
+], LogResponseDto.prototype, "method", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'URL 경로' }),
+    __metadata("design:type", String)
+], LogResponseDto.prototype, "url", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '요청 파라미터' }),
+    __metadata("design:type", typeof (_c = typeof Record !== "undefined" && Record) === "function" ? _c : Object)
+], LogResponseDto.prototype, "params", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '쿼리 파라미터' }),
+    __metadata("design:type", typeof (_d = typeof Record !== "undefined" && Record) === "function" ? _d : Object)
+], LogResponseDto.prototype, "query", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '요청 본문' }),
+    __metadata("design:type", Object)
+], LogResponseDto.prototype, "body", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'HTTP 상태 코드' }),
+    __metadata("design:type", Number)
+], LogResponseDto.prototype, "statusCode", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '응답 시간 (밀리초)' }),
+    __metadata("design:type", Number)
+], LogResponseDto.prototype, "responseTime", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '응답 본문' }),
+    __metadata("design:type", Object)
+], LogResponseDto.prototype, "response", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '에러 정보' }),
+    __metadata("design:type", Object)
+], LogResponseDto.prototype, "error", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'IP 주소' }),
+    __metadata("design:type", String)
+], LogResponseDto.prototype, "ip", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '호스트' }),
+    __metadata("design:type", String)
+], LogResponseDto.prototype, "host", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '사용자 에이전트' }),
+    __metadata("design:type", String)
+], LogResponseDto.prototype, "userAgent", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '시스템 구분자' }),
+    __metadata("design:type", String)
+], LogResponseDto.prototype, "system", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '에러 발생 여부' }),
+    __metadata("design:type", Boolean)
+], LogResponseDto.prototype, "isError", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/admin/log/dto/logs-response.dto.ts":
+/*!********************************************************************!*\
+  !*** ./src/modules/application/admin/log/dto/logs-response.dto.ts ***!
+  \********************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LogsResponseDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const log_response_dto_1 = __webpack_require__(/*! ./log-response.dto */ "./src/modules/application/admin/log/dto/log-response.dto.ts");
+class LogsResponseDto {
+}
+exports.LogsResponseDto = LogsResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '로그 목록', type: [log_response_dto_1.LogResponseDto] }),
+    __metadata("design:type", Array)
+], LogsResponseDto.prototype, "logs", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '전체 로그 수' }),
+    __metadata("design:type", Number)
+], LogsResponseDto.prototype, "total", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '현재 페이지 번호' }),
+    __metadata("design:type", Number)
+], LogsResponseDto.prototype, "page", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '페이지당 항목 수' }),
+    __metadata("design:type", Number)
+], LogsResponseDto.prototype, "limit", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '전체 페이지 수' }),
+    __metadata("design:type", Number)
+], LogsResponseDto.prototype, "totalPages", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/admin/log/log-application.service.ts":
+/*!**********************************************************************!*\
+  !*** ./src/modules/application/admin/log/log-application.service.ts ***!
+  \**********************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LogApplicationService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const log_management_context_service_1 = __webpack_require__(/*! ../../../context/log-management/log-management-context.service */ "./src/modules/context/log-management/log-management-context.service.ts");
+let LogApplicationService = class LogApplicationService {
+    constructor(로그관리컨텍스트서비스) {
+        this.로그관리컨텍스트서비스 = 로그관리컨텍스트서비스;
+    }
+    async 로그생성(createLogDto) {
+        try {
+            const log = await this.로그관리컨텍스트서비스.로그를_생성한다(createLogDto);
+            return this.로그_엔티티를_DTO로_변환(log);
+        }
+        catch (error) {
+            throw new Error('로그 생성에 실패했습니다.');
+        }
+    }
+    async 여러로그생성(createLogDtos) {
+        try {
+            const logs = await this.로그관리컨텍스트서비스.여러_로그를_생성한다(createLogDtos);
+            return logs.map((log) => this.로그_엔티티를_DTO로_변환(log));
+        }
+        catch (error) {
+            throw new Error('여러 로그 생성에 실패했습니다.');
+        }
+    }
+    async 로그목록조회(page = 1, limit = 10) {
+        try {
+            const result = await this.로그관리컨텍스트서비스.모든_로그를_조회한다(page, limit);
+            return {
+                logs: result.logs.map((log) => this.로그_엔티티를_DTO로_변환(log)),
+                total: result.total,
+                page: result.page,
+                limit: limit,
+                totalPages: result.totalPages,
+            };
+        }
+        catch (error) {
+            throw new common_1.NotFoundException('로그 목록 조회에 실패했습니다.');
+        }
+    }
+    async 로그상세조회(id) {
+        try {
+            const log = await this.로그관리컨텍스트서비스.로그를_ID로_조회한다(id);
+            if (!log) {
+                throw new common_1.NotFoundException('해당 로그를 찾을 수 없습니다.');
+            }
+            return this.로그_엔티티를_DTO로_변환(log);
+        }
+        catch (error) {
+            if (error instanceof common_1.NotFoundException) {
+                throw error;
+            }
+            throw new common_1.NotFoundException('로그 조회에 실패했습니다.');
+        }
+    }
+    async 로그필터링조회(filterDto) {
+        try {
+            const filterOptions = {
+                page: filterDto.page,
+                limit: filterDto.limit,
+                startDate: filterDto.startDate,
+                endDate: filterDto.endDate,
+                method: filterDto.method,
+                url: filterDto.url,
+                statusCode: filterDto.statusCode,
+                host: filterDto.host,
+                ip: filterDto.ip,
+                system: filterDto.system,
+                errorsOnly: filterDto.errorsOnly,
+                sortBy: filterDto.sortBy,
+                sortDirection: filterDto.sortDirection,
+            };
+            const result = await this.로그관리컨텍스트서비스.로그를_필터링하여_조회한다(filterOptions);
+            return {
+                logs: result.logs.map((log) => this.로그_엔티티를_DTO로_변환(log)),
+                total: result.total,
+                page: result.page,
+                limit: filterDto.limit || 10,
+                totalPages: result.totalPages,
+            };
+        }
+        catch (error) {
+            throw new common_1.NotFoundException('로그 필터링 조회에 실패했습니다.');
+        }
+    }
+    async 에러로그조회() {
+        try {
+            const errorLogs = await this.로그관리컨텍스트서비스.에러_로그를_조회한다();
+            return errorLogs.map((log) => this.로그_엔티티를_DTO로_변환(log));
+        }
+        catch (error) {
+            throw new common_1.NotFoundException('에러 로그 조회에 실패했습니다.');
+        }
+    }
+    async 시스템별로그조회(system) {
+        try {
+            const systemLogs = await this.로그관리컨텍스트서비스.시스템별_로그를_조회한다(system);
+            return systemLogs.map((log) => this.로그_엔티티를_DTO로_변환(log));
+        }
+        catch (error) {
+            throw new common_1.NotFoundException('시스템별 로그 조회에 실패했습니다.');
+        }
+    }
+    async 느린요청조회(minResponseTime = 1000) {
+        try {
+            const slowLogs = await this.로그관리컨텍스트서비스.느린_요청을_조회한다(minResponseTime);
+            return slowLogs.map((log) => this.로그_엔티티를_DTO로_변환(log));
+        }
+        catch (error) {
+            throw new common_1.NotFoundException('느린 요청 조회에 실패했습니다.');
+        }
+    }
+    async IP주소별로그조회(ip) {
+        try {
+            const ipLogs = await this.로그관리컨텍스트서비스.IP주소별_로그를_조회한다(ip);
+            return ipLogs.map((log) => this.로그_엔티티를_DTO로_변환(log));
+        }
+        catch (error) {
+            throw new common_1.NotFoundException('IP주소별 로그 조회에 실패했습니다.');
+        }
+    }
+    async 로그인로그조회(days = 7) {
+        try {
+            const loginLogs = await this.로그관리컨텍스트서비스.로그인_로그를_조회한다(days);
+            return loginLogs.map((log) => this.로그_엔티티를_DTO로_변환(log));
+        }
+        catch (error) {
+            throw new common_1.NotFoundException('로그인 로그 조회에 실패했습니다.');
+        }
+    }
+    로그_엔티티를_DTO로_변환(log) {
+        return {
+            id: log.id,
+            requestTimestamp: log.requestTimestamp,
+            responseTimestamp: log.responseTimestamp,
+            method: log.method,
+            url: log.url,
+            params: log.params,
+            query: log.query,
+            body: log.body,
+            statusCode: log.statusCode,
+            responseTime: log.responseTime,
+            response: log.response,
+            error: log.error,
+            ip: log.ip,
+            host: log.host,
+            userAgent: log.userAgent,
+            system: log.system,
+            isError: log.isError,
+        };
+    }
+};
+exports.LogApplicationService = LogApplicationService;
+exports.LogApplicationService = LogApplicationService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof log_management_context_service_1.LogManagementContextService !== "undefined" && log_management_context_service_1.LogManagementContextService) === "function" ? _a : Object])
+], LogApplicationService);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/admin/log/log.controller.ts":
+/*!*************************************************************!*\
+  !*** ./src/modules/application/admin/log/log.controller.ts ***!
+  \*************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d, _e;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LogController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const jwt_auth_guard_1 = __webpack_require__(/*! ../../../../../libs/common/guards/jwt-auth.guard */ "./libs/common/guards/jwt-auth.guard.ts");
+const log_application_service_1 = __webpack_require__(/*! ./log-application.service */ "./src/modules/application/admin/log/log-application.service.ts");
+const dto_1 = __webpack_require__(/*! ./dto */ "./src/modules/application/admin/log/dto/index.ts");
+let LogController = class LogController {
+    constructor(logApplicationService) {
+        this.logApplicationService = logApplicationService;
+    }
+    async findAll(page = 1, limit = 10) {
+        return await this.logApplicationService.로그목록조회(+page, +limit);
+    }
+    async findOne(id) {
+        return await this.logApplicationService.로그상세조회(id);
+    }
+    async filter(filterDto) {
+        return await this.logApplicationService.로그필터링조회(filterDto);
+    }
+};
+exports.LogController = LogController;
+__decorate([
+    (0, common_1.Get)(),
+    (0, swagger_1.ApiOperation)({ summary: '로그 목록 조회' }),
+    (0, swagger_1.ApiResponse)({ status: 200, type: dto_1.LogsResponseDto }),
+    (0, swagger_1.ApiQuery)({ name: 'page', required: false, description: '페이지 번호', type: Number }),
+    (0, swagger_1.ApiQuery)({ name: 'limit', required: false, description: '페이지당 항목 수', type: Number }),
+    __param(0, (0, common_1.Query)('page')),
+    __param(1, (0, common_1.Query)('limit')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", typeof (_b = typeof Promise !== "undefined" && Promise) === "function" ? _b : Object)
+], LogController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: '로그 상세 조회' }),
+    (0, swagger_1.ApiResponse)({ status: 200, type: dto_1.LogResponseDto }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: '로그를 찾을 수 없음' }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: '로그 ID' }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
+], LogController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Post)('filter'),
+    (0, swagger_1.ApiOperation)({ summary: '로그 필터링' }),
+    (0, swagger_1.ApiBody)({ type: dto_1.LogFilterDto }),
+    (0, swagger_1.ApiResponse)({ status: 200, type: dto_1.LogsResponseDto }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_d = typeof dto_1.LogFilterDto !== "undefined" && dto_1.LogFilterDto) === "function" ? _d : Object]),
+    __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
+], LogController.prototype, "filter", null);
+exports.LogController = LogController = __decorate([
+    (0, swagger_1.ApiTags)('Admin - 로그 관리'),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Controller)('admin/logs'),
+    __metadata("design:paramtypes", [typeof (_a = typeof log_application_service_1.LogApplicationService !== "undefined" && log_application_service_1.LogApplicationService) === "function" ? _a : Object])
+], LogController);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/admin/log/log.module.ts":
+/*!*********************************************************!*\
+  !*** ./src/modules/application/admin/log/log.module.ts ***!
+  \*********************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LogModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const log_controller_1 = __webpack_require__(/*! ./log.controller */ "./src/modules/application/admin/log/log.controller.ts");
+const log_application_service_1 = __webpack_require__(/*! ./log-application.service */ "./src/modules/application/admin/log/log-application.service.ts");
+const log_management_context_module_1 = __webpack_require__(/*! ../../../context/log-management/log-management-context.module */ "./src/modules/context/log-management/log-management-context.module.ts");
+let LogModule = class LogModule {
+};
+exports.LogModule = LogModule;
+exports.LogModule = LogModule = __decorate([
+    (0, common_1.Module)({
+        imports: [log_management_context_module_1.LogManagementContextModule],
+        controllers: [log_controller_1.LogController],
+        providers: [log_application_service_1.LogApplicationService],
+        exports: [log_application_service_1.LogApplicationService],
+    })
+], LogModule);
 
 
 /***/ }),
@@ -2644,12 +3353,1006 @@ __decorate([
     __metadata("design:returntype", typeof (_11 = typeof Promise !== "undefined" && Promise) === "function" ? _11 : Object)
 ], OrganizationController.prototype, "getEmployeeRankHistory", null);
 exports.OrganizationController = OrganizationController = __decorate([
-    (0, swagger_1.ApiTags)('조직 관리'),
+    (0, swagger_1.ApiTags)('Admin - 조직 관리'),
     (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Controller)('admin/organizations'),
     __metadata("design:paramtypes", [typeof (_a = typeof organization_application_service_1.OrganizationApplicationService !== "undefined" && organization_application_service_1.OrganizationApplicationService) === "function" ? _a : Object])
 ], OrganizationController);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/admin/system/dto/create-system-role.dto.ts":
+/*!****************************************************************************!*\
+  !*** ./src/modules/application/admin/system/dto/create-system-role.dto.ts ***!
+  \****************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CreateSystemRoleDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+class CreateSystemRoleDto {
+}
+exports.CreateSystemRoleDto = CreateSystemRoleDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '시스템 ID' }),
+    (0, class_validator_1.IsUUID)(),
+    __metadata("design:type", String)
+], CreateSystemRoleDto.prototype, "systemId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '역할 이름', example: '관리자' }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateSystemRoleDto.prototype, "roleName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '역할 코드', example: 'admin' }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateSystemRoleDto.prototype, "roleCode", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '역할 설명', example: '시스템 전체 관리 권한' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateSystemRoleDto.prototype, "description", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        description: '권한 목록',
+        example: ['read', 'write', 'delete'],
+        type: [String],
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsString)({ each: true }),
+    __metadata("design:type", Array)
+], CreateSystemRoleDto.prototype, "permissions", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '정렬 순서', example: 1 }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], CreateSystemRoleDto.prototype, "sortOrder", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '활성화 상태', example: true }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsBoolean)(),
+    __metadata("design:type", Boolean)
+], CreateSystemRoleDto.prototype, "isActive", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/admin/system/dto/create-system.dto.ts":
+/*!***********************************************************************!*\
+  !*** ./src/modules/application/admin/system/dto/create-system.dto.ts ***!
+  \***********************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CreateSystemDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+class CreateSystemDto {
+}
+exports.CreateSystemDto = CreateSystemDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '시스템 이름', example: 'RMS' }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateSystemDto.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '시스템 설명', example: '리소스 관리 시스템' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateSystemDto.prototype, "description", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '도메인', example: 'rms.company.com' }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateSystemDto.prototype, "domain", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '허용된 오리진 목록',
+        example: ['https://rms.company.com', 'https://admin.company.com'],
+        type: [String],
+    }),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.ArrayMinSize)(1),
+    (0, class_validator_1.IsString)({ each: true }),
+    __metadata("design:type", Array)
+], CreateSystemDto.prototype, "allowedOrigin", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '헬스체크 URL', example: 'https://rms.company.com/health' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsUrl)(),
+    __metadata("design:type", String)
+], CreateSystemDto.prototype, "healthCheckUrl", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '활성화 상태', example: true }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsBoolean)(),
+    __metadata("design:type", Boolean)
+], CreateSystemDto.prototype, "isActive", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/admin/system/dto/index.ts":
+/*!***********************************************************!*\
+  !*** ./src/modules/application/admin/system/dto/index.ts ***!
+  \***********************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(/*! ./create-system.dto */ "./src/modules/application/admin/system/dto/create-system.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./update-system.dto */ "./src/modules/application/admin/system/dto/update-system.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./system-response.dto */ "./src/modules/application/admin/system/dto/system-response.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./create-system-role.dto */ "./src/modules/application/admin/system/dto/create-system-role.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./update-system-role.dto */ "./src/modules/application/admin/system/dto/update-system-role.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./system-role-response.dto */ "./src/modules/application/admin/system/dto/system-role-response.dto.ts"), exports);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/admin/system/dto/system-response.dto.ts":
+/*!*************************************************************************!*\
+  !*** ./src/modules/application/admin/system/dto/system-response.dto.ts ***!
+  \*************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SystemResponseDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+class SystemResponseDto {
+}
+exports.SystemResponseDto = SystemResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '시스템 ID' }),
+    __metadata("design:type", String)
+], SystemResponseDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '클라이언트 ID' }),
+    __metadata("design:type", String)
+], SystemResponseDto.prototype, "clientId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '클라이언트 시크릿' }),
+    __metadata("design:type", String)
+], SystemResponseDto.prototype, "clientSecret", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '시스템 이름' }),
+    __metadata("design:type", String)
+], SystemResponseDto.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '시스템 설명' }),
+    __metadata("design:type", String)
+], SystemResponseDto.prototype, "description", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '도메인' }),
+    __metadata("design:type", String)
+], SystemResponseDto.prototype, "domain", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '허용된 오리진 목록', type: [String] }),
+    __metadata("design:type", Array)
+], SystemResponseDto.prototype, "allowedOrigin", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '헬스체크 URL' }),
+    __metadata("design:type", String)
+], SystemResponseDto.prototype, "healthCheckUrl", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '활성화 상태' }),
+    __metadata("design:type", Boolean)
+], SystemResponseDto.prototype, "isActive", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '생성일시' }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], SystemResponseDto.prototype, "createdAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '수정일시' }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], SystemResponseDto.prototype, "updatedAt", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/admin/system/dto/system-role-response.dto.ts":
+/*!******************************************************************************!*\
+  !*** ./src/modules/application/admin/system/dto/system-role-response.dto.ts ***!
+  \******************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SystemRoleResponseDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+class SystemRoleResponseDto {
+}
+exports.SystemRoleResponseDto = SystemRoleResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '시스템 롤 ID' }),
+    __metadata("design:type", String)
+], SystemRoleResponseDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '시스템 ID' }),
+    __metadata("design:type", String)
+], SystemRoleResponseDto.prototype, "systemId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '역할 이름' }),
+    __metadata("design:type", String)
+], SystemRoleResponseDto.prototype, "roleName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '역할 코드' }),
+    __metadata("design:type", String)
+], SystemRoleResponseDto.prototype, "roleCode", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '역할 설명' }),
+    __metadata("design:type", String)
+], SystemRoleResponseDto.prototype, "description", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '권한 목록', type: [String] }),
+    __metadata("design:type", Array)
+], SystemRoleResponseDto.prototype, "permissions", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '정렬 순서' }),
+    __metadata("design:type", Number)
+], SystemRoleResponseDto.prototype, "sortOrder", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '활성화 상태' }),
+    __metadata("design:type", Boolean)
+], SystemRoleResponseDto.prototype, "isActive", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '생성일시' }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], SystemRoleResponseDto.prototype, "createdAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '수정일시' }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], SystemRoleResponseDto.prototype, "updatedAt", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/admin/system/dto/update-system-role.dto.ts":
+/*!****************************************************************************!*\
+  !*** ./src/modules/application/admin/system/dto/update-system-role.dto.ts ***!
+  \****************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdateSystemRoleDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+class UpdateSystemRoleDto {
+}
+exports.UpdateSystemRoleDto = UpdateSystemRoleDto;
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '역할 이름', example: '관리자' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], UpdateSystemRoleDto.prototype, "roleName", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '역할 코드', example: 'admin' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], UpdateSystemRoleDto.prototype, "roleCode", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '역할 설명', example: '시스템 전체 관리 권한' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], UpdateSystemRoleDto.prototype, "description", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        description: '권한 목록',
+        example: ['read', 'write', 'delete'],
+        type: [String],
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsString)({ each: true }),
+    __metadata("design:type", Array)
+], UpdateSystemRoleDto.prototype, "permissions", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '정렬 순서', example: 1 }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], UpdateSystemRoleDto.prototype, "sortOrder", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '활성화 상태', example: true }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsBoolean)(),
+    __metadata("design:type", Boolean)
+], UpdateSystemRoleDto.prototype, "isActive", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/admin/system/dto/update-system.dto.ts":
+/*!***********************************************************************!*\
+  !*** ./src/modules/application/admin/system/dto/update-system.dto.ts ***!
+  \***********************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdateSystemDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+class UpdateSystemDto {
+}
+exports.UpdateSystemDto = UpdateSystemDto;
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '시스템 이름', example: 'RMS' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], UpdateSystemDto.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '시스템 설명', example: '리소스 관리 시스템' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], UpdateSystemDto.prototype, "description", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '도메인', example: 'rms.company.com' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], UpdateSystemDto.prototype, "domain", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        description: '허용된 오리진 목록',
+        example: ['https://rms.company.com', 'https://admin.company.com'],
+        type: [String],
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsString)({ each: true }),
+    __metadata("design:type", Array)
+], UpdateSystemDto.prototype, "allowedOrigin", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '헬스체크 URL', example: 'https://rms.company.com/health' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsUrl)(),
+    __metadata("design:type", String)
+], UpdateSystemDto.prototype, "healthCheckUrl", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '활성화 상태', example: true }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsBoolean)(),
+    __metadata("design:type", Boolean)
+], UpdateSystemDto.prototype, "isActive", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/admin/system/system-application.service.ts":
+/*!****************************************************************************!*\
+  !*** ./src/modules/application/admin/system/system-application.service.ts ***!
+  \****************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SystemApplicationService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const system_management_context_service_1 = __webpack_require__(/*! ../../../context/system-management/system-management-context.service */ "./src/modules/context/system-management/system-management-context.service.ts");
+let SystemApplicationService = class SystemApplicationService {
+    constructor(시스템관리컨텍스트서비스) {
+        this.시스템관리컨텍스트서비스 = 시스템관리컨텍스트서비스;
+    }
+    async 시스템목록조회() {
+        try {
+            const systems = await this.시스템관리컨텍스트서비스.모든_시스템을_조회한다();
+            return systems.map((system) => this.시스템_엔티티를_DTO로_변환(system));
+        }
+        catch (error) {
+            throw new common_1.NotFoundException('시스템 목록 조회에 실패했습니다.');
+        }
+    }
+    async 시스템검색(query) {
+        try {
+            const systems = await this.시스템관리컨텍스트서비스.시스템을_검색한다(query);
+            return systems.map((system) => this.시스템_엔티티를_DTO로_변환(system));
+        }
+        catch (error) {
+            throw new common_1.NotFoundException('시스템 검색에 실패했습니다.');
+        }
+    }
+    async 시스템상세조회(id) {
+        try {
+            const system = await this.시스템관리컨텍스트서비스.시스템을_ID로_조회한다(id);
+            if (!system) {
+                throw new common_1.NotFoundException('해당 시스템을 찾을 수 없습니다.');
+            }
+            return this.시스템_엔티티를_DTO로_변환(system);
+        }
+        catch (error) {
+            if (error instanceof common_1.NotFoundException) {
+                throw error;
+            }
+            throw new common_1.NotFoundException('시스템 조회에 실패했습니다.');
+        }
+    }
+    async 시스템생성(createDto) {
+        try {
+            const result = await this.시스템관리컨텍스트서비스.시스템을_생성한다({
+                name: createDto.name,
+                description: createDto.description,
+                domain: createDto.domain,
+                allowedOrigin: createDto.allowedOrigin,
+                healthCheckUrl: createDto.healthCheckUrl,
+                isActive: createDto.isActive,
+            });
+            const response = this.시스템_엔티티를_DTO로_변환(result.system);
+            response.clientSecret = result.originalSecret;
+            return response;
+        }
+        catch (error) {
+            if (error.message?.includes('이미 존재하는 시스템 이름')) {
+                throw new common_1.ConflictException('이미 존재하는 시스템 이름입니다.');
+            }
+            throw new common_1.ConflictException('시스템 생성에 실패했습니다.');
+        }
+    }
+    async 시스템수정(id, updateDto) {
+        try {
+            const updatedSystem = await this.시스템관리컨텍스트서비스.시스템을_수정한다(id, {
+                name: updateDto.name,
+                description: updateDto.description,
+                domain: updateDto.domain,
+                allowedOrigin: updateDto.allowedOrigin,
+                healthCheckUrl: updateDto.healthCheckUrl,
+                isActive: updateDto.isActive,
+            });
+            return this.시스템_엔티티를_DTO로_변환(updatedSystem);
+        }
+        catch (error) {
+            if (error.message?.includes('이미 존재하는 시스템 이름')) {
+                throw new common_1.ConflictException('이미 존재하는 시스템 이름입니다.');
+            }
+            if (error.message?.includes('해당 시스템을 찾을 수 없습니다')) {
+                throw new common_1.NotFoundException('해당 시스템을 찾을 수 없습니다.');
+            }
+            throw new common_1.ConflictException('시스템 수정에 실패했습니다.');
+        }
+    }
+    async 시스템삭제(id) {
+        try {
+            await this.시스템관리컨텍스트서비스.시스템을_삭제한다(id);
+        }
+        catch (error) {
+            if (error.message?.includes('해당 시스템을 찾을 수 없습니다')) {
+                throw new common_1.NotFoundException('해당 시스템을 찾을 수 없습니다.');
+            }
+            throw new common_1.NotFoundException('시스템 삭제에 실패했습니다.');
+        }
+    }
+    async API키_재생성(id) {
+        try {
+            const result = await this.시스템관리컨텍스트서비스.시스템의_API키를_재생성한다(id);
+            const response = this.시스템_엔티티를_DTO로_변환(result.system);
+            response.clientSecret = result.originalSecret;
+            return response;
+        }
+        catch (error) {
+            if (error.message?.includes('해당 시스템을 찾을 수 없습니다')) {
+                throw new common_1.NotFoundException('해당 시스템을 찾을 수 없습니다.');
+            }
+            throw new common_1.NotFoundException('API 키 재생성에 실패했습니다.');
+        }
+    }
+    async 시스템롤목록조회(systemId) {
+        try {
+            let systemRoles;
+            if (systemId) {
+                systemRoles = await this.시스템관리컨텍스트서비스.시스템의_역할목록을_조회한다(systemId);
+            }
+            else {
+                systemRoles = await this.시스템관리컨텍스트서비스.모든_시스템역할을_조회한다();
+            }
+            return systemRoles.map((role) => this.시스템롤_엔티티를_DTO로_변환(role));
+        }
+        catch (error) {
+            throw new common_1.NotFoundException('시스템 역할 목록 조회에 실패했습니다.');
+        }
+    }
+    async 시스템롤상세조회(id) {
+        try {
+            const systemRole = await this.시스템관리컨텍스트서비스.시스템역할을_ID로_조회한다(id);
+            if (!systemRole) {
+                throw new common_1.NotFoundException('해당 시스템 롤을 찾을 수 없습니다.');
+            }
+            return this.시스템롤_엔티티를_DTO로_변환(systemRole);
+        }
+        catch (error) {
+            if (error instanceof common_1.NotFoundException) {
+                throw error;
+            }
+            throw new common_1.NotFoundException('시스템 역할 조회에 실패했습니다.');
+        }
+    }
+    async 시스템롤생성(createDto) {
+        try {
+            const savedRole = await this.시스템관리컨텍스트서비스.시스템역할을_생성한다({
+                systemId: createDto.systemId,
+                roleName: createDto.roleName,
+                roleCode: createDto.roleCode,
+                description: createDto.description,
+                permissions: createDto.permissions,
+                sortOrder: createDto.sortOrder,
+            });
+            return this.시스템롤_엔티티를_DTO로_변환(savedRole);
+        }
+        catch (error) {
+            if (error.message?.includes('이미 할당된 역할') || error.message?.includes('이미 존재합니다')) {
+                throw new common_1.ConflictException('해당 시스템에 이미 존재하는 역할 코드입니다.');
+            }
+            throw new common_1.ConflictException('시스템 역할 생성에 실패했습니다.');
+        }
+    }
+    async 시스템롤수정(id, updateDto) {
+        try {
+            const updatedRole = await this.시스템관리컨텍스트서비스.시스템역할을_수정한다(id, {
+                roleName: updateDto.roleName,
+                roleCode: updateDto.roleCode,
+                description: updateDto.description,
+                permissions: updateDto.permissions,
+                sortOrder: updateDto.sortOrder,
+                isActive: updateDto.isActive,
+            });
+            return this.시스템롤_엔티티를_DTO로_변환(updatedRole);
+        }
+        catch (error) {
+            if (error.message?.includes('이미 존재합니다')) {
+                throw new common_1.ConflictException('해당 시스템에 이미 존재하는 역할 코드입니다.');
+            }
+            if (error.message?.includes('찾을 수 없습니다')) {
+                throw new common_1.NotFoundException('해당 시스템 롤을 찾을 수 없습니다.');
+            }
+            throw new common_1.ConflictException('시스템 역할 수정에 실패했습니다.');
+        }
+    }
+    async 시스템롤삭제(id) {
+        try {
+            await this.시스템관리컨텍스트서비스.시스템역할을_비활성화한다(id);
+        }
+        catch (error) {
+            if (error.message?.includes('찾을 수 없습니다')) {
+                throw new common_1.NotFoundException('해당 시스템 롤을 찾을 수 없습니다.');
+            }
+            throw new common_1.NotFoundException('시스템 역할 삭제에 실패했습니다.');
+        }
+    }
+    시스템_엔티티를_DTO로_변환(system) {
+        return {
+            id: system.id,
+            clientId: system.clientId,
+            clientSecret: '***',
+            name: system.name,
+            description: system.description,
+            domain: system.domain,
+            allowedOrigin: system.allowedOrigin,
+            healthCheckUrl: system.healthCheckUrl,
+            isActive: system.isActive,
+            createdAt: system.createdAt,
+            updatedAt: system.updatedAt,
+        };
+    }
+    시스템롤_엔티티를_DTO로_변환(systemRole) {
+        return {
+            id: systemRole.id,
+            systemId: systemRole.systemId,
+            roleName: systemRole.roleName,
+            roleCode: systemRole.roleCode,
+            description: systemRole.description,
+            permissions: systemRole.permissions,
+            sortOrder: systemRole.sortOrder,
+            isActive: systemRole.isActive,
+            createdAt: systemRole.createdAt,
+            updatedAt: systemRole.updatedAt,
+        };
+    }
+};
+exports.SystemApplicationService = SystemApplicationService;
+exports.SystemApplicationService = SystemApplicationService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof system_management_context_service_1.SystemManagementContextService !== "undefined" && system_management_context_service_1.SystemManagementContextService) === "function" ? _a : Object])
+], SystemApplicationService);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/admin/system/system-role.controller.ts":
+/*!************************************************************************!*\
+  !*** ./src/modules/application/admin/system/system-role.controller.ts ***!
+  \************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d, _e, _f, _g, _h;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SystemRoleController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const jwt_auth_guard_1 = __webpack_require__(/*! ../../../../../libs/common/guards/jwt-auth.guard */ "./libs/common/guards/jwt-auth.guard.ts");
+const system_application_service_1 = __webpack_require__(/*! ./system-application.service */ "./src/modules/application/admin/system/system-application.service.ts");
+const dto_1 = __webpack_require__(/*! ./dto */ "./src/modules/application/admin/system/dto/index.ts");
+let SystemRoleController = class SystemRoleController {
+    constructor(systemApplicationService) {
+        this.systemApplicationService = systemApplicationService;
+    }
+    async getSystemRoles(systemId) {
+        return await this.systemApplicationService.시스템롤목록조회(systemId);
+    }
+    async getSystemRole(id) {
+        return await this.systemApplicationService.시스템롤상세조회(id);
+    }
+    async createSystemRole(createSystemRoleDto) {
+        return await this.systemApplicationService.시스템롤생성(createSystemRoleDto);
+    }
+    async updateSystemRole(id, updateSystemRoleDto) {
+        return await this.systemApplicationService.시스템롤수정(id, updateSystemRoleDto);
+    }
+    async deleteSystemRole(id) {
+        return await this.systemApplicationService.시스템롤삭제(id);
+    }
+};
+exports.SystemRoleController = SystemRoleController;
+__decorate([
+    (0, common_1.Get)(),
+    (0, swagger_1.ApiOperation)({ summary: '시스템 역할 목록 조회' }),
+    (0, swagger_1.ApiResponse)({ status: 200, type: [dto_1.SystemRoleResponseDto] }),
+    (0, swagger_1.ApiQuery)({ name: 'systemId', required: false, description: '시스템 ID (특정 시스템의 역할만 조회)' }),
+    __param(0, (0, common_1.Query)('systemId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", typeof (_b = typeof Promise !== "undefined" && Promise) === "function" ? _b : Object)
+], SystemRoleController.prototype, "getSystemRoles", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: '시스템 역할 상세 조회' }),
+    (0, swagger_1.ApiResponse)({ status: 200, type: dto_1.SystemRoleResponseDto }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: '시스템 역할을 찾을 수 없음' }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: '시스템 역할 ID' }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
+], SystemRoleController.prototype, "getSystemRole", null);
+__decorate([
+    (0, common_1.Post)(),
+    (0, swagger_1.ApiOperation)({ summary: '시스템 역할 생성' }),
+    (0, swagger_1.ApiBody)({ type: dto_1.CreateSystemRoleDto }),
+    (0, swagger_1.ApiResponse)({ status: 201, type: dto_1.SystemRoleResponseDto }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: '시스템을 찾을 수 없음' }),
+    (0, swagger_1.ApiResponse)({ status: 409, description: '이미 존재하는 역할 코드' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_d = typeof dto_1.CreateSystemRoleDto !== "undefined" && dto_1.CreateSystemRoleDto) === "function" ? _d : Object]),
+    __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
+], SystemRoleController.prototype, "createSystemRole", null);
+__decorate([
+    (0, common_1.Patch)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: '시스템 역할 수정' }),
+    (0, swagger_1.ApiBody)({ type: dto_1.UpdateSystemRoleDto }),
+    (0, swagger_1.ApiResponse)({ status: 200, type: dto_1.SystemRoleResponseDto }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: '시스템 역할을 찾을 수 없음' }),
+    (0, swagger_1.ApiResponse)({ status: 409, description: '이미 존재하는 역할 코드' }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: '시스템 역할 ID' }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, typeof (_f = typeof dto_1.UpdateSystemRoleDto !== "undefined" && dto_1.UpdateSystemRoleDto) === "function" ? _f : Object]),
+    __metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
+], SystemRoleController.prototype, "updateSystemRole", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: '시스템 역할 삭제' }),
+    (0, swagger_1.ApiResponse)({ status: 200 }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: '시스템 역할을 찾을 수 없음' }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: '시스템 역할 ID' }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
+], SystemRoleController.prototype, "deleteSystemRole", null);
+exports.SystemRoleController = SystemRoleController = __decorate([
+    (0, swagger_1.ApiTags)('Admin - 시스템 역할 관리'),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Controller)('admin/system-roles'),
+    __metadata("design:paramtypes", [typeof (_a = typeof system_application_service_1.SystemApplicationService !== "undefined" && system_application_service_1.SystemApplicationService) === "function" ? _a : Object])
+], SystemRoleController);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/admin/system/system.controller.ts":
+/*!*******************************************************************!*\
+  !*** ./src/modules/application/admin/system/system.controller.ts ***!
+  \*******************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SystemController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const jwt_auth_guard_1 = __webpack_require__(/*! ../../../../../libs/common/guards/jwt-auth.guard */ "./libs/common/guards/jwt-auth.guard.ts");
+const system_application_service_1 = __webpack_require__(/*! ./system-application.service */ "./src/modules/application/admin/system/system-application.service.ts");
+const dto_1 = __webpack_require__(/*! ./dto */ "./src/modules/application/admin/system/dto/index.ts");
+let SystemController = class SystemController {
+    constructor(systemApplicationService) {
+        this.systemApplicationService = systemApplicationService;
+    }
+    async getSystems(search) {
+        if (search) {
+            return await this.systemApplicationService.시스템검색(search);
+        }
+        return await this.systemApplicationService.시스템목록조회();
+    }
+    async searchSystems(query) {
+        return await this.systemApplicationService.시스템검색(query);
+    }
+    async getSystem(id) {
+        return await this.systemApplicationService.시스템상세조회(id);
+    }
+    async createSystem(createSystemDto) {
+        return await this.systemApplicationService.시스템생성(createSystemDto);
+    }
+    async updateSystem(id, updateSystemDto) {
+        return await this.systemApplicationService.시스템수정(id, updateSystemDto);
+    }
+    async deleteSystem(id) {
+        return await this.systemApplicationService.시스템삭제(id);
+    }
+    async regenerateApiKeys(id) {
+        return await this.systemApplicationService.API키_재생성(id);
+    }
+};
+exports.SystemController = SystemController;
+__decorate([
+    (0, common_1.Get)(),
+    (0, swagger_1.ApiOperation)({ summary: '시스템 목록 조회' }),
+    (0, swagger_1.ApiResponse)({ status: 200, type: [dto_1.SystemResponseDto] }),
+    (0, swagger_1.ApiQuery)({ name: 'search', required: false, description: '검색어 (이름, 설명, 도메인)' }),
+    __param(0, (0, common_1.Query)('search')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", typeof (_b = typeof Promise !== "undefined" && Promise) === "function" ? _b : Object)
+], SystemController.prototype, "getSystems", null);
+__decorate([
+    (0, common_1.Get)('search'),
+    (0, swagger_1.ApiOperation)({ summary: '시스템 검색' }),
+    (0, swagger_1.ApiResponse)({ status: 200, type: [dto_1.SystemResponseDto] }),
+    (0, swagger_1.ApiQuery)({ name: 'query', required: true, description: '검색어' }),
+    __param(0, (0, common_1.Query)('query')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
+], SystemController.prototype, "searchSystems", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: '시스템 상세 조회' }),
+    (0, swagger_1.ApiResponse)({ status: 200, type: dto_1.SystemResponseDto }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: '시스템을 찾을 수 없음' }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: '시스템 ID' }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
+], SystemController.prototype, "getSystem", null);
+__decorate([
+    (0, common_1.Post)(),
+    (0, swagger_1.ApiOperation)({
+        summary: '시스템 생성',
+        description: '새로운 시스템을 등록하고 클라이언트 ID/시크릿을 자동 생성합니다.',
+    }),
+    (0, swagger_1.ApiBody)({ type: dto_1.CreateSystemDto }),
+    (0, swagger_1.ApiResponse)({ status: 201, type: dto_1.SystemResponseDto }),
+    (0, swagger_1.ApiResponse)({ status: 409, description: '이미 존재하는 시스템 이름' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_e = typeof dto_1.CreateSystemDto !== "undefined" && dto_1.CreateSystemDto) === "function" ? _e : Object]),
+    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
+], SystemController.prototype, "createSystem", null);
+__decorate([
+    (0, common_1.Patch)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: '시스템 수정' }),
+    (0, swagger_1.ApiBody)({ type: dto_1.UpdateSystemDto }),
+    (0, swagger_1.ApiResponse)({ status: 200, type: dto_1.SystemResponseDto }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: '시스템을 찾을 수 없음' }),
+    (0, swagger_1.ApiResponse)({ status: 409, description: '이미 존재하는 시스템 이름' }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: '시스템 ID' }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, typeof (_g = typeof dto_1.UpdateSystemDto !== "undefined" && dto_1.UpdateSystemDto) === "function" ? _g : Object]),
+    __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
+], SystemController.prototype, "updateSystem", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: '시스템 삭제' }),
+    (0, swagger_1.ApiResponse)({ status: 200 }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: '시스템을 찾을 수 없음' }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: '시스템 ID' }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
+], SystemController.prototype, "deleteSystem", null);
+__decorate([
+    (0, common_1.Post)(':id/regenerate-keys'),
+    (0, swagger_1.ApiOperation)({
+        summary: 'API 키 재생성',
+        description: '클라이언트 시크릿을 새로 생성합니다.',
+    }),
+    (0, swagger_1.ApiResponse)({ status: 200, type: dto_1.SystemResponseDto }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: '시스템을 찾을 수 없음' }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: '시스템 ID' }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
+], SystemController.prototype, "regenerateApiKeys", null);
+exports.SystemController = SystemController = __decorate([
+    (0, swagger_1.ApiTags)('Admin - 시스템 관리'),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Controller)('admin/systems'),
+    __metadata("design:paramtypes", [typeof (_a = typeof system_application_service_1.SystemApplicationService !== "undefined" && system_application_service_1.SystemApplicationService) === "function" ? _a : Object])
+], SystemController);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/admin/system/system.module.ts":
+/*!***************************************************************!*\
+  !*** ./src/modules/application/admin/system/system.module.ts ***!
+  \***************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SystemModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const system_controller_1 = __webpack_require__(/*! ./system.controller */ "./src/modules/application/admin/system/system.controller.ts");
+const system_role_controller_1 = __webpack_require__(/*! ./system-role.controller */ "./src/modules/application/admin/system/system-role.controller.ts");
+const system_application_service_1 = __webpack_require__(/*! ./system-application.service */ "./src/modules/application/admin/system/system-application.service.ts");
+const system_management_context_module_1 = __webpack_require__(/*! ../../../context/system-management/system-management-context.module */ "./src/modules/context/system-management/system-management-context.module.ts");
+let SystemModule = class SystemModule {
+};
+exports.SystemModule = SystemModule;
+exports.SystemModule = SystemModule = __decorate([
+    (0, common_1.Module)({
+        imports: [system_management_context_module_1.SystemManagementContextModule],
+        controllers: [system_controller_1.SystemController, system_role_controller_1.SystemRoleController],
+        providers: [system_application_service_1.SystemApplicationService],
+        exports: [system_application_service_1.SystemApplicationService],
+    })
+], SystemModule);
 
 
 /***/ }),
@@ -2820,7 +4523,7 @@ __decorate([
     __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
 ], FcmTokenManagementApplicationController.prototype, "getFcmTokens", null);
 exports.FcmTokenManagementApplicationController = FcmTokenManagementApplicationController = __decorate([
-    (0, swagger_1.ApiTags)('FCM 토큰 관리 API'),
+    (0, swagger_1.ApiTags)('Client - FCM 토큰 관리 API'),
     (0, common_1.Controller)('fcm'),
     __metadata("design:paramtypes", [typeof (_a = typeof fcm_token_management_application_service_1.FcmTokenManagementApplicationService !== "undefined" && fcm_token_management_application_service_1.FcmTokenManagementApplicationService) === "function" ? _a : Object])
 ], FcmTokenManagementApplicationController);
@@ -3439,4079 +5142,6 @@ exports.FcmTokenManagementApplicationService = FcmTokenManagementApplicationServ
 
 /***/ }),
 
-/***/ "./src/modules/application/legacy/auth/auth.module.ts":
-/*!************************************************************!*\
-  !*** ./src/modules/application/legacy/auth/auth.module.ts ***!
-  \************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AuthModule = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const auth_service_1 = __webpack_require__(/*! ./services/auth.service */ "./src/modules/application/legacy/auth/services/auth.service.ts");
-const config_1 = __webpack_require__(/*! @nestjs/config */ "@nestjs/config");
-const jwt_1 = __webpack_require__(/*! @nestjs/jwt */ "@nestjs/jwt");
-const passport_1 = __webpack_require__(/*! @nestjs/passport */ "@nestjs/passport");
-const admin_controller_1 = __webpack_require__(/*! ./controllers/admin.controller */ "./src/modules/application/legacy/auth/controllers/admin.controller.ts");
-const admin_usecase_1 = __webpack_require__(/*! ./usecases/admin.usecase */ "./src/modules/application/legacy/auth/usecases/admin.usecase.ts");
-const jwt_auth_guard_1 = __webpack_require__(/*! ./guards/jwt-auth.guard */ "./src/modules/application/legacy/auth/guards/jwt-auth.guard.ts");
-let AuthModule = class AuthModule {
-};
-exports.AuthModule = AuthModule;
-exports.AuthModule = AuthModule = __decorate([
-    (0, common_1.Module)({
-        imports: [
-            jwt_1.JwtModule.registerAsync({
-                imports: [config_1.ConfigModule],
-                inject: [config_1.ConfigService],
-                useFactory: (configService) => ({
-                    secret: configService.get('GLOBAL_SECRET'),
-                    signOptions: { expiresIn: '1h' },
-                }),
-            }),
-            passport_1.PassportModule.register({ defaultStrategy: 'jwt' }),
-        ],
-        controllers: [admin_controller_1.AdminAuthController],
-        providers: [auth_service_1.AuthService, admin_usecase_1.AdminUseCase, jwt_auth_guard_1.JwtAuthGuard],
-        exports: [auth_service_1.AuthService],
-    })
-], AuthModule);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/auth/controllers/admin.controller.ts":
-/*!*****************************************************************************!*\
-  !*** ./src/modules/application/legacy/auth/controllers/admin.controller.ts ***!
-  \*****************************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AdminAuthController = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const admin_usecase_1 = __webpack_require__(/*! ../usecases/admin.usecase */ "./src/modules/application/legacy/auth/usecases/admin.usecase.ts");
-const admin_1 = __webpack_require__(/*! ../dto/admin */ "./src/modules/application/legacy/auth/dto/admin/index.ts");
-const jwt_auth_guard_1 = __webpack_require__(/*! ../guards/jwt-auth.guard */ "./src/modules/application/legacy/auth/guards/jwt-auth.guard.ts");
-const api_response_dto_1 = __webpack_require__(/*! ../../../../../../libs/common/dto/api-response.dto */ "./libs/common/dto/api-response.dto.ts");
-let AdminAuthController = class AdminAuthController {
-    constructor(adminUseCase) {
-        this.adminUseCase = adminUseCase;
-    }
-    async login(loginDto) {
-        console.log(loginDto);
-        const result = await this.adminUseCase.login(loginDto.email, loginDto.password);
-        return api_response_dto_1.ApiResponseDto.success(result);
-    }
-    async verifyToken(verifyDto) {
-        const result = await this.adminUseCase.verifyToken(verifyDto.token);
-        return api_response_dto_1.ApiResponseDto.success(result);
-    }
-    async refreshToken(refreshDto) {
-        const result = await this.adminUseCase.refreshToken(refreshDto.refreshToken);
-        return api_response_dto_1.ApiResponseDto.success(result);
-    }
-    async getProfile(req) {
-        const adminId = req.user.sub;
-        const result = await this.adminUseCase.getProfile(adminId);
-        return api_response_dto_1.ApiResponseDto.success(result);
-    }
-    async changePassword(req, changePasswordDto) {
-        const adminId = req.user.sub;
-        const result = await this.adminUseCase.changePassword(adminId, changePasswordDto.currentPassword, changePasswordDto.newPassword);
-        return api_response_dto_1.ApiResponseDto.success(result);
-    }
-};
-exports.AdminAuthController = AdminAuthController;
-__decorate([
-    (0, common_1.Post)('login'),
-    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
-    (0, swagger_1.ApiOperation)({ summary: '관리자 로그인' }),
-    (0, swagger_1.ApiBody)({ type: admin_1.AdminLoginDto }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '로그인 성공',
-        type: () => api_response_dto_1.ApiResponseDto,
-    }),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_b = typeof admin_1.AdminLoginDto !== "undefined" && admin_1.AdminLoginDto) === "function" ? _b : Object]),
-    __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
-], AdminAuthController.prototype, "login", null);
-__decorate([
-    (0, common_1.Post)('verify'),
-    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
-    (0, swagger_1.ApiOperation)({ summary: '토큰 검증' }),
-    (0, swagger_1.ApiBody)({ type: admin_1.AdminTokenVerifyDto }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '토큰 검증 성공',
-        type: () => api_response_dto_1.ApiResponseDto,
-    }),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_d = typeof admin_1.AdminTokenVerifyDto !== "undefined" && admin_1.AdminTokenVerifyDto) === "function" ? _d : Object]),
-    __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
-], AdminAuthController.prototype, "verifyToken", null);
-__decorate([
-    (0, common_1.Post)('refresh'),
-    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
-    (0, swagger_1.ApiOperation)({ summary: '토큰 갱신' }),
-    (0, swagger_1.ApiBody)({ type: admin_1.AdminTokenRefreshDto }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '토큰 갱신 성공',
-        type: () => api_response_dto_1.ApiResponseDto,
-    }),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_f = typeof admin_1.AdminTokenRefreshDto !== "undefined" && admin_1.AdminTokenRefreshDto) === "function" ? _f : Object]),
-    __metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
-], AdminAuthController.prototype, "refreshToken", null);
-__decorate([
-    (0, common_1.Get)('profile'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiOperation)({ summary: '내 정보 조회' }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '관리자 정보',
-        type: () => api_response_dto_1.ApiResponseDto,
-    }),
-    __param(0, (0, common_1.Req)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
-], AdminAuthController.prototype, "getProfile", null);
-__decorate([
-    (0, common_1.Put)('password'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiOperation)({ summary: '비밀번호 변경' }),
-    (0, swagger_1.ApiBody)({ type: admin_1.ChangePasswordDto }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '비밀번호 변경 성공',
-        type: () => api_response_dto_1.ApiResponseDto,
-    }),
-    __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, typeof (_j = typeof admin_1.ChangePasswordDto !== "undefined" && admin_1.ChangePasswordDto) === "function" ? _j : Object]),
-    __metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
-], AdminAuthController.prototype, "changePassword", null);
-exports.AdminAuthController = AdminAuthController = __decorate([
-    (0, swagger_1.ApiTags)('관리자 인증 API'),
-    (0, common_1.Controller)('admin/auth'),
-    __metadata("design:paramtypes", [typeof (_a = typeof admin_usecase_1.AdminUseCase !== "undefined" && admin_usecase_1.AdminUseCase) === "function" ? _a : Object])
-], AdminAuthController);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/auth/dto/admin/admin-login-response.dto.ts":
-/*!***********************************************************************************!*\
-  !*** ./src/modules/application/legacy/auth/dto/admin/admin-login-response.dto.ts ***!
-  \***********************************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AdminLoginResponseDto = void 0;
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const admin_response_dto_1 = __webpack_require__(/*! ./admin-response.dto */ "./src/modules/application/legacy/auth/dto/admin/admin-response.dto.ts");
-class AdminLoginResponseDto {
-}
-exports.AdminLoginResponseDto = AdminLoginResponseDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '액세스 토큰',
-        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
-    }),
-    __metadata("design:type", String)
-], AdminLoginResponseDto.prototype, "accessToken", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '리프레시 토큰',
-        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
-    }),
-    __metadata("design:type", String)
-], AdminLoginResponseDto.prototype, "refreshToken", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '관리자 정보',
-        type: admin_response_dto_1.AdminResponseDto,
-    }),
-    __metadata("design:type", typeof (_a = typeof admin_response_dto_1.AdminResponseDto !== "undefined" && admin_response_dto_1.AdminResponseDto) === "function" ? _a : Object)
-], AdminLoginResponseDto.prototype, "admin", void 0);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/auth/dto/admin/admin-login.dto.ts":
-/*!**************************************************************************!*\
-  !*** ./src/modules/application/legacy/auth/dto/admin/admin-login.dto.ts ***!
-  \**************************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AdminLoginDto = void 0;
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
-class AdminLoginDto {
-}
-exports.AdminLoginDto = AdminLoginDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '관리자 이메일',
-        example: 'admin@example.com',
-    }),
-    (0, class_validator_1.IsEmail)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], AdminLoginDto.prototype, "email", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '비밀번호',
-        example: 'password123',
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], AdminLoginDto.prototype, "password", void 0);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/auth/dto/admin/admin-profile.dto.ts":
-/*!****************************************************************************!*\
-  !*** ./src/modules/application/legacy/auth/dto/admin/admin-profile.dto.ts ***!
-  \****************************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b, _c;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AdminProfileDto = void 0;
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-class AdminProfileDto {
-}
-exports.AdminProfileDto = AdminProfileDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '관리자 ID',
-        example: '123e4567-e89b-12d3-a456-426614174000',
-    }),
-    __metadata("design:type", String)
-], AdminProfileDto.prototype, "id", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '이메일',
-        example: 'admin@example.com',
-    }),
-    __metadata("design:type", String)
-], AdminProfileDto.prototype, "email", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '이름',
-        example: '홍길동',
-    }),
-    __metadata("design:type", String)
-], AdminProfileDto.prototype, "name", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '역할',
-        example: 'admin',
-    }),
-    __metadata("design:type", String)
-], AdminProfileDto.prototype, "role", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '마지막 로그인 시간',
-        example: '2023-01-01T00:00:00Z',
-        required: false,
-    }),
-    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
-], AdminProfileDto.prototype, "lastLogin", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '생성일',
-        example: '2023-01-01T00:00:00Z',
-    }),
-    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
-], AdminProfileDto.prototype, "createdAt", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '수정일',
-        example: '2023-01-01T00:00:00Z',
-    }),
-    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
-], AdminProfileDto.prototype, "updatedAt", void 0);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/auth/dto/admin/admin-response.dto.ts":
-/*!*****************************************************************************!*\
-  !*** ./src/modules/application/legacy/auth/dto/admin/admin-response.dto.ts ***!
-  \*****************************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AdminResponseDto = void 0;
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-class AdminResponseDto {
-}
-exports.AdminResponseDto = AdminResponseDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '관리자 ID',
-        example: '123e4567-e89b-12d3-a456-426614174000',
-    }),
-    __metadata("design:type", String)
-], AdminResponseDto.prototype, "id", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '이메일',
-        example: 'admin@example.com',
-    }),
-    __metadata("design:type", String)
-], AdminResponseDto.prototype, "email", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '이름',
-        example: '홍길동',
-    }),
-    __metadata("design:type", String)
-], AdminResponseDto.prototype, "name", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '역할',
-        example: 'admin',
-    }),
-    __metadata("design:type", String)
-], AdminResponseDto.prototype, "role", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '생성일',
-        example: '2023-01-01T00:00:00Z',
-    }),
-    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
-], AdminResponseDto.prototype, "createdAt", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '수정일',
-        example: '2023-01-01T00:00:00Z',
-    }),
-    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
-], AdminResponseDto.prototype, "updatedAt", void 0);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/auth/dto/admin/admin-token-refresh.dto.ts":
-/*!**********************************************************************************!*\
-  !*** ./src/modules/application/legacy/auth/dto/admin/admin-token-refresh.dto.ts ***!
-  \**********************************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AdminTokenRefreshDto = void 0;
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
-class AdminTokenRefreshDto {
-}
-exports.AdminTokenRefreshDto = AdminTokenRefreshDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '리프레시 토큰',
-        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], AdminTokenRefreshDto.prototype, "refreshToken", void 0);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/auth/dto/admin/admin-token-verify.dto.ts":
-/*!*********************************************************************************!*\
-  !*** ./src/modules/application/legacy/auth/dto/admin/admin-token-verify.dto.ts ***!
-  \*********************************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AdminTokenVerifyDto = void 0;
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
-class AdminTokenVerifyDto {
-}
-exports.AdminTokenVerifyDto = AdminTokenVerifyDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '검증할 토큰',
-        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], AdminTokenVerifyDto.prototype, "token", void 0);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/auth/dto/admin/change-password.dto.ts":
-/*!******************************************************************************!*\
-  !*** ./src/modules/application/legacy/auth/dto/admin/change-password.dto.ts ***!
-  \******************************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ChangePasswordDto = void 0;
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
-class ChangePasswordDto {
-}
-exports.ChangePasswordDto = ChangePasswordDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '현재 비밀번호',
-        example: 'current_password',
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], ChangePasswordDto.prototype, "currentPassword", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '새 비밀번호',
-        example: 'new_password123',
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.MinLength)(8),
-    __metadata("design:type", String)
-], ChangePasswordDto.prototype, "newPassword", void 0);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/auth/dto/admin/create-admin.dto.ts":
-/*!***************************************************************************!*\
-  !*** ./src/modules/application/legacy/auth/dto/admin/create-admin.dto.ts ***!
-  \***************************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CreateAdminDto = void 0;
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
-class CreateAdminDto {
-}
-exports.CreateAdminDto = CreateAdminDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '관리자 이메일',
-        example: 'admin@example.com',
-    }),
-    (0, class_validator_1.IsEmail)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], CreateAdminDto.prototype, "email", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '관리자 이름',
-        example: '홍길동',
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], CreateAdminDto.prototype, "name", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '관리자 역할',
-        example: 'admin',
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], CreateAdminDto.prototype, "role", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '비밀번호',
-        example: 'password123',
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.MinLength)(8),
-    __metadata("design:type", String)
-], CreateAdminDto.prototype, "password", void 0);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/auth/dto/admin/index.ts":
-/*!****************************************************************!*\
-  !*** ./src/modules/application/legacy/auth/dto/admin/index.ts ***!
-  \****************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(/*! ./admin-login.dto */ "./src/modules/application/legacy/auth/dto/admin/admin-login.dto.ts"), exports);
-__exportStar(__webpack_require__(/*! ./admin-login-response.dto */ "./src/modules/application/legacy/auth/dto/admin/admin-login-response.dto.ts"), exports);
-__exportStar(__webpack_require__(/*! ./admin-profile.dto */ "./src/modules/application/legacy/auth/dto/admin/admin-profile.dto.ts"), exports);
-__exportStar(__webpack_require__(/*! ./admin-response.dto */ "./src/modules/application/legacy/auth/dto/admin/admin-response.dto.ts"), exports);
-__exportStar(__webpack_require__(/*! ./create-admin.dto */ "./src/modules/application/legacy/auth/dto/admin/create-admin.dto.ts"), exports);
-__exportStar(__webpack_require__(/*! ./update-admin.dto */ "./src/modules/application/legacy/auth/dto/admin/update-admin.dto.ts"), exports);
-__exportStar(__webpack_require__(/*! ./change-password.dto */ "./src/modules/application/legacy/auth/dto/admin/change-password.dto.ts"), exports);
-__exportStar(__webpack_require__(/*! ./admin-token-verify.dto */ "./src/modules/application/legacy/auth/dto/admin/admin-token-verify.dto.ts"), exports);
-__exportStar(__webpack_require__(/*! ./admin-token-refresh.dto */ "./src/modules/application/legacy/auth/dto/admin/admin-token-refresh.dto.ts"), exports);
-__exportStar(__webpack_require__(/*! ./token-response.dto */ "./src/modules/application/legacy/auth/dto/admin/token-response.dto.ts"), exports);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/auth/dto/admin/token-response.dto.ts":
-/*!*****************************************************************************!*\
-  !*** ./src/modules/application/legacy/auth/dto/admin/token-response.dto.ts ***!
-  \*****************************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.TokenResponseDto = void 0;
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-class TokenResponseDto {
-}
-exports.TokenResponseDto = TokenResponseDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '액세스 토큰',
-        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
-    }),
-    __metadata("design:type", String)
-], TokenResponseDto.prototype, "accessToken", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '리프레시 토큰',
-        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
-        required: false,
-    }),
-    __metadata("design:type", String)
-], TokenResponseDto.prototype, "refreshToken", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '토큰 만료 시간 (초)',
-        example: 3600,
-    }),
-    __metadata("design:type", Number)
-], TokenResponseDto.prototype, "expiresIn", void 0);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/auth/dto/admin/update-admin.dto.ts":
-/*!***************************************************************************!*\
-  !*** ./src/modules/application/legacy/auth/dto/admin/update-admin.dto.ts ***!
-  \***************************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.UpdateAdminDto = void 0;
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
-class UpdateAdminDto {
-}
-exports.UpdateAdminDto = UpdateAdminDto;
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({
-        description: '관리자 이메일',
-        example: 'admin@example.com',
-    }),
-    (0, class_validator_1.IsEmail)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], UpdateAdminDto.prototype, "email", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({
-        description: '관리자 이름',
-        example: '홍길동',
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], UpdateAdminDto.prototype, "name", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({
-        description: '관리자 역할',
-        example: 'admin',
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], UpdateAdminDto.prototype, "role", void 0);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/auth/guards/jwt-auth.guard.ts":
-/*!**********************************************************************!*\
-  !*** ./src/modules/application/legacy/auth/guards/jwt-auth.guard.ts ***!
-  \**********************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.JwtAuthGuard = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const passport_1 = __webpack_require__(/*! @nestjs/passport */ "@nestjs/passport");
-const jwt_1 = __webpack_require__(/*! @nestjs/jwt */ "@nestjs/jwt");
-const config_1 = __webpack_require__(/*! @nestjs/config */ "@nestjs/config");
-let JwtAuthGuard = class JwtAuthGuard extends (0, passport_1.AuthGuard)('jwt') {
-    constructor(jwtService, configService) {
-        super();
-        this.jwtService = jwtService;
-        this.configService = configService;
-        this.jwtSecret = this.configService.get('GLOBAL_SECRET');
-    }
-    canActivate(context) {
-        const request = context.switchToHttp().getRequest();
-        const token = this.extractTokenFromHeader(request);
-        console.log('token', token);
-        if (!token) {
-            throw new common_1.UnauthorizedException('인증 토큰이 없습니다.');
-        }
-        try {
-            const payload = this.jwtService.verify(token, {
-                secret: this.jwtSecret,
-            });
-            request.user = payload;
-            return true;
-        }
-        catch (error) {
-            throw new common_1.UnauthorizedException('유효하지 않은 토큰입니다.');
-        }
-    }
-    extractTokenFromHeader(request) {
-        const [type, token] = request.headers.authorization?.split(' ') ?? [];
-        return type === 'Bearer' ? token : undefined;
-    }
-};
-exports.JwtAuthGuard = JwtAuthGuard;
-exports.JwtAuthGuard = JwtAuthGuard = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof jwt_1.JwtService !== "undefined" && jwt_1.JwtService) === "function" ? _a : Object, typeof (_b = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _b : Object])
-], JwtAuthGuard);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/auth/services/auth.service.ts":
-/*!**********************************************************************!*\
-  !*** ./src/modules/application/legacy/auth/services/auth.service.ts ***!
-  \**********************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AuthService = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const bcrypt = __webpack_require__(/*! @node-rs/bcrypt */ "@node-rs/bcrypt");
-let AuthService = class AuthService {
-    constructor() {
-        this.hardcodedAdmin = {
-            id: '987ade20-8278-4819-bd04-faeb1192cba5',
-            email: 'admin@lumir.space',
-            name: '관리자',
-            role: 'admin',
-            password: '$2b$10$Ja916Bwk1syQGShmQJMfQ.q28HF4mnLMvAPOwxfoT2xbRNNTqgPpm',
-            createdAt: new Date('2025-04-16 00:47:14.872'),
-            updatedAt: new Date('2025-04-16 00:47:14.872'),
-            hashPassword: async function () { },
-            validatePassword: async function (password) {
-                return bcrypt.compare(password, this.password);
-            },
-        };
-    }
-    async findAll() {
-        const { password, hashPassword, validatePassword, ...adminData } = this.hardcodedAdmin;
-        return [adminData];
-    }
-    async findOne(id) {
-        if (id !== this.hardcodedAdmin.id) {
-            throw new common_1.NotFoundException(`Admin with ID ${id} not found`);
-        }
-        const { password, hashPassword, validatePassword, ...adminData } = this.hardcodedAdmin;
-        return adminData;
-    }
-    async findByEmail(email) {
-        if (email !== this.hardcodedAdmin.email) {
-            return null;
-        }
-        return this.hardcodedAdmin;
-    }
-    async create(adminData) {
-        throw new Error('Creating new admin is not supported in hardcoded mode');
-    }
-    async update(id, adminData) {
-        throw new Error('Updating admin is not supported in hardcoded mode');
-    }
-    async remove(id) {
-        throw new Error('Removing admin is not supported in hardcoded mode');
-    }
-    async changePassword(id, currentPassword, newPassword) {
-        throw new Error('Changing password is not supported in hardcoded mode');
-    }
-};
-exports.AuthService = AuthService;
-exports.AuthService = AuthService = __decorate([
-    (0, common_1.Injectable)()
-], AuthService);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/auth/usecases/admin.usecase.ts":
-/*!***********************************************************************!*\
-  !*** ./src/modules/application/legacy/auth/usecases/admin.usecase.ts ***!
-  \***********************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b, _c;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AdminUseCase = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const jwt_1 = __webpack_require__(/*! @nestjs/jwt */ "@nestjs/jwt");
-const config_1 = __webpack_require__(/*! @nestjs/config */ "@nestjs/config");
-const auth_service_1 = __webpack_require__(/*! ../services/auth.service */ "./src/modules/application/legacy/auth/services/auth.service.ts");
-let AdminUseCase = class AdminUseCase {
-    constructor(authService, jwtService, configService) {
-        this.authService = authService;
-        this.jwtService = jwtService;
-        this.configService = configService;
-        this.jwtSecret = this.configService.get('GLOBAL_SECRET');
-    }
-    async login(email, password) {
-        const admin = await this.authService.findByEmail(email);
-        if (!admin) {
-            throw new common_1.UnauthorizedException('이메일 또는 비밀번호가 올바르지 않습니다.');
-        }
-        const isPasswordValid = await admin.validatePassword(password);
-        if (!isPasswordValid) {
-            throw new common_1.UnauthorizedException('이메일 또는 비밀번호가 올바르지 않습니다.');
-        }
-        const payload = { sub: admin.id, email: admin.email, role: admin.role };
-        const { password: _, ...adminInfo } = admin;
-        return {
-            accessToken: this.jwtService.sign(payload, {
-                secret: this.jwtSecret,
-                expiresIn: '1h',
-            }),
-            refreshToken: this.jwtService.sign(payload, {
-                secret: this.jwtSecret,
-                expiresIn: '7d',
-            }),
-            admin: adminInfo,
-        };
-    }
-    async verifyToken(token) {
-        try {
-            const payload = this.jwtService.verify(token, {
-                secret: this.jwtSecret,
-            });
-            const admin = await this.authService.findOne(payload.sub);
-            if (!admin) {
-                throw new common_1.UnauthorizedException('유효하지 않은 토큰입니다.');
-            }
-            const { password: _, ...adminInfo } = admin;
-            return {
-                accessToken: token,
-                refreshToken: '',
-                admin: adminInfo,
-            };
-        }
-        catch (error) {
-            throw new common_1.UnauthorizedException('유효하지 않은 토큰입니다.');
-        }
-    }
-    async refreshToken(refreshToken) {
-        try {
-            const payload = this.jwtService.verify(refreshToken, {
-                secret: this.jwtSecret,
-            });
-            const admin = await this.authService.findOne(payload.sub);
-            if (!admin) {
-                throw new common_1.UnauthorizedException('유효하지 않은 토큰입니다.');
-            }
-            const newPayload = { sub: admin.id, email: admin.email, role: admin.role };
-            return {
-                accessToken: this.jwtService.sign(newPayload, {
-                    secret: this.jwtSecret,
-                    expiresIn: '1h',
-                }),
-                refreshToken: this.jwtService.sign(newPayload, {
-                    secret: this.jwtSecret,
-                    expiresIn: '7d',
-                }),
-                expiresIn: 3600,
-            };
-        }
-        catch (error) {
-            throw new common_1.UnauthorizedException('유효하지 않은 리프레시 토큰입니다.');
-        }
-    }
-    async getProfile(adminId) {
-        try {
-            const admin = await this.authService.findOne(adminId);
-            return {
-                id: admin.id,
-                email: admin.email,
-                name: admin.name,
-                role: admin.role,
-                createdAt: admin.createdAt,
-                updatedAt: admin.updatedAt,
-            };
-        }
-        catch (error) {
-            if (error instanceof common_1.NotFoundException) {
-                throw new common_1.UnauthorizedException('관리자 정보를 찾을 수 없습니다.');
-            }
-            throw error;
-        }
-    }
-    async changePassword(adminId, currentPassword, newPassword) {
-        const result = await this.authService.changePassword(adminId, currentPassword, newPassword);
-        if (!result) {
-            throw new common_1.UnauthorizedException('현재 비밀번호가 일치하지 않습니다.');
-        }
-        return { success: true };
-    }
-};
-exports.AdminUseCase = AdminUseCase;
-exports.AdminUseCase = AdminUseCase = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof auth_service_1.AuthService !== "undefined" && auth_service_1.AuthService) === "function" ? _a : Object, typeof (_b = typeof jwt_1.JwtService !== "undefined" && jwt_1.JwtService) === "function" ? _b : Object, typeof (_c = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _c : Object])
-], AdminUseCase);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/logs/controllers/admin.controller.ts":
-/*!*****************************************************************************!*\
-  !*** ./src/modules/application/legacy/logs/controllers/admin.controller.ts ***!
-  \*****************************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a, _b, _c, _d, _e;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AdminLogsController = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const admin_usecase_1 = __webpack_require__(/*! ../usecases/admin.usecase */ "./src/modules/application/legacy/logs/usecases/admin.usecase.ts");
-const log_filter_dto_1 = __webpack_require__(/*! ../dto/log-filter.dto */ "./src/modules/application/legacy/logs/dto/log-filter.dto.ts");
-const api_response_dto_1 = __webpack_require__(/*! ../../../../../../libs/common/dto/api-response.dto */ "./libs/common/dto/api-response.dto.ts");
-let AdminLogsController = class AdminLogsController {
-    constructor(logsAdminUseCase) {
-        this.logsAdminUseCase = logsAdminUseCase;
-    }
-    async findAll(page = 1, limit = 10) {
-        try {
-            const { logs, total, page: pageNum, totalPages } = await this.logsAdminUseCase.findAll(+page, +limit);
-            const responseData = {
-                logs: logs.map((log) => this.logsAdminUseCase.mapLogToDto(log)),
-                total,
-                page: pageNum,
-                limit: +limit,
-            };
-            return api_response_dto_1.ApiResponseDto.success(responseData);
-        }
-        catch (error) {
-            return api_response_dto_1.ApiResponseDto.error('LOGS_FETCH_ERROR', '로그 목록을 가져오는 중 오류가 발생했습니다.');
-        }
-    }
-    async findOne(id) {
-        try {
-            const log = await this.logsAdminUseCase.findOne(id);
-            return api_response_dto_1.ApiResponseDto.success(this.logsAdminUseCase.mapLogToDto(log));
-        }
-        catch (error) {
-            return api_response_dto_1.ApiResponseDto.error('LOG_NOT_FOUND', `ID가 ${id}인 로그를 찾을 수 없습니다.`);
-        }
-    }
-    async filter(filterDto) {
-        try {
-            const { logs, total, page, totalPages } = await this.logsAdminUseCase.filterLogs(filterDto);
-            const responseData = {
-                logs: logs.map((log) => this.logsAdminUseCase.mapLogToDto(log)),
-                total,
-                page,
-                limit: filterDto.limit || 10,
-            };
-            return api_response_dto_1.ApiResponseDto.success(responseData);
-        }
-        catch (error) {
-            return api_response_dto_1.ApiResponseDto.error('LOGS_FILTER_ERROR', '로그 필터링 중 오류가 발생했습니다.');
-        }
-    }
-};
-exports.AdminLogsController = AdminLogsController;
-__decorate([
-    (0, common_1.Get)(),
-    (0, swagger_1.ApiOperation)({ summary: '로그 목록 조회' }),
-    (0, swagger_1.ApiResponse)({
-        status: common_1.HttpStatus.OK,
-        description: '로그 목록 조회 성공',
-        type: api_response_dto_1.ApiResponseDto,
-    }),
-    (0, swagger_1.ApiQuery)({ name: 'page', required: false, description: '페이지 번호', type: Number }),
-    (0, swagger_1.ApiQuery)({ name: 'limit', required: false, description: '페이지당 항목 수', type: Number }),
-    __param(0, (0, common_1.Query)('page')),
-    __param(1, (0, common_1.Query)('limit')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", typeof (_b = typeof Promise !== "undefined" && Promise) === "function" ? _b : Object)
-], AdminLogsController.prototype, "findAll", null);
-__decorate([
-    (0, common_1.Get)(':id'),
-    (0, swagger_1.ApiOperation)({ summary: '로그 상세 조회' }),
-    (0, swagger_1.ApiResponse)({
-        status: common_1.HttpStatus.OK,
-        description: '로그 상세 조회 성공',
-        type: api_response_dto_1.ApiResponseDto,
-    }),
-    (0, swagger_1.ApiParam)({ name: 'id', description: '로그 ID' }),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
-], AdminLogsController.prototype, "findOne", null);
-__decorate([
-    (0, common_1.Post)('filter'),
-    (0, swagger_1.ApiOperation)({ summary: '로그 필터링' }),
-    (0, swagger_1.ApiResponse)({
-        status: common_1.HttpStatus.OK,
-        description: '로그 필터링 성공',
-        type: api_response_dto_1.ApiResponseDto,
-    }),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_d = typeof log_filter_dto_1.LogFilterDto !== "undefined" && log_filter_dto_1.LogFilterDto) === "function" ? _d : Object]),
-    __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
-], AdminLogsController.prototype, "filter", null);
-exports.AdminLogsController = AdminLogsController = __decorate([
-    (0, swagger_1.ApiTags)('관리자 로그 API'),
-    (0, common_1.Controller)('admin/logs'),
-    __metadata("design:paramtypes", [typeof (_a = typeof admin_usecase_1.LogsAdminUseCase !== "undefined" && admin_usecase_1.LogsAdminUseCase) === "function" ? _a : Object])
-], AdminLogsController);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/logs/dto/log-filter.dto.ts":
-/*!*******************************************************************!*\
-  !*** ./src/modules/application/legacy/logs/dto/log-filter.dto.ts ***!
-  \*******************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.LogFilterDto = exports.SortDirection = void 0;
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const class_transformer_1 = __webpack_require__(/*! class-transformer */ "class-transformer");
-const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
-var SortDirection;
-(function (SortDirection) {
-    SortDirection["ASC"] = "ASC";
-    SortDirection["DESC"] = "DESC";
-})(SortDirection || (exports.SortDirection = SortDirection = {}));
-class LogFilterDto {
-    constructor() {
-        this.page = 1;
-        this.limit = 10;
-        this.errorsOnly = false;
-        this.sortBy = 'requestTimestamp';
-        this.sortDirection = SortDirection.DESC;
-    }
-}
-exports.LogFilterDto = LogFilterDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: 'Page number', required: false, default: 1 }),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", Number)
-], LogFilterDto.prototype, "page", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: 'Number of logs per page', required: false, default: 10 }),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", Number)
-], LogFilterDto.prototype, "limit", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: 'Start date for filtering logs', required: false }),
-    (0, class_transformer_1.Type)(() => Date),
-    (0, class_validator_1.IsDate)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
-], LogFilterDto.prototype, "startDate", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: 'End date for filtering logs', required: false }),
-    (0, class_transformer_1.Type)(() => Date),
-    (0, class_validator_1.IsDate)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
-], LogFilterDto.prototype, "endDate", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: 'HTTP method filter', required: false }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], LogFilterDto.prototype, "method", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: 'URL path filter', required: false }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], LogFilterDto.prototype, "url", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: 'Status code filter', required: false }),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", Number)
-], LogFilterDto.prototype, "statusCode", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: 'Host filter', required: false }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], LogFilterDto.prototype, "host", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: 'IP address filter', required: false }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], LogFilterDto.prototype, "ip", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: 'System filter', required: false }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], LogFilterDto.prototype, "system", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: 'Show only errors (status >= 400)', required: false, default: false }),
-    (0, class_transformer_1.Type)(() => Boolean),
-    (0, class_validator_1.IsBoolean)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", Boolean)
-], LogFilterDto.prototype, "errorsOnly", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Field to sort by',
-        required: false,
-        default: 'requestTimestamp',
-        enum: ['requestTimestamp', 'method', 'url', 'statusCode', 'responseTime', 'ip', 'host'],
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], LogFilterDto.prototype, "sortBy", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Sort direction',
-        required: false,
-        default: SortDirection.DESC,
-        enum: SortDirection,
-    }),
-    (0, class_validator_1.IsEnum)(SortDirection),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], LogFilterDto.prototype, "sortDirection", void 0);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/logs/dto/log-response.dto.ts":
-/*!*********************************************************************!*\
-  !*** ./src/modules/application/legacy/logs/dto/log-response.dto.ts ***!
-  \*********************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b, _c;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.LogResponseDto = void 0;
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-class LogResponseDto {
-}
-exports.LogResponseDto = LogResponseDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: 'Unique identifier for the log entry' }),
-    __metadata("design:type", String)
-], LogResponseDto.prototype, "id", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: 'Timestamp when the log was created' }),
-    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
-], LogResponseDto.prototype, "requestTimestamp", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: 'HTTP method of the request' }),
-    __metadata("design:type", String)
-], LogResponseDto.prototype, "method", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: 'URL path of the request' }),
-    __metadata("design:type", String)
-], LogResponseDto.prototype, "url", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: 'Query parameters of the request', required: false }),
-    __metadata("design:type", typeof (_b = typeof Record !== "undefined" && Record) === "function" ? _b : Object)
-], LogResponseDto.prototype, "query", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: 'Request headers', required: false }),
-    __metadata("design:type", typeof (_c = typeof Record !== "undefined" && Record) === "function" ? _c : Object)
-], LogResponseDto.prototype, "headers", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: 'Request body', required: false }),
-    __metadata("design:type", Object)
-], LogResponseDto.prototype, "body", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: 'Response status code' }),
-    __metadata("design:type", Number)
-], LogResponseDto.prototype, "statusCode", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: 'Response time in milliseconds' }),
-    __metadata("design:type", Number)
-], LogResponseDto.prototype, "responseTime", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: 'Response body', required: false }),
-    __metadata("design:type", Object)
-], LogResponseDto.prototype, "response", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: 'Error message if any', required: false }),
-    __metadata("design:type", String)
-], LogResponseDto.prototype, "error", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: 'IP address of the requester' }),
-    __metadata("design:type", String)
-], LogResponseDto.prototype, "ip", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: 'Host of the request' }),
-    __metadata("design:type", String)
-], LogResponseDto.prototype, "host", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: 'User agent of the requester', required: false }),
-    __metadata("design:type", String)
-], LogResponseDto.prototype, "userAgent", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: 'System name', required: false }),
-    __metadata("design:type", String)
-], LogResponseDto.prototype, "system", void 0);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/logs/logs.module.ts":
-/*!************************************************************!*\
-  !*** ./src/modules/application/legacy/logs/logs.module.ts ***!
-  \************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.LogsModule = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const logs_service_1 = __webpack_require__(/*! ./services/logs.service */ "./src/modules/application/legacy/logs/services/logs.service.ts");
-const admin_controller_1 = __webpack_require__(/*! ./controllers/admin.controller */ "./src/modules/application/legacy/logs/controllers/admin.controller.ts");
-const admin_usecase_1 = __webpack_require__(/*! ./usecases/admin.usecase */ "./src/modules/application/legacy/logs/usecases/admin.usecase.ts");
-const log_module_1 = __webpack_require__(/*! ../../../domain/log/log.module */ "./src/modules/domain/log/log.module.ts");
-let LogsModule = class LogsModule {
-};
-exports.LogsModule = LogsModule;
-exports.LogsModule = LogsModule = __decorate([
-    (0, common_1.Module)({
-        imports: [log_module_1.DomainLogModule],
-        providers: [logs_service_1.LogsService, admin_usecase_1.LogsAdminUseCase],
-        controllers: [admin_controller_1.AdminLogsController],
-        exports: [logs_service_1.LogsService, admin_usecase_1.LogsAdminUseCase],
-    })
-], LogsModule);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/logs/services/logs.service.ts":
-/*!**********************************************************************!*\
-  !*** ./src/modules/application/legacy/logs/services/logs.service.ts ***!
-  \**********************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var LogsService_1;
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.LogsService = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
-const log_filter_dto_1 = __webpack_require__(/*! ../dto/log-filter.dto */ "./src/modules/application/legacy/logs/dto/log-filter.dto.ts");
-const log_service_1 = __webpack_require__(/*! ../../../../domain/log/log.service */ "./src/modules/domain/log/log.service.ts");
-let LogsService = LogsService_1 = class LogsService {
-    constructor(domainLogService) {
-        this.domainLogService = domainLogService;
-        this.logger = new common_1.Logger(LogsService_1.name);
-    }
-    async create(createLogDto) {
-        await this.domainLogService.save(createLogDto);
-    }
-    async createMany(createLogDto) {
-        for (const dto of createLogDto) {
-            await this.domainLogService.create(dto);
-        }
-    }
-    async findAll(page = 1, limit = 10) {
-        const options = {
-            order: { requestTimestamp: 'DESC' },
-            skip: (page - 1) * limit,
-            take: limit,
-        };
-        const logs = await this.domainLogService.findAll(options);
-        const allLogs = await this.domainLogService.findAll();
-        const total = allLogs.length;
-        return {
-            logs,
-            total,
-            page,
-            totalPages: Math.ceil(total / limit),
-        };
-    }
-    async findOne(id) {
-        const log = await this.domainLogService.findOne({ where: { id } });
-        if (!log) {
-            throw new common_1.NotFoundException(`Log with ID ${id} not found`);
-        }
-        return log;
-    }
-    async filterLogs(filterDto) {
-        const { page = 1, limit = 10, startDate, endDate, method, url, statusCode, host, ip, system, errorsOnly, sortBy = 'requestTimestamp', sortDirection = log_filter_dto_1.SortDirection.DESC, } = filterDto;
-        const where = {};
-        if (startDate && endDate) {
-            where.requestTimestamp = (0, typeorm_1.Between)(startDate, endDate);
-        }
-        else if (startDate) {
-            where.requestTimestamp = (0, typeorm_1.MoreThanOrEqual)(startDate);
-        }
-        else if (endDate) {
-            where.requestTimestamp = (0, typeorm_1.LessThanOrEqual)(endDate);
-        }
-        if (url) {
-            where.url = (0, typeorm_1.ILike)(`%${url}%`);
-        }
-        if (host) {
-            where.host = (0, typeorm_1.ILike)(`%${host}%`);
-        }
-        if (ip) {
-            where.ip = (0, typeorm_1.ILike)(`%${ip}%`);
-        }
-        if (method) {
-            where.method = method;
-        }
-        if (statusCode) {
-            where.statusCode = statusCode;
-        }
-        if (errorsOnly) {
-            where.isError = true;
-        }
-        if (system) {
-            where.system = (0, typeorm_1.ILike)(`%${system}%`);
-        }
-        const order = {};
-        order[sortBy] = sortDirection;
-        const options = {
-            where,
-            order,
-            skip: (page - 1) * limit,
-            take: limit,
-        };
-        const logs = await this.domainLogService.findAll(options);
-        const allFilteredLogs = await this.domainLogService.findAll({ where });
-        const total = allFilteredLogs.length;
-        return {
-            logs,
-            total,
-            page,
-            totalPages: Math.ceil(total / limit),
-        };
-    }
-};
-exports.LogsService = LogsService;
-exports.LogsService = LogsService = LogsService_1 = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof log_service_1.DomainLogService !== "undefined" && log_service_1.DomainLogService) === "function" ? _a : Object])
-], LogsService);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/logs/usecases/admin.usecase.ts":
-/*!***********************************************************************!*\
-  !*** ./src/modules/application/legacy/logs/usecases/admin.usecase.ts ***!
-  \***********************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var LogsAdminUseCase_1;
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.LogsAdminUseCase = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const logs_service_1 = __webpack_require__(/*! ../services/logs.service */ "./src/modules/application/legacy/logs/services/logs.service.ts");
-const log_response_dto_1 = __webpack_require__(/*! ../dto/log-response.dto */ "./src/modules/application/legacy/logs/dto/log-response.dto.ts");
-let LogsAdminUseCase = LogsAdminUseCase_1 = class LogsAdminUseCase {
-    constructor(logsService) {
-        this.logsService = logsService;
-        this.logger = new common_1.Logger(LogsAdminUseCase_1.name);
-    }
-    async findAll(page = 1, limit = 10) {
-        console.log('findAll', page, limit);
-        try {
-            return await this.logsService.findAll(page, limit);
-        }
-        catch (error) {
-            this.logger.error(`로그 목록 조회 중 오류 발생: ${error.message}`);
-            return {
-                logs: [],
-                total: 0,
-                page,
-                totalPages: 0,
-            };
-        }
-    }
-    async findOne(id) {
-        try {
-            return await this.logsService.findOne(id);
-        }
-        catch (error) {
-            this.logger.error(`로그 상세 조회 중 오류 발생: ${error.message}`);
-            throw error;
-        }
-    }
-    async filterLogs(filterDto) {
-        try {
-            return await this.logsService.filterLogs(filterDto);
-        }
-        catch (error) {
-            this.logger.error(`로그 필터링 중 오류 발생: ${error.message}`);
-            return {
-                logs: [],
-                total: 0,
-                page: filterDto.page || 1,
-                totalPages: 0,
-            };
-        }
-    }
-    async findLoginLogs(days = 7) {
-        try {
-            const fromDate = new Date();
-            fromDate.setDate(fromDate.getDate() - days);
-            const { logs } = await this.logsService.filterLogs({
-                startDate: fromDate,
-                url: '/auth/login',
-                limit: 1000,
-            });
-            return logs;
-        }
-        catch (error) {
-            this.logger.error(`로그인 로그를 가져오는 중 오류 발생: ${error.message}`);
-            return [];
-        }
-    }
-    mapLogToDto(log) {
-        const responseDto = new log_response_dto_1.LogResponseDto();
-        responseDto.id = log.id;
-        responseDto.requestTimestamp = log.requestTimestamp;
-        responseDto.method = log.method;
-        responseDto.url = log.url;
-        responseDto.query = log.query;
-        responseDto.body = log.body;
-        responseDto.statusCode = log.statusCode;
-        responseDto.responseTime = log.responseTime;
-        responseDto.response = log.response;
-        responseDto.error = log.error;
-        responseDto.ip = log.ip;
-        responseDto.host = log.host;
-        responseDto.userAgent = log.userAgent;
-        responseDto.system = log.system;
-        return responseDto;
-    }
-};
-exports.LogsAdminUseCase = LogsAdminUseCase;
-exports.LogsAdminUseCase = LogsAdminUseCase = LogsAdminUseCase_1 = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof logs_service_1.LogsService !== "undefined" && logs_service_1.LogsService) === "function" ? _a : Object])
-], LogsAdminUseCase);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/mail/mail.module.ts":
-/*!************************************************************!*\
-  !*** ./src/modules/application/legacy/mail/mail.module.ts ***!
-  \************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.MailModule = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const mailer_1 = __webpack_require__(/*! @nestjs-modules/mailer */ "@nestjs-modules/mailer");
-const config_1 = __webpack_require__(/*! @nestjs/config */ "@nestjs/config");
-const handlebars_adapter_1 = __webpack_require__(/*! @nestjs-modules/mailer/dist/adapters/handlebars.adapter */ "@nestjs-modules/mailer/dist/adapters/handlebars.adapter");
-const path_1 = __webpack_require__(/*! path */ "path");
-const mail_service_1 = __webpack_require__(/*! ./mail.service */ "./src/modules/application/legacy/mail/mail.service.ts");
-let MailModule = class MailModule {
-};
-exports.MailModule = MailModule;
-exports.MailModule = MailModule = __decorate([
-    (0, common_1.Module)({
-        imports: [
-            mailer_1.MailerModule.forRootAsync({
-                imports: [config_1.ConfigModule],
-                useFactory: async (configService) => {
-                    return {
-                        transport: {
-                            host: 'smtp.gmail.com',
-                            port: 587,
-                            secure: false,
-                            auth: {
-                                user: configService.get('GMAIL_USER'),
-                                pass: configService.get('GMAIL_PASSWORD'),
-                            },
-                        },
-                        defaults: {
-                            from: `"LSSO" <${configService.get('GMAIL_USER')}>`,
-                        },
-                        template: {
-                            dir: (0, path_1.join)(__dirname, 'templates'),
-                            adapter: new handlebars_adapter_1.HandlebarsAdapter(),
-                            options: {
-                                strict: true,
-                            },
-                        },
-                    };
-                },
-                inject: [config_1.ConfigService],
-            }),
-        ],
-        providers: [mail_service_1.MailService],
-        exports: [mail_service_1.MailService],
-    })
-], MailModule);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/mail/mail.service.ts":
-/*!*************************************************************!*\
-  !*** ./src/modules/application/legacy/mail/mail.service.ts ***!
-  \*************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.MailService = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const mailer_1 = __webpack_require__(/*! @nestjs-modules/mailer */ "@nestjs-modules/mailer");
-const path_1 = __webpack_require__(/*! path */ "path");
-const fs = __webpack_require__(/*! fs */ "fs");
-const handlebars = __webpack_require__(/*! handlebars */ "handlebars");
-let MailService = class MailService {
-    constructor(mailerService) {
-        this.mailerService = mailerService;
-        handlebars.registerHelper({
-            multiply: (a, b) => a * b,
-            divide: (a, b) => a / b,
-            round: (num) => Math.round(num),
-            gt: (a, b) => {
-                if (Array.isArray(a)) {
-                    return a.length > b;
-                }
-                return a > b;
-            },
-            eq: (a, b) => a === b,
-            mod: (a, b) => a % b,
-            times: function (n, block) {
-                let accum = '';
-                for (let i = 0; i < n; ++i)
-                    accum += block.fn(i);
-                return accum;
-            },
-            or: (a, b) => a || b,
-            minutesToHours: (minutes) => {
-                return Number((minutes / 60).toFixed(2));
-            },
-            substring: (str, start, end) => {
-                if (!str)
-                    return '';
-                if (end === undefined) {
-                    return str.substring(start);
-                }
-                return str.substring(start, end);
-            },
-            formatExpiresIn: (expiresIn) => {
-                if (!expiresIn)
-                    return '';
-                const unit = expiresIn.slice(-1);
-                const value = expiresIn.slice(0, -1);
-                switch (unit) {
-                    case 'h':
-                        return `${value}시간`;
-                    case 'm':
-                        return `${value}분`;
-                    case 'd':
-                        return `${value}일`;
-                    case 's':
-                        return `${value}초`;
-                    default:
-                        return expiresIn;
-                }
-            },
-        });
-    }
-    async sendEmail(dto) {
-        console.log(dto);
-        let { recipients: to, subject, template, context } = dto;
-        const templatePath = (0, path_1.join)(process.cwd(), 'src', 'modules', 'application', 'legacy', 'mail', 'templates', `${template}.hbs`);
-        console.log(templatePath);
-        let source = '';
-        try {
-            source = fs.readFileSync(templatePath, 'utf-8');
-        }
-        catch (error) {
-            console.error(`Error reading template file: ${error}`);
-            throw new common_1.BadRequestException('해당 경로에 파일이 존재하지 않습니다.');
-        }
-        const compiledTemplate = handlebars.compile(source);
-        const html = compiledTemplate(context);
-        await this.mailerService.sendMail({
-            from: `"No Reply" <${process.env.GMAIL_USER}>`,
-            to: to,
-            subject: subject,
-            html: html,
-        });
-    }
-};
-exports.MailService = MailService;
-exports.MailService = MailService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof mailer_1.MailerService !== "undefined" && mailer_1.MailerService) === "function" ? _a : Object])
-], MailService);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/systems/controllers/admin.controller.ts":
-/*!********************************************************************************!*\
-  !*** ./src/modules/application/legacy/systems/controllers/admin.controller.ts ***!
-  \********************************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AdminSystemsController = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const create_system_dto_1 = __webpack_require__(/*! ../dto/create-system.dto */ "./src/modules/application/legacy/systems/dto/create-system.dto.ts");
-const update_system_dto_1 = __webpack_require__(/*! ../dto/update-system.dto */ "./src/modules/application/legacy/systems/dto/update-system.dto.ts");
-const api_response_dto_1 = __webpack_require__(/*! ../../../../../../libs/common/dto/api-response.dto */ "./libs/common/dto/api-response.dto.ts");
-const admin_usecase_1 = __webpack_require__(/*! ../usecases/admin.usecase */ "./src/modules/application/legacy/systems/usecases/admin.usecase.ts");
-let AdminSystemsController = class AdminSystemsController {
-    constructor(adminUsecase) {
-        this.adminUsecase = adminUsecase;
-    }
-    async findAll(search) {
-        try {
-            let systems;
-            if (search) {
-                systems = await this.adminUsecase.searchSystems(search);
-            }
-            else {
-                systems = await this.adminUsecase.findAll();
-            }
-            return api_response_dto_1.ApiResponseDto.success(systems);
-        }
-        catch (error) {
-            return api_response_dto_1.ApiResponseDto.error('SYSTEMS_FETCH_ERROR', '시스템 목록을 조회하는 중 오류가 발생했습니다.');
-        }
-    }
-    async search(query) {
-        try {
-            const systems = await this.adminUsecase.searchSystems(query);
-            return api_response_dto_1.ApiResponseDto.success(systems);
-        }
-        catch (error) {
-            return api_response_dto_1.ApiResponseDto.error('SYSTEMS_SEARCH_ERROR', '시스템 검색 중 오류가 발생했습니다.');
-        }
-    }
-    async findOne(id) {
-        try {
-            const system = await this.adminUsecase.findOne(id);
-            return api_response_dto_1.ApiResponseDto.success(system);
-        }
-        catch (error) {
-            return api_response_dto_1.ApiResponseDto.error('SYSTEM_NOT_FOUND', `해당 ID의 시스템을 찾을 수 없습니다: ${id}`);
-        }
-    }
-    async create(createSystemDto) {
-        try {
-            console.log(createSystemDto);
-            const system = await this.adminUsecase.registerSystem(createSystemDto);
-            console.log(system);
-            return api_response_dto_1.ApiResponseDto.success(system);
-        }
-        catch (error) {
-            return api_response_dto_1.ApiResponseDto.error('SYSTEM_CREATE_ERROR', '시스템 생성 중 오류가 발생했습니다.');
-        }
-    }
-    async partialUpdate(id, updateSystemDto) {
-        try {
-            let system;
-            system = await this.adminUsecase.update(id, updateSystemDto);
-            return api_response_dto_1.ApiResponseDto.success(system);
-        }
-        catch (error) {
-            return api_response_dto_1.ApiResponseDto.error('SYSTEM_UPDATE_ERROR', `시스템 수정 중 오류가 발생했습니다: ${error.message}`);
-        }
-    }
-    async remove(id) {
-        try {
-            await this.adminUsecase.remove(id);
-            return api_response_dto_1.ApiResponseDto.success(true);
-        }
-        catch (error) {
-            return api_response_dto_1.ApiResponseDto.error('SYSTEM_DELETE_ERROR', `시스템 삭제 중 오류가 발생했습니다: ${error.message}`);
-        }
-    }
-    async regenerateApiKeys(id) {
-        try {
-            const system = await this.adminUsecase.regenerateApiKeys(id);
-            return api_response_dto_1.ApiResponseDto.success(system);
-        }
-        catch (error) {
-            return api_response_dto_1.ApiResponseDto.error('KEY_REGENERATION_ERROR', `키 재생성 중 오류가 발생했습니다: ${error.message}`);
-        }
-    }
-};
-exports.AdminSystemsController = AdminSystemsController;
-__decorate([
-    (0, common_1.Get)(),
-    (0, swagger_1.ApiOperation)({ summary: '시스템 목록 조회' }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '시스템 목록 조회 성공',
-        type: api_response_dto_1.ApiResponseDto,
-    }),
-    (0, swagger_1.ApiQuery)({ name: 'search', required: false, description: '검색어 (이름, 설명, 공개키, 허용된 출처)' }),
-    __param(0, (0, common_1.Query)('search')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_b = typeof Promise !== "undefined" && Promise) === "function" ? _b : Object)
-], AdminSystemsController.prototype, "findAll", null);
-__decorate([
-    (0, common_1.Get)('search'),
-    (0, swagger_1.ApiOperation)({ summary: '시스템 검색' }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '시스템 검색 성공',
-        type: api_response_dto_1.ApiResponseDto,
-    }),
-    __param(0, (0, common_1.Query)('query')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
-], AdminSystemsController.prototype, "search", null);
-__decorate([
-    (0, common_1.Get)(':id'),
-    (0, swagger_1.ApiOperation)({ summary: '시스템 상세 조회' }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '시스템 상세 조회 성공',
-        type: api_response_dto_1.ApiResponseDto,
-    }),
-    (0, swagger_1.ApiParam)({ name: 'id', description: '시스템 ID' }),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
-], AdminSystemsController.prototype, "findOne", null);
-__decorate([
-    (0, common_1.Post)(),
-    (0, swagger_1.ApiOperation)({ summary: '시스템 생성', description: '새로운 시스템을 등록하고 공개키/비밀키 쌍을 생성합니다.' }),
-    (0, swagger_1.ApiBody)({ type: create_system_dto_1.CreateSystemDto }),
-    (0, swagger_1.ApiResponse)({
-        status: 201,
-        description: '시스템 생성 성공',
-        type: api_response_dto_1.ApiResponseDto,
-    }),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_e = typeof create_system_dto_1.CreateSystemDto !== "undefined" && create_system_dto_1.CreateSystemDto) === "function" ? _e : Object]),
-    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
-], AdminSystemsController.prototype, "create", null);
-__decorate([
-    (0, common_1.Patch)(':id'),
-    (0, swagger_1.ApiOperation)({ summary: '시스템 부분 수정' }),
-    (0, swagger_1.ApiBody)({ type: update_system_dto_1.UpdateSystemDto }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '시스템 수정 성공',
-        type: api_response_dto_1.ApiResponseDto,
-    }),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, typeof (_g = typeof update_system_dto_1.UpdateSystemDto !== "undefined" && update_system_dto_1.UpdateSystemDto) === "function" ? _g : Object]),
-    __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
-], AdminSystemsController.prototype, "partialUpdate", null);
-__decorate([
-    (0, common_1.Delete)(':id'),
-    (0, swagger_1.ApiOperation)({ summary: '시스템 삭제' }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '시스템 삭제 성공',
-        type: api_response_dto_1.ApiResponseDto,
-    }),
-    (0, swagger_1.ApiParam)({ name: 'id', description: '시스템 ID' }),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
-], AdminSystemsController.prototype, "remove", null);
-__decorate([
-    (0, common_1.Post)(':id/regenerate-keys'),
-    (0, swagger_1.ApiOperation)({ summary: 'API 키 재생성', description: '공개키/비밀키 쌍을 새로 생성합니다.' }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '키가 재생성되었습니다.',
-        type: api_response_dto_1.ApiResponseDto,
-    }),
-    (0, swagger_1.ApiParam)({ name: 'id', description: '시스템 ID' }),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
-], AdminSystemsController.prototype, "regenerateApiKeys", null);
-exports.AdminSystemsController = AdminSystemsController = __decorate([
-    (0, swagger_1.ApiTags)('관리자 시스템 API'),
-    (0, common_1.Controller)('admin/systems'),
-    __metadata("design:paramtypes", [typeof (_a = typeof admin_usecase_1.AdminUsecase !== "undefined" && admin_usecase_1.AdminUsecase) === "function" ? _a : Object])
-], AdminSystemsController);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/systems/dto/create-system.dto.ts":
-/*!*************************************************************************!*\
-  !*** ./src/modules/application/legacy/systems/dto/create-system.dto.ts ***!
-  \*************************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CreateSystemDto = void 0;
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
-class CreateSystemDto {
-}
-exports.CreateSystemDto = CreateSystemDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '시스템 이름',
-        example: 'Sample System',
-        required: true,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], CreateSystemDto.prototype, "name", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '시스템 설명',
-        example: 'This is a sample system description',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], CreateSystemDto.prototype, "description", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '시스템 도메인',
-        example: 'example.com',
-        required: true,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], CreateSystemDto.prototype, "domain", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '허용된 출처 URL 목록',
-        example: ['https://sample-system.com'],
-        type: [String],
-        required: true,
-    }),
-    (0, class_validator_1.IsArray)(),
-    (0, class_validator_1.IsString)({ each: true }),
-    __metadata("design:type", Array)
-], CreateSystemDto.prototype, "allowedOrigin", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '헬스 체크 URL',
-        example: 'https://sample-system.com/health',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], CreateSystemDto.prototype, "healthCheckUrl", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '클라이언트 ID (입력하지 않으면 자동 생성)',
-        example: 'client-a1b2c3d4',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], CreateSystemDto.prototype, "clientId", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '클라이언트 시크릿 (입력하지 않으면 자동 생성)',
-        example: 'secret-a1b2c3d4e5f6',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], CreateSystemDto.prototype, "clientSecret", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '활성 여부',
-        example: true,
-        required: false,
-        default: true,
-    }),
-    (0, class_validator_1.IsBoolean)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", Boolean)
-], CreateSystemDto.prototype, "isActive", void 0);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/systems/dto/update-system.dto.ts":
-/*!*************************************************************************!*\
-  !*** ./src/modules/application/legacy/systems/dto/update-system.dto.ts ***!
-  \*************************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.UpdateSystemDto = void 0;
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
-class UpdateSystemDto {
-}
-exports.UpdateSystemDto = UpdateSystemDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '시스템 이름',
-        example: 'Sample System',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], UpdateSystemDto.prototype, "name", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '시스템 설명',
-        example: 'This is a sample system description',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], UpdateSystemDto.prototype, "description", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '시스템 도메인',
-        example: 'example.com',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], UpdateSystemDto.prototype, "domain", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '허용된 출처 URL 목록',
-        example: ['https://sample-system.com'],
-        type: [String],
-        required: false,
-    }),
-    (0, class_validator_1.IsArray)(),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)({ each: true }),
-    __metadata("design:type", Array)
-], UpdateSystemDto.prototype, "allowedOrigin", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '헬스 체크 URL',
-        example: 'https://sample-system.com/health',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], UpdateSystemDto.prototype, "healthCheckUrl", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '클라이언트 ID',
-        example: 'client-a1b2c3d4',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], UpdateSystemDto.prototype, "clientId", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '클라이언트 시크릿',
-        example: 'secret-a1b2c3d4e5f6',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], UpdateSystemDto.prototype, "clientSecret", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '활성 여부',
-        example: true,
-        required: false,
-    }),
-    (0, class_validator_1.IsBoolean)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", Boolean)
-], UpdateSystemDto.prototype, "isActive", void 0);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/systems/services/systems.service.ts":
-/*!****************************************************************************!*\
-  !*** ./src/modules/application/legacy/systems/services/systems.service.ts ***!
-  \****************************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SystemsService = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const system_service_1 = __webpack_require__(/*! ../../../../domain/system/system.service */ "./src/modules/domain/system/system.service.ts");
-let SystemsService = class SystemsService {
-    constructor(systemService) {
-        this.systemService = systemService;
-    }
-    async findAll(options) {
-        return this.systemService.findAll(options);
-    }
-    async findOne(id) {
-        return this.systemService.findOne({ where: { id } });
-    }
-    async findByClientId(clientId) {
-        return this.systemService.findByClientId(clientId);
-    }
-    async findByName(name) {
-        return this.systemService.findByName(name);
-    }
-    async findByDomain(domain) {
-        return this.systemService.findByDomain(domain);
-    }
-    async findActiveSystems() {
-        return this.systemService.findActiveSystems();
-    }
-    async create(createSystemDto) {
-        const { clientId, clientSecret, hash } = this.systemService.generateCredentials();
-        const systemData = {
-            ...createSystemDto,
-            clientId,
-            clientSecret: hash,
-        };
-        return this.systemService.create(systemData);
-    }
-    async update(id, systemData) {
-        return this.systemService.update(id, systemData);
-    }
-    async remove(id) {
-        await this.systemService.delete(id);
-    }
-    async verifyClientSecret(clientSecret, system) {
-        return this.systemService.verifyClientSecret(clientSecret, system);
-    }
-    generateCredentials() {
-        return this.systemService.generateCredentials();
-    }
-};
-exports.SystemsService = SystemsService;
-exports.SystemsService = SystemsService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof system_service_1.DomainSystemService !== "undefined" && system_service_1.DomainSystemService) === "function" ? _a : Object])
-], SystemsService);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/systems/systems.module.ts":
-/*!******************************************************************!*\
-  !*** ./src/modules/application/legacy/systems/systems.module.ts ***!
-  \******************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SystemsModule = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const systems_service_1 = __webpack_require__(/*! ./services/systems.service */ "./src/modules/application/legacy/systems/services/systems.service.ts");
-const admin_controller_1 = __webpack_require__(/*! ./controllers/admin.controller */ "./src/modules/application/legacy/systems/controllers/admin.controller.ts");
-const admin_usecase_1 = __webpack_require__(/*! ./usecases/admin.usecase */ "./src/modules/application/legacy/systems/usecases/admin.usecase.ts");
-const system_module_1 = __webpack_require__(/*! ../../../domain/system/system.module */ "./src/modules/domain/system/system.module.ts");
-let SystemsModule = class SystemsModule {
-};
-exports.SystemsModule = SystemsModule;
-exports.SystemsModule = SystemsModule = __decorate([
-    (0, common_1.Module)({
-        imports: [system_module_1.DomainSystemModule],
-        providers: [systems_service_1.SystemsService, admin_usecase_1.AdminUsecase],
-        controllers: [admin_controller_1.AdminSystemsController],
-        exports: [systems_service_1.SystemsService, admin_usecase_1.AdminUsecase],
-    })
-], SystemsModule);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/systems/usecases/admin.usecase.ts":
-/*!**************************************************************************!*\
-  !*** ./src/modules/application/legacy/systems/usecases/admin.usecase.ts ***!
-  \**************************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AdminUsecase = void 0;
-const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const systems_service_1 = __webpack_require__(/*! ../services/systems.service */ "./src/modules/application/legacy/systems/services/systems.service.ts");
-const crypto_1 = __webpack_require__(/*! crypto */ "crypto");
-const uuid_1 = __webpack_require__(/*! uuid */ "uuid");
-const bcrypt = __webpack_require__(/*! @node-rs/bcrypt */ "@node-rs/bcrypt");
-let AdminUsecase = class AdminUsecase {
-    constructor(systemsService) {
-        this.systemsService = systemsService;
-    }
-    async findAll() {
-        return this.systemsService.findAll();
-    }
-    async findOne(id) {
-        return this.systemsService.findOne(id);
-    }
-    async create(createSystemDto) {
-        return this.systemsService.create(createSystemDto);
-    }
-    async update(id, updateData) {
-        return this.systemsService.update(id, updateData);
-    }
-    async remove(id) {
-        return this.systemsService.remove(id);
-    }
-    async searchSystems(query) {
-        if (!query || query.trim() === '') {
-            return this.findAll();
-        }
-        const options = {
-            where: [
-                { name: (0, typeorm_1.ILike)(`%${query}%`) },
-                { description: (0, typeorm_1.ILike)(`%${query}%`) },
-                { clientId: (0, typeorm_1.ILike)(`%${query}%`) },
-                { domain: (0, typeorm_1.ILike)(`%${query}%`) },
-            ],
-        };
-        return this.systemsService.findAll(options);
-    }
-    async registerSystem(createSystemDto) {
-        const credentials = this.generateCredentials();
-        console.log(credentials);
-        createSystemDto.clientId = credentials.clientId;
-        createSystemDto.clientSecret = credentials.hash;
-        const system = await this.systemsService.create(createSystemDto);
-        console.log('@', system);
-        return { ...system, clientSecret: credentials.clientSecret };
-    }
-    async regenerateApiKeys(id) {
-        const system = await this.systemsService.findOne(id);
-        const credentials = this.generateSecret();
-        system.clientSecret = credentials.hash;
-        await this.systemsService.update(id, system);
-        return { ...system, clientSecret: credentials.clientSecret };
-    }
-    generateCredentials() {
-        const clientId = (0, uuid_1.v4)();
-        const { clientSecret, hash } = this.generateSecret();
-        return { clientId, clientSecret, hash };
-    }
-    generateSecret() {
-        const clientSecret = (0, crypto_1.randomBytes)(32).toString('hex');
-        const hash = bcrypt.hashSync(clientSecret, 10);
-        return { clientSecret, hash };
-    }
-};
-exports.AdminUsecase = AdminUsecase;
-exports.AdminUsecase = AdminUsecase = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof systems_service_1.SystemsService !== "undefined" && systems_service_1.SystemsService) === "function" ? _a : Object])
-], AdminUsecase);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/tokens/controllers/admin-tokens.controller.ts":
-/*!**************************************************************************************!*\
-  !*** ./src/modules/application/legacy/tokens/controllers/admin-tokens.controller.ts ***!
-  \**************************************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AdminTokensController = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const dto_1 = __webpack_require__(/*! ../dto */ "./src/modules/application/legacy/tokens/dto/index.ts");
-const api_response_dto_1 = __webpack_require__(/*! ../../../../../../libs/common/dto/api-response.dto */ "./libs/common/dto/api-response.dto.ts");
-const admin_usecase_1 = __webpack_require__(/*! ../usecases/admin.usecase */ "./src/modules/application/legacy/tokens/usecases/admin.usecase.ts");
-let AdminTokensController = class AdminTokensController {
-    constructor(adminTokensUsecase) {
-        this.adminTokensUsecase = adminTokensUsecase;
-    }
-    async findAll() {
-        try {
-            const tokensWithEmployee = await this.adminTokensUsecase.findAllWithEmployee();
-            const tokenResponseDtos = tokensWithEmployee.map((token) => this.mapTokenToDto(token));
-            return api_response_dto_1.ApiResponseDto.success(tokenResponseDtos);
-        }
-        catch (error) {
-            return api_response_dto_1.ApiResponseDto.error('TOKENS_FETCH_ERROR', '토큰 목록을 조회하는 중 오류가 발생했습니다.');
-        }
-    }
-    async findByEmployeeId(employeeId) {
-        try {
-            const tokens = await this.adminTokensUsecase.findByEmployeeId(employeeId);
-            const tokenResponseDtos = tokens.map((token) => this.mapTokenToDto(token));
-            return api_response_dto_1.ApiResponseDto.success(tokenResponseDtos);
-        }
-        catch (error) {
-            return api_response_dto_1.ApiResponseDto.error('TOKENS_FETCH_ERROR', '직원별 토큰을 조회하는 중 오류가 발생했습니다.');
-        }
-    }
-    async findOne(id) {
-        try {
-            const tokenWithEmployee = await this.adminTokensUsecase.findOneWithEmployee(id);
-            const tokenResponseDto = this.mapTokenToDto(tokenWithEmployee);
-            return api_response_dto_1.ApiResponseDto.success(tokenResponseDto);
-        }
-        catch (error) {
-            return api_response_dto_1.ApiResponseDto.error('TOKEN_NOT_FOUND', `해당 ID의 토큰을 찾을 수 없습니다: ${id}`);
-        }
-    }
-    async create(createTokenDto) {
-        try {
-            const token = await this.adminTokensUsecase.createToken(createTokenDto);
-            const tokenResponseDto = this.mapTokenToDto(token);
-            return api_response_dto_1.ApiResponseDto.success(tokenResponseDto);
-        }
-        catch (error) {
-            return api_response_dto_1.ApiResponseDto.error('TOKEN_CREATE_ERROR', '토큰 생성 중 오류가 발생했습니다.');
-        }
-    }
-    async updateStatus(id, updateTokenStatusDto) {
-        try {
-            const token = await this.adminTokensUsecase.updateStatus(id, updateTokenStatusDto.isActive);
-            const tokenResponseDto = this.mapTokenToDto(token);
-            return api_response_dto_1.ApiResponseDto.success(tokenResponseDto);
-        }
-        catch (error) {
-            return api_response_dto_1.ApiResponseDto.error('TOKEN_UPDATE_ERROR', `토큰 상태 변경 중 오류가 발생했습니다: ${error.message}`);
-        }
-    }
-    async renewToken(id, renewTokenDto) {
-        try {
-            const token = await this.adminTokensUsecase.renewToken(id, renewTokenDto);
-            const tokenResponseDto = this.mapTokenToDto(token);
-            return api_response_dto_1.ApiResponseDto.success(tokenResponseDto);
-        }
-        catch (error) {
-            return api_response_dto_1.ApiResponseDto.error('TOKEN_RENEW_ERROR', `토큰 갱신 중 오류가 발생했습니다: ${error.message}`);
-        }
-    }
-    async refreshToken(id) {
-        try {
-            const token = await this.adminTokensUsecase.refreshTokens(id);
-            const tokenResponseDto = this.mapTokenToDto(token);
-            return api_response_dto_1.ApiResponseDto.success(tokenResponseDto);
-        }
-        catch (error) {
-            return api_response_dto_1.ApiResponseDto.error('TOKEN_REFRESH_ERROR', `리프레시 토큰을 사용한 액세스 토큰 갱신 중 오류가 발생했습니다: ${error.message}`);
-        }
-    }
-    async remove(id) {
-        try {
-            await this.adminTokensUsecase.remove(id);
-            return api_response_dto_1.ApiResponseDto.success(true);
-        }
-        catch (error) {
-            return api_response_dto_1.ApiResponseDto.error('TOKEN_DELETE_ERROR', `토큰 삭제 중 오류가 발생했습니다: ${error.message}`);
-        }
-    }
-    mapTokenToDto(token) {
-        const responseDto = new dto_1.TokenResponseDto();
-        responseDto.id = token.id;
-        responseDto.accessToken = token.accessToken;
-        responseDto.refreshToken = token.refreshToken;
-        responseDto.tokenExpiresAt = token.tokenExpiresAt;
-        responseDto.refreshTokenExpiresAt = token.refreshTokenExpiresAt;
-        responseDto.lastAccess = token.lastAccess;
-        responseDto.isActive = token.isActive;
-        responseDto.createdAt = token.createdAt;
-        responseDto.updatedAt = token.updatedAt;
-        if (token.employee) {
-            responseDto.userId = token.employee.id;
-            responseDto.userName = token.employee.name;
-            responseDto.userEmail = token.employee.email;
-        }
-        else {
-            responseDto.userId = null;
-            responseDto.userName = null;
-            responseDto.userEmail = null;
-        }
-        return responseDto;
-    }
-};
-exports.AdminTokensController = AdminTokensController;
-__decorate([
-    (0, common_1.Get)(),
-    (0, swagger_1.ApiOperation)({ summary: '토큰 목록 조회' }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '토큰 목록 조회 성공',
-        type: api_response_dto_1.ApiResponseDto,
-    }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_b = typeof Promise !== "undefined" && Promise) === "function" ? _b : Object)
-], AdminTokensController.prototype, "findAll", null);
-__decorate([
-    (0, common_1.Get)('user/:employeeId'),
-    (0, swagger_1.ApiOperation)({ summary: '직원별 토큰 조회' }),
-    (0, swagger_1.ApiParam)({ name: 'employeeId', description: '직원 ID' }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '직원별 토큰 조회 성공',
-        type: api_response_dto_1.ApiResponseDto,
-    }),
-    __param(0, (0, common_1.Param)('employeeId')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
-], AdminTokensController.prototype, "findByEmployeeId", null);
-__decorate([
-    (0, common_1.Get)(':id'),
-    (0, swagger_1.ApiOperation)({ summary: '토큰 상세 조회' }),
-    (0, swagger_1.ApiParam)({ name: 'id', description: '토큰 ID' }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '토큰 상세 조회 성공',
-        type: api_response_dto_1.ApiResponseDto,
-    }),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
-], AdminTokensController.prototype, "findOne", null);
-__decorate([
-    (0, common_1.Post)(),
-    (0, swagger_1.ApiOperation)({ summary: '토큰 생성' }),
-    (0, swagger_1.ApiBody)({ type: dto_1.CreateTokenDto }),
-    (0, swagger_1.ApiResponse)({
-        status: 201,
-        description: '토큰 생성 성공',
-        type: api_response_dto_1.ApiResponseDto,
-    }),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_e = typeof dto_1.CreateTokenDto !== "undefined" && dto_1.CreateTokenDto) === "function" ? _e : Object]),
-    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
-], AdminTokensController.prototype, "create", null);
-__decorate([
-    (0, common_1.Put)(':id/status'),
-    (0, swagger_1.ApiOperation)({ summary: '토큰 상태 변경' }),
-    (0, swagger_1.ApiParam)({ name: 'id', description: '토큰 ID' }),
-    (0, swagger_1.ApiBody)({ type: dto_1.UpdateTokenStatusDto }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '토큰 상태 변경 성공',
-        type: api_response_dto_1.ApiResponseDto,
-    }),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, typeof (_g = typeof dto_1.UpdateTokenStatusDto !== "undefined" && dto_1.UpdateTokenStatusDto) === "function" ? _g : Object]),
-    __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
-], AdminTokensController.prototype, "updateStatus", null);
-__decorate([
-    (0, common_1.Put)(':id/renew'),
-    (0, swagger_1.ApiOperation)({ summary: '토큰 갱신' }),
-    (0, swagger_1.ApiParam)({ name: 'id', description: '토큰 ID' }),
-    (0, swagger_1.ApiBody)({ type: dto_1.RenewTokenDto }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '토큰 갱신 성공',
-        type: api_response_dto_1.ApiResponseDto,
-    }),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, typeof (_j = typeof dto_1.RenewTokenDto !== "undefined" && dto_1.RenewTokenDto) === "function" ? _j : Object]),
-    __metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
-], AdminTokensController.prototype, "renewToken", null);
-__decorate([
-    (0, common_1.Put)(':id/refresh'),
-    (0, swagger_1.ApiOperation)({ summary: '리프레시 토큰으로 액세스 토큰 갱신' }),
-    (0, swagger_1.ApiParam)({ name: 'id', description: '토큰 ID' }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '액세스 토큰 갱신 성공',
-        type: api_response_dto_1.ApiResponseDto,
-    }),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_l = typeof Promise !== "undefined" && Promise) === "function" ? _l : Object)
-], AdminTokensController.prototype, "refreshToken", null);
-__decorate([
-    (0, common_1.Delete)(':id'),
-    (0, swagger_1.ApiOperation)({ summary: '토큰 삭제' }),
-    (0, swagger_1.ApiParam)({ name: 'id', description: '토큰 ID' }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '토큰 삭제 성공',
-        type: api_response_dto_1.ApiResponseDto,
-    }),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_m = typeof Promise !== "undefined" && Promise) === "function" ? _m : Object)
-], AdminTokensController.prototype, "remove", null);
-exports.AdminTokensController = AdminTokensController = __decorate([
-    (0, swagger_1.ApiTags)('관리자 토큰 API'),
-    (0, common_1.Controller)('admin/tokens'),
-    __metadata("design:paramtypes", [typeof (_a = typeof admin_usecase_1.AdminTokensUsecase !== "undefined" && admin_usecase_1.AdminTokensUsecase) === "function" ? _a : Object])
-], AdminTokensController);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/tokens/dto/create-token.dto.ts":
-/*!***********************************************************************!*\
-  !*** ./src/modules/application/legacy/tokens/dto/create-token.dto.ts ***!
-  \***********************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CreateTokenDto = void 0;
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
-class CreateTokenDto {
-}
-exports.CreateTokenDto = CreateTokenDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '직원 ID',
-        example: '987fcdeb-51a2-43b7-89cd-321654987000',
-    }),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsUUID)(),
-    __metadata("design:type", String)
-], CreateTokenDto.prototype, "employeeId", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: '사번', example: '24020' }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], CreateTokenDto.prototype, "employeeNumber", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: '액세스 토큰 만료 일수', default: 30, minimum: 1, maximum: 365 }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsInt)(),
-    (0, class_validator_1.Min)(1),
-    (0, class_validator_1.Max)(365),
-    __metadata("design:type", Number)
-], CreateTokenDto.prototype, "expiresInDays", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: '리프레시 토큰 만료 일수', default: 90, minimum: 30, maximum: 730 }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsInt)(),
-    (0, class_validator_1.Min)(30),
-    (0, class_validator_1.Max)(730),
-    __metadata("design:type", Number)
-], CreateTokenDto.prototype, "refreshExpiresInDays", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: '액세스 토큰' }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], CreateTokenDto.prototype, "accessToken", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: '리프레시 토큰' }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], CreateTokenDto.prototype, "refreshToken", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: '토큰 만료 일시' }),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
-], CreateTokenDto.prototype, "tokenExpiresAt", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: '리프레시 토큰 만료 일시' }),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
-], CreateTokenDto.prototype, "refreshTokenExpiresAt", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: '클라이언트 정보' }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], CreateTokenDto.prototype, "clientInfo", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: 'IP 주소' }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], CreateTokenDto.prototype, "ipAddress", void 0);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/tokens/dto/index.ts":
-/*!************************************************************!*\
-  !*** ./src/modules/application/legacy/tokens/dto/index.ts ***!
-  \************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(/*! ./create-token.dto */ "./src/modules/application/legacy/tokens/dto/create-token.dto.ts"), exports);
-__exportStar(__webpack_require__(/*! ./token-response.dto */ "./src/modules/application/legacy/tokens/dto/token-response.dto.ts"), exports);
-__exportStar(__webpack_require__(/*! ./renew-token.dto */ "./src/modules/application/legacy/tokens/dto/renew-token.dto.ts"), exports);
-__exportStar(__webpack_require__(/*! ./update-token-status.dto */ "./src/modules/application/legacy/tokens/dto/update-token-status.dto.ts"), exports);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/tokens/dto/renew-token.dto.ts":
-/*!**********************************************************************!*\
-  !*** ./src/modules/application/legacy/tokens/dto/renew-token.dto.ts ***!
-  \**********************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.RenewTokenDto = void 0;
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
-class RenewTokenDto {
-}
-exports.RenewTokenDto = RenewTokenDto;
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: '액세스 토큰 만료 일수', default: 30, minimum: 1, maximum: 365 }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsInt)(),
-    (0, class_validator_1.Min)(1),
-    (0, class_validator_1.Max)(365),
-    __metadata("design:type", Number)
-], RenewTokenDto.prototype, "expiresInDays", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: '리프레시 토큰 만료 일수', default: 90, minimum: 30, maximum: 730 }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsInt)(),
-    (0, class_validator_1.Min)(30),
-    (0, class_validator_1.Max)(730),
-    __metadata("design:type", Number)
-], RenewTokenDto.prototype, "refreshExpiresInDays", void 0);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/tokens/dto/token-response.dto.ts":
-/*!*************************************************************************!*\
-  !*** ./src/modules/application/legacy/tokens/dto/token-response.dto.ts ***!
-  \*************************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b, _c, _d, _e;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.TokenResponseDto = void 0;
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-class TokenResponseDto {
-}
-exports.TokenResponseDto = TokenResponseDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '토큰 ID',
-        example: '123e4567-e89b-12d3-a456-426614174000',
-    }),
-    __metadata("design:type", String)
-], TokenResponseDto.prototype, "id", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '사용자 ID',
-        example: '987fcdeb-51a2-43b7-89cd-321654987000',
-    }),
-    __metadata("design:type", String)
-], TokenResponseDto.prototype, "userId", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '액세스 토큰',
-        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
-    }),
-    __metadata("design:type", String)
-], TokenResponseDto.prototype, "accessToken", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({
-        description: '리프레시 토큰',
-    }),
-    __metadata("design:type", String)
-], TokenResponseDto.prototype, "refreshToken", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '토큰 만료 일자',
-        example: '2023-12-31T23:59:59Z',
-    }),
-    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
-], TokenResponseDto.prototype, "tokenExpiresAt", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({
-        description: '리프레시 토큰 만료일',
-    }),
-    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
-], TokenResponseDto.prototype, "refreshTokenExpiresAt", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({
-        description: '마지막 접근 일자',
-        example: '2023-06-15T14:30:00Z',
-        required: false,
-    }),
-    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
-], TokenResponseDto.prototype, "lastAccess", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '토큰 활성화 상태',
-        example: true,
-    }),
-    __metadata("design:type", Boolean)
-], TokenResponseDto.prototype, "isActive", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '생성일',
-        example: '2023-01-01T00:00:00Z',
-    }),
-    __metadata("design:type", typeof (_d = typeof Date !== "undefined" && Date) === "function" ? _d : Object)
-], TokenResponseDto.prototype, "createdAt", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '수정일',
-        example: '2023-01-01T00:00:00Z',
-    }),
-    __metadata("design:type", typeof (_e = typeof Date !== "undefined" && Date) === "function" ? _e : Object)
-], TokenResponseDto.prototype, "updatedAt", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '사용자 이름',
-        example: '홍길동',
-        required: false,
-    }),
-    __metadata("design:type", String)
-], TokenResponseDto.prototype, "userName", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '사용자 이메일',
-        example: 'user@example.com',
-        required: false,
-    }),
-    __metadata("design:type", String)
-], TokenResponseDto.prototype, "userEmail", void 0);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/tokens/dto/update-token-status.dto.ts":
-/*!******************************************************************************!*\
-  !*** ./src/modules/application/legacy/tokens/dto/update-token-status.dto.ts ***!
-  \******************************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.UpdateTokenStatusDto = void 0;
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
-class UpdateTokenStatusDto {
-}
-exports.UpdateTokenStatusDto = UpdateTokenStatusDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '토큰 활성화 상태',
-        example: true,
-    }),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.IsBoolean)(),
-    __metadata("design:type", Boolean)
-], UpdateTokenStatusDto.prototype, "isActive", void 0);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/tokens/services/tokens.service.ts":
-/*!**************************************************************************!*\
-  !*** ./src/modules/application/legacy/tokens/services/tokens.service.ts ***!
-  \**************************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b, _c;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.TokensService = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const token_service_1 = __webpack_require__(/*! ../../../../domain/token/token.service */ "./src/modules/domain/token/token.service.ts");
-const employee_token_service_1 = __webpack_require__(/*! ../../../../domain/employee-token/employee-token.service */ "./src/modules/domain/employee-token/employee-token.service.ts");
-const users_service_1 = __webpack_require__(/*! ../../users/services/users.service */ "./src/modules/application/legacy/users/services/users.service.ts");
-let TokensService = class TokensService {
-    constructor(tokenService, employeeTokenService, usersService) {
-        this.tokenService = tokenService;
-        this.employeeTokenService = employeeTokenService;
-        this.usersService = usersService;
-    }
-    async findAll(options) {
-        return this.tokenService.findAll(options);
-    }
-    async findAllWithEmployee() {
-        const tokens = await this.tokenService.findAll();
-        const tokensWithEmployee = [];
-        for (const token of tokens) {
-            try {
-                const employee = await this.getEmployeeByToken(token.id);
-                tokensWithEmployee.push({
-                    ...token,
-                    employee: employee,
-                });
-            }
-            catch (error) {
-                tokensWithEmployee.push({
-                    ...token,
-                    employee: null,
-                });
-            }
-        }
-        return tokensWithEmployee;
-    }
-    async findOne(id) {
-        return this.tokenService.findOne({ where: { id } });
-    }
-    async findOneWithEmployee(id) {
-        const token = await this.tokenService.findOne({ where: { id } });
-        if (!token) {
-            throw new common_1.NotFoundException('토큰을 찾을 수 없습니다.');
-        }
-        try {
-            const employee = await this.getEmployeeByToken(token.id);
-            return {
-                ...token,
-                employee: employee,
-            };
-        }
-        catch (error) {
-            return {
-                ...token,
-                employee: null,
-            };
-        }
-    }
-    async findByEmployeeId(employeeId) {
-        const employeeTokens = await this.employeeTokenService.findByEmployeeId(employeeId);
-        const tokens = [];
-        for (const employeeToken of employeeTokens) {
-            const token = await this.tokenService.findOne({ where: { id: employeeToken.tokenId } });
-            if (token) {
-                tokens.push(token);
-            }
-        }
-        return tokens;
-    }
-    async findByAccessToken(accessToken) {
-        return this.tokenService.findByAccessToken(accessToken);
-    }
-    async findByRefreshToken(refreshToken) {
-        return this.tokenService.findByRefreshToken(refreshToken);
-    }
-    async create(createTokenDto) {
-        const { employeeId, ...tokenData } = createTokenDto;
-        const employee = await this.usersService.findOne(employeeId);
-        const tokenCreateData = {
-            accessToken: tokenData.accessToken || '',
-            refreshToken: tokenData.refreshToken || '',
-            tokenExpiresAt: tokenData.tokenExpiresAt || new Date(),
-            refreshTokenExpiresAt: tokenData.refreshTokenExpiresAt,
-            clientInfo: tokenData.clientInfo,
-            ipAddress: tokenData.ipAddress,
-        };
-        const token = await this.tokenService.create(tokenCreateData);
-        await this.employeeTokenService.createOrUpdateRelation(employeeId, token.id, {});
-        return token;
-    }
-    async update(id, updateData) {
-        return this.tokenService.update(id, updateData);
-    }
-    async remove(id) {
-        const employeeTokens = await this.employeeTokenService.findByTokenId(id);
-        for (const employeeToken of employeeTokens) {
-            await this.employeeTokenService.delete(employeeToken.id);
-        }
-        await this.tokenService.delete(id);
-    }
-    async removeAllEmployeeTokens(employeeId) {
-        const employeeTokens = await this.employeeTokenService.findByEmployeeId(employeeId);
-        for (const employeeToken of employeeTokens) {
-            await this.tokenService.delete(employeeToken.tokenId);
-            await this.employeeTokenService.delete(employeeToken.id);
-        }
-    }
-    async getEmployeeByToken(tokenId) {
-        const employeeTokens = await this.employeeTokenService.findByTokenId(tokenId);
-        if (employeeTokens.length === 0) {
-            throw new common_1.NotFoundException('토큰에 연결된 직원을 찾을 수 없습니다.');
-        }
-        const employeeToken = employeeTokens[0];
-        return this.usersService.findOne(employeeToken.employeeId);
-    }
-    generateJwtToken(payload, expiresIn) {
-        return this.tokenService.generateJwtToken(payload, expiresIn);
-    }
-    verifyJwtToken(token) {
-        return this.tokenService.verifyJwtToken(token);
-    }
-};
-exports.TokensService = TokensService;
-exports.TokensService = TokensService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof token_service_1.DomainTokenService !== "undefined" && token_service_1.DomainTokenService) === "function" ? _a : Object, typeof (_b = typeof employee_token_service_1.DomainEmployeeTokenService !== "undefined" && employee_token_service_1.DomainEmployeeTokenService) === "function" ? _b : Object, typeof (_c = typeof users_service_1.UsersService !== "undefined" && users_service_1.UsersService) === "function" ? _c : Object])
-], TokensService);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/tokens/tokens.module.ts":
-/*!****************************************************************!*\
-  !*** ./src/modules/application/legacy/tokens/tokens.module.ts ***!
-  \****************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.TokensModule = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const tokens_service_1 = __webpack_require__(/*! ./services/tokens.service */ "./src/modules/application/legacy/tokens/services/tokens.service.ts");
-const users_module_1 = __webpack_require__(/*! ../users/users.module */ "./src/modules/application/legacy/users/users.module.ts");
-const systems_module_1 = __webpack_require__(/*! ../systems/systems.module */ "./src/modules/application/legacy/systems/systems.module.ts");
-const admin_tokens_controller_1 = __webpack_require__(/*! ./controllers/admin-tokens.controller */ "./src/modules/application/legacy/tokens/controllers/admin-tokens.controller.ts");
-const admin_usecase_1 = __webpack_require__(/*! ./usecases/admin.usecase */ "./src/modules/application/legacy/tokens/usecases/admin.usecase.ts");
-const client_usecase_1 = __webpack_require__(/*! ./usecases/client.usecase */ "./src/modules/application/legacy/tokens/usecases/client.usecase.ts");
-const token_module_1 = __webpack_require__(/*! ../../../domain/token/token.module */ "./src/modules/domain/token/token.module.ts");
-const employee_token_module_1 = __webpack_require__(/*! ../../../domain/employee-token/employee-token.module */ "./src/modules/domain/employee-token/employee-token.module.ts");
-const jwt_1 = __webpack_require__(/*! @nestjs/jwt */ "@nestjs/jwt");
-const config_1 = __webpack_require__(/*! @nestjs/config */ "@nestjs/config");
-let TokensModule = class TokensModule {
-};
-exports.TokensModule = TokensModule;
-exports.TokensModule = TokensModule = __decorate([
-    (0, common_1.Module)({
-        imports: [
-            token_module_1.DomainTokenModule,
-            employee_token_module_1.DomainEmployeeTokenModule,
-            users_module_1.UsersModule,
-            systems_module_1.SystemsModule,
-            jwt_1.JwtModule.registerAsync({
-                imports: [config_1.ConfigModule],
-                inject: [config_1.ConfigService],
-                useFactory: (configService) => ({
-                    secret: configService.get('GLOBAL_SECRET'),
-                    signOptions: { expiresIn: '1h' },
-                }),
-            }),
-        ],
-        providers: [tokens_service_1.TokensService, admin_usecase_1.AdminTokensUsecase, client_usecase_1.ClientTokensUsecase],
-        controllers: [admin_tokens_controller_1.AdminTokensController],
-        exports: [tokens_service_1.TokensService, admin_usecase_1.AdminTokensUsecase, client_usecase_1.ClientTokensUsecase],
-    })
-], TokensModule);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/tokens/usecases/admin.usecase.ts":
-/*!*************************************************************************!*\
-  !*** ./src/modules/application/legacy/tokens/usecases/admin.usecase.ts ***!
-  \*************************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b, _c;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AdminTokensUsecase = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const tokens_service_1 = __webpack_require__(/*! ../services/tokens.service */ "./src/modules/application/legacy/tokens/services/tokens.service.ts");
-const jwt_1 = __webpack_require__(/*! @nestjs/jwt */ "@nestjs/jwt");
-const users_service_1 = __webpack_require__(/*! ../../users/services/users.service */ "./src/modules/application/legacy/users/services/users.service.ts");
-const JWT_CONSTANTS = {
-    DEFAULT_ACCESS_TOKEN_EXPIRES_DAYS: 1,
-    DEFAULT_REFRESH_TOKEN_EXPIRES_DAYS: 7,
-    MIN_ACCESS_TOKEN_EXPIRES_DAYS: 1,
-    MAX_ACCESS_TOKEN_EXPIRES_DAYS: 365,
-    MIN_REFRESH_TOKEN_EXPIRES_DAYS: 30,
-    MAX_REFRESH_TOKEN_EXPIRES_DAYS: 730,
-};
-let AdminTokensUsecase = class AdminTokensUsecase {
-    constructor(tokensService, jwtService, usersService) {
-        this.tokensService = tokensService;
-        this.jwtService = jwtService;
-        this.usersService = usersService;
-    }
-    async findAll() {
-        return this.tokensService.findAll();
-    }
-    async findAllWithEmployee() {
-        return this.tokensService.findAllWithEmployee();
-    }
-    async findOne(id) {
-        return this.tokensService.findOne(id);
-    }
-    async findOneWithEmployee(id) {
-        return this.tokensService.findOneWithEmployee(id);
-    }
-    async findByEmployeeId(employeeId) {
-        return this.tokensService.findByEmployeeId(employeeId);
-    }
-    async createToken(createTokenDto) {
-        const { employeeId, expiresInDays = JWT_CONSTANTS.DEFAULT_ACCESS_TOKEN_EXPIRES_DAYS, refreshExpiresInDays = JWT_CONSTANTS.DEFAULT_REFRESH_TOKEN_EXPIRES_DAYS, } = createTokenDto;
-        const employee = await this.usersService.findOne(employeeId);
-        const payload = {
-            sub: employeeId,
-            employeeNumber: employee.employeeNumber,
-            type: 'access',
-        };
-        const accessToken = this.tokensService.generateJwtToken(payload, `${expiresInDays}d`);
-        const refreshPayload = {
-            ...payload,
-            type: 'refresh',
-        };
-        const refreshToken = this.tokensService.generateJwtToken(refreshPayload, `${refreshExpiresInDays}d`);
-        const now = new Date();
-        const tokenExpiresAt = this.addDays(now, expiresInDays);
-        const refreshTokenExpiresAt = this.addDays(now, refreshExpiresInDays);
-        return this.tokensService.create({
-            employeeId,
-            accessToken,
-            refreshToken,
-            tokenExpiresAt,
-            refreshTokenExpiresAt,
-            isActive: true,
-        });
-    }
-    async updateStatus(id, isActive) {
-        const token = await this.tokensService.findOne(id);
-        return this.tokensService.update(id, {
-            ...token,
-            isActive,
-        });
-    }
-    async renewToken(id, renewTokenDto) {
-        const token = await this.tokensService.findOne(id);
-        const employee = await this.tokensService.getEmployeeByToken(id);
-        const { expiresInDays = JWT_CONSTANTS.DEFAULT_ACCESS_TOKEN_EXPIRES_DAYS, refreshExpiresInDays = JWT_CONSTANTS.DEFAULT_REFRESH_TOKEN_EXPIRES_DAYS, } = renewTokenDto;
-        const payload = {
-            sub: employee.id,
-            employeeNumber: employee.employeeNumber,
-            type: 'access',
-        };
-        const accessToken = this.tokensService.generateJwtToken(payload, `${expiresInDays}d`);
-        const refreshPayload = {
-            ...payload,
-            type: 'refresh',
-        };
-        const refreshToken = this.tokensService.generateJwtToken(refreshPayload, `${refreshExpiresInDays}d`);
-        const now = new Date();
-        const tokenExpiresAt = this.addDays(now, expiresInDays);
-        const refreshTokenExpiresAt = this.addDays(now, refreshExpiresInDays);
-        return this.tokensService.update(id, {
-            accessToken,
-            refreshToken,
-            tokenExpiresAt,
-            refreshTokenExpiresAt,
-            lastAccess: now,
-            isActive: true,
-        });
-    }
-    async refreshTokens(id) {
-        const token = await this.tokensService.findOne(id);
-        const employee = await this.tokensService.getEmployeeByToken(id);
-        if (!token.refreshToken || new Date() > token.refreshTokenExpiresAt) {
-            throw new Error('리프레시 토큰이 만료되었습니다.');
-        }
-        if (!token.isActive) {
-            throw new Error('비활성화된 토큰은 갱신할 수 없습니다.');
-        }
-        const payload = {
-            sub: employee.id,
-            employeeNumber: employee.employeeNumber,
-            type: 'access',
-        };
-        const accessToken = this.tokensService.generateJwtToken(payload, `${JWT_CONSTANTS.DEFAULT_ACCESS_TOKEN_EXPIRES_DAYS}d`);
-        const now = new Date();
-        const tokenExpiresAt = this.addDays(now, JWT_CONSTANTS.DEFAULT_ACCESS_TOKEN_EXPIRES_DAYS);
-        return this.tokensService.update(id, {
-            accessToken,
-            tokenExpiresAt,
-            lastAccess: now,
-        });
-    }
-    async remove(id) {
-        return this.tokensService.remove(id);
-    }
-    addDays(date, days) {
-        const result = new Date(date);
-        result.setDate(result.getDate() + days);
-        return result;
-    }
-};
-exports.AdminTokensUsecase = AdminTokensUsecase;
-exports.AdminTokensUsecase = AdminTokensUsecase = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof tokens_service_1.TokensService !== "undefined" && tokens_service_1.TokensService) === "function" ? _a : Object, typeof (_b = typeof jwt_1.JwtService !== "undefined" && jwt_1.JwtService) === "function" ? _b : Object, typeof (_c = typeof users_service_1.UsersService !== "undefined" && users_service_1.UsersService) === "function" ? _c : Object])
-], AdminTokensUsecase);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/tokens/usecases/client.usecase.ts":
-/*!**************************************************************************!*\
-  !*** ./src/modules/application/legacy/tokens/usecases/client.usecase.ts ***!
-  \**************************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b, _c, _d;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ClientTokensUsecase = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const tokens_service_1 = __webpack_require__(/*! ../services/tokens.service */ "./src/modules/application/legacy/tokens/services/tokens.service.ts");
-const jwt_1 = __webpack_require__(/*! @nestjs/jwt */ "@nestjs/jwt");
-const config_1 = __webpack_require__(/*! @nestjs/config */ "@nestjs/config");
-const users_service_1 = __webpack_require__(/*! ../../users/services/users.service */ "./src/modules/application/legacy/users/services/users.service.ts");
-const JWT_CONSTANTS = {
-    DEFAULT_ACCESS_TOKEN_EXPIRES_DAYS: 1,
-    DEFAULT_REFRESH_TOKEN_EXPIRES_DAYS: 7,
-    MIN_ACCESS_TOKEN_EXPIRES_DAYS: 1,
-    MAX_ACCESS_TOKEN_EXPIRES_DAYS: 365,
-    MIN_REFRESH_TOKEN_EXPIRES_DAYS: 30,
-    MAX_REFRESH_TOKEN_EXPIRES_DAYS: 730,
-};
-let ClientTokensUsecase = class ClientTokensUsecase {
-    constructor(tokensService, jwtService, configService, usersService) {
-        this.tokensService = tokensService;
-        this.jwtService = jwtService;
-        this.configService = configService;
-        this.usersService = usersService;
-    }
-    async findAll() {
-        return this.tokensService.findAll();
-    }
-    async findAllWithEmployee() {
-        return this.tokensService.findAllWithEmployee();
-    }
-    async findOne(id) {
-        return this.tokensService.findOne(id);
-    }
-    async findOneWithEmployee(id) {
-        return this.tokensService.findOneWithEmployee(id);
-    }
-    async findByEmployeeId(employeeId) {
-        return this.tokensService.findByEmployeeId(employeeId);
-    }
-    async createToken(createTokenDto) {
-        const { employeeId, employeeNumber, expiresInDays = JWT_CONSTANTS.DEFAULT_ACCESS_TOKEN_EXPIRES_DAYS, refreshExpiresInDays = JWT_CONSTANTS.DEFAULT_REFRESH_TOKEN_EXPIRES_DAYS, } = createTokenDto;
-        const payload = {
-            sub: employeeId,
-            employeeNumber,
-            type: 'access',
-        };
-        const accessToken = this.tokensService.generateJwtToken(payload, `${expiresInDays}d`);
-        const refreshPayload = {
-            ...payload,
-            type: 'refresh',
-        };
-        const refreshToken = this.tokensService.generateJwtToken(refreshPayload, `${refreshExpiresInDays}d`);
-        const now = new Date();
-        const tokenExpiresAt = this.addDays(now, expiresInDays);
-        const refreshTokenExpiresAt = this.addDays(now, refreshExpiresInDays);
-        try {
-            const existingTokens = await this.tokensService.findByEmployeeId(employeeId);
-            if (existingTokens && existingTokens.length > 0) {
-                const existingToken = existingTokens[0];
-                console.log(`Employee ${employeeId} already has a token, updating existing token ${existingToken.id}`);
-                return this.tokensService.update(existingToken.id, {
-                    accessToken,
-                    refreshToken,
-                    tokenExpiresAt,
-                    refreshTokenExpiresAt,
-                    lastAccess: now,
-                    isActive: true,
-                });
-            }
-        }
-        catch (error) {
-            console.log(`Error checking existing tokens for employee ${employeeId}: ${error.message}`);
-        }
-        console.log(`Creating new token for employee ${employeeId}`);
-        return this.tokensService.create({
-            employeeId,
-            accessToken,
-            refreshToken,
-            tokenExpiresAt,
-            refreshTokenExpiresAt,
-            isActive: true,
-        });
-    }
-    async updateStatus(id, isActive) {
-        const token = await this.tokensService.findOne(id);
-        return this.tokensService.update(id, {
-            ...token,
-            isActive,
-        });
-    }
-    async renewToken(id, renewTokenDto) {
-        const token = await this.tokensService.findOne(id);
-        const { expiresInDays = JWT_CONSTANTS.DEFAULT_ACCESS_TOKEN_EXPIRES_DAYS, refreshExpiresInDays = JWT_CONSTANTS.DEFAULT_REFRESH_TOKEN_EXPIRES_DAYS, } = renewTokenDto;
-        const employee = await this.tokensService.getEmployeeByToken(id);
-        const payload = {
-            sub: employee.id,
-            employeeNumber: employee.employeeNumber,
-            type: 'access',
-        };
-        const accessToken = this.tokensService.generateJwtToken(payload, `${expiresInDays}d`);
-        const refreshPayload = {
-            ...payload,
-            type: 'refresh',
-        };
-        const refreshToken = this.tokensService.generateJwtToken(refreshPayload, `${refreshExpiresInDays}d`);
-        const now = new Date();
-        const tokenExpiresAt = this.addDays(now, expiresInDays);
-        const refreshTokenExpiresAt = this.addDays(now, refreshExpiresInDays);
-        return this.tokensService.update(id, {
-            accessToken,
-            refreshToken,
-            tokenExpiresAt,
-            refreshTokenExpiresAt,
-            lastAccess: now,
-            isActive: true,
-        });
-    }
-    async refreshTokens(id) {
-        const token = await this.tokensService.findOne(id);
-        const employee = await this.tokensService.getEmployeeByToken(id);
-        if (!token.refreshToken || new Date() > token.refreshTokenExpiresAt) {
-            throw new Error('리프레시 토큰이 만료되었습니다.');
-        }
-        if (!token.isActive) {
-            throw new Error('비활성화된 토큰은 갱신할 수 없습니다.');
-        }
-        const payload = {
-            sub: employee.id,
-            employeeNumber: employee.employeeNumber,
-            type: 'access',
-        };
-        const accessToken = this.tokensService.generateJwtToken(payload, `${JWT_CONSTANTS.DEFAULT_ACCESS_TOKEN_EXPIRES_DAYS}d`);
-        const now = new Date();
-        const tokenExpiresAt = this.addDays(now, JWT_CONSTANTS.DEFAULT_ACCESS_TOKEN_EXPIRES_DAYS);
-        return this.tokensService.update(id, {
-            accessToken,
-            tokenExpiresAt,
-            lastAccess: now,
-        });
-    }
-    async remove(id) {
-        return this.tokensService.remove(id);
-    }
-    addDays(date, days) {
-        const result = new Date(date);
-        result.setDate(result.getDate() + days);
-        return result;
-    }
-};
-exports.ClientTokensUsecase = ClientTokensUsecase;
-exports.ClientTokensUsecase = ClientTokensUsecase = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof tokens_service_1.TokensService !== "undefined" && tokens_service_1.TokensService) === "function" ? _a : Object, typeof (_b = typeof jwt_1.JwtService !== "undefined" && jwt_1.JwtService) === "function" ? _b : Object, typeof (_c = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _c : Object, typeof (_d = typeof users_service_1.UsersService !== "undefined" && users_service_1.UsersService) === "function" ? _d : Object])
-], ClientTokensUsecase);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/users/controllers/admin.controller.ts":
-/*!******************************************************************************!*\
-  !*** ./src/modules/application/legacy/users/controllers/admin.controller.ts ***!
-  \******************************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a, _b, _c, _d, _e, _f, _g;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AdminUsersController = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const users_service_1 = __webpack_require__(/*! ../services/users.service */ "./src/modules/application/legacy/users/services/users.service.ts");
-const user_response_dto_1 = __webpack_require__(/*! ../dto/user-response.dto */ "./src/modules/application/legacy/users/dto/user-response.dto.ts");
-const api_response_dto_1 = __webpack_require__(/*! ../../../../../../libs/common/dto/api-response.dto */ "./libs/common/dto/api-response.dto.ts");
-const admin_usecase_1 = __webpack_require__(/*! ../usecases/admin.usecase */ "./src/modules/application/legacy/users/usecases/admin.usecase.ts");
-let AdminUsersController = class AdminUsersController {
-    constructor(usersService, adminUsecase) {
-        this.usersService = usersService;
-        this.adminUsecase = adminUsecase;
-    }
-    async findAll() {
-        try {
-            const employees = await this.usersService.findAll();
-            const userDtos = employees.map((employee) => new user_response_dto_1.UserResponseDto(employee));
-            return api_response_dto_1.ApiResponseDto.success(userDtos);
-        }
-        catch (error) {
-            console.error('Error fetching all users:', error);
-            return api_response_dto_1.ApiResponseDto.error('USERS_FETCH_ERROR', '사용자 목록을 조회하는 중 오류가 발생했습니다.');
-        }
-    }
-    async search(query) {
-        try {
-            const users = await this.adminUsecase.searchUsers(query);
-            const userDtos = users.map((user) => new user_response_dto_1.UserResponseDto(user));
-            return api_response_dto_1.ApiResponseDto.success(userDtos);
-        }
-        catch (error) {
-            console.error(`Error searching users with query ${query}:`, error);
-            return api_response_dto_1.ApiResponseDto.error('USERS_SEARCH_ERROR', '사용자 검색 중 오류가 발생했습니다.');
-        }
-    }
-    async findOne(id) {
-        try {
-            const user = await this.usersService.findOne(id);
-            if (!user) {
-                return api_response_dto_1.ApiResponseDto.error('USER_NOT_FOUND', '해당 ID의 사용자를 찾을 수 없습니다.');
-            }
-            return api_response_dto_1.ApiResponseDto.success(new user_response_dto_1.UserResponseDto(user));
-        }
-        catch (error) {
-            if (error instanceof common_1.NotFoundException) {
-                return api_response_dto_1.ApiResponseDto.error('USER_NOT_FOUND', '해당 ID의 사용자를 찾을 수 없습니다.');
-            }
-            console.error(`Error fetching user with ID ${id}:`, error);
-            return api_response_dto_1.ApiResponseDto.error('USER_FETCH_ERROR', '사용자 정보를 조회하는 중 오류가 발생했습니다.');
-        }
-    }
-    async sendInitPassSetMail(body) {
-        try {
-            await this.adminUsecase.sendInitPassSetMail(body.email);
-            return api_response_dto_1.ApiResponseDto.success(null);
-        }
-        catch (error) {
-            console.error(`Error sending init pass set mail to ${body.email}:`, error);
-            return api_response_dto_1.ApiResponseDto.error('MAIL_SEND_ERROR', '초기 비밀번호 설정 메일 전송 중 오류가 발생했습니다.');
-        }
-        finally {
-        }
-    }
-    async sendTempPasswordMail(body) {
-        try {
-            return api_response_dto_1.ApiResponseDto.success(null);
-        }
-        catch (error) {
-            console.error(`Error sending temp password mail to ${body.email}:`, error);
-            return api_response_dto_1.ApiResponseDto.error('MAIL_SEND_ERROR', '임시 비밀번호 발급 메일 전송 중 오류가 발생했습니다.');
-        }
-        finally {
-            this.adminUsecase.sendTempPasswordMail(body.email);
-        }
-    }
-};
-exports.AdminUsersController = AdminUsersController;
-__decorate([
-    (0, common_1.Get)(),
-    (0, swagger_1.ApiOperation)({ summary: '사용자 목록 조회', description: '등록된 모든 사용자 목록을 조회합니다.' }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '사용자 목록 조회 성공',
-        type: api_response_dto_1.ApiResponseDto,
-    }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
-], AdminUsersController.prototype, "findAll", null);
-__decorate([
-    (0, common_1.Get)('search'),
-    (0, swagger_1.ApiOperation)({ summary: '사용자 검색', description: '검색 조건에 맞는 사용자 목록을 조회합니다.' }),
-    (0, swagger_1.ApiQuery)({ name: 'query', description: '검색어 (이름, 이메일, 직원번호, 부서, 직책 등)', required: true }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '사용자 검색 성공',
-        type: api_response_dto_1.ApiResponseDto,
-    }),
-    __param(0, (0, common_1.Query)('query')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
-], AdminUsersController.prototype, "search", null);
-__decorate([
-    (0, common_1.Get)(':id'),
-    (0, swagger_1.ApiOperation)({ summary: '사용자 상세 조회', description: '특정 ID의 사용자 정보를 조회합니다.' }),
-    (0, swagger_1.ApiParam)({ name: 'id', description: '사용자 ID' }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '사용자 상세 조회 성공',
-        type: api_response_dto_1.ApiResponseDto,
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 404,
-        description: '사용자를 찾을 수 없음',
-        type: api_response_dto_1.ApiResponseDto,
-    }),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
-], AdminUsersController.prototype, "findOne", null);
-__decorate([
-    (0, common_1.Post)('send-init-pass-set-mail'),
-    (0, swagger_1.ApiOperation)({ summary: '초기 비밀번호 설정 메일 전송', description: '초기 비밀번호 설정 메일을 전송합니다.' }),
-    (0, swagger_1.ApiBody)({ schema: { type: 'object', properties: { email: { type: 'string' } } } }),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
-], AdminUsersController.prototype, "sendInitPassSetMail", null);
-__decorate([
-    (0, common_1.Post)('send-temp-password-mail'),
-    (0, swagger_1.ApiOperation)({ summary: '임시 비밀번호 발급 메일 전송', description: '임시 비밀번호 발급 메일을 전송합니다.' }),
-    (0, swagger_1.ApiBody)({ schema: { type: 'object', properties: { email: { type: 'string' } } } }),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
-], AdminUsersController.prototype, "sendTempPasswordMail", null);
-exports.AdminUsersController = AdminUsersController = __decorate([
-    (0, swagger_1.ApiTags)('관리자 사용자 API'),
-    (0, common_1.Controller)('admin/users'),
-    __metadata("design:paramtypes", [typeof (_a = typeof users_service_1.UsersService !== "undefined" && users_service_1.UsersService) === "function" ? _a : Object, typeof (_b = typeof admin_usecase_1.AdminUsecase !== "undefined" && admin_usecase_1.AdminUsecase) === "function" ? _b : Object])
-], AdminUsersController);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/users/dto/user-response.dto.ts":
-/*!***********************************************************************!*\
-  !*** ./src/modules/application/legacy/users/dto/user-response.dto.ts ***!
-  \***********************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.UserResponseDto = void 0;
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-class UserResponseDto {
-    constructor(employee) {
-        this.id = employee.id;
-        this.employeeNumber = employee.employeeNumber;
-        this.name = employee.name;
-        this.email = employee.email;
-        this.phoneNumber = employee.phoneNumber;
-        this.dateOfBirth = employee.dateOfBirth ? String(employee.dateOfBirth).split('T')[0] : undefined;
-        this.gender = employee.gender ? employee.gender.toString() : undefined;
-        this.hireDate = employee.hireDate ? String(employee.hireDate).split('T')[0] : undefined;
-        this.status = employee.status ? employee.status.toString() : undefined;
-        this.rank = employee.currentRank?.rankName || undefined;
-        this.department = employee.departmentPositions?.[0]?.department?.departmentName || undefined;
-        this.position = employee.departmentPositions?.[0]?.position?.positionTitle || undefined;
-        this.createdAt = String(employee.createdAt).split('T')[0] || String(employee.createdAt);
-        this.updatedAt = String(employee.updatedAt).split('T')[0] || String(employee.updatedAt);
-        this.isInitialPasswordSet = employee.isInitialPasswordSet;
-    }
-}
-exports.UserResponseDto = UserResponseDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '사용자 ID' }),
-    __metadata("design:type", String)
-], UserResponseDto.prototype, "id", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '직원 번호' }),
-    __metadata("design:type", String)
-], UserResponseDto.prototype, "employeeNumber", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '사용자 이름' }),
-    __metadata("design:type", String)
-], UserResponseDto.prototype, "name", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '이메일' }),
-    __metadata("design:type", String)
-], UserResponseDto.prototype, "email", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '전화번호', required: false }),
-    __metadata("design:type", String)
-], UserResponseDto.prototype, "phoneNumber", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '생년월일', required: false }),
-    __metadata("design:type", String)
-], UserResponseDto.prototype, "dateOfBirth", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '성별', required: false }),
-    __metadata("design:type", String)
-], UserResponseDto.prototype, "gender", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '입사일', required: false }),
-    __metadata("design:type", String)
-], UserResponseDto.prototype, "hireDate", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '재직 상태', required: false }),
-    __metadata("design:type", String)
-], UserResponseDto.prototype, "status", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '현재 직급', required: false }),
-    __metadata("design:type", String)
-], UserResponseDto.prototype, "rank", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '부서명', required: false }),
-    __metadata("design:type", String)
-], UserResponseDto.prototype, "department", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '직위명', required: false }),
-    __metadata("design:type", String)
-], UserResponseDto.prototype, "position", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '생성일' }),
-    __metadata("design:type", String)
-], UserResponseDto.prototype, "createdAt", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '수정일' }),
-    __metadata("design:type", String)
-], UserResponseDto.prototype, "updatedAt", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '초기 비밀번호 설정 여부', required: false }),
-    __metadata("design:type", Boolean)
-], UserResponseDto.prototype, "isInitialPasswordSet", void 0);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/users/services/users.service.ts":
-/*!************************************************************************!*\
-  !*** ./src/modules/application/legacy/users/services/users.service.ts ***!
-  \************************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b, _c, _d, _e;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.UsersService = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const employee_service_1 = __webpack_require__(/*! ../../../../domain/employee/employee.service */ "./src/modules/domain/employee/employee.service.ts");
-const department_service_1 = __webpack_require__(/*! ../../../../domain/department/department.service */ "./src/modules/domain/department/department.service.ts");
-const position_service_1 = __webpack_require__(/*! ../../../../domain/position/position.service */ "./src/modules/domain/position/position.service.ts");
-const rank_service_1 = __webpack_require__(/*! ../../../../domain/rank/rank.service */ "./src/modules/domain/rank/rank.service.ts");
-const employee_department_position_service_1 = __webpack_require__(/*! ../../../../domain/employee-department-position/employee-department-position.service */ "./src/modules/domain/employee-department-position/employee-department-position.service.ts");
-let UsersService = class UsersService {
-    constructor(employeeService, departmentService, positionService, rankService, employeeDepartmentPositionService) {
-        this.employeeService = employeeService;
-        this.departmentService = departmentService;
-        this.positionService = positionService;
-        this.rankService = rankService;
-        this.employeeDepartmentPositionService = employeeDepartmentPositionService;
-    }
-    async findAll(options) {
-        const enhancedOptions = {
-            ...options,
-            relations: [
-                'currentRank',
-                'departmentPositions',
-                'departmentPositions.department',
-                'departmentPositions.position',
-                ...(options?.relations || []),
-            ],
-        };
-        return this.employeeService.findAll(enhancedOptions);
-    }
-    async findOne(id) {
-        const options = {
-            where: { id },
-            relations: [
-                'currentRank',
-                'departmentPositions',
-                'departmentPositions.department',
-                'departmentPositions.position',
-            ],
-        };
-        return this.employeeService.findOne(options);
-    }
-    async findByEmployeeNumber(employeeNumber) {
-        return this.employeeService.findByEmployeeNumber(employeeNumber);
-    }
-    async findByEmail(email) {
-        return this.employeeService.findByEmail(email);
-    }
-    hashPassword(password = '1234') {
-        return this.employeeService.hashPassword(password);
-    }
-    async createEmployee(employeeData) {
-        if (!employeeData.password) {
-            employeeData.password = this.hashPassword();
-        }
-        const employee = await this.employeeService.create(employeeData);
-        await this.employeeService.save(employee);
-        return employee;
-    }
-    async save(employee) {
-        return this.employeeService.save(employee);
-    }
-    async bulkSave(employees) {
-        return this.employeeService.bulkSave(employees);
-    }
-    async update(id, employeeData) {
-        if (employeeData.password) {
-            employeeData.password = this.hashPassword(employeeData.password);
-        }
-        return this.employeeService.update(id, employeeData);
-    }
-    async remove(id) {
-        await this.employeeService.delete(id);
-    }
-    async getEmployeeWithDepartmentPosition(employeeId) {
-        const employee = await this.findOne(employeeId);
-        const departmentPositions = await this.employeeDepartmentPositionService.findByEmployeeId(employeeId);
-        return {
-            employee,
-            departmentPositions,
-        };
-    }
-    async verifyPassword(password, employee) {
-        return this.employeeService.verifyPassword(password, employee);
-    }
-};
-exports.UsersService = UsersService;
-exports.UsersService = UsersService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof employee_service_1.DomainEmployeeService !== "undefined" && employee_service_1.DomainEmployeeService) === "function" ? _a : Object, typeof (_b = typeof department_service_1.DomainDepartmentService !== "undefined" && department_service_1.DomainDepartmentService) === "function" ? _b : Object, typeof (_c = typeof position_service_1.DomainPositionService !== "undefined" && position_service_1.DomainPositionService) === "function" ? _c : Object, typeof (_d = typeof rank_service_1.DomainRankService !== "undefined" && rank_service_1.DomainRankService) === "function" ? _d : Object, typeof (_e = typeof employee_department_position_service_1.DomainEmployeeDepartmentPositionService !== "undefined" && employee_department_position_service_1.DomainEmployeeDepartmentPositionService) === "function" ? _e : Object])
-], UsersService);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/users/usecases/admin.usecase.ts":
-/*!************************************************************************!*\
-  !*** ./src/modules/application/legacy/users/usecases/admin.usecase.ts ***!
-  \************************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b, _c, _d;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AdminUsecase = void 0;
-const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
-const users_service_1 = __webpack_require__(/*! ../services/users.service */ "./src/modules/application/legacy/users/services/users.service.ts");
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const jwt_1 = __webpack_require__(/*! @nestjs/jwt */ "@nestjs/jwt");
-const mail_service_1 = __webpack_require__(/*! ../../mail/mail.service */ "./src/modules/application/legacy/mail/mail.service.ts");
-const authorization_context_service_1 = __webpack_require__(/*! src/modules/context/authorization/authorization-context.service */ "./src/modules/context/authorization/authorization-context.service.ts");
-let AdminUsecase = class AdminUsecase {
-    constructor(usersService, jwtService, mailService, authorizationContextService) {
-        this.usersService = usersService;
-        this.jwtService = jwtService;
-        this.mailService = mailService;
-        this.authorizationContextService = authorizationContextService;
-    }
-    async searchUsers(query) {
-        if (!query) {
-            return this.usersService.findAll();
-        }
-        const searchConditions = {
-            where: [
-                { name: (0, typeorm_1.Like)(`%${query}%`) },
-                { email: (0, typeorm_1.Like)(`%${query}%`) },
-                { employeeNumber: (0, typeorm_1.Like)(`%${query}%`) },
-            ],
-            relations: ['currentRank'],
-        };
-        return this.usersService.findAll(searchConditions);
-    }
-    async sendInitPassSetMail(email) {
-        const employee = await this.usersService.findByEmail(email);
-        if (!employee) {
-            throw new common_1.NotFoundException('Employee not found');
-        }
-        if (employee.email !== email) {
-            throw new common_1.NotFoundException('Employee not found');
-        }
-        const token = await this.authorizationContextService.토큰정보를_생성한다(employee);
-        const mail = await this.mailService.sendEmail({
-            recipients: [employee.email],
-            subject: '[Lumir Backoffice] 초기 비밀번호 설정 안내',
-            template: 'initial-password',
-            context: {
-                name: employee.name,
-                resetUrl: `${process.env.APP_URL}/set-initial-password?token=${token.accessToken}`,
-                expiresIn: '1d',
-            },
-        });
-        console.log(mail);
-        await this.usersService.save(employee);
-        return mail;
-    }
-    async sendTempPasswordMail(email) {
-        const employee = await this.usersService.findByEmail(email);
-        if (!employee) {
-            throw new common_1.NotFoundException('Employee not found');
-        }
-        if (employee.email !== email) {
-            throw new common_1.NotFoundException('Employee not found');
-        }
-        const tempPassword = Math.random().toString(36).substring(2, 15);
-        const hashedPassword = this.usersService.hashPassword(tempPassword);
-        employee.password = hashedPassword;
-        await this.usersService.save(employee);
-        const mail = await this.mailService.sendEmail({
-            recipients: [employee.email],
-            subject: '[Lumir Backoffice] 임시 비밀번호 발급',
-            template: 'temp-password',
-            context: {
-                name: employee.name,
-                tempPassword: tempPassword,
-            },
-        });
-        console.log(mail);
-        return mail;
-    }
-};
-exports.AdminUsecase = AdminUsecase;
-exports.AdminUsecase = AdminUsecase = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof users_service_1.UsersService !== "undefined" && users_service_1.UsersService) === "function" ? _a : Object, typeof (_b = typeof jwt_1.JwtService !== "undefined" && jwt_1.JwtService) === "function" ? _b : Object, typeof (_c = typeof mail_service_1.MailService !== "undefined" && mail_service_1.MailService) === "function" ? _c : Object, typeof (_d = typeof authorization_context_service_1.AuthorizationContextService !== "undefined" && authorization_context_service_1.AuthorizationContextService) === "function" ? _d : Object])
-], AdminUsecase);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/legacy/users/users.module.ts":
-/*!**************************************************************!*\
-  !*** ./src/modules/application/legacy/users/users.module.ts ***!
-  \**************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.UsersModule = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const users_service_1 = __webpack_require__(/*! ./services/users.service */ "./src/modules/application/legacy/users/services/users.service.ts");
-const admin_controller_1 = __webpack_require__(/*! ./controllers/admin.controller */ "./src/modules/application/legacy/users/controllers/admin.controller.ts");
-const admin_usecase_1 = __webpack_require__(/*! ./usecases/admin.usecase */ "./src/modules/application/legacy/users/usecases/admin.usecase.ts");
-const jwt_1 = __webpack_require__(/*! @nestjs/jwt */ "@nestjs/jwt");
-const mail_module_1 = __webpack_require__(/*! ../mail/mail.module */ "./src/modules/application/legacy/mail/mail.module.ts");
-const employee_module_1 = __webpack_require__(/*! ../../../domain/employee/employee.module */ "./src/modules/domain/employee/employee.module.ts");
-const department_module_1 = __webpack_require__(/*! ../../../domain/department/department.module */ "./src/modules/domain/department/department.module.ts");
-const position_module_1 = __webpack_require__(/*! ../../../domain/position/position.module */ "./src/modules/domain/position/position.module.ts");
-const rank_module_1 = __webpack_require__(/*! ../../../domain/rank/rank.module */ "./src/modules/domain/rank/rank.module.ts");
-const employee_department_position_module_1 = __webpack_require__(/*! ../../../domain/employee-department-position/employee-department-position.module */ "./src/modules/domain/employee-department-position/employee-department-position.module.ts");
-const authorization_context_module_1 = __webpack_require__(/*! src/modules/context/authorization/authorization-context.module */ "./src/modules/context/authorization/authorization-context.module.ts");
-let UsersModule = class UsersModule {
-};
-exports.UsersModule = UsersModule;
-exports.UsersModule = UsersModule = __decorate([
-    (0, common_1.Module)({
-        imports: [
-            mail_module_1.MailModule,
-            jwt_1.JwtModule.register({}),
-            employee_module_1.DomainEmployeeModule,
-            department_module_1.DomainDepartmentModule,
-            position_module_1.DomainPositionModule,
-            rank_module_1.DomainRankModule,
-            employee_department_position_module_1.DomainEmployeeDepartmentPositionModule,
-            authorization_context_module_1.AuthorizationContextModule,
-            mail_module_1.MailModule,
-        ],
-        providers: [users_service_1.UsersService, admin_usecase_1.AdminUsecase],
-        controllers: [admin_controller_1.AdminUsersController],
-        exports: [users_service_1.UsersService],
-    })
-], UsersModule);
-
-
-/***/ }),
-
 /***/ "./src/modules/application/organization-information/controllers/organization-information-application.controller.ts":
 /*!*************************************************************************************************************************!*\
   !*** ./src/modules/application/organization-information/controllers/organization-information-application.controller.ts ***!
@@ -7810,7 +5440,7 @@ __decorate([
     __metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
 ], OrganizationInformationApplicationController.prototype, "executeMigrationCron", null);
 exports.OrganizationInformationApplicationController = OrganizationInformationApplicationController = __decorate([
-    (0, swagger_1.ApiTags)('조직 정보 API'),
+    (0, swagger_1.ApiTags)('Client - 조직 정보 API'),
     (0, common_1.Controller)('organization'),
     __metadata("design:paramtypes", [typeof (_a = typeof organization_information_application_service_1.OrganizationInformationApplicationService !== "undefined" && organization_information_application_service_1.OrganizationInformationApplicationService) === "function" ? _a : Object, typeof (_b = typeof migration_service_1.MigrationService !== "undefined" && migration_service_1.MigrationService) === "function" ? _b : Object])
 ], OrganizationInformationApplicationController);
@@ -8860,7 +6490,7 @@ __decorate([
     __metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
 ], SsoApplicationController.prototype, "cleanUpExpiredTokens", null);
 exports.SsoApplicationController = SsoApplicationController = __decorate([
-    (0, swagger_1.ApiTags)('외부 시스템 인증 API'),
+    (0, swagger_1.ApiTags)('Client - 인증 API'),
     (0, common_1.Controller)('auth'),
     __metadata("design:paramtypes", [typeof (_a = typeof sso_application_service_1.SsoApplicationService !== "undefined" && sso_application_service_1.SsoApplicationService) === "function" ? _a : Object])
 ], SsoApplicationController);
@@ -9040,7 +6670,7 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiPropertyOptional)({
         description: '사용자 이메일 (grant_type이 password인 경우에만 필요)',
-        example: 'user@example.com',
+        example: 'admin@lumir.space',
     }),
     (0, class_validator_1.ValidateIf)((obj) => obj.grant_type === GrantType.PASSWORD),
     (0, class_validator_1.IsEmail)({}, { message: '유효한 이메일 주소를 입력해주세요.' }),
@@ -9050,7 +6680,7 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiPropertyOptional)({
         description: '사용자 비밀번호 (grant_type이 password인 경우에만 필요)',
-        example: 'password123',
+        example: '00000',
     }),
     (0, class_validator_1.ValidateIf)((obj) => obj.grant_type === GrantType.PASSWORD),
     (0, class_validator_1.IsString)(),
@@ -9322,6 +6952,7 @@ let SsoApplicationService = class SsoApplicationService {
             }
         }
         const token = await this.authorizationContextService.토큰정보를_생성한다(employee);
+        console.log('token', token);
         return {
             tokenType: 'Bearer',
             accessToken: token.accessToken,
@@ -9349,6 +6980,7 @@ let SsoApplicationService = class SsoApplicationService {
             throw new common_1.UnauthorizedException('유효하지 않은 인증정보입니다.');
         }
         const { accessToken } = result;
+        console.log('accessToken', accessToken);
         const { employee, token } = await this.authorizationContextService.엑세스토큰을_검증한다(accessToken);
         return {
             valid: true,
@@ -9601,7 +7233,7 @@ let AuthorizationContextService = class AuthorizationContextService {
                 message: '삭제할 만료된 토큰이 없습니다.',
             };
         }
-        const tokenIds = expiredTokens.map(token => token.id);
+        const tokenIds = expiredTokens.map((token) => token.id);
         await this.직원토큰서비스.deleteByTokenIds(tokenIds);
         const result = await this.토큰서비스.deleteExpiredTokens();
         return {
@@ -9719,6 +7351,184 @@ exports.FcmTokenManagementContextService = FcmTokenManagementContextService = __
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [typeof (_a = typeof employee_service_1.DomainEmployeeService !== "undefined" && employee_service_1.DomainEmployeeService) === "function" ? _a : Object, typeof (_b = typeof fcm_token_service_1.DomainFcmTokenService !== "undefined" && fcm_token_service_1.DomainFcmTokenService) === "function" ? _b : Object, typeof (_c = typeof employee_fcm_token_service_1.DomainEmployeeFcmTokenService !== "undefined" && employee_fcm_token_service_1.DomainEmployeeFcmTokenService) === "function" ? _c : Object])
 ], FcmTokenManagementContextService);
+
+
+/***/ }),
+
+/***/ "./src/modules/context/log-management/log-management-context.module.ts":
+/*!*****************************************************************************!*\
+  !*** ./src/modules/context/log-management/log-management-context.module.ts ***!
+  \*****************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LogManagementContextModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const log_management_context_service_1 = __webpack_require__(/*! ./log-management-context.service */ "./src/modules/context/log-management/log-management-context.service.ts");
+const log_module_1 = __webpack_require__(/*! ../../domain/log/log.module */ "./src/modules/domain/log/log.module.ts");
+let LogManagementContextModule = class LogManagementContextModule {
+};
+exports.LogManagementContextModule = LogManagementContextModule;
+exports.LogManagementContextModule = LogManagementContextModule = __decorate([
+    (0, common_1.Module)({
+        imports: [log_module_1.DomainLogModule],
+        providers: [log_management_context_service_1.LogManagementContextService],
+        exports: [log_management_context_service_1.LogManagementContextService],
+    })
+], LogManagementContextModule);
+
+
+/***/ }),
+
+/***/ "./src/modules/context/log-management/log-management-context.service.ts":
+/*!******************************************************************************!*\
+  !*** ./src/modules/context/log-management/log-management-context.service.ts ***!
+  \******************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var LogManagementContextService_1;
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LogManagementContextService = exports.SortDirection = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const log_service_1 = __webpack_require__(/*! ../../domain/log/log.service */ "./src/modules/domain/log/log.service.ts");
+const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
+var SortDirection;
+(function (SortDirection) {
+    SortDirection["ASC"] = "ASC";
+    SortDirection["DESC"] = "DESC";
+})(SortDirection || (exports.SortDirection = SortDirection = {}));
+let LogManagementContextService = LogManagementContextService_1 = class LogManagementContextService {
+    constructor(로그서비스) {
+        this.로그서비스 = 로그서비스;
+        this.logger = new common_1.Logger(LogManagementContextService_1.name);
+    }
+    async 모든_로그를_조회한다(page = 1, limit = 10) {
+        const options = {
+            order: { requestTimestamp: 'DESC' },
+            skip: (page - 1) * limit,
+            take: limit,
+        };
+        const logs = await this.로그서비스.findAll(options);
+        const allLogs = await this.로그서비스.findAll();
+        const total = allLogs.length;
+        return {
+            logs,
+            total,
+            page,
+            totalPages: Math.ceil(total / limit),
+        };
+    }
+    async 로그를_ID로_조회한다(id) {
+        return this.로그서비스.findOne({ where: { id } });
+    }
+    async 로그를_필터링하여_조회한다(filterOptions) {
+        const { page = 1, limit = 10, startDate, endDate, method, url, statusCode, host, ip, system, errorsOnly, sortBy = 'requestTimestamp', sortDirection = SortDirection.DESC, } = filterOptions;
+        const where = {};
+        if (startDate && endDate) {
+            where.requestTimestamp = (0, typeorm_1.Between)(startDate, endDate);
+        }
+        else if (startDate) {
+            where.requestTimestamp = (0, typeorm_1.MoreThanOrEqual)(startDate);
+        }
+        else if (endDate) {
+            where.requestTimestamp = (0, typeorm_1.LessThanOrEqual)(endDate);
+        }
+        if (url) {
+            where.url = (0, typeorm_1.ILike)(`%${url}%`);
+        }
+        if (host) {
+            where.host = (0, typeorm_1.ILike)(`%${host}%`);
+        }
+        if (ip) {
+            where.ip = (0, typeorm_1.ILike)(`%${ip}%`);
+        }
+        if (method) {
+            where.method = method;
+        }
+        if (statusCode) {
+            where.statusCode = statusCode;
+        }
+        if (errorsOnly) {
+            where.isError = true;
+        }
+        if (system) {
+            where.system = (0, typeorm_1.ILike)(`%${system}%`);
+        }
+        const order = {};
+        order[sortBy] = sortDirection;
+        const options = {
+            where,
+            order,
+            skip: (page - 1) * limit,
+            take: limit,
+        };
+        const logs = await this.로그서비스.findAll(options);
+        const allFilteredLogs = await this.로그서비스.findAll({ where });
+        const total = allFilteredLogs.length;
+        return {
+            logs,
+            total,
+            page,
+            totalPages: Math.ceil(total / limit),
+        };
+    }
+    async 에러_로그를_조회한다() {
+        return this.로그서비스.findErrorLogs();
+    }
+    async 시스템별_로그를_조회한다(system) {
+        return this.로그서비스.findBySystem(system);
+    }
+    async 느린_요청을_조회한다(minResponseTime = 1000) {
+        return this.로그서비스.findSlowRequests(minResponseTime);
+    }
+    async IP주소별_로그를_조회한다(ip) {
+        return this.로그서비스.findByIpAddress(ip);
+    }
+    async 로그인_로그를_조회한다(days = 7) {
+        const fromDate = new Date();
+        fromDate.setDate(fromDate.getDate() - days);
+        const { logs } = await this.로그를_필터링하여_조회한다({
+            startDate: fromDate,
+            url: '/auth/login',
+            limit: 1000,
+        });
+        return logs;
+    }
+    async 로그를_생성한다(logData) {
+        return this.로그서비스.save(logData);
+    }
+    async 여러_로그를_생성한다(logsData) {
+        const logs = [];
+        for (const logData of logsData) {
+            const log = await this.로그서비스.save(logData);
+            logs.push(log);
+        }
+        return logs;
+    }
+};
+exports.LogManagementContextService = LogManagementContextService;
+exports.LogManagementContextService = LogManagementContextService = LogManagementContextService_1 = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof log_service_1.DomainLogService !== "undefined" && log_service_1.DomainLogService) === "function" ? _a : Object])
+], LogManagementContextService);
 
 
 /***/ }),
@@ -11193,8 +9003,6 @@ exports.SystemManagementContextModule = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const system_management_context_service_1 = __webpack_require__(/*! ./system-management-context.service */ "./src/modules/context/system-management/system-management-context.service.ts");
 const system_module_1 = __webpack_require__(/*! ../../domain/system/system.module */ "./src/modules/domain/system/system.module.ts");
-const webhook_module_1 = __webpack_require__(/*! ../../domain/webhook/webhook.module */ "./src/modules/domain/webhook/webhook.module.ts");
-const webhook_event_log_module_1 = __webpack_require__(/*! ../../domain/webhook-event-log/webhook-event-log.module */ "./src/modules/domain/webhook-event-log/webhook-event-log.module.ts");
 const system_webhook_module_1 = __webpack_require__(/*! ../../domain/system-webhook/system-webhook.module */ "./src/modules/domain/system-webhook/system-webhook.module.ts");
 const system_role_module_1 = __webpack_require__(/*! ../../domain/system-role/system-role.module */ "./src/modules/domain/system-role/system-role.module.ts");
 const employee_system_role_module_1 = __webpack_require__(/*! ../../domain/employee-system-role/employee-system-role.module */ "./src/modules/domain/employee-system-role/employee-system-role.module.ts");
@@ -11207,8 +9015,6 @@ exports.SystemManagementContextModule = SystemManagementContextModule = __decora
     (0, common_1.Module)({
         imports: [
             system_module_1.DomainSystemModule,
-            webhook_module_1.DomainWebhookModule,
-            webhook_event_log_module_1.DomainWebhookEventLogModule,
             system_webhook_module_1.DomainSystemWebhookModule,
             system_role_module_1.DomainSystemRoleModule,
             employee_system_role_module_1.DomainEmployeeSystemRoleModule,
@@ -11240,80 +9046,19 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var SystemManagementContextService_1;
-var _a, _b, _c, _d, _e, _f, _g, _h;
+var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SystemManagementContextService = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const system_service_1 = __webpack_require__(/*! ../../domain/system/system.service */ "./src/modules/domain/system/system.service.ts");
-const webhook_service_1 = __webpack_require__(/*! ../../domain/webhook/webhook.service */ "./src/modules/domain/webhook/webhook.service.ts");
-const webhook_event_log_service_1 = __webpack_require__(/*! ../../domain/webhook-event-log/webhook-event-log.service */ "./src/modules/domain/webhook-event-log/webhook-event-log.service.ts");
-const system_webhook_service_1 = __webpack_require__(/*! ../../domain/system-webhook/system-webhook.service */ "./src/modules/domain/system-webhook/system-webhook.service.ts");
 const system_role_service_1 = __webpack_require__(/*! ../../domain/system-role/system-role.service */ "./src/modules/domain/system-role/system-role.service.ts");
 const employee_system_role_service_1 = __webpack_require__(/*! ../../domain/employee-system-role/employee-system-role.service */ "./src/modules/domain/employee-system-role/employee-system-role.service.ts");
-const department_service_1 = __webpack_require__(/*! ../../domain/department/department.service */ "./src/modules/domain/department/department.service.ts");
-const employee_department_position_service_1 = __webpack_require__(/*! ../../domain/employee-department-position/employee-department-position.service */ "./src/modules/domain/employee-department-position/employee-department-position.service.ts");
 let SystemManagementContextService = SystemManagementContextService_1 = class SystemManagementContextService {
-    constructor(시스템서비스, 웹훅서비스, 웹훅이벤트로그서비스, 시스템웹훅서비스, 시스템역할서비스, 직원시스템역할서비스, 부서서비스, 직원부서직책서비스) {
+    constructor(시스템서비스, 시스템역할서비스, 직원시스템역할서비스) {
         this.시스템서비스 = 시스템서비스;
-        this.웹훅서비스 = 웹훅서비스;
-        this.웹훅이벤트로그서비스 = 웹훅이벤트로그서비스;
-        this.시스템웹훅서비스 = 시스템웹훅서비스;
         this.시스템역할서비스 = 시스템역할서비스;
         this.직원시스템역할서비스 = 직원시스템역할서비스;
-        this.부서서비스 = 부서서비스;
-        this.직원부서직책서비스 = 직원부서직책서비스;
         this.logger = new common_1.Logger(SystemManagementContextService_1.name);
-    }
-    async onModuleInit() {
-        try {
-        }
-        catch (error) {
-            this.logger.error('테스트 데이터 생성 중 오류 발생:', error);
-        }
-    }
-    async Web파트_부서에_테스트_역할_부여() {
-        try {
-            this.logger.log('Web파트 부서 직원들에게 테스트 역할 부여 시작...');
-            const systems = await this.시스템서비스.findAll();
-            const rmsSystem = systems.find((system) => system.name === 'RMS-PROD');
-            if (!rmsSystem) {
-                this.logger.warn('RMS-PROD 시스템을 찾을 수 없습니다.');
-                return;
-            }
-            this.logger.log(`RMS-PROD 시스템 찾음: ${rmsSystem.id}`);
-            const departments = await this.부서서비스.findAll();
-            const webDepartment = departments.find((dept) => dept.departmentName === 'Web파트');
-            if (!webDepartment) {
-                this.logger.warn('Web파트 부서를 찾을 수 없습니다.');
-                return;
-            }
-            this.logger.log(`Web파트 부서 찾음: ${webDepartment.id}`);
-            const resourceManagerRole = await this.시스템역할_생성_또는_조회(rmsSystem.id, 'resourceManager', 'Resource Manager', 'RMS 리소스 관리자', ['resource.read', 'resource.write', 'resource.delete']);
-            const systemAdminRole = await this.시스템역할_생성_또는_조회(rmsSystem.id, 'systemAdmin', 'System Administrator', 'RMS 시스템 관리자', ['system.read', 'system.write', 'system.admin', 'user.manage']);
-            this.logger.log(`시스템 역할 준비 완료 - resourceManager: ${resourceManagerRole.id}, systemAdmin: ${systemAdminRole.id}`);
-            const employeeDepartmentPositions = await this.직원부서직책서비스.findByDepartmentId(webDepartment.id);
-            if (employeeDepartmentPositions.length === 0) {
-                this.logger.warn('Web파트 부서에 직원이 없습니다.');
-                return;
-            }
-            this.logger.log(`Web파트 부서 직원 ${employeeDepartmentPositions.length}명 찾음`);
-            let assignedCount = 0;
-            for (const empDeptPos of employeeDepartmentPositions) {
-                try {
-                    await this.역할_할당_시도(empDeptPos.employeeId, resourceManagerRole.id);
-                    await this.역할_할당_시도(empDeptPos.employeeId, systemAdminRole.id);
-                    assignedCount++;
-                }
-                catch (error) {
-                    this.logger.warn(`직원 ${empDeptPos.employeeId} 역할 할당 실패:`, error.message);
-                }
-            }
-            this.logger.log(`Web파트 부서 직원 ${assignedCount}명에게 테스트 역할 할당 완료`);
-        }
-        catch (error) {
-            this.logger.error('Web파트 부서 테스트 역할 부여 중 오류:', error);
-            throw error;
-        }
     }
     async 시스템역할_생성_또는_조회(systemId, roleCode, roleName, description, permissions) {
         try {
@@ -11351,8 +9096,76 @@ let SystemManagementContextService = SystemManagementContextService_1 = class Sy
             throw error;
         }
     }
+    async 시스템을_생성한다(data) {
+        const existingSystem = await this.시스템서비스.findByName(data.name);
+        if (existingSystem) {
+            throw new Error('이미 존재하는 시스템 이름입니다.');
+        }
+        const { clientId, clientSecret, hash } = this.시스템서비스.generateCredentials();
+        const systemData = {
+            clientId,
+            clientSecret: hash,
+            name: data.name,
+            description: data.description,
+            domain: data.domain,
+            allowedOrigin: data.allowedOrigin,
+            healthCheckUrl: data.healthCheckUrl,
+            isActive: data.isActive ?? true,
+        };
+        const savedSystem = await this.시스템서비스.save(systemData);
+        return {
+            system: savedSystem,
+            originalSecret: clientSecret,
+        };
+    }
+    async 모든_시스템을_조회한다() {
+        return this.시스템서비스.findAllSystems();
+    }
+    async 시스템을_검색한다(query) {
+        return this.시스템서비스.searchSystems(query);
+    }
+    async 시스템을_ID로_조회한다(systemId) {
+        return this.시스템서비스.findOne({ where: { id: systemId } });
+    }
+    async 시스템을_수정한다(systemId, data) {
+        const system = await this.시스템서비스.findOne({ where: { id: systemId } });
+        if (!system) {
+            throw new Error('해당 시스템을 찾을 수 없습니다.');
+        }
+        if (data.name && data.name !== system.name) {
+            const existingSystem = await this.시스템서비스.findByName(data.name);
+            if (existingSystem) {
+                throw new Error('이미 존재하는 시스템 이름입니다.');
+            }
+        }
+        return this.시스템서비스.update(systemId, data);
+    }
+    async 시스템을_삭제한다(systemId) {
+        const system = await this.시스템서비스.findOne({ where: { id: systemId } });
+        if (!system) {
+            throw new Error('해당 시스템을 찾을 수 없습니다.');
+        }
+        await this.시스템서비스.delete(systemId);
+    }
+    async 시스템의_API키를_재생성한다(systemId) {
+        const system = await this.시스템서비스.findOne({ where: { id: systemId } });
+        if (!system) {
+            throw new Error('해당 시스템을 찾을 수 없습니다.');
+        }
+        const { clientSecret, hash } = this.시스템서비스.generateSecret();
+        const updatedSystem = await this.시스템서비스.update(systemId, {
+            clientSecret: hash,
+        });
+        return {
+            system: updatedSystem,
+            originalSecret: clientSecret,
+        };
+    }
     async 시스템역할을_생성한다(data) {
         return this.시스템역할서비스.createSystemRole(data);
+    }
+    async 모든_시스템역할을_조회한다() {
+        return this.시스템역할서비스.findAllSystemRoles();
     }
     async 시스템의_역할목록을_조회한다(systemId) {
         return this.시스템역할서비스.findBySystemId(systemId);
@@ -11403,7 +9216,7 @@ let SystemManagementContextService = SystemManagementContextService_1 = class Sy
 exports.SystemManagementContextService = SystemManagementContextService;
 exports.SystemManagementContextService = SystemManagementContextService = SystemManagementContextService_1 = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof system_service_1.DomainSystemService !== "undefined" && system_service_1.DomainSystemService) === "function" ? _a : Object, typeof (_b = typeof webhook_service_1.DomainWebhookService !== "undefined" && webhook_service_1.DomainWebhookService) === "function" ? _b : Object, typeof (_c = typeof webhook_event_log_service_1.DomainWebhookEventLogService !== "undefined" && webhook_event_log_service_1.DomainWebhookEventLogService) === "function" ? _c : Object, typeof (_d = typeof system_webhook_service_1.DomainSystemWebhookService !== "undefined" && system_webhook_service_1.DomainSystemWebhookService) === "function" ? _d : Object, typeof (_e = typeof system_role_service_1.DomainSystemRoleService !== "undefined" && system_role_service_1.DomainSystemRoleService) === "function" ? _e : Object, typeof (_f = typeof employee_system_role_service_1.DomainEmployeeSystemRoleService !== "undefined" && employee_system_role_service_1.DomainEmployeeSystemRoleService) === "function" ? _f : Object, typeof (_g = typeof department_service_1.DomainDepartmentService !== "undefined" && department_service_1.DomainDepartmentService) === "function" ? _g : Object, typeof (_h = typeof employee_department_position_service_1.DomainEmployeeDepartmentPositionService !== "undefined" && employee_department_position_service_1.DomainEmployeeDepartmentPositionService) === "function" ? _h : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof system_service_1.DomainSystemService !== "undefined" && system_service_1.DomainSystemService) === "function" ? _a : Object, typeof (_b = typeof system_role_service_1.DomainSystemRoleService !== "undefined" && system_role_service_1.DomainSystemRoleService) === "function" ? _b : Object, typeof (_c = typeof employee_system_role_service_1.DomainEmployeeSystemRoleService !== "undefined" && employee_system_role_service_1.DomainEmployeeSystemRoleService) === "function" ? _c : Object])
 ], SystemManagementContextService);
 
 
@@ -14483,6 +12296,11 @@ let DomainSystemRoleService = class DomainSystemRoleService extends base_service
     async findById(id) {
         return this.systemRoleRepository.findOne({ where: { id } });
     }
+    async findAllSystemRoles() {
+        return this.systemRoleRepository.findAll({
+            order: { systemId: 'ASC', sortOrder: 'ASC', roleName: 'ASC' },
+        });
+    }
     async findBySystemId(systemId) {
         return this.systemRoleRepository.findAll({
             where: { systemId, isActive: true },
@@ -14981,6 +12799,7 @@ const base_service_1 = __webpack_require__(/*! ../../../../libs/common/services/
 const crypto_1 = __webpack_require__(/*! crypto */ "crypto");
 const bcrypt = __webpack_require__(/*! @node-rs/bcrypt */ "@node-rs/bcrypt");
 const uuid_1 = __webpack_require__(/*! uuid */ "uuid");
+const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
 let DomainSystemService = class DomainSystemService extends base_service_1.BaseService {
     constructor(systemRepository) {
         super(systemRepository);
@@ -14996,13 +12815,29 @@ let DomainSystemService = class DomainSystemService extends base_service_1.BaseS
         return system;
     }
     async findByName(name) {
-        const system = await this.systemRepository.findOne({
+        return this.systemRepository.findOne({
             where: { name },
         });
-        if (!system) {
-            throw new common_1.NotFoundException('시스템을 찾을 수 없습니다.');
+    }
+    async findAllSystems() {
+        return this.systemRepository.findAll({
+            order: { name: 'ASC' },
+        });
+    }
+    async searchSystems(query) {
+        if (!query || query.trim() === '') {
+            return this.findAll();
         }
-        return system;
+        const options = {
+            where: [
+                { name: (0, typeorm_1.ILike)(`%${query}%`) },
+                { description: (0, typeorm_1.ILike)(`%${query}%`) },
+                { clientId: (0, typeorm_1.ILike)(`%${query}%`) },
+                { domain: (0, typeorm_1.ILike)(`%${query}%`) },
+            ],
+            order: { name: 'ASC' },
+        };
+        return this.systemRepository.findAll(options);
     }
     async findActiveSystems() {
         return this.systemRepository.findAll({
@@ -15712,202 +13547,6 @@ exports.WebhookEventLog = WebhookEventLog = __decorate([
 
 /***/ }),
 
-/***/ "./src/modules/domain/webhook-event-log/webhook-event-log.module.ts":
-/*!**************************************************************************!*\
-  !*** ./src/modules/domain/webhook-event-log/webhook-event-log.module.ts ***!
-  \**************************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DomainWebhookEventLogModule = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
-const webhook_event_log_service_1 = __webpack_require__(/*! ./webhook-event-log.service */ "./src/modules/domain/webhook-event-log/webhook-event-log.service.ts");
-const webhook_event_log_repository_1 = __webpack_require__(/*! ./webhook-event-log.repository */ "./src/modules/domain/webhook-event-log/webhook-event-log.repository.ts");
-const webhook_event_log_entity_1 = __webpack_require__(/*! ./webhook-event-log.entity */ "./src/modules/domain/webhook-event-log/webhook-event-log.entity.ts");
-let DomainWebhookEventLogModule = class DomainWebhookEventLogModule {
-};
-exports.DomainWebhookEventLogModule = DomainWebhookEventLogModule;
-exports.DomainWebhookEventLogModule = DomainWebhookEventLogModule = __decorate([
-    (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([webhook_event_log_entity_1.WebhookEventLog])],
-        providers: [webhook_event_log_service_1.DomainWebhookEventLogService, webhook_event_log_repository_1.DomainWebhookEventLogRepository],
-        exports: [webhook_event_log_service_1.DomainWebhookEventLogService],
-    })
-], DomainWebhookEventLogModule);
-
-
-/***/ }),
-
-/***/ "./src/modules/domain/webhook-event-log/webhook-event-log.repository.ts":
-/*!******************************************************************************!*\
-  !*** ./src/modules/domain/webhook-event-log/webhook-event-log.repository.ts ***!
-  \******************************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DomainWebhookEventLogRepository = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
-const typeorm_2 = __webpack_require__(/*! typeorm */ "typeorm");
-const entities_1 = __webpack_require__(/*! ../../../../libs/database/entities */ "./libs/database/entities/index.ts");
-const base_repository_1 = __webpack_require__(/*! ../../../../libs/common/repositories/base.repository */ "./libs/common/repositories/base.repository.ts");
-let DomainWebhookEventLogRepository = class DomainWebhookEventLogRepository extends base_repository_1.BaseRepository {
-    constructor(repository) {
-        super(repository);
-    }
-};
-exports.DomainWebhookEventLogRepository = DomainWebhookEventLogRepository;
-exports.DomainWebhookEventLogRepository = DomainWebhookEventLogRepository = __decorate([
-    (0, common_1.Injectable)(),
-    __param(0, (0, typeorm_1.InjectRepository)(entities_1.WebhookEventLog)),
-    __metadata("design:paramtypes", [typeof (_a = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _a : Object])
-], DomainWebhookEventLogRepository);
-
-
-/***/ }),
-
-/***/ "./src/modules/domain/webhook-event-log/webhook-event-log.service.ts":
-/*!***************************************************************************!*\
-  !*** ./src/modules/domain/webhook-event-log/webhook-event-log.service.ts ***!
-  \***************************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DomainWebhookEventLogService = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const webhook_event_log_repository_1 = __webpack_require__(/*! ./webhook-event-log.repository */ "./src/modules/domain/webhook-event-log/webhook-event-log.repository.ts");
-const base_service_1 = __webpack_require__(/*! ../../../../libs/common/services/base.service */ "./libs/common/services/base.service.ts");
-let DomainWebhookEventLogService = class DomainWebhookEventLogService extends base_service_1.BaseService {
-    constructor(webhookEventLogRepository) {
-        super(webhookEventLogRepository);
-        this.webhookEventLogRepository = webhookEventLogRepository;
-    }
-    async findByWebhookId(webhookId) {
-        return this.webhookEventLogRepository.findAll({
-            where: { webhookId },
-            order: { createdAt: 'DESC' },
-        });
-    }
-    async findByEventType(eventType) {
-        return this.webhookEventLogRepository.findAll({
-            where: { eventType },
-            order: { createdAt: 'DESC' },
-        });
-    }
-    async findByEntityId(entityId) {
-        return this.webhookEventLogRepository.findAll({
-            where: { entityId },
-            order: { createdAt: 'DESC' },
-        });
-    }
-    async findSuccessfulEvents() {
-        return this.webhookEventLogRepository.findAll({
-            where: { isSuccess: true },
-            order: { createdAt: 'DESC' },
-        });
-    }
-    async findFailedEvents() {
-        return this.webhookEventLogRepository.findAll({
-            where: { isSuccess: false },
-            order: { createdAt: 'DESC' },
-        });
-    }
-    async findByResponseCode(responseCode) {
-        return this.webhookEventLogRepository.findAll({
-            order: { createdAt: 'DESC' },
-        });
-    }
-    async findRetryableEvents(maxAttempts = 3) {
-        return this.webhookEventLogRepository.findAll({
-            where: { isSuccess: false },
-            order: { lastAttemptAt: 'ASC' },
-        });
-    }
-    async createEventLog(webhookId, eventType, entityId, payload) {
-        return this.webhookEventLogRepository.save({
-            webhookId,
-            eventType,
-            entityId,
-            payload,
-            attemptCount: 1,
-            isSuccess: false,
-            lastAttemptAt: new Date(),
-        });
-    }
-    async updateEventResult(id, responseCode, responseBody, isSuccess) {
-        return this.webhookEventLogRepository.update(id, {
-            responseCode,
-            responseBody,
-            isSuccess,
-            lastAttemptAt: new Date(),
-        });
-    }
-    async incrementAttemptCount(id) {
-        const eventLog = await this.webhookEventLogRepository.findOne({ where: { id } });
-        if (!eventLog) {
-            throw new common_1.NotFoundException('이벤트 로그를 찾을 수 없습니다.');
-        }
-        return this.webhookEventLogRepository.update(id, {
-            attemptCount: eventLog.attemptCount + 1,
-            lastAttemptAt: new Date(),
-        });
-    }
-    async findRecentEvents(limit = 50) {
-        return this.webhookEventLogRepository.findAll({
-            order: { createdAt: 'DESC' },
-            take: limit,
-        });
-    }
-    async getSuccessRateByWebhook(webhookId) {
-        const events = await this.findByWebhookId(webhookId);
-        const total = events.length;
-        const success = events.filter((event) => event.isSuccess).length;
-        const successRate = total > 0 ? (success / total) * 100 : 0;
-        return { total, success, successRate };
-    }
-};
-exports.DomainWebhookEventLogService = DomainWebhookEventLogService;
-exports.DomainWebhookEventLogService = DomainWebhookEventLogService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof webhook_event_log_repository_1.DomainWebhookEventLogRepository !== "undefined" && webhook_event_log_repository_1.DomainWebhookEventLogRepository) === "function" ? _a : Object])
-], DomainWebhookEventLogService);
-
-
-/***/ }),
-
 /***/ "./src/modules/domain/webhook/webhook.entity.ts":
 /*!******************************************************!*\
   !*** ./src/modules/domain/webhook/webhook.entity.ts ***!
@@ -16003,172 +13642,6 @@ exports.Webhook = Webhook = __decorate([
     (0, typeorm_1.Entity)('webhooks')
 ], Webhook);
 
-
-/***/ }),
-
-/***/ "./src/modules/domain/webhook/webhook.module.ts":
-/*!******************************************************!*\
-  !*** ./src/modules/domain/webhook/webhook.module.ts ***!
-  \******************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DomainWebhookModule = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
-const webhook_service_1 = __webpack_require__(/*! ./webhook.service */ "./src/modules/domain/webhook/webhook.service.ts");
-const webhook_repository_1 = __webpack_require__(/*! ./webhook.repository */ "./src/modules/domain/webhook/webhook.repository.ts");
-const webhook_entity_1 = __webpack_require__(/*! ./webhook.entity */ "./src/modules/domain/webhook/webhook.entity.ts");
-let DomainWebhookModule = class DomainWebhookModule {
-};
-exports.DomainWebhookModule = DomainWebhookModule;
-exports.DomainWebhookModule = DomainWebhookModule = __decorate([
-    (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([webhook_entity_1.Webhook])],
-        providers: [webhook_service_1.DomainWebhookService, webhook_repository_1.DomainWebhookRepository],
-        exports: [webhook_service_1.DomainWebhookService],
-    })
-], DomainWebhookModule);
-
-
-/***/ }),
-
-/***/ "./src/modules/domain/webhook/webhook.repository.ts":
-/*!**********************************************************!*\
-  !*** ./src/modules/domain/webhook/webhook.repository.ts ***!
-  \**********************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DomainWebhookRepository = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
-const typeorm_2 = __webpack_require__(/*! typeorm */ "typeorm");
-const entities_1 = __webpack_require__(/*! ../../../../libs/database/entities */ "./libs/database/entities/index.ts");
-const base_repository_1 = __webpack_require__(/*! ../../../../libs/common/repositories/base.repository */ "./libs/common/repositories/base.repository.ts");
-let DomainWebhookRepository = class DomainWebhookRepository extends base_repository_1.BaseRepository {
-    constructor(repository) {
-        super(repository);
-    }
-};
-exports.DomainWebhookRepository = DomainWebhookRepository;
-exports.DomainWebhookRepository = DomainWebhookRepository = __decorate([
-    (0, common_1.Injectable)(),
-    __param(0, (0, typeorm_1.InjectRepository)(entities_1.Webhook)),
-    __metadata("design:paramtypes", [typeof (_a = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _a : Object])
-], DomainWebhookRepository);
-
-
-/***/ }),
-
-/***/ "./src/modules/domain/webhook/webhook.service.ts":
-/*!*******************************************************!*\
-  !*** ./src/modules/domain/webhook/webhook.service.ts ***!
-  \*******************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DomainWebhookService = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const webhook_repository_1 = __webpack_require__(/*! ./webhook.repository */ "./src/modules/domain/webhook/webhook.repository.ts");
-const base_service_1 = __webpack_require__(/*! ../../../../libs/common/services/base.service */ "./libs/common/services/base.service.ts");
-let DomainWebhookService = class DomainWebhookService extends base_service_1.BaseService {
-    constructor(webhookRepository) {
-        super(webhookRepository);
-        this.webhookRepository = webhookRepository;
-    }
-    async findByName(webhookName) {
-        const webhook = await this.webhookRepository.findOne({
-            where: { webhookName },
-        });
-        if (!webhook) {
-            throw new common_1.NotFoundException('웹훅을 찾을 수 없습니다.');
-        }
-        return webhook;
-    }
-    async findByEventType(eventType) {
-        return this.webhookRepository.findAll({
-            where: { eventType },
-            order: { createdAt: 'DESC' },
-        });
-    }
-    async findByEntityType(entityType) {
-        return this.webhookRepository.findAll({
-            where: { entityType },
-            order: { createdAt: 'DESC' },
-        });
-    }
-    async findActiveWebhooks() {
-        return this.webhookRepository.findAll({
-            where: { isActive: true },
-            order: { webhookName: 'ASC' },
-        });
-    }
-    async findByTargetUrl(targetUrl) {
-        return this.webhookRepository.findAll({
-            where: { targetUrl },
-            order: { createdAt: 'DESC' },
-        });
-    }
-};
-exports.DomainWebhookService = DomainWebhookService;
-exports.DomainWebhookService = DomainWebhookService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof webhook_repository_1.DomainWebhookRepository !== "undefined" && webhook_repository_1.DomainWebhookRepository) === "function" ? _a : Object])
-], DomainWebhookService);
-
-
-/***/ }),
-
-/***/ "@nestjs-modules/mailer":
-/*!*****************************************!*\
-  !*** external "@nestjs-modules/mailer" ***!
-  \*****************************************/
-/***/ ((module) => {
-
-module.exports = require("@nestjs-modules/mailer");
-
-/***/ }),
-
-/***/ "@nestjs-modules/mailer/dist/adapters/handlebars.adapter":
-/*!**************************************************************************!*\
-  !*** external "@nestjs-modules/mailer/dist/adapters/handlebars.adapter" ***!
-  \**************************************************************************/
-/***/ ((module) => {
-
-module.exports = require("@nestjs-modules/mailer/dist/adapters/handlebars.adapter");
 
 /***/ }),
 
@@ -16302,16 +13775,6 @@ module.exports = require("express");
 
 /***/ }),
 
-/***/ "handlebars":
-/*!*****************************!*\
-  !*** external "handlebars" ***!
-  \*****************************/
-/***/ ((module) => {
-
-module.exports = require("handlebars");
-
-/***/ }),
-
 /***/ "hbs":
 /*!**********************!*\
   !*** external "hbs" ***!
@@ -16382,16 +13845,6 @@ module.exports = require("crypto");
 
 /***/ }),
 
-/***/ "fs":
-/*!*********************!*\
-  !*** external "fs" ***!
-  \*********************/
-/***/ ((module) => {
-
-module.exports = require("fs");
-
-/***/ }),
-
 /***/ "path":
 /*!***********************!*\
   !*** external "path" ***!
@@ -16445,8 +13898,7 @@ const swagger_1 = __webpack_require__(/*! ../libs/common/utils/swagger */ "./lib
 const dtos = __webpack_require__(/*! ./dtos.index */ "./src/dtos.index.ts");
 const path_1 = __webpack_require__(/*! path */ "path");
 const logging_interceptor_1 = __webpack_require__(/*! ../libs/common/interceptors/logging.interceptor */ "./libs/common/interceptors/logging.interceptor.ts");
-const logs_service_1 = __webpack_require__(/*! ./modules/application/legacy/logs/services/logs.service */ "./src/modules/application/legacy/logs/services/logs.service.ts");
-const systems_service_1 = __webpack_require__(/*! ./modules/application/legacy/systems/services/systems.service */ "./src/modules/application/legacy/systems/services/systems.service.ts");
+const log_application_service_1 = __webpack_require__(/*! ./modules/application/admin/log/log-application.service */ "./src/modules/application/admin/log/log-application.service.ts");
 const hbs = __webpack_require__(/*! hbs */ "hbs");
 const request_interceptor_1 = __webpack_require__(/*! ../libs/common/interceptors/request.interceptor */ "./libs/common/interceptors/request.interceptor.ts");
 const error_interceptor_1 = __webpack_require__(/*! ../libs/common/interceptors/error.interceptor */ "./libs/common/interceptors/error.interceptor.ts");
@@ -16467,7 +13919,7 @@ async function bootstrap() {
     (0, swagger_1.setupSwagger)(app, [...Object.values(dtos)]);
     app.enableCors();
     app.useGlobalInterceptors(new request_interceptor_1.RequestInterceptor(), new error_interceptor_1.ErrorInterceptor());
-    app.useGlobalInterceptors(new logging_interceptor_1.LoggingInterceptor(app.get(logs_service_1.LogsService), app.get(systems_service_1.SystemsService)));
+    app.useGlobalInterceptors(new logging_interceptor_1.LoggingInterceptor(app.get(log_application_service_1.LogApplicationService)));
     app.useStaticAssets((0, path_1.join)(__dirname, '..', 'public'));
     app.setBaseViewsDir((0, path_1.join)(__dirname, '..', 'src', 'views'));
     app.setViewEngine('hbs');

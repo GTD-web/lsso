@@ -5,6 +5,8 @@ import { System } from '../../../../libs/database/entities';
 import { randomBytes } from 'crypto';
 import * as bcrypt from '@node-rs/bcrypt';
 import { v4 as uuidv4 } from 'uuid';
+import { ILike } from 'typeorm';
+import { IRepositoryOptions } from '../../../../libs/common/interfaces/repository.interface';
 
 @Injectable()
 export class DomainSystemService extends BaseService<System> {
@@ -23,15 +25,44 @@ export class DomainSystemService extends BaseService<System> {
         return system;
     }
 
-    // 시스템 이름으로 찾기
-    async findByName(name: string): Promise<System> {
-        const system = await this.systemRepository.findOne({
+    // 시스템 이름으로 찾기 (nullable)
+    async findByName(name: string): Promise<System | null> {
+        return this.systemRepository.findOne({
             where: { name },
         });
-        if (!system) {
-            throw new NotFoundException('시스템을 찾을 수 없습니다.');
+    }
+
+    // 모든 시스템 조회
+    async findAllSystems(): Promise<System[]> {
+        return this.systemRepository.findAll({
+            order: { name: 'ASC' },
+        });
+    }
+
+    // 시스템 검색
+    async searchSystems(query: string): Promise<System[]> {
+        if (!query || query.trim() === '') {
+            return this.findAll();
         }
-        return system;
+        const options: IRepositoryOptions<System> = {
+            where: [
+                { name: ILike(`%${query}%`) },
+                { description: ILike(`%${query}%`) },
+                { clientId: ILike(`%${query}%`) },
+                { domain: ILike(`%${query}%`) },
+            ],
+            order: { name: 'ASC' },
+        };
+
+        return this.systemRepository.findAll(options);
+        // return this.systemRepository.findAll({
+        //     where: [
+        //         { name: ILike(`%${query}%`) },
+        //         { description: ILike(`%${query}%`) },
+        //         { domain: ILike(`%${query}%`) },
+        //     ],
+        //     order: { name: 'ASC' },
+        // });
     }
 
     // 활성 시스템 목록 조회

@@ -18,7 +18,7 @@ import { ResponseSystemDto } from '../dto/response-system.dto';
 import { ApiResponseDto } from '../../../../../../libs/common/dto/api-response.dto';
 import { AdminUsecase } from '../usecases/admin.usecase';
 
-@ApiTags('관리자 시스템 API')
+@ApiTags('Legacy - 관리자 시스템 API')
 @Controller('admin/systems')
 export class AdminSystemsController {
     constructor(private readonly adminUsecase: AdminUsecase) {}

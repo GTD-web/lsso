@@ -17,7 +17,7 @@ export class LoginRequestDto {
 
     @ApiPropertyOptional({
         description: '사용자 이메일 (grant_type이 password인 경우에만 필요)',
-        example: 'user@example.com',
+        example: 'admin@lumir.space',
     })
     @ValidateIf((obj) => obj.grant_type === GrantType.PASSWORD)
     @IsEmail({}, { message: '유효한 이메일 주소를 입력해주세요.' })
@@ -26,7 +26,7 @@ export class LoginRequestDto {
 
     @ApiPropertyOptional({
         description: '사용자 비밀번호 (grant_type이 password인 경우에만 필요)',
-        example: 'password123',
+        example: '00000',
     })
     @ValidateIf((obj) => obj.grant_type === GrantType.PASSWORD)
     @IsString()

@@ -5,7 +5,7 @@ import { UserResponseDto } from '../dto/user-response.dto';
 import { ApiResponseDto } from '../../../../../../libs/common/dto/api-response.dto';
 import { AdminUsecase } from '../usecases/admin.usecase';
 
-@ApiTags('관리자 사용자 API')
+@ApiTags('Legacy - 관리자 사용자 API')
 @Controller('admin/users')
 export class AdminUsersController {
     constructor(private readonly usersService: UsersService, private readonly adminUsecase: AdminUsecase) {}

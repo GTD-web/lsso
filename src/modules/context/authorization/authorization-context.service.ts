@@ -155,21 +155,21 @@ export class AuthorizationContextService {
     async 만료된_토큰을_정리한다(): Promise<{ deletedCount: number; message: string }> {
         // 1. 먼저 만료된 토큰들을 조회
         const expiredTokens = await this.토큰서비스.findExpiredTokens();
-        
+
         if (expiredTokens.length === 0) {
             return {
                 deletedCount: 0,
                 message: '삭제할 만료된 토큰이 없습니다.',
             };
         }
-        
+
         // 2. 중간테이블(employee-token) 데이터 먼저 삭제
-        const tokenIds = expiredTokens.map(token => token.id);
+        const tokenIds = expiredTokens.map((token) => token.id);
         await this.직원토큰서비스.deleteByTokenIds(tokenIds);
-        
+
         // 3. 그 다음 토큰 데이터 삭제
         const result = await this.토큰서비스.deleteExpiredTokens();
-        
+
         return {
             deletedCount: result.deletedCount,
             message: `만료된 토큰 ${result.deletedCount}개가 성공적으로 삭제되었습니다.`,

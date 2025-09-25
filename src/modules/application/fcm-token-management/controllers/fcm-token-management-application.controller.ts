@@ -24,7 +24,7 @@ import {
     BaseEmployeeIdentifierDto,
 } from '../dto';
 
-@ApiTags('FCM 토큰 관리 API')
+@ApiTags('Client - FCM 토큰 관리 API')
 @Controller('fcm')
 export class FcmTokenManagementApplicationController {
     constructor(private readonly fcmTokenManagementApplicationService: FcmTokenManagementApplicationService) {}

@@ -8,6 +8,12 @@ import { OrganizationController } from './organization/organization.controller';
 import { OrganizationApplicationService } from './organization/organization-application.service';
 import { OrganizationManagementContextModule } from '../../context/organization-management/organization-management-context.module';
 
+// 시스템관리 관련 imports
+import { SystemModule } from './system/system.module';
+
+// 로그관리 관련 imports
+import { LogModule } from './log/log.module';
+
 @Module({
     imports: [
         // JWT 모듈 설정
@@ -23,9 +29,15 @@ import { OrganizationManagementContextModule } from '../../context/organization-
 
         // 조직관리 컨텍스트 모듈
         OrganizationManagementContextModule,
+
+        // 시스템관리 모듈
+        SystemModule,
+
+        // 로그관리 모듈
+        LogModule,
     ],
     controllers: [OrganizationController],
     providers: [OrganizationApplicationService],
-    exports: [OrganizationApplicationService],
+    exports: [OrganizationApplicationService, SystemModule, LogModule],
 })
 export class AdminModule {}

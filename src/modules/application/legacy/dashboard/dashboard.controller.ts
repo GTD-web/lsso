@@ -12,7 +12,7 @@ import {
 } from './dto/dashboard.dto';
 import { Log } from '../../../../../libs/database/entities';
 
-@ApiTags('관리자 대시보드 API')
+@ApiTags('Legacy - 관리자 대시보드 API')
 @Controller('admin/dashboard')
 export class DashboardController {
     constructor(private readonly dashboardService: DashboardService) {}

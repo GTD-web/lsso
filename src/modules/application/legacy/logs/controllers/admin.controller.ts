@@ -7,7 +7,7 @@ import { ApiResponseDto } from '../../../../../../libs/common/dto/api-response.d
 import { LogResponseDto } from '../dto/log-response.dto';
 import { LogsResponseDto } from '../dto/logs-response.dto';
 
-@ApiTags('관리자 로그 API')
+@ApiTags('Legacy - 관리자 로그 API')
 @Controller('admin/logs')
 export class AdminLogsController {
     constructor(private readonly logsAdminUseCase: LogsAdminUseCase) {}
