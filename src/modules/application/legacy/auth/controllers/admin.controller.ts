@@ -23,7 +23,7 @@ interface RequestWithUser extends Request {
     };
 }
 
-@ApiTags('관리자 인증 API')
+@ApiTags('Legacy - 관리자 인증 API')
 @Controller('admin/auth')
 export class AdminAuthController {
     constructor(private readonly adminUseCase: AdminUseCase) {}

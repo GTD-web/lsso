@@ -4,7 +4,7 @@ import { ApiBody } from '@nestjs/swagger';
 import { ApiOperation } from '@nestjs/swagger';
 import { ApiTags } from '@nestjs/swagger';
 
-@ApiTags('메일')
+@ApiTags('Legacy - 메일')
 @Controller('mail')
 export class ClientMailController {
     constructor(private readonly mailService: MailService) {}

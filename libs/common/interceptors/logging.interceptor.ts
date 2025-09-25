@@ -2,10 +2,11 @@ import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nes
 import { Observable } from 'rxjs';
 import { tap, catchError, finalize } from 'rxjs/operators';
 import { Request, Response } from 'express';
+import { LogApplicationService } from 'src/modules/application/admin/log/log-application.service';
 // import { DateUtil } from '../utils/date.util';
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
-    constructor(private readonly logsService: any, private readonly systemService: any) {}
+    constructor(private readonly logsService: LogApplicationService) {}
 
     async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
         const startTime = Date.now();
@@ -74,7 +75,7 @@ export class LoggingInterceptor implements NestInterceptor {
                 throw error;
             }),
             finalize(() => {
-                this.logsService.create(logData);
+                this.logsService.로그생성(logData);
             }),
         );
     }

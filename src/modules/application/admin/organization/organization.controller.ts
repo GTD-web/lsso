@@ -24,7 +24,7 @@ import {
     EmployeeRankHistoryResponseDto,
 } from './dto';
 
-@ApiTags('조직 관리')
+@ApiTags('Admin - 조직 관리')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('admin/organizations')

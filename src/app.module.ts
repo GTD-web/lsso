@@ -11,12 +11,8 @@ import databaseConfig, { JWT_CONFIG } from '../libs/configs/env.config';
 import { Entities } from '../libs/database/entities';
 import { SsoApplicationModule } from './modules/application/single-sign-on/sso-application.module';
 import { MigrationModule } from './modules/context/migration/migration.module';
-import { AuthModule } from './modules/application/legacy/auth/auth.module';
-import { UsersModule } from './modules/application/legacy/users/users.module';
 import { LogsModule } from './modules/application/legacy/logs/logs.module';
 import { SystemsModule } from './modules/application/legacy/systems/systems.module';
-import { TokensModule } from './modules/application/legacy/tokens/tokens.module';
-import { MailModule } from './modules/application/legacy/mail/mail.module';
 import { OrganizationInformationApplicationModule } from './modules/application/organization-information/organization-information-application.module';
 import { FcmTokenManagementApplicationModule } from './modules/application/fcm-token-management/fcm-token-management-application.module';
 import { AdminModule } from './modules/application/admin/admin.module';
@@ -40,12 +36,12 @@ import { AdminModule } from './modules/application/admin/admin.module';
         AdminModule,
 
         // Legacy Modules
-        AuthModule,
-        UsersModule,
-        LogsModule,
-        SystemsModule,
-        TokensModule,
-        MailModule,
+        // AuthModule,
+        // UsersModule,
+        // LogsModule,
+        // SystemsModule,
+        // TokensModule,
+        // MailModule,
     ],
     controllers: [AppController],
     providers: [

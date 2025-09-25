@@ -34,6 +34,7 @@ export function setupSwagger(app: INestApplication, dtos: any[]) {
 
                 return a.localeCompare(b, 'en'); // 같은 언어일 경우 알파벳순 정렬
             },
+
             docExpansion: 'none',
 
             persistAuthorization: true,

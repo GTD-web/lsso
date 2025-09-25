@@ -23,7 +23,7 @@ import {
     CheckPasswordResponseDto,
 } from '../dto';
 
-@ApiTags('외부 시스템 인증 API')
+@ApiTags('Client - 인증 API')
 @Controller('auth')
 export class SsoApplicationController {
     constructor(private readonly ssoApplicationService: SsoApplicationService) {}
@@ -158,5 +158,4 @@ export class SsoApplicationController {
     async cleanUpExpiredTokens(): Promise<{ deletedCount: number; message: string }> {
         return this.ssoApplicationService.만료된_토큰을_정리한다();
     }
-
 }

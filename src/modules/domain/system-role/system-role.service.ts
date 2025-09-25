@@ -17,6 +17,15 @@ export class DomainSystemRoleService extends BaseService<SystemRole> {
     }
 
     /**
+     * 모든 시스템 역할을 조회합니다
+     */
+    async findAllSystemRoles(): Promise<SystemRole[]> {
+        return this.systemRoleRepository.findAll({
+            order: { systemId: 'ASC', sortOrder: 'ASC', roleName: 'ASC' },
+        });
+    }
+
+    /**
      * 시스템 ID로 활성화된 역할 목록을 조회합니다
      */
 

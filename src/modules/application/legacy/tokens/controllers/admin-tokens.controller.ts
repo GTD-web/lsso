@@ -4,7 +4,7 @@ import { TokenResponseDto, CreateTokenDto, UpdateTokenStatusDto, RenewTokenDto }
 import { ApiResponseDto } from '../../../../../../libs/common/dto/api-response.dto';
 import { AdminTokensUsecase } from '../usecases/admin.usecase';
 
-@ApiTags('관리자 토큰 API')
+@ApiTags('Legacy - 관리자 토큰 API')
 @Controller('admin/tokens')
 export class AdminTokensController {
     constructor(private readonly adminTokensUsecase: AdminTokensUsecase) {}
