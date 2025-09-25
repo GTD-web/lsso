@@ -7,11 +7,11 @@ export const ENV = process.env;
 
 export default registerAs('database', () => {
     return {
-        host: process.env.POSTGRES_HOST || 'localhost',
-        port: parseInt(process.env.POSTGRES_PORT, 10) || 5432,
-        username: process.env.POSTGRES_USER || 'admin',
-        password: process.env.POSTGRES_PASSWORD || 'tech7admin!',
-        database: process.env.POSTGRES_DATABASE || 'resource-server',
+        host: process.env.POSTGRES_HOST || 'aws-1-ap-northeast-2.pooler.supabase.com',
+        port: parseInt(process.env.POSTGRES_PORT, 10) || 6543,
+        username: process.env.POSTGRES_USER || 'postgres.sowdygzapciuqtnzwxvf',
+        password: process.env.POSTGRES_PASSWORD || '163700as',
+        database: process.env.POSTGRES_DATABASE || 'postgres',
         schema: process.env.POSTGRES_SCHEMA || 'public',
     };
 });

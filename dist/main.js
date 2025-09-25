@@ -740,76 +740,6 @@ exports.BaseService = BaseService = __decorate([
 
 /***/ }),
 
-/***/ "./libs/common/strategies/jwt.strategy.ts":
-/*!************************************************!*\
-  !*** ./libs/common/strategies/jwt.strategy.ts ***!
-  \************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.JwtStrategy = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const passport_1 = __webpack_require__(/*! @nestjs/passport */ "@nestjs/passport");
-const passport_jwt_1 = __webpack_require__(/*! passport-jwt */ "passport-jwt");
-const config_1 = __webpack_require__(/*! @nestjs/config */ "@nestjs/config");
-const authorization_context_service_1 = __webpack_require__(/*! ../../../src/modules/context/authorization/authorization-context.service */ "./src/modules/context/authorization/authorization-context.service.ts");
-let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy) {
-    constructor(configService, authorizationContextService) {
-        super({
-            jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
-            ignoreExpiration: false,
-            secretOrKey: configService.get('GLOBAL_SECRET'),
-            passReqToCallback: true,
-        });
-        this.configService = configService;
-        this.authorizationContextService = authorizationContextService;
-    }
-    async validate(req, payload) {
-        try {
-            const authHeader = req.headers.authorization;
-            if (!authHeader || !authHeader.startsWith('Bearer ')) {
-                throw new common_1.UnauthorizedException('유효하지 않은 토큰 형식입니다.');
-            }
-            const accessToken = authHeader.split(' ')[1];
-            const { employee, token } = await this.authorizationContextService.엑세스토큰을_검증한다(accessToken);
-            return {
-                id: employee.id,
-                employeeNumber: employee.employeeNumber,
-                name: employee.name,
-                email: employee.email,
-                status: employee.status,
-                currentRankId: employee.currentRankId,
-                token: {
-                    id: token.id,
-                    expiresAt: token.tokenExpiresAt,
-                },
-            };
-        }
-        catch (error) {
-            throw new common_1.UnauthorizedException('토큰 검증에 실패했습니다.');
-        }
-    }
-};
-exports.JwtStrategy = JwtStrategy;
-exports.JwtStrategy = JwtStrategy = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _a : Object, typeof (_b = typeof authorization_context_service_1.AuthorizationContextService !== "undefined" && authorization_context_service_1.AuthorizationContextService) === "function" ? _b : Object])
-], JwtStrategy);
-
-
-/***/ }),
-
 /***/ "./libs/common/utils/swagger.ts":
 /*!**************************************!*\
   !*** ./libs/common/utils/swagger.ts ***!
@@ -875,11 +805,11 @@ const config_1 = __webpack_require__(/*! @nestjs/config */ "@nestjs/config");
 exports.ENV = process.env;
 exports["default"] = (0, config_1.registerAs)('database', () => {
     return {
-        host: process.env.POSTGRES_HOST || 'localhost',
-        port: parseInt(process.env.POSTGRES_PORT, 10) || 5432,
-        username: process.env.POSTGRES_USER || 'admin',
-        password: process.env.POSTGRES_PASSWORD || 'tech7admin!',
-        database: process.env.POSTGRES_DATABASE || 'resource-server',
+        host: process.env.POSTGRES_HOST || 'aws-1-ap-northeast-2.pooler.supabase.com',
+        port: parseInt(process.env.POSTGRES_PORT, 10) || 6543,
+        username: process.env.POSTGRES_USER || 'postgres.sowdygzapciuqtnzwxvf',
+        password: process.env.POSTGRES_PASSWORD || '163700as',
+        database: process.env.POSTGRES_DATABASE || 'postgres',
         schema: process.env.POSTGRES_SCHEMA || 'public',
     };
 });
@@ -6040,8 +5970,6 @@ const organization_information_application_controller_1 = __webpack_require__(/*
 const organization_management_context_module_1 = __webpack_require__(/*! ../../context/organization-management/organization-management-context.module */ "./src/modules/context/organization-management/organization-management-context.module.ts");
 const authorization_context_module_1 = __webpack_require__(/*! ../../context/authorization/authorization-context.module */ "./src/modules/context/authorization/authorization-context.module.ts");
 const migration_module_1 = __webpack_require__(/*! ../../context/migration/migration.module */ "./src/modules/context/migration/migration.module.ts");
-const jwt_strategy_1 = __webpack_require__(/*! ../../../../libs/common/strategies/jwt.strategy */ "./libs/common/strategies/jwt.strategy.ts");
-const jwt_auth_guard_1 = __webpack_require__(/*! ../../../../libs/common/guards/jwt-auth.guard */ "./libs/common/guards/jwt-auth.guard.ts");
 const jwt_config_1 = __webpack_require__(/*! ../../../../libs/configs/jwt.config */ "./libs/configs/jwt.config.ts");
 let OrganizationInformationApplicationModule = class OrganizationInformationApplicationModule {
 };
@@ -6059,7 +5987,7 @@ exports.OrganizationInformationApplicationModule = OrganizationInformationApplic
             }),
         ],
         controllers: [organization_information_application_controller_1.OrganizationInformationApplicationController],
-        providers: [organization_information_application_service_1.OrganizationInformationApplicationService, jwt_strategy_1.JwtStrategy, jwt_auth_guard_1.JwtAuthGuard],
+        providers: [organization_information_application_service_1.OrganizationInformationApplicationService],
         exports: [organization_information_application_service_1.OrganizationInformationApplicationService],
     })
 ], OrganizationInformationApplicationModule);
@@ -13785,16 +13713,6 @@ module.exports = require("hbs");
 
 /***/ }),
 
-/***/ "passport-jwt":
-/*!*******************************!*\
-  !*** external "passport-jwt" ***!
-  \*******************************/
-/***/ ((module) => {
-
-module.exports = require("passport-jwt");
-
-/***/ }),
-
 /***/ "rxjs":
 /*!***********************!*\
   !*** external "rxjs" ***!
@@ -13908,6 +13826,7 @@ async function bootstrap() {
         return;
     }
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
+    app.enableCors();
     app.useGlobalPipes(new common_1.ValidationPipe({
         whitelist: true,
         transform: true,
@@ -13917,12 +13836,6 @@ async function bootstrap() {
         exclude: ['/set-initial-password', '/change-password'],
     });
     (0, swagger_1.setupSwagger)(app, [...Object.values(dtos)]);
-    app.enableCors({
-        origin: '*',
-        methods: ['GET', 'POST', 'PUT', 'DELETE'],
-        allowedHeaders: ['Content-Type', 'Authorization'],
-        credentials: true,
-    });
     app.useGlobalInterceptors(new request_interceptor_1.RequestInterceptor(), new error_interceptor_1.ErrorInterceptor());
     app.useGlobalInterceptors(new logging_interceptor_1.LoggingInterceptor(app.get(log_application_service_1.LogApplicationService)));
     app.useStaticAssets((0, path_1.join)(__dirname, '..', 'public'));
