@@ -15,14 +15,14 @@ import { LogModule } from './log/log.module';
 @Module({
     imports: [
         // JWT 모듈 설정
-        JwtModule.registerAsync({
-            imports: [ConfigModule],
-            inject: [ConfigService],
-            useFactory: (configService: ConfigService) => ({
-                secret: configService.get<string>('GLOBAL_SECRET'),
-                signOptions: { expiresIn: '1h' },
-            }),
-        }),
+        // JwtModule.registerAsync({
+        //     imports: [ConfigModule],
+        //     inject: [ConfigService],
+        //     useFactory: (configService: ConfigService) => ({
+        //         secret: configService.get<string>('GLOBAL_SECRET'),
+        //         signOptions: { expiresIn: '1h' },
+        //     }),
+        // }),
         // PassportModule.register({ defaultStrategy: 'jwt' }),
 
         // 조직관리 모듈

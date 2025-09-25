@@ -26,7 +26,6 @@ import {
 
 @ApiTags('Admin - 조직 관리')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
 @Controller('admin/organizations')
 export class OrganizationController {
     constructor(private readonly organizationApplicationService: OrganizationApplicationService) {}
