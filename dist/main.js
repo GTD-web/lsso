@@ -13917,7 +13917,12 @@ async function bootstrap() {
         exclude: ['/set-initial-password', '/change-password'],
     });
     (0, swagger_1.setupSwagger)(app, [...Object.values(dtos)]);
-    app.enableCors();
+    app.enableCors({
+        origin: '*',
+        methods: ['GET', 'POST', 'PUT', 'DELETE'],
+        allowedHeaders: ['Content-Type', 'Authorization'],
+        credentials: true,
+    });
     app.useGlobalInterceptors(new request_interceptor_1.RequestInterceptor(), new error_interceptor_1.ErrorInterceptor());
     app.useGlobalInterceptors(new logging_interceptor_1.LoggingInterceptor(app.get(log_application_service_1.LogApplicationService)));
     app.useStaticAssets((0, path_1.join)(__dirname, '..', 'public'));
