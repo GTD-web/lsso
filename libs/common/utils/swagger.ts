@@ -16,11 +16,13 @@ export function setupSwagger(app: INestApplication, dtos: any[]) {
         extraModels: extraModels,
     });
 
+    const customJsUrl = `${process.env.APP_URL}${process.env.NODE_ENV ? '/static' : ''}/swagger-custom.js`; // 커스텀 JS 파일 추가
+
     SwaggerModule.setup('api-docs', app, document, {
         customJs: [
             'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-bundle.min.js',
             'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-standalone-preset.min.js',
-            `${process.env.APP_URL}/static/swagger-custom.js`, // 커스텀 JS 파일 추가
+            customJsUrl, // 커스텀 JS 파일 추가
         ],
         customCssUrl: [
             'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css',
