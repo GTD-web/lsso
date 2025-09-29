@@ -710,7 +710,7 @@ function setupSwagger(app, dtos) {
         customJs: [
             'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-bundle.min.js',
             'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-standalone-preset.min.js',
-            '/static/swagger-custom.js',
+            `${process.env.APP_URL}/static/swagger-custom.js`,
         ],
         customCssUrl: [
             'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css',
