@@ -31,9 +31,11 @@ async function initializeCustomFeatures() {
         const result = await performApiCheck();
         console.log('🔍 result:', result);
         if (!result) {
-            window.location.reload();
+            if (confirm('API 문서가 수정되었습니다. 새로고침 하시겠습니까?')) {
+                window.location.reload();
+            }
         }
-    }, 10 * 60 * 1000);
+    }, 10 * 1000);
 }
 
 async function performApiCheck() {
