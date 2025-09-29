@@ -1,6 +1,7 @@
 import { Controller, Get, Param, Query, Res, Inject } from '@nestjs/common';
 import { Response } from 'express';
 import { join } from 'path';
+import * as fs from 'fs';
 import { AppService } from './app.service';
 import { ApiExcludeController, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { HttpAdapterHost } from '@nestjs/core';
@@ -21,6 +22,29 @@ export class AppController {
         return res.render('pages/change-password', {
             token,
         });
+    }
+
+    // Vercel 환경에서 정적 파일 서빙을 위한 API 엔드포인트
+    @Get('static/swagger-custom.js')
+    async getSwaggerCustomJs(@Res() res: Response) {
+        try {
+            const filePath = join(process.cwd(), 'public', 'swagger-custom.js');
+
+            // 파일 존재 확인
+            if (!fs.existsSync(filePath)) {
+                console.error('swagger-custom.js file not found at:', filePath);
+                return res.status(404).send('File not found');
+            }
+
+            const fileContent = fs.readFileSync(filePath, 'utf8');
+
+            res.setHeader('Content-Type', 'application/javascript');
+            res.setHeader('Cache-Control', 'public, max-age=86400'); // 1일 캐시
+            res.send(fileContent);
+        } catch (error) {
+            console.error('Error serving swagger-custom.js:', error);
+            res.status(500).send('Internal server error');
+        }
     }
 
     @Get('_debug/routes')

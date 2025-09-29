@@ -936,11 +936,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d;
+var _a, _b, _c, _d, _e;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AppController = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const express_1 = __webpack_require__(/*! express */ "express");
+const path_1 = __webpack_require__(/*! path */ "path");
+const fs = __webpack_require__(/*! fs */ "fs");
 const app_service_1 = __webpack_require__(/*! ./app.service */ "./src/app.service.ts");
 const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
 const core_1 = __webpack_require__(/*! @nestjs/core */ "@nestjs/core");
@@ -958,6 +960,23 @@ let AppController = class AppController {
         return res.render('pages/change-password', {
             token,
         });
+    }
+    async getSwaggerCustomJs(res) {
+        try {
+            const filePath = (0, path_1.join)(process.cwd(), 'public', 'swagger-custom.js');
+            if (!fs.existsSync(filePath)) {
+                console.error('swagger-custom.js file not found at:', filePath);
+                return res.status(404).send('File not found');
+            }
+            const fileContent = fs.readFileSync(filePath, 'utf8');
+            res.setHeader('Content-Type', 'application/javascript');
+            res.setHeader('Cache-Control', 'public, max-age=86400');
+            res.send(fileContent);
+        }
+        catch (error) {
+            console.error('Error serving swagger-custom.js:', error);
+            res.status(500).send('Internal server error');
+        }
     }
     async getServerRoutes() {
         try {
@@ -1072,6 +1091,13 @@ __decorate([
     __metadata("design:paramtypes", [typeof (_d = typeof express_1.Response !== "undefined" && express_1.Response) === "function" ? _d : Object, String]),
     __metadata("design:returntype", Promise)
 ], AppController.prototype, "changePassword", null);
+__decorate([
+    (0, common_1.Get)('static/swagger-custom.js'),
+    __param(0, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_e = typeof express_1.Response !== "undefined" && express_1.Response) === "function" ? _e : Object]),
+    __metadata("design:returntype", Promise)
+], AppController.prototype, "getSwaggerCustomJs", null);
 __decorate([
     (0, common_1.Get)('_debug/routes'),
     __metadata("design:type", Function),
@@ -15972,6 +15998,16 @@ module.exports = require("uuid");
 /***/ ((module) => {
 
 module.exports = require("crypto");
+
+/***/ }),
+
+/***/ "fs":
+/*!*********************!*\
+  !*** external "fs" ***!
+  \*********************/
+/***/ ((module) => {
+
+module.exports = require("fs");
 
 /***/ }),
 
