@@ -15,13 +15,13 @@ import {
 export class EmployeeFcmTokenController {
     constructor(private readonly employeeFcmTokenApplicationService: EmployeeFcmTokenApplicationService) {}
 
-    @Get('test')
-    @ApiOperation({ summary: 'test' })
-    @ApiResponse({ status: 200, type: EmployeeFcmTokenGroupedListResponseDto })
-    @ApiQuery({ name: 'employeeId', required: false, description: '특정 직원의 FCM 토큰 조회' })
-    async test(@Query('employeeId') employeeId?: string): Promise<EmployeeFcmTokenGroupedListResponseDto> {
-        return null;
-    }
+    // @Get('test')
+    // @ApiOperation({ summary: 'test' })
+    // @ApiResponse({ status: 200, type: EmployeeFcmTokenGroupedListResponseDto })
+    // @ApiQuery({ name: 'employeeId', required: false, description: '특정 직원의 FCM 토큰 조회' })
+    // async test(@Query('employeeId') employeeId?: string): Promise<EmployeeFcmTokenGroupedListResponseDto> {
+    //     return null;
+    // }
 
     @Get()
     @ApiOperation({ summary: '직원별 FCM 토큰 관계 목록 조회 (그룹핑)' })

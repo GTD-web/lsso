@@ -26,9 +26,13 @@ async function initializeCustomFeatures() {
     // 첫 번째 검사 즉시 실행
     await performApiCheck();
 
-    // 10초마다 주기적으로 검사 실행
+    // 10분마다 주기적으로 검사 실행
     setInterval(async () => {
-        await performApiCheck();
+        const result = await performApiCheck();
+        console.log('🔍 result:', result);
+        if (!result) {
+            window.location.reload();
+        }
     }, 10 * 60 * 1000);
 }
 
@@ -43,37 +47,12 @@ async function performApiCheck() {
 
         // SwaggerUI 객체에서 직접 스펙 확인
         const windowPaths = window.ui.getSystem().specSelectors.specJson().toJS().paths;
-        const paths = Object.keys(windowPaths);
+
         const serverRoutes = await getServerRouteList();
-        const routes = new Set(serverRoutes.map((route) => route.path));
-
-        console.log(`📊 Swagger paths: ${paths.length}개`);
-        console.log(`📊 서버 routes: ${routes.size}개`);
-
-        const missingPaths = paths.filter((path) => !routes.has(path));
-        const extraRoutes = Array.from(routes).filter((route) => !paths.includes(route));
-
-        if (missingPaths.length > 0) {
-            console.warn('🚨 서버에 없는 Swagger paths:', missingPaths);
-        }
-
-        if (extraRoutes.length > 0) {
-            console.warn('📝 Swagger에 없는 서버 routes:', extraRoutes);
-        }
-
-        const totalIssues = missingPaths.length + extraRoutes.length;
-        const matchRate = Math.round(
-            ((Math.max(paths.length, routes.size) - totalIssues) / Math.max(paths.length, routes.size)) * 100,
-        );
-
-        if (totalIssues === 0) {
-            console.log('🎉 모든 API가 일치합니다!');
-        } else {
-            console.warn(`⚠️ ${totalIssues}개 불일치 (일치율: ${matchRate}%)`);
-            window.location.reload();
-        }
-
-        return totalIssues > 0;
+        console.log('🔍 windowPaths:', windowPaths);
+        console.log('🔍 serverRoutes:', serverRoutes);
+        console.log(JSON.stringify(windowPaths) === JSON.stringify(serverRoutes));
+        return JSON.stringify(windowPaths) === JSON.stringify(serverRoutes);
     } catch (error) {
         console.error('❌ API 검사 중 오류:', error);
         return false;
@@ -86,7 +65,7 @@ async function getServerRouteList() {
         // 현재 페이지의 호스트와 포트를 자동으로 감지
         const currentUrl = new URL(window.location.href);
         const baseUrl = `${currentUrl.protocol}//${currentUrl.host}`;
-        const debugUrl = `${baseUrl}/api/_debug/routes`;
+        const debugUrl = `${baseUrl}/api-docs-json`;
 
         console.log(`🌐 서버 라우트 요청 URL: ${debugUrl}`);
 
@@ -96,23 +75,9 @@ async function getServerRouteList() {
         }
 
         const data = await response.json();
+        console.log('🔍 data:', data);
 
-        if (!data.success) {
-            throw new Error(data.error || '서버 라우트 데이터를 가져올 수 없습니다.');
-        }
-
-        return data.routes.filter((route) => {
-            // 시스템 라우트들 제외 (필요에 따라 조정)
-            const excludePaths = [
-                '/_debug/routes',
-                '/set-initial-password',
-                '/change-password',
-                '/static',
-                '/api-docs',
-            ];
-
-            return !excludePaths.some((excludePath) => route.path.startsWith(excludePath));
-        });
+        return data.paths;
     } catch (error) {
         console.error('서버 라우트 목록 가져오기 실패:', error);
         throw error;

@@ -57,10 +57,12 @@ export class AppController {
 
             // Express.js 라우터에서 등록된 라우트들 추출
             if (app._router && app._router.stack) {
+                console.log('🔍 app._router.stack:', app._router);
                 const extractRoutes = (stack, basePath = '') => {
                     stack.forEach((layer) => {
                         if (layer.route) {
                             // 직접 등록된 라우트
+
                             const methods = Object.keys(layer.route.methods);
                             methods.forEach((method) => {
                                 if (method !== '_all') {
@@ -68,7 +70,6 @@ export class AppController {
 
                                     // Express 파라미터를 OpenAPI 형식으로 변환 (:param -> {param})
                                     routePath = this.convertExpressToOpenApiPath(routePath);
-
                                     routes.push({
                                         path: routePath,
                                         method: method.toUpperCase(),

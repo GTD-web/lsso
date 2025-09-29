@@ -706,7 +706,7 @@ function setupSwagger(app, dtos) {
     const document = swagger_1.SwaggerModule.createDocument(app, config, {
         extraModels: extraModels,
     });
-    const customJsUrl = `${process.env.APP_URL}${process.env.NODE_ENV ? '' : '/static'}/swagger-custom.js`;
+    const customJsUrl = `${process.env.APP_URL}${process.env.NODE_ENV !== 'development' ? '' : '/static'}/swagger-custom.js`;
     swagger_1.SwaggerModule.setup('api-docs', app, document, {
         customJs: [
             'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-bundle.min.js',
@@ -985,6 +985,7 @@ let AppController = class AppController {
             const app = httpAdapter.getInstance();
             const routes = [];
             if (app._router && app._router.stack) {
+                console.log('🔍 app._router.stack:', app._router);
                 const extractRoutes = (stack, basePath = '') => {
                     stack.forEach((layer) => {
                         if (layer.route) {
@@ -1305,7 +1306,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.EmployeeFcmTokenController = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
@@ -1315,9 +1316,6 @@ const dto_1 = __webpack_require__(/*! ../dto */ "./src/modules/application/admin
 let EmployeeFcmTokenController = class EmployeeFcmTokenController {
     constructor(employeeFcmTokenApplicationService) {
         this.employeeFcmTokenApplicationService = employeeFcmTokenApplicationService;
-    }
-    async test(employeeId) {
-        return null;
     }
     async findAllGroupedByEmployee(employeeId) {
         return await this.employeeFcmTokenApplicationService.직원별_그룹핑된_FCM_토큰_관계_조회(employeeId);
@@ -1349,16 +1347,6 @@ let EmployeeFcmTokenController = class EmployeeFcmTokenController {
 };
 exports.EmployeeFcmTokenController = EmployeeFcmTokenController;
 __decorate([
-    (0, common_1.Get)('test'),
-    (0, swagger_1.ApiOperation)({ summary: 'test' }),
-    (0, swagger_1.ApiResponse)({ status: 200, type: dto_1.EmployeeFcmTokenGroupedListResponseDto }),
-    (0, swagger_1.ApiQuery)({ name: 'employeeId', required: false, description: '특정 직원의 FCM 토큰 조회' }),
-    __param(0, (0, common_1.Query)('employeeId')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_b = typeof Promise !== "undefined" && Promise) === "function" ? _b : Object)
-], EmployeeFcmTokenController.prototype, "test", null);
-__decorate([
     (0, common_1.Get)(),
     (0, swagger_1.ApiOperation)({ summary: '직원별 FCM 토큰 관계 목록 조회 (그룹핑)' }),
     (0, swagger_1.ApiResponse)({ status: 200, type: dto_1.EmployeeFcmTokenGroupedListResponseDto }),
@@ -1366,7 +1354,7 @@ __decorate([
     __param(0, (0, common_1.Query)('employeeId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
+    __metadata("design:returntype", typeof (_b = typeof Promise !== "undefined" && Promise) === "function" ? _b : Object)
 ], EmployeeFcmTokenController.prototype, "findAllGroupedByEmployee", null);
 __decorate([
     (0, common_1.Get)('stats'),
@@ -1374,7 +1362,7 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 200, type: dto_1.EmployeeFcmTokenStatsDto }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
+    __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
 ], EmployeeFcmTokenController.prototype, "getStats", null);
 __decorate([
     (0, common_1.Get)(':id'),
@@ -1385,7 +1373,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
+    __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
 ], EmployeeFcmTokenController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Post)(),
@@ -1395,8 +1383,8 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 400, description: '잘못된 요청' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_f = typeof dto_1.CreateEmployeeFcmTokenDto !== "undefined" && dto_1.CreateEmployeeFcmTokenDto) === "function" ? _f : Object]),
-    __metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
+    __metadata("design:paramtypes", [typeof (_e = typeof dto_1.CreateEmployeeFcmTokenDto !== "undefined" && dto_1.CreateEmployeeFcmTokenDto) === "function" ? _e : Object]),
+    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
 ], EmployeeFcmTokenController.prototype, "create", null);
 __decorate([
     (0, common_1.Put)(':id'),
@@ -1408,8 +1396,8 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, typeof (_h = typeof dto_1.UpdateEmployeeFcmTokenDto !== "undefined" && dto_1.UpdateEmployeeFcmTokenDto) === "function" ? _h : Object]),
-    __metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
+    __metadata("design:paramtypes", [String, typeof (_g = typeof dto_1.UpdateEmployeeFcmTokenDto !== "undefined" && dto_1.UpdateEmployeeFcmTokenDto) === "function" ? _g : Object]),
+    __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
 ], EmployeeFcmTokenController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
@@ -1420,7 +1408,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
+    __metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
 ], EmployeeFcmTokenController.prototype, "remove", null);
 __decorate([
     (0, common_1.Delete)('employee/:employeeId/all'),
@@ -1430,7 +1418,7 @@ __decorate([
     __param(0, (0, common_1.Param)('employeeId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_l = typeof Promise !== "undefined" && Promise) === "function" ? _l : Object)
+    __metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
 ], EmployeeFcmTokenController.prototype, "removeAllByEmployee", null);
 __decorate([
     (0, common_1.Put)(':employeeId/:fcmTokenId/usage'),
@@ -1443,7 +1431,7 @@ __decorate([
     __param(1, (0, common_1.Param)('fcmTokenId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, String]),
-    __metadata("design:returntype", typeof (_m = typeof Promise !== "undefined" && Promise) === "function" ? _m : Object)
+    __metadata("design:returntype", typeof (_l = typeof Promise !== "undefined" && Promise) === "function" ? _l : Object)
 ], EmployeeFcmTokenController.prototype, "updateUsage", null);
 __decorate([
     (0, common_1.Delete)('cleanup/old-tokens'),
@@ -1453,7 +1441,7 @@ __decorate([
     __param(0, (0, common_1.Query)('cutoffDays')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", typeof (_o = typeof Promise !== "undefined" && Promise) === "function" ? _o : Object)
+    __metadata("design:returntype", typeof (_m = typeof Promise !== "undefined" && Promise) === "function" ? _m : Object)
 ], EmployeeFcmTokenController.prototype, "cleanupOldTokens", null);
 exports.EmployeeFcmTokenController = EmployeeFcmTokenController = __decorate([
     (0, swagger_1.ApiTags)('Admin - 직원 FCM 토큰 관리'),
