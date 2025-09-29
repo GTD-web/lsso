@@ -57,8 +57,12 @@ async function bootstrap() {
     app.useGlobalInterceptors(new RequestInterceptor(), new ErrorInterceptor());
     app.useGlobalInterceptors(new LoggingInterceptor(app.get(LogApplicationService)));
 
+    // 정적 파일 서빙 설정 (Swagger 커스텀 JS 포함)
+    app.useStaticAssets(join(__dirname, '..', 'public'), {
+        prefix: '/static',
+    });
+
     // Handlebars 설정
-    app.useStaticAssets(join(__dirname, '..', 'public'));
     app.setBaseViewsDir(join(__dirname, '..', 'src', 'views'));
     app.setViewEngine('hbs');
 

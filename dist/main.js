@@ -710,6 +710,7 @@ function setupSwagger(app, dtos) {
         customJs: [
             'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-bundle.min.js',
             'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-standalone-preset.min.js',
+            '/static/swagger-custom.js',
         ],
         customCssUrl: [
             'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css',
@@ -935,16 +936,18 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c;
+var _a, _b, _c, _d;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AppController = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const express_1 = __webpack_require__(/*! express */ "express");
 const app_service_1 = __webpack_require__(/*! ./app.service */ "./src/app.service.ts");
 const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const core_1 = __webpack_require__(/*! @nestjs/core */ "@nestjs/core");
 let AppController = class AppController {
-    constructor(appService) {
+    constructor(appService, httpAdapterHost) {
         this.appService = appService;
+        this.httpAdapterHost = httpAdapterHost;
     }
     async setInitialPassword(res, token) {
         return res.render('pages/set-initial-password', {
@@ -956,6 +959,101 @@ let AppController = class AppController {
             token,
         });
     }
+    async getServerRoutes() {
+        try {
+            const httpAdapter = this.httpAdapterHost.httpAdapter;
+            const app = httpAdapter.getInstance();
+            const routes = [];
+            if (app._router && app._router.stack) {
+                const extractRoutes = (stack, basePath = '') => {
+                    stack.forEach((layer) => {
+                        if (layer.route) {
+                            const methods = Object.keys(layer.route.methods);
+                            methods.forEach((method) => {
+                                if (method !== '_all') {
+                                    let routePath = basePath + layer.route.path;
+                                    routePath = this.convertExpressToOpenApiPath(routePath);
+                                    routes.push({
+                                        path: routePath,
+                                        method: method.toUpperCase(),
+                                        source: 'direct',
+                                        originalPath: basePath + layer.route.path,
+                                    });
+                                }
+                            });
+                        }
+                        else if (layer.name === 'router' && layer.handle.stack) {
+                            const routerPath = layer.regexp.source
+                                .replace('\\', '')
+                                .replace('^', '')
+                                .replace('$', '')
+                                .replace('\\/', '/')
+                                .replace('(?=\\/|$)', '')
+                                .replace('\\', '');
+                            extractRoutes(layer.handle.stack, basePath + routerPath);
+                        }
+                    });
+                };
+                extractRoutes(app._router.stack);
+            }
+            const documentedRoutes = routes.filter((route) => this.isDocumentedApi(route.path));
+            const uniqueRoutes = documentedRoutes
+                .filter((route, index, self) => index === self.findIndex((r) => r.path === route.path && r.method === route.method))
+                .sort((a, b) => {
+                if (a.path === b.path) {
+                    return a.method.localeCompare(b.method);
+                }
+                return a.path.localeCompare(b.path);
+            });
+            return {
+                success: true,
+                timestamp: new Date().toISOString(),
+                totalRoutes: uniqueRoutes.length,
+                routes: uniqueRoutes,
+                metadata: {
+                    generatedAt: new Date().toISOString(),
+                    serverType: 'NestJS + Express',
+                    note: 'Swagger로 문서화된 API 라우트만 포함합니다.',
+                    filteredRoutes: routes.length - documentedRoutes.length,
+                    conversionNote: 'Express 경로 파라미터(:param)를 OpenAPI 형식({param})으로 변환했습니다.',
+                },
+            };
+        }
+        catch (error) {
+            return {
+                success: false,
+                error: error.message,
+                routes: [],
+                totalRoutes: 0,
+                metadata: {
+                    generatedAt: new Date().toISOString(),
+                    error: '라우트 정보를 가져오는데 실패했습니다.',
+                },
+            };
+        }
+    }
+    convertExpressToOpenApiPath(path) {
+        return path.replace(/:([^/]+)/g, '{$1}');
+    }
+    isDocumentedApi(path) {
+        if (!path.startsWith('/api/')) {
+            return false;
+        }
+        const excludePatterns = [
+            '/_debug',
+            '/static',
+            '/health',
+            '/metrics',
+            '/favicon',
+            '/docs',
+        ];
+        for (const pattern of excludePatterns) {
+            if (path.includes(pattern)) {
+                return false;
+            }
+        }
+        return true;
+    }
 };
 exports.AppController = AppController;
 __decorate([
@@ -963,7 +1061,7 @@ __decorate([
     __param(0, (0, common_1.Res)()),
     __param(1, (0, common_1.Query)('token')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_b = typeof express_1.Response !== "undefined" && express_1.Response) === "function" ? _b : Object, String]),
+    __metadata("design:paramtypes", [typeof (_c = typeof express_1.Response !== "undefined" && express_1.Response) === "function" ? _c : Object, String]),
     __metadata("design:returntype", Promise)
 ], AppController.prototype, "setInitialPassword", null);
 __decorate([
@@ -971,13 +1069,19 @@ __decorate([
     __param(0, (0, common_1.Res)()),
     __param(1, (0, common_1.Query)('token')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_c = typeof express_1.Response !== "undefined" && express_1.Response) === "function" ? _c : Object, String]),
+    __metadata("design:paramtypes", [typeof (_d = typeof express_1.Response !== "undefined" && express_1.Response) === "function" ? _d : Object, String]),
     __metadata("design:returntype", Promise)
 ], AppController.prototype, "changePassword", null);
+__decorate([
+    (0, common_1.Get)('_debug/routes'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], AppController.prototype, "getServerRoutes", null);
 exports.AppController = AppController = __decorate([
     (0, swagger_1.ApiExcludeController)(),
     (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof app_service_1.AppService !== "undefined" && app_service_1.AppService) === "function" ? _a : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof app_service_1.AppService !== "undefined" && app_service_1.AppService) === "function" ? _a : Object, typeof (_b = typeof core_1.HttpAdapterHost !== "undefined" && core_1.HttpAdapterHost) === "function" ? _b : Object])
 ], AppController);
 
 
@@ -15957,7 +16061,9 @@ async function bootstrap() {
     (0, swagger_1.setupSwagger)(app, [...Object.values(dtos)]);
     app.useGlobalInterceptors(new request_interceptor_1.RequestInterceptor(), new error_interceptor_1.ErrorInterceptor());
     app.useGlobalInterceptors(new logging_interceptor_1.LoggingInterceptor(app.get(log_application_service_1.LogApplicationService)));
-    app.useStaticAssets((0, path_1.join)(__dirname, '..', 'public'));
+    app.useStaticAssets((0, path_1.join)(__dirname, '..', 'public'), {
+        prefix: '/static',
+    });
     app.setBaseViewsDir((0, path_1.join)(__dirname, '..', 'src', 'views'));
     app.setViewEngine('hbs');
     hbs.registerPartials((0, path_1.join)(__dirname, '..', 'views/partials'));
