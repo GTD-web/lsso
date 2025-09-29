@@ -16,7 +16,7 @@ export function setupSwagger(app: INestApplication, dtos: any[]) {
         extraModels: extraModels,
     });
 
-    const customJsUrl = `${process.env.APP_URL}${process.env.NODE_ENV ? '/static' : ''}/swagger-custom.js`; // 커스텀 JS 파일 추가
+    const customJsUrl = `${process.env.APP_URL}${process.env.NODE_ENV ? '' : '/static'}/swagger-custom.js`; // 커스텀 JS 파일 추가
 
     SwaggerModule.setup('api-docs', app, document, {
         customJs: [
