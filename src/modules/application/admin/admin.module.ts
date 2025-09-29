@@ -12,6 +12,9 @@ import { SystemModule } from './system/system.module';
 // 로그관리 관련 imports
 import { LogModule } from './log/log.module';
 
+// 직원 관리 모듈
+import { EmployeeModule } from './employee/employee.module';
+
 @Module({
     imports: [
         // JWT 모듈 설정
@@ -33,9 +36,12 @@ import { LogModule } from './log/log.module';
 
         // 로그관리 모듈
         LogModule,
+
+        // 직원 관리 모듈
+        EmployeeModule,
     ],
     controllers: [],
     providers: [],
-    exports: [OrganizationModule, SystemModule, LogModule],
+    exports: [OrganizationModule, SystemModule, LogModule, EmployeeModule],
 })
 export class AdminModule {}

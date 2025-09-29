@@ -1134,6 +1134,7 @@ const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const organization_module_1 = __webpack_require__(/*! ./organization/organization.module */ "./src/modules/application/admin/organization/organization.module.ts");
 const system_module_1 = __webpack_require__(/*! ./system/system.module */ "./src/modules/application/admin/system/system.module.ts");
 const log_module_1 = __webpack_require__(/*! ./log/log.module */ "./src/modules/application/admin/log/log.module.ts");
+const employee_module_1 = __webpack_require__(/*! ./employee/employee.module */ "./src/modules/application/admin/employee/employee.module.ts");
 let AdminModule = class AdminModule {
 };
 exports.AdminModule = AdminModule;
@@ -1143,12 +1144,1784 @@ exports.AdminModule = AdminModule = __decorate([
             organization_module_1.OrganizationModule,
             system_module_1.SystemModule,
             log_module_1.LogModule,
+            employee_module_1.EmployeeModule,
         ],
         controllers: [],
         providers: [],
-        exports: [organization_module_1.OrganizationModule, system_module_1.SystemModule, log_module_1.LogModule],
+        exports: [organization_module_1.OrganizationModule, system_module_1.SystemModule, log_module_1.LogModule, employee_module_1.EmployeeModule],
     })
 ], AdminModule);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/admin/employee/controllers/employee-fcm-token.controller.ts":
+/*!*********************************************************************************************!*\
+  !*** ./src/modules/application/admin/employee/controllers/employee-fcm-token.controller.ts ***!
+  \*********************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EmployeeFcmTokenController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const employee_fcm_token_application_service_1 = __webpack_require__(/*! ../services/employee-fcm-token-application.service */ "./src/modules/application/admin/employee/services/employee-fcm-token-application.service.ts");
+const dto_1 = __webpack_require__(/*! ../dto */ "./src/modules/application/admin/employee/dto/index.ts");
+let EmployeeFcmTokenController = class EmployeeFcmTokenController {
+    constructor(employeeFcmTokenApplicationService) {
+        this.employeeFcmTokenApplicationService = employeeFcmTokenApplicationService;
+    }
+    async findAllGroupedByEmployee(employeeId) {
+        return await this.employeeFcmTokenApplicationService.직원별_그룹핑된_FCM_토큰_관계_조회(employeeId);
+    }
+    async getStats() {
+        return await this.employeeFcmTokenApplicationService.FCM_토큰_통계_조회();
+    }
+    async findOne(id) {
+        return await this.employeeFcmTokenApplicationService.직원_FCM_토큰_관계_상세_조회(id);
+    }
+    async create(createDto) {
+        return await this.employeeFcmTokenApplicationService.직원_FCM_토큰_관계_생성(createDto);
+    }
+    async update(id, updateDto) {
+        return await this.employeeFcmTokenApplicationService.직원_FCM_토큰_관계_수정(id, updateDto);
+    }
+    async remove(id) {
+        return await this.employeeFcmTokenApplicationService.직원_FCM_토큰_관계_삭제(id);
+    }
+    async removeAllByEmployee(employeeId) {
+        return await this.employeeFcmTokenApplicationService.직원_모든_FCM_토큰_관계_삭제(employeeId);
+    }
+    async updateUsage(employeeId, fcmTokenId) {
+        return await this.employeeFcmTokenApplicationService.FCM_토큰_사용일_업데이트(employeeId, fcmTokenId);
+    }
+    async cleanupOldTokens(cutoffDays) {
+        return await this.employeeFcmTokenApplicationService.오래된_FCM_토큰_관계_정리(cutoffDays);
+    }
+};
+exports.EmployeeFcmTokenController = EmployeeFcmTokenController;
+__decorate([
+    (0, common_1.Get)(),
+    (0, swagger_1.ApiOperation)({ summary: '직원별 FCM 토큰 관계 목록 조회 (그룹핑)' }),
+    (0, swagger_1.ApiResponse)({ status: 200, type: dto_1.EmployeeFcmTokenGroupedListResponseDto }),
+    (0, swagger_1.ApiQuery)({ name: 'employeeId', required: false, description: '특정 직원의 FCM 토큰 조회' }),
+    __param(0, (0, common_1.Query)('employeeId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", typeof (_b = typeof Promise !== "undefined" && Promise) === "function" ? _b : Object)
+], EmployeeFcmTokenController.prototype, "findAllGroupedByEmployee", null);
+__decorate([
+    (0, common_1.Get)('stats'),
+    (0, swagger_1.ApiOperation)({ summary: 'FCM 토큰 통계 조회' }),
+    (0, swagger_1.ApiResponse)({ status: 200, type: dto_1.EmployeeFcmTokenStatsDto }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
+], EmployeeFcmTokenController.prototype, "getStats", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: '직원 FCM 토큰 관계 상세 조회' }),
+    (0, swagger_1.ApiResponse)({ status: 200, type: dto_1.EmployeeFcmTokenListResponseDto }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: '직원 FCM 토큰 관계를 찾을 수 없음' }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: '직원 FCM 토큰 관계 ID' }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
+], EmployeeFcmTokenController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Post)(),
+    (0, swagger_1.ApiOperation)({ summary: '직원 FCM 토큰 관계 생성' }),
+    (0, swagger_1.ApiBody)({ type: dto_1.CreateEmployeeFcmTokenDto }),
+    (0, swagger_1.ApiResponse)({ status: 201, type: dto_1.EmployeeFcmTokenListResponseDto }),
+    (0, swagger_1.ApiResponse)({ status: 400, description: '잘못된 요청' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_e = typeof dto_1.CreateEmployeeFcmTokenDto !== "undefined" && dto_1.CreateEmployeeFcmTokenDto) === "function" ? _e : Object]),
+    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
+], EmployeeFcmTokenController.prototype, "create", null);
+__decorate([
+    (0, common_1.Put)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: '직원 FCM 토큰 관계 수정' }),
+    (0, swagger_1.ApiBody)({ type: dto_1.UpdateEmployeeFcmTokenDto }),
+    (0, swagger_1.ApiResponse)({ status: 200, type: dto_1.EmployeeFcmTokenListResponseDto }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: '직원 FCM 토큰 관계를 찾을 수 없음' }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: '직원 FCM 토큰 관계 ID' }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, typeof (_g = typeof dto_1.UpdateEmployeeFcmTokenDto !== "undefined" && dto_1.UpdateEmployeeFcmTokenDto) === "function" ? _g : Object]),
+    __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
+], EmployeeFcmTokenController.prototype, "update", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: '직원 FCM 토큰 관계 삭제' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: '관계 삭제 성공' }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: '직원 FCM 토큰 관계를 찾을 수 없음' }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: '직원 FCM 토큰 관계 ID' }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
+], EmployeeFcmTokenController.prototype, "remove", null);
+__decorate([
+    (0, common_1.Delete)('employee/:employeeId/all'),
+    (0, swagger_1.ApiOperation)({ summary: '직원의 모든 FCM 토큰 관계 삭제' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: '모든 관계 삭제 성공' }),
+    (0, swagger_1.ApiParam)({ name: 'employeeId', description: '직원 ID' }),
+    __param(0, (0, common_1.Param)('employeeId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
+], EmployeeFcmTokenController.prototype, "removeAllByEmployee", null);
+__decorate([
+    (0, common_1.Put)(':employeeId/:fcmTokenId/usage'),
+    (0, swagger_1.ApiOperation)({ summary: 'FCM 토큰 사용일 업데이트' }),
+    (0, swagger_1.ApiResponse)({ status: 200, type: dto_1.EmployeeFcmTokenListResponseDto }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: '직원 FCM 토큰 관계를 찾을 수 없음' }),
+    (0, swagger_1.ApiParam)({ name: 'employeeId', description: '직원 ID' }),
+    (0, swagger_1.ApiParam)({ name: 'fcmTokenId', description: 'FCM 토큰 ID' }),
+    __param(0, (0, common_1.Param)('employeeId')),
+    __param(1, (0, common_1.Param)('fcmTokenId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", typeof (_l = typeof Promise !== "undefined" && Promise) === "function" ? _l : Object)
+], EmployeeFcmTokenController.prototype, "updateUsage", null);
+__decorate([
+    (0, common_1.Delete)('cleanup/old-tokens'),
+    (0, swagger_1.ApiOperation)({ summary: '오래된 FCM 토큰 관계 정리' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: '정리 완료' }),
+    (0, swagger_1.ApiQuery)({ name: 'cutoffDays', required: false, description: '기준 일수 (기본: 30일)' }),
+    __param(0, (0, common_1.Query)('cutoffDays')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", typeof (_m = typeof Promise !== "undefined" && Promise) === "function" ? _m : Object)
+], EmployeeFcmTokenController.prototype, "cleanupOldTokens", null);
+exports.EmployeeFcmTokenController = EmployeeFcmTokenController = __decorate([
+    (0, swagger_1.ApiTags)('Admin - 직원 FCM 토큰 관리'),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, common_1.Controller)('admin/employee-fcm-tokens'),
+    __metadata("design:paramtypes", [typeof (_a = typeof employee_fcm_token_application_service_1.EmployeeFcmTokenApplicationService !== "undefined" && employee_fcm_token_application_service_1.EmployeeFcmTokenApplicationService) === "function" ? _a : Object])
+], EmployeeFcmTokenController);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/admin/employee/controllers/employee-system-role.controller.ts":
+/*!***********************************************************************************************!*\
+  !*** ./src/modules/application/admin/employee/controllers/employee-system-role.controller.ts ***!
+  \***********************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d, _e, _f, _g;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EmployeeSystemRoleController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const employee_system_role_application_service_1 = __webpack_require__(/*! ../services/employee-system-role-application.service */ "./src/modules/application/admin/employee/services/employee-system-role-application.service.ts");
+const dto_1 = __webpack_require__(/*! ../dto */ "./src/modules/application/admin/employee/dto/index.ts");
+let EmployeeSystemRoleController = class EmployeeSystemRoleController {
+    constructor(employeeSystemRoleApplicationService) {
+        this.employeeSystemRoleApplicationService = employeeSystemRoleApplicationService;
+    }
+    async findAllGroupedByEmployee(employeeId) {
+        return await this.employeeSystemRoleApplicationService.직원별_그룹핑된_시스템_역할_조회(employeeId);
+    }
+    async findOne(id) {
+        return await this.employeeSystemRoleApplicationService.직원_시스템_역할_상세_조회(id);
+    }
+    async create(createDto) {
+        return await this.employeeSystemRoleApplicationService.직원_시스템_역할_할당(createDto);
+    }
+    async remove(id) {
+        return await this.employeeSystemRoleApplicationService.직원_시스템_역할_해제(id);
+    }
+    async removeAllByEmployee(employeeId) {
+        return await this.employeeSystemRoleApplicationService.직원_모든_시스템_역할_해제(employeeId);
+    }
+};
+exports.EmployeeSystemRoleController = EmployeeSystemRoleController;
+__decorate([
+    (0, common_1.Get)(),
+    (0, swagger_1.ApiOperation)({ summary: '직원별 시스템 역할 목록 조회 (그룹핑)' }),
+    (0, swagger_1.ApiResponse)({ status: 200, type: dto_1.EmployeeSystemRoleGroupedListResponseDto }),
+    (0, swagger_1.ApiQuery)({ name: 'employeeId', required: false, description: '특정 직원의 시스템 역할 조회' }),
+    __param(0, (0, common_1.Query)('employeeId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", typeof (_b = typeof Promise !== "undefined" && Promise) === "function" ? _b : Object)
+], EmployeeSystemRoleController.prototype, "findAllGroupedByEmployee", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: '직원 시스템 역할 상세 조회' }),
+    (0, swagger_1.ApiResponse)({ status: 200, type: dto_1.EmployeeSystemRoleListResponseDto }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: '직원 시스템 역할을 찾을 수 없음' }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: '직원 시스템 역할 ID' }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
+], EmployeeSystemRoleController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Post)(),
+    (0, swagger_1.ApiOperation)({ summary: '직원에게 시스템 역할 할당' }),
+    (0, swagger_1.ApiBody)({ type: dto_1.CreateEmployeeSystemRoleDto }),
+    (0, swagger_1.ApiResponse)({ status: 201, type: dto_1.EmployeeSystemRoleListResponseDto }),
+    (0, swagger_1.ApiResponse)({ status: 400, description: '이미 할당된 역할이거나 잘못된 요청' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_d = typeof dto_1.CreateEmployeeSystemRoleDto !== "undefined" && dto_1.CreateEmployeeSystemRoleDto) === "function" ? _d : Object]),
+    __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
+], EmployeeSystemRoleController.prototype, "create", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: '직원 시스템 역할 해제' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: '역할 해제 성공' }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: '직원 시스템 역할을 찾을 수 없음' }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: '직원 시스템 역할 ID' }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
+], EmployeeSystemRoleController.prototype, "remove", null);
+__decorate([
+    (0, common_1.Delete)('employee/:employeeId/all'),
+    (0, swagger_1.ApiOperation)({ summary: '직원의 모든 시스템 역할 해제' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: '모든 역할 해제 성공' }),
+    (0, swagger_1.ApiParam)({ name: 'employeeId', description: '직원 ID' }),
+    __param(0, (0, common_1.Param)('employeeId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
+], EmployeeSystemRoleController.prototype, "removeAllByEmployee", null);
+exports.EmployeeSystemRoleController = EmployeeSystemRoleController = __decorate([
+    (0, swagger_1.ApiTags)('Admin - 직원 시스템 역할 관리'),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, common_1.Controller)('admin/employee-system-roles'),
+    __metadata("design:paramtypes", [typeof (_a = typeof employee_system_role_application_service_1.EmployeeSystemRoleApplicationService !== "undefined" && employee_system_role_application_service_1.EmployeeSystemRoleApplicationService) === "function" ? _a : Object])
+], EmployeeSystemRoleController);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/admin/employee/controllers/employee-token.controller.ts":
+/*!*****************************************************************************************!*\
+  !*** ./src/modules/application/admin/employee/controllers/employee-token.controller.ts ***!
+  \*****************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d, _e, _f, _g, _h, _j;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EmployeeTokenController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const employee_token_application_service_1 = __webpack_require__(/*! ../services/employee-token-application.service */ "./src/modules/application/admin/employee/services/employee-token-application.service.ts");
+const dto_1 = __webpack_require__(/*! ../dto */ "./src/modules/application/admin/employee/dto/index.ts");
+let EmployeeTokenController = class EmployeeTokenController {
+    constructor(employeeTokenApplicationService) {
+        this.employeeTokenApplicationService = employeeTokenApplicationService;
+    }
+    async findAllGroupedByEmployee(employeeId) {
+        return await this.employeeTokenApplicationService.직원별_그룹핑된_토큰_관계_조회(employeeId);
+    }
+    async findOne(id) {
+        return await this.employeeTokenApplicationService.직원_토큰_관계_상세_조회(id);
+    }
+    async create(createDto) {
+        return await this.employeeTokenApplicationService.직원_토큰_관계_생성_또는_업데이트(createDto);
+    }
+    async update(id, updateDto) {
+        return await this.employeeTokenApplicationService.직원_토큰_관계_수정(id, updateDto);
+    }
+    async remove(id) {
+        return await this.employeeTokenApplicationService.직원_토큰_관계_삭제(id);
+    }
+    async removeBulkByTokens(body) {
+        return await this.employeeTokenApplicationService.토큰_관련_관계_삭제(body.tokenIds);
+    }
+};
+exports.EmployeeTokenController = EmployeeTokenController;
+__decorate([
+    (0, common_1.Get)(),
+    (0, swagger_1.ApiOperation)({ summary: '직원별 토큰 관계 목록 조회 (그룹핑)' }),
+    (0, swagger_1.ApiResponse)({ status: 200, type: dto_1.EmployeeTokenGroupedListResponseDto }),
+    (0, swagger_1.ApiQuery)({ name: 'employeeId', required: false, description: '특정 직원의 토큰 조회' }),
+    __param(0, (0, common_1.Query)('employeeId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", typeof (_b = typeof Promise !== "undefined" && Promise) === "function" ? _b : Object)
+], EmployeeTokenController.prototype, "findAllGroupedByEmployee", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: '직원 토큰 관계 상세 조회' }),
+    (0, swagger_1.ApiResponse)({ status: 200, type: dto_1.EmployeeTokenListResponseDto }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: '직원 토큰 관계를 찾을 수 없음' }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: '직원 토큰 관계 ID' }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
+], EmployeeTokenController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Post)(),
+    (0, swagger_1.ApiOperation)({ summary: '직원 토큰 관계 생성' }),
+    (0, swagger_1.ApiBody)({ type: dto_1.CreateEmployeeTokenDto }),
+    (0, swagger_1.ApiResponse)({ status: 201, type: dto_1.EmployeeTokenListResponseDto }),
+    (0, swagger_1.ApiResponse)({ status: 400, description: '잘못된 요청' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_d = typeof dto_1.CreateEmployeeTokenDto !== "undefined" && dto_1.CreateEmployeeTokenDto) === "function" ? _d : Object]),
+    __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
+], EmployeeTokenController.prototype, "create", null);
+__decorate([
+    (0, common_1.Put)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: '직원 토큰 관계 수정' }),
+    (0, swagger_1.ApiBody)({ type: dto_1.UpdateEmployeeTokenDto }),
+    (0, swagger_1.ApiResponse)({ status: 200, type: dto_1.EmployeeTokenListResponseDto }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: '직원 토큰 관계를 찾을 수 없음' }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: '직원 토큰 관계 ID' }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, typeof (_f = typeof dto_1.UpdateEmployeeTokenDto !== "undefined" && dto_1.UpdateEmployeeTokenDto) === "function" ? _f : Object]),
+    __metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
+], EmployeeTokenController.prototype, "update", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: '직원 토큰 관계 삭제' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: '관계 삭제 성공' }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: '직원 토큰 관계를 찾을 수 없음' }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: '직원 토큰 관계 ID' }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
+], EmployeeTokenController.prototype, "remove", null);
+__decorate([
+    (0, common_1.Delete)('tokens/bulk'),
+    (0, swagger_1.ApiOperation)({ summary: '토큰들과 관련된 모든 관계 삭제' }),
+    (0, swagger_1.ApiBody)({
+        schema: {
+            type: 'object',
+            properties: {
+                tokenIds: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: '삭제할 토큰 ID 배열',
+                },
+            },
+        },
+    }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: '관계 삭제 성공' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
+], EmployeeTokenController.prototype, "removeBulkByTokens", null);
+exports.EmployeeTokenController = EmployeeTokenController = __decorate([
+    (0, swagger_1.ApiTags)('Admin - 직원 토큰 관리'),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, common_1.Controller)('admin/employee-tokens'),
+    __metadata("design:paramtypes", [typeof (_a = typeof employee_token_application_service_1.EmployeeTokenApplicationService !== "undefined" && employee_token_application_service_1.EmployeeTokenApplicationService) === "function" ? _a : Object])
+], EmployeeTokenController);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/admin/employee/dto/employee-fcm-token.dto.ts":
+/*!******************************************************************************!*\
+  !*** ./src/modules/application/admin/employee/dto/employee-fcm-token.dto.ts ***!
+  \******************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b, _c, _d, _e, _f;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EmployeeFcmTokenStatsDto = exports.EmployeeFcmTokenGroupedListResponseDto = exports.EmployeeFcmTokenGroupedDto = exports.EmployeeFcmTokenListResponseDto = exports.EmployeeFcmTokenTokenDto = exports.FcmTokenDeviceInfoDto = exports.EmployeeFcmTokenEmployeeDto = exports.UpdateEmployeeFcmTokenDto = exports.CreateEmployeeFcmTokenDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+class CreateEmployeeFcmTokenDto {
+}
+exports.CreateEmployeeFcmTokenDto = CreateEmployeeFcmTokenDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직원 ID', example: 'uuid-employee-id' }),
+    (0, class_validator_1.IsUUID)(),
+    __metadata("design:type", String)
+], CreateEmployeeFcmTokenDto.prototype, "employeeId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'FCM 토큰 ID', example: 'uuid-fcm-token-id' }),
+    (0, class_validator_1.IsUUID)(),
+    __metadata("design:type", String)
+], CreateEmployeeFcmTokenDto.prototype, "fcmTokenId", void 0);
+class UpdateEmployeeFcmTokenDto {
+}
+exports.UpdateEmployeeFcmTokenDto = UpdateEmployeeFcmTokenDto;
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: 'FCM 토큰 ID', example: 'uuid-fcm-token-id' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsUUID)(),
+    __metadata("design:type", String)
+], UpdateEmployeeFcmTokenDto.prototype, "fcmTokenId", void 0);
+class EmployeeFcmTokenEmployeeDto {
+}
+exports.EmployeeFcmTokenEmployeeDto = EmployeeFcmTokenEmployeeDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직원 ID' }),
+    __metadata("design:type", String)
+], EmployeeFcmTokenEmployeeDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직원명' }),
+    __metadata("design:type", String)
+], EmployeeFcmTokenEmployeeDto.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '사번' }),
+    __metadata("design:type", String)
+], EmployeeFcmTokenEmployeeDto.prototype, "employeeNumber", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '이메일' }),
+    __metadata("design:type", String)
+], EmployeeFcmTokenEmployeeDto.prototype, "email", void 0);
+class FcmTokenDeviceInfoDto {
+}
+exports.FcmTokenDeviceInfoDto = FcmTokenDeviceInfoDto;
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '디바이스 모델명' }),
+    __metadata("design:type", String)
+], FcmTokenDeviceInfoDto.prototype, "model", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: 'OS 버전' }),
+    __metadata("design:type", String)
+], FcmTokenDeviceInfoDto.prototype, "osVersion", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '앱 버전' }),
+    __metadata("design:type", String)
+], FcmTokenDeviceInfoDto.prototype, "appVersion", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '사용자 에이전트' }),
+    __metadata("design:type", String)
+], FcmTokenDeviceInfoDto.prototype, "userAgent", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '플랫폼' }),
+    __metadata("design:type", String)
+], FcmTokenDeviceInfoDto.prototype, "platform", void 0);
+class EmployeeFcmTokenTokenDto {
+}
+exports.EmployeeFcmTokenTokenDto = EmployeeFcmTokenTokenDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'FCM 토큰 ID' }),
+    __metadata("design:type", String)
+], EmployeeFcmTokenTokenDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'FCM 토큰 값' }),
+    __metadata("design:type", String)
+], EmployeeFcmTokenTokenDto.prototype, "fcmToken", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '디바이스 타입' }),
+    __metadata("design:type", String)
+], EmployeeFcmTokenTokenDto.prototype, "deviceType", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '디바이스 정보', type: FcmTokenDeviceInfoDto }),
+    __metadata("design:type", FcmTokenDeviceInfoDto)
+], EmployeeFcmTokenTokenDto.prototype, "deviceInfo", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '활성화 상태' }),
+    __metadata("design:type", Boolean)
+], EmployeeFcmTokenTokenDto.prototype, "isActive", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '관계 생성일' }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], EmployeeFcmTokenTokenDto.prototype, "relationCreatedAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '관계 수정일' }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], EmployeeFcmTokenTokenDto.prototype, "relationUpdatedAt", void 0);
+class EmployeeFcmTokenListResponseDto {
+}
+exports.EmployeeFcmTokenListResponseDto = EmployeeFcmTokenListResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '관계 ID' }),
+    __metadata("design:type", String)
+], EmployeeFcmTokenListResponseDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직원 ID' }),
+    __metadata("design:type", String)
+], EmployeeFcmTokenListResponseDto.prototype, "employeeId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'FCM 토큰 ID' }),
+    __metadata("design:type", String)
+], EmployeeFcmTokenListResponseDto.prototype, "fcmTokenId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '생성일' }),
+    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
+], EmployeeFcmTokenListResponseDto.prototype, "createdAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '수정일' }),
+    __metadata("design:type", typeof (_d = typeof Date !== "undefined" && Date) === "function" ? _d : Object)
+], EmployeeFcmTokenListResponseDto.prototype, "updatedAt", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '직원 정보', type: EmployeeFcmTokenEmployeeDto }),
+    __metadata("design:type", EmployeeFcmTokenEmployeeDto)
+], EmployeeFcmTokenListResponseDto.prototype, "employee", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: 'FCM 토큰 정보', type: EmployeeFcmTokenTokenDto }),
+    __metadata("design:type", EmployeeFcmTokenTokenDto)
+], EmployeeFcmTokenListResponseDto.prototype, "fcmToken", void 0);
+class EmployeeFcmTokenGroupedDto {
+}
+exports.EmployeeFcmTokenGroupedDto = EmployeeFcmTokenGroupedDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직원 ID' }),
+    __metadata("design:type", String)
+], EmployeeFcmTokenGroupedDto.prototype, "employeeId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직원명' }),
+    __metadata("design:type", String)
+], EmployeeFcmTokenGroupedDto.prototype, "employeeName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '사번' }),
+    __metadata("design:type", String)
+], EmployeeFcmTokenGroupedDto.prototype, "employeeNumber", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '이메일' }),
+    __metadata("design:type", String)
+], EmployeeFcmTokenGroupedDto.prototype, "employeeEmail", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'FCM 토큰 목록', type: [EmployeeFcmTokenTokenDto] }),
+    __metadata("design:type", Array)
+], EmployeeFcmTokenGroupedDto.prototype, "fcmTokens", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '전체 토큰 수' }),
+    __metadata("design:type", Number)
+], EmployeeFcmTokenGroupedDto.prototype, "totalTokens", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '활성 토큰 수' }),
+    __metadata("design:type", Number)
+], EmployeeFcmTokenGroupedDto.prototype, "activeTokens", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '최초 관계 생성일' }),
+    __metadata("design:type", typeof (_e = typeof Date !== "undefined" && Date) === "function" ? _e : Object)
+], EmployeeFcmTokenGroupedDto.prototype, "firstRelationCreatedAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '최근 관계 수정일' }),
+    __metadata("design:type", typeof (_f = typeof Date !== "undefined" && Date) === "function" ? _f : Object)
+], EmployeeFcmTokenGroupedDto.prototype, "lastRelationUpdatedAt", void 0);
+class EmployeeFcmTokenGroupedListResponseDto {
+}
+exports.EmployeeFcmTokenGroupedListResponseDto = EmployeeFcmTokenGroupedListResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직원별 FCM 토큰 목록', type: [EmployeeFcmTokenGroupedDto] }),
+    __metadata("design:type", Array)
+], EmployeeFcmTokenGroupedListResponseDto.prototype, "employees", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '전체 직원 수' }),
+    __metadata("design:type", Number)
+], EmployeeFcmTokenGroupedListResponseDto.prototype, "totalEmployees", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '전체 관계 수' }),
+    __metadata("design:type", Number)
+], EmployeeFcmTokenGroupedListResponseDto.prototype, "totalRelations", void 0);
+class EmployeeFcmTokenStatsDto {
+}
+exports.EmployeeFcmTokenStatsDto = EmployeeFcmTokenStatsDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '전체 관계 수' }),
+    __metadata("design:type", Number)
+], EmployeeFcmTokenStatsDto.prototype, "totalRelations", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '활성 토큰 수' }),
+    __metadata("design:type", Number)
+], EmployeeFcmTokenStatsDto.prototype, "activeTokens", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '비활성 토큰 수' }),
+    __metadata("design:type", Number)
+], EmployeeFcmTokenStatsDto.prototype, "inactiveTokens", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직원 수' }),
+    __metadata("design:type", Number)
+], EmployeeFcmTokenStatsDto.prototype, "employeeCount", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'FCM 토큰 수' }),
+    __metadata("design:type", Number)
+], EmployeeFcmTokenStatsDto.prototype, "fcmTokenCount", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/admin/employee/dto/employee-system-role.dto.ts":
+/*!********************************************************************************!*\
+  !*** ./src/modules/application/admin/employee/dto/employee-system-role.dto.ts ***!
+  \********************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b, _c, _d, _e, _f;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EmployeeSystemRoleGroupedListResponseDto = exports.EmployeeSystemRoleGroupedDto = exports.EmployeeSystemRoleDetailDto = exports.EmployeeSystemRoleListResponseDto = exports.EmployeeSystemRoleRoleDto = exports.EmployeeSystemRoleSystemDto = exports.EmployeeSystemRoleEmployeeDto = exports.UpdateEmployeeSystemRoleDto = exports.CreateEmployeeSystemRoleDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+class CreateEmployeeSystemRoleDto {
+}
+exports.CreateEmployeeSystemRoleDto = CreateEmployeeSystemRoleDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직원 ID', example: 'uuid-employee-id' }),
+    (0, class_validator_1.IsUUID)(),
+    __metadata("design:type", String)
+], CreateEmployeeSystemRoleDto.prototype, "employeeId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '시스템 역할 ID', example: 'uuid-system-role-id' }),
+    (0, class_validator_1.IsUUID)(),
+    __metadata("design:type", String)
+], CreateEmployeeSystemRoleDto.prototype, "systemRoleId", void 0);
+class UpdateEmployeeSystemRoleDto {
+}
+exports.UpdateEmployeeSystemRoleDto = UpdateEmployeeSystemRoleDto;
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '시스템 역할 ID', example: 'uuid-system-role-id' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsUUID)(),
+    __metadata("design:type", String)
+], UpdateEmployeeSystemRoleDto.prototype, "systemRoleId", void 0);
+class EmployeeSystemRoleEmployeeDto {
+}
+exports.EmployeeSystemRoleEmployeeDto = EmployeeSystemRoleEmployeeDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직원 ID' }),
+    __metadata("design:type", String)
+], EmployeeSystemRoleEmployeeDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직원명' }),
+    __metadata("design:type", String)
+], EmployeeSystemRoleEmployeeDto.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '사번' }),
+    __metadata("design:type", String)
+], EmployeeSystemRoleEmployeeDto.prototype, "employeeNumber", void 0);
+class EmployeeSystemRoleSystemDto {
+}
+exports.EmployeeSystemRoleSystemDto = EmployeeSystemRoleSystemDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '시스템 ID' }),
+    __metadata("design:type", String)
+], EmployeeSystemRoleSystemDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '시스템명' }),
+    __metadata("design:type", String)
+], EmployeeSystemRoleSystemDto.prototype, "name", void 0);
+class EmployeeSystemRoleRoleDto {
+}
+exports.EmployeeSystemRoleRoleDto = EmployeeSystemRoleRoleDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '시스템 역할 ID' }),
+    __metadata("design:type", String)
+], EmployeeSystemRoleRoleDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '역할명' }),
+    __metadata("design:type", String)
+], EmployeeSystemRoleRoleDto.prototype, "roleName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '역할 코드' }),
+    __metadata("design:type", String)
+], EmployeeSystemRoleRoleDto.prototype, "roleCode", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '소속 시스템', type: EmployeeSystemRoleSystemDto }),
+    __metadata("design:type", EmployeeSystemRoleSystemDto)
+], EmployeeSystemRoleRoleDto.prototype, "system", void 0);
+class EmployeeSystemRoleListResponseDto {
+}
+exports.EmployeeSystemRoleListResponseDto = EmployeeSystemRoleListResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '관계 ID' }),
+    __metadata("design:type", String)
+], EmployeeSystemRoleListResponseDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직원 ID' }),
+    __metadata("design:type", String)
+], EmployeeSystemRoleListResponseDto.prototype, "employeeId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '시스템 역할 ID' }),
+    __metadata("design:type", String)
+], EmployeeSystemRoleListResponseDto.prototype, "systemRoleId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '생성일' }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], EmployeeSystemRoleListResponseDto.prototype, "createdAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '수정일' }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], EmployeeSystemRoleListResponseDto.prototype, "updatedAt", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '직원 정보', type: EmployeeSystemRoleEmployeeDto }),
+    __metadata("design:type", EmployeeSystemRoleEmployeeDto)
+], EmployeeSystemRoleListResponseDto.prototype, "employee", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '시스템 역할 정보', type: EmployeeSystemRoleRoleDto }),
+    __metadata("design:type", EmployeeSystemRoleRoleDto)
+], EmployeeSystemRoleListResponseDto.prototype, "systemRole", void 0);
+class EmployeeSystemRoleDetailDto {
+}
+exports.EmployeeSystemRoleDetailDto = EmployeeSystemRoleDetailDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '시스템 역할 ID' }),
+    __metadata("design:type", String)
+], EmployeeSystemRoleDetailDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '역할명' }),
+    __metadata("design:type", String)
+], EmployeeSystemRoleDetailDto.prototype, "roleName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '역할 코드' }),
+    __metadata("design:type", String)
+], EmployeeSystemRoleDetailDto.prototype, "roleCode", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '소속 시스템명' }),
+    __metadata("design:type", String)
+], EmployeeSystemRoleDetailDto.prototype, "systemName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '할당일' }),
+    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
+], EmployeeSystemRoleDetailDto.prototype, "assignedAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '수정일' }),
+    __metadata("design:type", typeof (_d = typeof Date !== "undefined" && Date) === "function" ? _d : Object)
+], EmployeeSystemRoleDetailDto.prototype, "updatedAt", void 0);
+class EmployeeSystemRoleGroupedDto {
+}
+exports.EmployeeSystemRoleGroupedDto = EmployeeSystemRoleGroupedDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직원 ID' }),
+    __metadata("design:type", String)
+], EmployeeSystemRoleGroupedDto.prototype, "employeeId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직원명' }),
+    __metadata("design:type", String)
+], EmployeeSystemRoleGroupedDto.prototype, "employeeName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '사번' }),
+    __metadata("design:type", String)
+], EmployeeSystemRoleGroupedDto.prototype, "employeeNumber", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '시스템 역할 목록', type: [EmployeeSystemRoleDetailDto] }),
+    __metadata("design:type", Array)
+], EmployeeSystemRoleGroupedDto.prototype, "systemRoles", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '전체 역할 수' }),
+    __metadata("design:type", Number)
+], EmployeeSystemRoleGroupedDto.prototype, "totalRoles", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '최초 역할 할당일' }),
+    __metadata("design:type", typeof (_e = typeof Date !== "undefined" && Date) === "function" ? _e : Object)
+], EmployeeSystemRoleGroupedDto.prototype, "firstRoleAssignedAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '최근 역할 수정일' }),
+    __metadata("design:type", typeof (_f = typeof Date !== "undefined" && Date) === "function" ? _f : Object)
+], EmployeeSystemRoleGroupedDto.prototype, "lastRoleUpdatedAt", void 0);
+class EmployeeSystemRoleGroupedListResponseDto {
+}
+exports.EmployeeSystemRoleGroupedListResponseDto = EmployeeSystemRoleGroupedListResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직원별 시스템 역할 목록', type: [EmployeeSystemRoleGroupedDto] }),
+    __metadata("design:type", Array)
+], EmployeeSystemRoleGroupedListResponseDto.prototype, "employees", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '전체 직원 수' }),
+    __metadata("design:type", Number)
+], EmployeeSystemRoleGroupedListResponseDto.prototype, "totalEmployees", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '전체 관계 수' }),
+    __metadata("design:type", Number)
+], EmployeeSystemRoleGroupedListResponseDto.prototype, "totalRelations", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/admin/employee/dto/employee-token.dto.ts":
+/*!**************************************************************************!*\
+  !*** ./src/modules/application/admin/employee/dto/employee-token.dto.ts ***!
+  \**************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b, _c, _d, _e, _f;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EmployeeTokenGroupedListResponseDto = exports.EmployeeTokenGroupedDto = exports.EmployeeTokenDetailDto = exports.EmployeeTokenListResponseDto = exports.EmployeeTokenTokenDto = exports.EmployeeTokenEmployeeDto = exports.UpdateEmployeeTokenDto = exports.CreateEmployeeTokenDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+class CreateEmployeeTokenDto {
+}
+exports.CreateEmployeeTokenDto = CreateEmployeeTokenDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직원 ID', example: 'uuid-employee-id' }),
+    (0, class_validator_1.IsUUID)(),
+    __metadata("design:type", String)
+], CreateEmployeeTokenDto.prototype, "employeeId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '토큰 ID', example: 'uuid-token-id' }),
+    (0, class_validator_1.IsUUID)(),
+    __metadata("design:type", String)
+], CreateEmployeeTokenDto.prototype, "tokenId", void 0);
+class UpdateEmployeeTokenDto {
+}
+exports.UpdateEmployeeTokenDto = UpdateEmployeeTokenDto;
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '토큰 ID', example: 'uuid-token-id' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsUUID)(),
+    __metadata("design:type", String)
+], UpdateEmployeeTokenDto.prototype, "tokenId", void 0);
+class EmployeeTokenEmployeeDto {
+}
+exports.EmployeeTokenEmployeeDto = EmployeeTokenEmployeeDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직원 ID' }),
+    __metadata("design:type", String)
+], EmployeeTokenEmployeeDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직원명' }),
+    __metadata("design:type", String)
+], EmployeeTokenEmployeeDto.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '사번' }),
+    __metadata("design:type", String)
+], EmployeeTokenEmployeeDto.prototype, "employeeNumber", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '이메일' }),
+    __metadata("design:type", String)
+], EmployeeTokenEmployeeDto.prototype, "email", void 0);
+class EmployeeTokenTokenDto {
+}
+exports.EmployeeTokenTokenDto = EmployeeTokenTokenDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '토큰 ID' }),
+    __metadata("design:type", String)
+], EmployeeTokenTokenDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '액세스 토큰' }),
+    __metadata("design:type", String)
+], EmployeeTokenTokenDto.prototype, "accessToken", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '토큰 만료일시' }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], EmployeeTokenTokenDto.prototype, "tokenExpiresAt", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '클라이언트 정보' }),
+    __metadata("design:type", String)
+], EmployeeTokenTokenDto.prototype, "clientInfo", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '활성화 상태' }),
+    __metadata("design:type", Boolean)
+], EmployeeTokenTokenDto.prototype, "isActive", void 0);
+class EmployeeTokenListResponseDto {
+}
+exports.EmployeeTokenListResponseDto = EmployeeTokenListResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '관계 ID' }),
+    __metadata("design:type", String)
+], EmployeeTokenListResponseDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직원 ID' }),
+    __metadata("design:type", String)
+], EmployeeTokenListResponseDto.prototype, "employeeId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '토큰 ID' }),
+    __metadata("design:type", String)
+], EmployeeTokenListResponseDto.prototype, "tokenId", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '직원 정보', type: EmployeeTokenEmployeeDto }),
+    __metadata("design:type", EmployeeTokenEmployeeDto)
+], EmployeeTokenListResponseDto.prototype, "employee", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '토큰 정보', type: EmployeeTokenTokenDto }),
+    __metadata("design:type", EmployeeTokenTokenDto)
+], EmployeeTokenListResponseDto.prototype, "token", void 0);
+class EmployeeTokenDetailDto {
+}
+exports.EmployeeTokenDetailDto = EmployeeTokenDetailDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '토큰 ID' }),
+    __metadata("design:type", String)
+], EmployeeTokenDetailDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '액세스 토큰 (마스킹)' }),
+    __metadata("design:type", String)
+], EmployeeTokenDetailDto.prototype, "accessTokenMasked", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '토큰 만료일시' }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], EmployeeTokenDetailDto.prototype, "tokenExpiresAt", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '클라이언트 정보' }),
+    __metadata("design:type", String)
+], EmployeeTokenDetailDto.prototype, "clientInfo", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '활성화 상태' }),
+    __metadata("design:type", Boolean)
+], EmployeeTokenDetailDto.prototype, "isActive", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '토큰 생성일' }),
+    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
+], EmployeeTokenDetailDto.prototype, "tokenCreatedAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '마지막 접근일시' }),
+    __metadata("design:type", typeof (_d = typeof Date !== "undefined" && Date) === "function" ? _d : Object)
+], EmployeeTokenDetailDto.prototype, "lastAccess", void 0);
+class EmployeeTokenGroupedDto {
+}
+exports.EmployeeTokenGroupedDto = EmployeeTokenGroupedDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직원 ID' }),
+    __metadata("design:type", String)
+], EmployeeTokenGroupedDto.prototype, "employeeId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직원명' }),
+    __metadata("design:type", String)
+], EmployeeTokenGroupedDto.prototype, "employeeName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '사번' }),
+    __metadata("design:type", String)
+], EmployeeTokenGroupedDto.prototype, "employeeNumber", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '이메일' }),
+    __metadata("design:type", String)
+], EmployeeTokenGroupedDto.prototype, "employeeEmail", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '토큰 목록', type: [EmployeeTokenDetailDto] }),
+    __metadata("design:type", Array)
+], EmployeeTokenGroupedDto.prototype, "tokens", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '전체 토큰 수' }),
+    __metadata("design:type", Number)
+], EmployeeTokenGroupedDto.prototype, "totalTokens", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '활성 토큰 수' }),
+    __metadata("design:type", Number)
+], EmployeeTokenGroupedDto.prototype, "activeTokens", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '최초 토큰 생성일' }),
+    __metadata("design:type", typeof (_e = typeof Date !== "undefined" && Date) === "function" ? _e : Object)
+], EmployeeTokenGroupedDto.prototype, "firstTokenCreatedAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '최근 토큰 활동일' }),
+    __metadata("design:type", typeof (_f = typeof Date !== "undefined" && Date) === "function" ? _f : Object)
+], EmployeeTokenGroupedDto.prototype, "lastTokenActivity", void 0);
+class EmployeeTokenGroupedListResponseDto {
+}
+exports.EmployeeTokenGroupedListResponseDto = EmployeeTokenGroupedListResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직원별 토큰 목록', type: [EmployeeTokenGroupedDto] }),
+    __metadata("design:type", Array)
+], EmployeeTokenGroupedListResponseDto.prototype, "employees", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '전체 직원 수' }),
+    __metadata("design:type", Number)
+], EmployeeTokenGroupedListResponseDto.prototype, "totalEmployees", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '전체 관계 수' }),
+    __metadata("design:type", Number)
+], EmployeeTokenGroupedListResponseDto.prototype, "totalRelations", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/admin/employee/dto/index.ts":
+/*!*************************************************************!*\
+  !*** ./src/modules/application/admin/employee/dto/index.ts ***!
+  \*************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(/*! ./employee-system-role.dto */ "./src/modules/application/admin/employee/dto/employee-system-role.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./employee-token.dto */ "./src/modules/application/admin/employee/dto/employee-token.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./employee-fcm-token.dto */ "./src/modules/application/admin/employee/dto/employee-fcm-token.dto.ts"), exports);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/admin/employee/employee.module.ts":
+/*!*******************************************************************!*\
+  !*** ./src/modules/application/admin/employee/employee.module.ts ***!
+  \*******************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EmployeeModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const employee_system_role_controller_1 = __webpack_require__(/*! ./controllers/employee-system-role.controller */ "./src/modules/application/admin/employee/controllers/employee-system-role.controller.ts");
+const employee_token_controller_1 = __webpack_require__(/*! ./controllers/employee-token.controller */ "./src/modules/application/admin/employee/controllers/employee-token.controller.ts");
+const employee_fcm_token_controller_1 = __webpack_require__(/*! ./controllers/employee-fcm-token.controller */ "./src/modules/application/admin/employee/controllers/employee-fcm-token.controller.ts");
+const employee_system_role_application_service_1 = __webpack_require__(/*! ./services/employee-system-role-application.service */ "./src/modules/application/admin/employee/services/employee-system-role-application.service.ts");
+const employee_token_application_service_1 = __webpack_require__(/*! ./services/employee-token-application.service */ "./src/modules/application/admin/employee/services/employee-token-application.service.ts");
+const employee_fcm_token_application_service_1 = __webpack_require__(/*! ./services/employee-fcm-token-application.service */ "./src/modules/application/admin/employee/services/employee-fcm-token-application.service.ts");
+const employee_management_context_module_1 = __webpack_require__(/*! ../../../context/employee-management/employee-management-context.module */ "./src/modules/context/employee-management/employee-management-context.module.ts");
+let EmployeeModule = class EmployeeModule {
+};
+exports.EmployeeModule = EmployeeModule;
+exports.EmployeeModule = EmployeeModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            employee_management_context_module_1.EmployeeManagementContextModule,
+        ],
+        controllers: [employee_system_role_controller_1.EmployeeSystemRoleController, employee_token_controller_1.EmployeeTokenController, employee_fcm_token_controller_1.EmployeeFcmTokenController],
+        providers: [
+            employee_system_role_application_service_1.EmployeeSystemRoleApplicationService,
+            employee_token_application_service_1.EmployeeTokenApplicationService,
+            employee_fcm_token_application_service_1.EmployeeFcmTokenApplicationService,
+        ],
+        exports: [
+            employee_system_role_application_service_1.EmployeeSystemRoleApplicationService,
+            employee_token_application_service_1.EmployeeTokenApplicationService,
+            employee_fcm_token_application_service_1.EmployeeFcmTokenApplicationService,
+        ],
+    })
+], EmployeeModule);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/admin/employee/services/employee-fcm-token-application.service.ts":
+/*!***************************************************************************************************!*\
+  !*** ./src/modules/application/admin/employee/services/employee-fcm-token-application.service.ts ***!
+  \***************************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EmployeeFcmTokenApplicationService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const employee_fcm_token_management_context_service_1 = __webpack_require__(/*! ../../../../context/employee-management/employee-fcm-token-management-context.service */ "./src/modules/context/employee-management/employee-fcm-token-management-context.service.ts");
+let EmployeeFcmTokenApplicationService = class EmployeeFcmTokenApplicationService {
+    constructor(employeeFcmTokenManagementContext) {
+        this.employeeFcmTokenManagementContext = employeeFcmTokenManagementContext;
+    }
+    async 모든_직원_FCM_토큰_관계_조회() {
+        const relations = await this.employeeFcmTokenManagementContext.모든_직원_FCM_토큰_관계_조회();
+        return relations.map((relation) => ({
+            id: relation.id,
+            employeeId: relation.employeeId,
+            fcmTokenId: relation.fcmTokenId,
+            createdAt: relation.createdAt,
+            updatedAt: relation.updatedAt,
+            employee: relation.employee
+                ? {
+                    id: relation.employee.id,
+                    name: relation.employee.name,
+                    employeeNumber: relation.employee.employeeNumber,
+                    email: relation.employee.email,
+                }
+                : undefined,
+            fcmToken: relation.fcmToken
+                ? {
+                    id: relation.fcmToken.id,
+                    fcmToken: relation.fcmToken.fcmToken,
+                    deviceType: relation.fcmToken.deviceType,
+                    deviceInfo: relation.fcmToken.deviceInfo,
+                    isActive: relation.fcmToken.isActive,
+                    relationCreatedAt: relation.createdAt,
+                    relationUpdatedAt: relation.updatedAt,
+                }
+                : undefined,
+        }));
+    }
+    async 직원별_FCM_토큰_관계_조회(employeeId) {
+        const relations = await this.employeeFcmTokenManagementContext.직원별_FCM_토큰_관계_조회(employeeId);
+        return relations.map((relation) => ({
+            id: relation.id,
+            employeeId: relation.employeeId,
+            fcmTokenId: relation.fcmTokenId,
+            createdAt: relation.createdAt,
+            updatedAt: relation.updatedAt,
+            fcmToken: relation.fcmToken
+                ? {
+                    id: relation.fcmToken.id,
+                    fcmToken: relation.fcmToken.fcmToken,
+                    deviceType: relation.fcmToken.deviceType,
+                    deviceInfo: relation.fcmToken.deviceInfo,
+                    isActive: relation.fcmToken.isActive,
+                    relationCreatedAt: relation.createdAt,
+                    relationUpdatedAt: relation.updatedAt,
+                }
+                : undefined,
+        }));
+    }
+    async FCM_토큰별_직원_관계_조회(fcmTokenId) {
+        const relations = await this.employeeFcmTokenManagementContext.FCM_토큰별_직원_관계_조회(fcmTokenId);
+        return relations.map((relation) => ({
+            id: relation.id,
+            employeeId: relation.employeeId,
+            fcmTokenId: relation.fcmTokenId,
+            createdAt: relation.createdAt,
+            updatedAt: relation.updatedAt,
+            employee: relation.employee
+                ? {
+                    id: relation.employee.id,
+                    name: relation.employee.name,
+                    employeeNumber: relation.employee.employeeNumber,
+                    email: relation.employee.email,
+                }
+                : undefined,
+        }));
+    }
+    async 직원_FCM_토큰_관계_상세_조회(id) {
+        const relation = await this.employeeFcmTokenManagementContext.직원_FCM_토큰_관계_조회(id);
+        if (!relation) {
+            throw new common_1.NotFoundException('직원 FCM 토큰 관계를 찾을 수 없습니다.');
+        }
+        return {
+            id: relation.id,
+            employeeId: relation.employeeId,
+            fcmTokenId: relation.fcmTokenId,
+            createdAt: relation.createdAt,
+            updatedAt: relation.updatedAt,
+            employee: relation.employee
+                ? {
+                    id: relation.employee.id,
+                    name: relation.employee.name,
+                    employeeNumber: relation.employee.employeeNumber,
+                    email: relation.employee.email,
+                }
+                : undefined,
+            fcmToken: relation.fcmToken
+                ? {
+                    id: relation.fcmToken.id,
+                    fcmToken: relation.fcmToken.fcmToken,
+                    deviceType: relation.fcmToken.deviceType,
+                    deviceInfo: relation.fcmToken.deviceInfo,
+                    isActive: relation.fcmToken.isActive,
+                    relationCreatedAt: relation.createdAt,
+                    relationUpdatedAt: relation.updatedAt,
+                }
+                : undefined,
+        };
+    }
+    async 직원_FCM_토큰_관계_생성(dto) {
+        const relation = await this.employeeFcmTokenManagementContext.직원과_FCM_토큰_관계_생성_또는_업데이트(dto.employeeId, dto.fcmTokenId);
+        return this.직원_FCM_토큰_관계_상세_조회(relation.id);
+    }
+    async 직원_FCM_토큰_관계_수정(id, dto) {
+        const existingRelation = await this.employeeFcmTokenManagementContext.ID로_직원_FCM_토큰_관계_조회(id);
+        if (!existingRelation) {
+            throw new common_1.NotFoundException('직원 FCM 토큰 관계를 찾을 수 없습니다.');
+        }
+        if (dto.fcmTokenId && dto.fcmTokenId !== existingRelation.fcmTokenId) {
+            await this.employeeFcmTokenManagementContext.직원과_FCM_토큰_관계_삭제(existingRelation.employeeId, existingRelation.fcmTokenId);
+            const newRelation = await this.employeeFcmTokenManagementContext.직원과_FCM_토큰_관계_생성_또는_업데이트(existingRelation.employeeId, dto.fcmTokenId);
+            return this.직원_FCM_토큰_관계_상세_조회(newRelation.id);
+        }
+        return this.직원_FCM_토큰_관계_상세_조회(id);
+    }
+    async 직원_FCM_토큰_관계_삭제(id) {
+        const relation = await this.employeeFcmTokenManagementContext.ID로_직원_FCM_토큰_관계_조회(id);
+        if (!relation) {
+            throw new common_1.NotFoundException('직원 FCM 토큰 관계를 찾을 수 없습니다.');
+        }
+        await this.employeeFcmTokenManagementContext.직원과_FCM_토큰_관계_삭제(relation.employeeId, relation.fcmTokenId);
+        return { message: '직원 FCM 토큰 관계가 성공적으로 삭제되었습니다.' };
+    }
+    async 직원_모든_FCM_토큰_관계_삭제(employeeId) {
+        await this.employeeFcmTokenManagementContext.직원의_모든_FCM_토큰_관계_삭제(employeeId);
+        return { message: '직원의 모든 FCM 토큰 관계가 성공적으로 삭제되었습니다.' };
+    }
+    async FCM_토큰_사용일_업데이트(employeeId, fcmTokenId) {
+        const relation = await this.employeeFcmTokenManagementContext.FCM_토큰_사용일_업데이트(employeeId, fcmTokenId);
+        return this.직원_FCM_토큰_관계_상세_조회(relation.id);
+    }
+    async 오래된_FCM_토큰_관계_정리(cutoffDays = 30) {
+        const cutoffDate = new Date();
+        cutoffDate.setDate(cutoffDate.getDate() - cutoffDays);
+        const deletedCount = await this.employeeFcmTokenManagementContext.오래된_FCM_토큰_관계_삭제(cutoffDate);
+        return { deletedCount };
+    }
+    async FCM_토큰_통계_조회() {
+        const relations = await this.employeeFcmTokenManagementContext.모든_직원_FCM_토큰_관계_조회();
+        const employeeIds = new Set();
+        const fcmTokenIds = new Set();
+        let activeTokens = 0;
+        let inactiveTokens = 0;
+        relations.forEach((relation) => {
+            employeeIds.add(relation.employeeId);
+            fcmTokenIds.add(relation.fcmTokenId);
+            if (relation.fcmToken?.isActive) {
+                activeTokens++;
+            }
+            else {
+                inactiveTokens++;
+            }
+        });
+        return {
+            totalRelations: relations.length,
+            activeTokens,
+            inactiveTokens,
+            employeeCount: employeeIds.size,
+            fcmTokenCount: fcmTokenIds.size,
+        };
+    }
+    async 직원별_그룹핑된_FCM_토큰_관계_조회(employeeId) {
+        let relations;
+        if (employeeId) {
+            relations = await this.employeeFcmTokenManagementContext.직원별_FCM_토큰_관계_조회(employeeId);
+        }
+        else {
+            relations = await this.employeeFcmTokenManagementContext.모든_직원_FCM_토큰_관계_조회();
+        }
+        const employeeGroups = new Map();
+        relations.forEach((relation) => {
+            const employeeId = relation.employeeId;
+            if (!employeeGroups.has(employeeId)) {
+                employeeGroups.set(employeeId, {
+                    employeeId: relation.employeeId,
+                    employeeName: relation.employee?.name || '',
+                    employeeNumber: relation.employee?.employeeNumber || '',
+                    employeeEmail: relation.employee?.email || '',
+                    fcmTokens: [],
+                    totalTokens: 0,
+                    activeTokens: 0,
+                    firstRelationCreatedAt: relation.createdAt,
+                    lastRelationUpdatedAt: relation.updatedAt,
+                });
+            }
+            const group = employeeGroups.get(employeeId);
+            if (relation.createdAt < group.firstRelationCreatedAt) {
+                group.firstRelationCreatedAt = relation.createdAt;
+            }
+            if (relation.updatedAt > group.lastRelationUpdatedAt) {
+                group.lastRelationUpdatedAt = relation.updatedAt;
+            }
+            if (relation.fcmToken) {
+                const tokenDto = {
+                    id: relation.fcmToken.id,
+                    fcmToken: relation.fcmToken.fcmToken,
+                    deviceType: relation.fcmToken.deviceType,
+                    deviceInfo: relation.fcmToken.deviceInfo,
+                    isActive: relation.fcmToken.isActive,
+                    relationCreatedAt: relation.createdAt,
+                    relationUpdatedAt: relation.updatedAt,
+                };
+                group.fcmTokens.push(tokenDto);
+                group.totalTokens++;
+                if (relation.fcmToken.isActive) {
+                    group.activeTokens++;
+                }
+            }
+        });
+        const employees = Array.from(employeeGroups.values());
+        return {
+            employees,
+            totalEmployees: employees.length,
+            totalRelations: relations.length,
+        };
+    }
+};
+exports.EmployeeFcmTokenApplicationService = EmployeeFcmTokenApplicationService;
+exports.EmployeeFcmTokenApplicationService = EmployeeFcmTokenApplicationService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof employee_fcm_token_management_context_service_1.EmployeeFcmTokenManagementContextService !== "undefined" && employee_fcm_token_management_context_service_1.EmployeeFcmTokenManagementContextService) === "function" ? _a : Object])
+], EmployeeFcmTokenApplicationService);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/admin/employee/services/employee-system-role-application.service.ts":
+/*!*****************************************************************************************************!*\
+  !*** ./src/modules/application/admin/employee/services/employee-system-role-application.service.ts ***!
+  \*****************************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EmployeeSystemRoleApplicationService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const employee_system_role_management_context_service_1 = __webpack_require__(/*! ../../../../context/employee-management/employee-system-role-management-context.service */ "./src/modules/context/employee-management/employee-system-role-management-context.service.ts");
+let EmployeeSystemRoleApplicationService = class EmployeeSystemRoleApplicationService {
+    constructor(employeeSystemRoleManagementContext) {
+        this.employeeSystemRoleManagementContext = employeeSystemRoleManagementContext;
+    }
+    async 모든_직원_시스템_역할_조회() {
+        const relations = await this.employeeSystemRoleManagementContext.모든_직원_시스템_역할_관계_조회();
+        return relations.map((relation) => ({
+            id: relation.id,
+            employeeId: relation.employeeId,
+            systemRoleId: relation.systemRoleId,
+            createdAt: relation.createdAt,
+            updatedAt: relation.updatedAt,
+            employee: relation.employee
+                ? {
+                    id: relation.employee.id,
+                    name: relation.employee.name,
+                    employeeNumber: relation.employee.employeeNumber,
+                }
+                : undefined,
+            systemRole: relation.systemRole
+                ? {
+                    id: relation.systemRole.id,
+                    roleName: relation.systemRole.roleName,
+                    roleCode: relation.systemRole.roleCode,
+                    system: {
+                        id: relation.systemRole.system.id,
+                        name: relation.systemRole.system.name,
+                    },
+                }
+                : undefined,
+        }));
+    }
+    async 직원별_시스템_역할_조회(employeeId) {
+        const relations = await this.employeeSystemRoleManagementContext.직원별_시스템_역할_조회(employeeId);
+        return relations.map((relation) => ({
+            id: relation.id,
+            employeeId: relation.employeeId,
+            systemRoleId: relation.systemRoleId,
+            createdAt: relation.createdAt,
+            updatedAt: relation.updatedAt,
+            systemRole: relation.systemRole
+                ? {
+                    id: relation.systemRole.id,
+                    roleName: relation.systemRole.roleName,
+                    roleCode: relation.systemRole.roleCode,
+                    system: {
+                        id: relation.systemRole.system.id,
+                        name: relation.systemRole.system.name,
+                    },
+                }
+                : undefined,
+        }));
+    }
+    async 시스템_역할별_직원_조회(systemRoleId) {
+        const relations = await this.employeeSystemRoleManagementContext.시스템_역할별_직원_조회(systemRoleId);
+        return relations.map((relation) => ({
+            id: relation.id,
+            employeeId: relation.employeeId,
+            systemRoleId: relation.systemRoleId,
+            createdAt: relation.createdAt,
+            updatedAt: relation.updatedAt,
+            employee: relation.employee
+                ? {
+                    id: relation.employee.id,
+                    name: relation.employee.name,
+                    employeeNumber: relation.employee.employeeNumber,
+                }
+                : undefined,
+        }));
+    }
+    async 직원_시스템_역할_상세_조회(id) {
+        const relation = await this.employeeSystemRoleManagementContext.직원_시스템_역할_관계_조회(id);
+        if (!relation) {
+            throw new common_1.NotFoundException('직원 시스템 역할을 찾을 수 없습니다.');
+        }
+        return {
+            id: relation.id,
+            employeeId: relation.employeeId,
+            systemRoleId: relation.systemRoleId,
+            createdAt: relation.createdAt,
+            updatedAt: relation.updatedAt,
+            employee: relation.employee
+                ? {
+                    id: relation.employee.id,
+                    name: relation.employee.name,
+                    employeeNumber: relation.employee.employeeNumber,
+                }
+                : undefined,
+            systemRole: relation.systemRole
+                ? {
+                    id: relation.systemRole.id,
+                    roleName: relation.systemRole.roleName,
+                    roleCode: relation.systemRole.roleCode,
+                    system: {
+                        id: relation.systemRole.system.id,
+                        name: relation.systemRole.system.name,
+                    },
+                }
+                : undefined,
+        };
+    }
+    async 직원_시스템_역할_할당(dto) {
+        const relation = await this.employeeSystemRoleManagementContext.직원에게_시스템_역할_할당(dto.employeeId, dto.systemRoleId);
+        return this.직원_시스템_역할_상세_조회(relation.id);
+    }
+    async 직원_시스템_역할_해제(id) {
+        const relation = await this.employeeSystemRoleManagementContext.ID로_직원_시스템_역할_조회(id);
+        if (!relation) {
+            throw new common_1.NotFoundException('직원 시스템 역할을 찾을 수 없습니다.');
+        }
+        await this.employeeSystemRoleManagementContext.직원의_시스템_역할_해제(relation.employeeId, relation.systemRoleId);
+        return { message: '직원 시스템 역할이 성공적으로 해제되었습니다.' };
+    }
+    async 직원_모든_시스템_역할_해제(employeeId) {
+        await this.employeeSystemRoleManagementContext.직원의_모든_시스템_역할_해제(employeeId);
+        return { message: '직원의 모든 시스템 역할이 성공적으로 해제되었습니다.' };
+    }
+    async 직원별_그룹핑된_시스템_역할_조회(employeeId) {
+        let relations;
+        if (employeeId) {
+            relations = await this.employeeSystemRoleManagementContext.직원별_시스템_역할_조회(employeeId);
+        }
+        else {
+            relations = await this.employeeSystemRoleManagementContext.모든_직원_시스템_역할_관계_조회();
+        }
+        const employeeGroups = new Map();
+        relations.forEach((relation) => {
+            const employeeId = relation.employeeId;
+            if (!employeeGroups.has(employeeId)) {
+                employeeGroups.set(employeeId, {
+                    employeeId: relation.employeeId,
+                    employeeName: relation.employee?.name || '',
+                    employeeNumber: relation.employee?.employeeNumber || '',
+                    systemRoles: [],
+                    totalRoles: 0,
+                    firstRoleAssignedAt: relation.createdAt,
+                    lastRoleUpdatedAt: relation.updatedAt,
+                });
+            }
+            const group = employeeGroups.get(employeeId);
+            if (relation.createdAt < group.firstRoleAssignedAt) {
+                group.firstRoleAssignedAt = relation.createdAt;
+            }
+            if (relation.updatedAt > group.lastRoleUpdatedAt) {
+                group.lastRoleUpdatedAt = relation.updatedAt;
+            }
+            if (relation.systemRole) {
+                const roleDto = {
+                    id: relation.systemRole.id,
+                    roleName: relation.systemRole.roleName,
+                    roleCode: relation.systemRole.roleCode,
+                    systemName: relation.systemRole.system?.name || '',
+                    assignedAt: relation.createdAt,
+                    updatedAt: relation.updatedAt,
+                };
+                group.systemRoles.push(roleDto);
+                group.totalRoles++;
+            }
+        });
+        const employees = Array.from(employeeGroups.values());
+        return {
+            employees,
+            totalEmployees: employees.length,
+            totalRelations: relations.length,
+        };
+    }
+};
+exports.EmployeeSystemRoleApplicationService = EmployeeSystemRoleApplicationService;
+exports.EmployeeSystemRoleApplicationService = EmployeeSystemRoleApplicationService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof employee_system_role_management_context_service_1.EmployeeSystemRoleManagementContextService !== "undefined" && employee_system_role_management_context_service_1.EmployeeSystemRoleManagementContextService) === "function" ? _a : Object])
+], EmployeeSystemRoleApplicationService);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/admin/employee/services/employee-token-application.service.ts":
+/*!***********************************************************************************************!*\
+  !*** ./src/modules/application/admin/employee/services/employee-token-application.service.ts ***!
+  \***********************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EmployeeTokenApplicationService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const employee_token_management_context_service_1 = __webpack_require__(/*! ../../../../context/employee-management/employee-token-management-context.service */ "./src/modules/context/employee-management/employee-token-management-context.service.ts");
+let EmployeeTokenApplicationService = class EmployeeTokenApplicationService {
+    constructor(employeeTokenManagementContext) {
+        this.employeeTokenManagementContext = employeeTokenManagementContext;
+    }
+    async 모든_직원_토큰_관계_조회() {
+        const relations = await this.employeeTokenManagementContext.모든_직원_토큰_관계_조회();
+        return relations.map((relation) => ({
+            id: relation.id,
+            employeeId: relation.employeeId,
+            tokenId: relation.tokenId,
+            employee: relation.employee
+                ? {
+                    id: relation.employee.id,
+                    name: relation.employee.name,
+                    employeeNumber: relation.employee.employeeNumber,
+                    email: relation.employee.email,
+                }
+                : undefined,
+            token: relation.token
+                ? {
+                    id: relation.token.id,
+                    accessToken: relation.token.accessToken,
+                    tokenExpiresAt: relation.token.tokenExpiresAt,
+                    clientInfo: relation.token.clientInfo,
+                    isActive: relation.token.isActive,
+                }
+                : undefined,
+        }));
+    }
+    async 직원별_토큰_관계_조회(employeeId) {
+        const relations = await this.employeeTokenManagementContext.직원별_토큰_관계_조회(employeeId);
+        return relations.map((relation) => ({
+            id: relation.id,
+            employeeId: relation.employeeId,
+            tokenId: relation.tokenId,
+            token: relation.token
+                ? {
+                    id: relation.token.id,
+                    accessToken: relation.token.accessToken,
+                    tokenExpiresAt: relation.token.tokenExpiresAt,
+                    clientInfo: relation.token.clientInfo,
+                    isActive: relation.token.isActive,
+                }
+                : undefined,
+        }));
+    }
+    async 토큰별_직원_관계_조회(tokenId) {
+        const relations = await this.employeeTokenManagementContext.토큰별_직원_관계_조회(tokenId);
+        return relations.map((relation) => ({
+            id: relation.id,
+            employeeId: relation.employeeId,
+            tokenId: relation.tokenId,
+            employee: relation.employee
+                ? {
+                    id: relation.employee.id,
+                    name: relation.employee.name,
+                    employeeNumber: relation.employee.employeeNumber,
+                    email: relation.employee.email,
+                }
+                : undefined,
+        }));
+    }
+    async 직원_토큰_관계_상세_조회(id) {
+        const relation = await this.employeeTokenManagementContext.직원_토큰_관계_조회(id);
+        if (!relation) {
+            throw new common_1.NotFoundException('직원 토큰 관계를 찾을 수 없습니다.');
+        }
+        return {
+            id: relation.id,
+            employeeId: relation.employeeId,
+            tokenId: relation.tokenId,
+            employee: relation.employee
+                ? {
+                    id: relation.employee.id,
+                    name: relation.employee.name,
+                    employeeNumber: relation.employee.employeeNumber,
+                    email: relation.employee.email,
+                }
+                : undefined,
+            token: relation.token
+                ? {
+                    id: relation.token.id,
+                    accessToken: relation.token.accessToken,
+                    tokenExpiresAt: relation.token.tokenExpiresAt,
+                    clientInfo: relation.token.clientInfo,
+                    isActive: relation.token.isActive,
+                }
+                : undefined,
+        };
+    }
+    async 직원_토큰_관계_생성_또는_업데이트(dto) {
+        const relation = await this.employeeTokenManagementContext.직원과_토큰_관계_생성_또는_업데이트(dto.employeeId, dto.tokenId, {});
+        return this.직원_토큰_관계_상세_조회(relation.id);
+    }
+    async 직원_토큰_관계_수정(id, dto) {
+        const existingRelation = await this.employeeTokenManagementContext.ID로_직원_토큰_관계_조회(id);
+        if (!existingRelation) {
+            throw new common_1.NotFoundException('직원 토큰 관계를 찾을 수 없습니다.');
+        }
+        if (dto.tokenId) {
+            await this.employeeTokenManagementContext.직원과_토큰_관계_생성_또는_업데이트(existingRelation.employeeId, dto.tokenId, {});
+            await this.employeeTokenManagementContext.직원_토큰_관계_삭제(id);
+            const newRelation = await this.employeeTokenManagementContext.직원과_토큰의_관계_조회(existingRelation.employeeId, dto.tokenId);
+            return this.직원_토큰_관계_상세_조회(newRelation.id);
+        }
+        return this.직원_토큰_관계_상세_조회(id);
+    }
+    async 직원_토큰_관계_삭제(id) {
+        const relation = await this.employeeTokenManagementContext.ID로_직원_토큰_관계_조회(id);
+        if (!relation) {
+            throw new common_1.NotFoundException('직원 토큰 관계를 찾을 수 없습니다.');
+        }
+        await this.employeeTokenManagementContext.직원_토큰_관계_삭제(id);
+        return { message: '직원 토큰 관계가 성공적으로 삭제되었습니다.' };
+    }
+    async 토큰_관련_관계_삭제(tokenIds) {
+        return await this.employeeTokenManagementContext.토큰_ID들로_관계_삭제(tokenIds);
+    }
+    async 직원별_그룹핑된_토큰_관계_조회(employeeId) {
+        let relations;
+        if (employeeId) {
+            relations = await this.employeeTokenManagementContext.직원별_토큰_관계_조회(employeeId);
+        }
+        else {
+            relations = await this.employeeTokenManagementContext.모든_직원_토큰_관계_조회();
+        }
+        const employeeGroups = new Map();
+        relations.forEach((relation) => {
+            const employeeId = relation.employeeId;
+            if (!employeeGroups.has(employeeId)) {
+                const firstTokenCreatedAt = relation.token?.createdAt || new Date();
+                const lastTokenActivity = relation.token?.lastAccess || relation.token?.updatedAt || new Date();
+                employeeGroups.set(employeeId, {
+                    employeeId: relation.employeeId,
+                    employeeName: relation.employee?.name || '',
+                    employeeNumber: relation.employee?.employeeNumber || '',
+                    employeeEmail: relation.employee?.email || '',
+                    tokens: [],
+                    totalTokens: 0,
+                    activeTokens: 0,
+                    firstTokenCreatedAt,
+                    lastTokenActivity,
+                });
+            }
+            const group = employeeGroups.get(employeeId);
+            if (relation.token?.createdAt && relation.token.createdAt < group.firstTokenCreatedAt) {
+                group.firstTokenCreatedAt = relation.token.createdAt;
+            }
+            const tokenActivity = relation.token?.lastAccess || relation.token?.updatedAt;
+            if (tokenActivity && tokenActivity > group.lastTokenActivity) {
+                group.lastTokenActivity = tokenActivity;
+            }
+            if (relation.token) {
+                const accessToken = relation.token.accessToken;
+                const maskedToken = accessToken.length > 16
+                    ? `${accessToken.substring(0, 8)}...${accessToken.substring(accessToken.length - 8)}`
+                    : '********';
+                const tokenDto = {
+                    id: relation.token.id,
+                    accessTokenMasked: maskedToken,
+                    tokenExpiresAt: relation.token.tokenExpiresAt,
+                    clientInfo: relation.token.clientInfo,
+                    isActive: relation.token.isActive,
+                    tokenCreatedAt: relation.token.createdAt,
+                    lastAccess: relation.token.lastAccess,
+                };
+                group.tokens.push(tokenDto);
+                group.totalTokens++;
+                if (relation.token.isActive) {
+                    group.activeTokens++;
+                }
+            }
+        });
+        const employees = Array.from(employeeGroups.values());
+        return {
+            employees,
+            totalEmployees: employees.length,
+            totalRelations: relations.length,
+        };
+    }
+};
+exports.EmployeeTokenApplicationService = EmployeeTokenApplicationService;
+exports.EmployeeTokenApplicationService = EmployeeTokenApplicationService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof employee_token_management_context_service_1.EmployeeTokenManagementContextService !== "undefined" && employee_token_management_context_service_1.EmployeeTokenManagementContextService) === "function" ? _a : Object])
+], EmployeeTokenApplicationService);
 
 
 /***/ }),
@@ -7133,6 +8906,302 @@ exports.AuthorizationContextService = AuthorizationContextService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [typeof (_a = typeof employee_service_1.DomainEmployeeService !== "undefined" && employee_service_1.DomainEmployeeService) === "function" ? _a : Object, typeof (_b = typeof token_service_1.DomainTokenService !== "undefined" && token_service_1.DomainTokenService) === "function" ? _b : Object, typeof (_c = typeof system_service_1.DomainSystemService !== "undefined" && system_service_1.DomainSystemService) === "function" ? _c : Object, typeof (_d = typeof employee_token_service_1.DomainEmployeeTokenService !== "undefined" && employee_token_service_1.DomainEmployeeTokenService) === "function" ? _d : Object])
 ], AuthorizationContextService);
+
+
+/***/ }),
+
+/***/ "./src/modules/context/employee-management/employee-fcm-token-management-context.service.ts":
+/*!**************************************************************************************************!*\
+  !*** ./src/modules/context/employee-management/employee-fcm-token-management-context.service.ts ***!
+  \**************************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EmployeeFcmTokenManagementContextService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const employee_fcm_token_service_1 = __webpack_require__(/*! ../../domain/employee-fcm-token/employee-fcm-token.service */ "./src/modules/domain/employee-fcm-token/employee-fcm-token.service.ts");
+let EmployeeFcmTokenManagementContextService = class EmployeeFcmTokenManagementContextService {
+    constructor(employeeFcmTokenService) {
+        this.employeeFcmTokenService = employeeFcmTokenService;
+    }
+    async 모든_직원_FCM_토큰_관계_조회() {
+        return this.employeeFcmTokenService.findAll({
+            relations: ['employee', 'fcmToken'],
+        });
+    }
+    async 직원별_FCM_토큰_관계_조회(employeeId) {
+        return this.employeeFcmTokenService.findByEmployeeId(employeeId);
+    }
+    async FCM_토큰별_직원_관계_조회(fcmTokenId) {
+        return this.employeeFcmTokenService.findByFcmTokenId(fcmTokenId);
+    }
+    async 직원_FCM_토큰_관계_조회(id) {
+        return this.employeeFcmTokenService.findOne({
+            where: { id },
+            relations: ['employee', 'fcmToken'],
+        });
+    }
+    async ID로_직원_FCM_토큰_관계_조회(id) {
+        return this.employeeFcmTokenService.findOne({
+            where: { id },
+        });
+    }
+    async 직원과_FCM_토큰_관계_생성_또는_업데이트(employeeId, fcmTokenId) {
+        return this.employeeFcmTokenService.createOrUpdateRelation(employeeId, fcmTokenId);
+    }
+    async 직원과_FCM_토큰_관계_삭제(employeeId, fcmTokenId) {
+        return this.employeeFcmTokenService.deleteRelation(employeeId, fcmTokenId);
+    }
+    async 직원의_모든_FCM_토큰_관계_삭제(employeeId) {
+        return this.employeeFcmTokenService.deleteAllByEmployeeId(employeeId);
+    }
+    async FCM_토큰_사용일_업데이트(employeeId, fcmTokenId) {
+        return this.employeeFcmTokenService.updateUsage(employeeId, fcmTokenId);
+    }
+    async 직원과_FCM_토큰의_관계_조회(employeeId, fcmTokenId) {
+        return this.employeeFcmTokenService.findOne({
+            where: { employeeId, fcmTokenId },
+        });
+    }
+    async FCM_토큰을_가진_직원_수_조회(fcmTokenId) {
+        return this.employeeFcmTokenService.countEmployeesByFcmToken(fcmTokenId);
+    }
+    async 직원의_FCM_토큰_수_조회(employeeId) {
+        return this.employeeFcmTokenService.countFcmTokensByEmployee(employeeId);
+    }
+    async 오래된_FCM_토큰_관계_삭제(cutoffDate) {
+        return this.employeeFcmTokenService.deleteOldTokens(cutoffDate);
+    }
+    async FCM_토큰_사용일_업데이트_by_토큰ID(fcmTokenId) {
+        return this.employeeFcmTokenService.updateTokenUsage(fcmTokenId);
+    }
+    async FCM_토큰과_직원_관계_존재_여부_확인(employeeId, fcmTokenId) {
+        const relation = await this.employeeFcmTokenService.findOne({
+            where: { employeeId, fcmTokenId },
+        });
+        return !!relation;
+    }
+};
+exports.EmployeeFcmTokenManagementContextService = EmployeeFcmTokenManagementContextService;
+exports.EmployeeFcmTokenManagementContextService = EmployeeFcmTokenManagementContextService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof employee_fcm_token_service_1.DomainEmployeeFcmTokenService !== "undefined" && employee_fcm_token_service_1.DomainEmployeeFcmTokenService) === "function" ? _a : Object])
+], EmployeeFcmTokenManagementContextService);
+
+
+/***/ }),
+
+/***/ "./src/modules/context/employee-management/employee-management-context.module.ts":
+/*!***************************************************************************************!*\
+  !*** ./src/modules/context/employee-management/employee-management-context.module.ts ***!
+  \***************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EmployeeManagementContextModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const employee_system_role_management_context_service_1 = __webpack_require__(/*! ./employee-system-role-management-context.service */ "./src/modules/context/employee-management/employee-system-role-management-context.service.ts");
+const employee_token_management_context_service_1 = __webpack_require__(/*! ./employee-token-management-context.service */ "./src/modules/context/employee-management/employee-token-management-context.service.ts");
+const employee_fcm_token_management_context_service_1 = __webpack_require__(/*! ./employee-fcm-token-management-context.service */ "./src/modules/context/employee-management/employee-fcm-token-management-context.service.ts");
+const employee_system_role_module_1 = __webpack_require__(/*! ../../domain/employee-system-role/employee-system-role.module */ "./src/modules/domain/employee-system-role/employee-system-role.module.ts");
+const employee_token_module_1 = __webpack_require__(/*! ../../domain/employee-token/employee-token.module */ "./src/modules/domain/employee-token/employee-token.module.ts");
+const employee_fcm_token_module_1 = __webpack_require__(/*! ../../domain/employee-fcm-token/employee-fcm-token.module */ "./src/modules/domain/employee-fcm-token/employee-fcm-token.module.ts");
+let EmployeeManagementContextModule = class EmployeeManagementContextModule {
+};
+exports.EmployeeManagementContextModule = EmployeeManagementContextModule;
+exports.EmployeeManagementContextModule = EmployeeManagementContextModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            employee_system_role_module_1.DomainEmployeeSystemRoleModule,
+            employee_token_module_1.DomainEmployeeTokenModule,
+            employee_fcm_token_module_1.DomainEmployeeFcmTokenModule,
+        ],
+        providers: [
+            employee_system_role_management_context_service_1.EmployeeSystemRoleManagementContextService,
+            employee_token_management_context_service_1.EmployeeTokenManagementContextService,
+            employee_fcm_token_management_context_service_1.EmployeeFcmTokenManagementContextService,
+        ],
+        exports: [
+            employee_system_role_management_context_service_1.EmployeeSystemRoleManagementContextService,
+            employee_token_management_context_service_1.EmployeeTokenManagementContextService,
+            employee_fcm_token_management_context_service_1.EmployeeFcmTokenManagementContextService,
+        ],
+    })
+], EmployeeManagementContextModule);
+
+
+/***/ }),
+
+/***/ "./src/modules/context/employee-management/employee-system-role-management-context.service.ts":
+/*!****************************************************************************************************!*\
+  !*** ./src/modules/context/employee-management/employee-system-role-management-context.service.ts ***!
+  \****************************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EmployeeSystemRoleManagementContextService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const employee_system_role_service_1 = __webpack_require__(/*! ../../domain/employee-system-role/employee-system-role.service */ "./src/modules/domain/employee-system-role/employee-system-role.service.ts");
+let EmployeeSystemRoleManagementContextService = class EmployeeSystemRoleManagementContextService {
+    constructor(employeeSystemRoleService) {
+        this.employeeSystemRoleService = employeeSystemRoleService;
+    }
+    async 모든_직원_시스템_역할_관계_조회() {
+        return this.employeeSystemRoleService.findAll({
+            relations: ['employee', 'systemRole', 'systemRole.system'],
+        });
+    }
+    async 직원별_시스템_역할_조회(employeeId) {
+        return this.employeeSystemRoleService.findByEmployeeId(employeeId);
+    }
+    async 시스템_역할별_직원_조회(systemRoleId) {
+        return this.employeeSystemRoleService.findBySystemRoleId(systemRoleId);
+    }
+    async 직원_시스템_역할_관계_조회(id) {
+        return this.employeeSystemRoleService.findOne({
+            where: { id },
+            relations: ['employee', 'systemRole', 'systemRole.system'],
+        });
+    }
+    async 직원에게_시스템_역할_할당(employeeId, systemRoleId) {
+        return this.employeeSystemRoleService.assignRole(employeeId, systemRoleId);
+    }
+    async 직원의_시스템_역할_해제(employeeId, systemRoleId) {
+        return this.employeeSystemRoleService.unassignRole(employeeId, systemRoleId);
+    }
+    async ID로_직원_시스템_역할_조회(id) {
+        return this.employeeSystemRoleService.findOne({
+            where: { id },
+        });
+    }
+    async 직원의_모든_시스템_역할_해제(employeeId) {
+        return this.employeeSystemRoleService.unassignAllRolesByEmployeeId(employeeId);
+    }
+    async 시스템_역할의_모든_할당_해제(systemRoleId) {
+        return this.employeeSystemRoleService.unassignAllRolesBySystemRoleId(systemRoleId);
+    }
+    async 직원의_시스템_역할_보유_여부_확인(employeeId, systemRoleId) {
+        const relation = await this.employeeSystemRoleService.findByEmployeeIdAndSystemRoleId(employeeId, systemRoleId);
+        return !!relation;
+    }
+    async 시스템_역할에_할당된_직원_ID_목록_조회(systemRoleId) {
+        return this.employeeSystemRoleService.getEmployeeIdsBySystemRoleId(systemRoleId);
+    }
+    async 직원이_할당받은_시스템_역할_ID_목록_조회(employeeId) {
+        return this.employeeSystemRoleService.getSystemRoleIdsByEmployeeId(employeeId);
+    }
+};
+exports.EmployeeSystemRoleManagementContextService = EmployeeSystemRoleManagementContextService;
+exports.EmployeeSystemRoleManagementContextService = EmployeeSystemRoleManagementContextService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof employee_system_role_service_1.DomainEmployeeSystemRoleService !== "undefined" && employee_system_role_service_1.DomainEmployeeSystemRoleService) === "function" ? _a : Object])
+], EmployeeSystemRoleManagementContextService);
+
+
+/***/ }),
+
+/***/ "./src/modules/context/employee-management/employee-token-management-context.service.ts":
+/*!**********************************************************************************************!*\
+  !*** ./src/modules/context/employee-management/employee-token-management-context.service.ts ***!
+  \**********************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EmployeeTokenManagementContextService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const employee_token_service_1 = __webpack_require__(/*! ../../domain/employee-token/employee-token.service */ "./src/modules/domain/employee-token/employee-token.service.ts");
+let EmployeeTokenManagementContextService = class EmployeeTokenManagementContextService {
+    constructor(employeeTokenService) {
+        this.employeeTokenService = employeeTokenService;
+    }
+    async 모든_직원_토큰_관계_조회() {
+        return this.employeeTokenService.findAll({
+            relations: ['employee', 'token'],
+        });
+    }
+    async 직원별_토큰_관계_조회(employeeId) {
+        return this.employeeTokenService.findByEmployeeId(employeeId);
+    }
+    async 토큰별_직원_관계_조회(tokenId) {
+        return this.employeeTokenService.findByTokenId(tokenId);
+    }
+    async 직원_토큰_관계_조회(id) {
+        return this.employeeTokenService.findOne({
+            where: { id },
+            relations: ['employee', 'token'],
+        });
+    }
+    async ID로_직원_토큰_관계_조회(id) {
+        return this.employeeTokenService.findOne({
+            where: { id },
+        });
+    }
+    async 직원과_토큰_관계_생성_또는_업데이트(employeeId, tokenId, relationData = {}) {
+        return this.employeeTokenService.createOrUpdateRelation(employeeId, tokenId, relationData);
+    }
+    async 직원_토큰_관계_삭제(id) {
+        return this.employeeTokenService.delete(id);
+    }
+    async 토큰_ID들로_관계_삭제(tokenIds) {
+        return this.employeeTokenService.deleteByTokenIds(tokenIds);
+    }
+    async 직원과_토큰의_관계_조회(employeeId, tokenId) {
+        return this.employeeTokenService.findOne({
+            where: { employeeId, tokenId },
+        });
+    }
+    async 직원의_모든_토큰_관계_삭제(employeeId) {
+        const relations = await this.employeeTokenService.findByEmployeeId(employeeId);
+        for (const relation of relations) {
+            await this.employeeTokenService.delete(relation.id);
+        }
+    }
+};
+exports.EmployeeTokenManagementContextService = EmployeeTokenManagementContextService;
+exports.EmployeeTokenManagementContextService = EmployeeTokenManagementContextService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof employee_token_service_1.DomainEmployeeTokenService !== "undefined" && employee_token_service_1.DomainEmployeeTokenService) === "function" ? _a : Object])
+], EmployeeTokenManagementContextService);
 
 
 /***/ }),
