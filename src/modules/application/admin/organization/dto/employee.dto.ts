@@ -147,3 +147,22 @@ export class EmployeeListResponseDto {
     @ApiProperty({ description: '직원 목록', type: [EmployeeResponseDto] })
     employees: EmployeeResponseDto[];
 }
+
+export class NextEmployeeNumberResponseDto {
+    @ApiProperty({
+        description: '다음 직원번호',
+        example: '25001',
+        examples: {
+            '2025년 첫 직원': { value: '25001' },
+            '2025년 다섯번째 직원': { value: '25005' },
+            '2024년 마지막 직원': { value: '24999' },
+        },
+    })
+    nextEmployeeNumber: string;
+
+    @ApiProperty({ description: '기준 연도', example: 2025 })
+    year: number;
+
+    @ApiProperty({ description: '해당 연도 직원 수', example: 4 })
+    currentCount: number;
+}

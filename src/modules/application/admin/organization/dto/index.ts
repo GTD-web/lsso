@@ -12,6 +12,7 @@ export {
     UpdateEmployeeRequestDto,
     EmployeeResponseDto,
     EmployeeListResponseDto,
+    NextEmployeeNumberResponseDto,
 } from './employee.dto';
 
 // Position DTOs

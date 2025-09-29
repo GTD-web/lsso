@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam, ApiBody } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam, ApiBody, ApiQuery } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../../../../libs/common/guards/jwt-auth.guard';
 import { OrganizationApplicationService } from './organization-application.service';
 import {
@@ -11,6 +11,7 @@ import {
     UpdateEmployeeRequestDto,
     EmployeeResponseDto,
     EmployeeListResponseDto,
+    NextEmployeeNumberResponseDto,
     CreatePositionRequestDto,
     UpdatePositionRequestDto,
     PositionResponseDto,
@@ -80,6 +81,23 @@ export class OrganizationController {
     @ApiResponse({ status: 200, type: EmployeeListResponseDto })
     async getEmployees(): Promise<EmployeeListResponseDto> {
         return await this.organizationApplicationService.직원목록조회();
+    }
+
+    @Get('employees/next-employee-number')
+    @ApiOperation({
+        summary: '다음 직원번호 조회',
+        description:
+            '해당 연도의 다음 순번 직원번호를 조회합니다. 연도를 지정하지 않으면 현재 연도 기준으로 조회합니다.',
+    })
+    @ApiResponse({
+        status: 200,
+        type: NextEmployeeNumberResponseDto,
+        description: '다음 직원번호 정보 (형식: YY + 순번 3자리, 예: 25001)',
+    })
+    @ApiQuery({ name: 'year', description: '연도', required: false })
+    async getNextEmployeeNumber(@Query('year') year?: number): Promise<NextEmployeeNumberResponseDto> {
+        const targetYear = year || new Date().getFullYear();
+        return await this.organizationApplicationService.다음직원번호조회(targetYear);
     }
 
     @Get('employees/:id')

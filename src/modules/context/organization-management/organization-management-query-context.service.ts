@@ -56,6 +56,11 @@ export class OrganizationManagementQueryContextService {
         return await this.직원서비스.findAllEmployees(includeTerminated);
     }
 
+    async 연도별_직원번호_패턴으로_직원을_조회한다(yearPrefix: string): Promise<Employee[]> {
+        // 해당 연도 패턴으로 시작하는 직원번호를 가진 직원들을 조회
+        return await this.직원서비스.findByEmployeeNumberPattern(yearPrefix);
+    }
+
     async 직원_ID로_직원을_조회한다(employeeId: string): Promise<Employee> {
         return await this.직원서비스.findByEmployeeId(employeeId);
     }

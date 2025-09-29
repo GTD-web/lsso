@@ -3,7 +3,7 @@ import { DomainEmployeeRepository } from './employee.repository';
 import { BaseService } from '../../../../libs/common/services/base.service';
 import { Employee } from './employee.entity';
 import { EmployeeStatus } from '../../../../libs/common/enums';
-import { In, Not } from 'typeorm';
+import { In, Not, Like } from 'typeorm';
 import * as bcrypt from '@node-rs/bcrypt';
 
 @Injectable()
@@ -96,6 +96,19 @@ export class DomainEmployeeService extends BaseService<Employee> {
 
         return this.employeeRepository.findAll({
             where,
+            order: { employeeNumber: 'ASC' },
+        });
+    }
+
+    /**
+     * 직원번호 패턴으로 직원을 조회합니다
+     * @param pattern 직원번호 패턴 (예: "25" - 2025년도 직원들)
+     */
+    async findByEmployeeNumberPattern(pattern: string): Promise<Employee[]> {
+        return await this.employeeRepository.findAll({
+            where: {
+                employeeNumber: Like(`${pattern}%`),
+            },
             order: { employeeNumber: 'ASC' },
         });
     }

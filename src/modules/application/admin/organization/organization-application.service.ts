@@ -10,6 +10,7 @@ import {
     UpdateEmployeeRequestDto,
     EmployeeResponseDto,
     EmployeeListResponseDto,
+    NextEmployeeNumberResponseDto,
     CreatePositionRequestDto,
     UpdatePositionRequestDto,
     PositionResponseDto,
@@ -96,6 +97,42 @@ export class OrganizationApplicationService {
         const employees = await this.queryContextService.모든_직원을_조회한다();
         return {
             employees: employees.map(this.직원을_응답DTO로_변환한다),
+        };
+    }
+
+    async 다음직원번호조회(year: number): Promise<NextEmployeeNumberResponseDto> {
+        // 해당 연도의 직원번호 패턴으로 검색
+        const yearSuffix = year.toString().slice(-2); // 연도의 마지막 두 자리
+        const employeeNumberPrefix = yearSuffix; // 예: 2025 -> "25"
+
+        // 해당 연도의 모든 직원을 조회
+        const employees = await this.queryContextService.연도별_직원번호_패턴으로_직원을_조회한다(employeeNumberPrefix);
+
+        // 현재 연도에 해당하는 직원번호들을 추출하고 가장 높은 순번을 찾기
+        let maxSequence = 0;
+        let currentCount = 0;
+
+        employees.forEach((employee) => {
+            const employeeNumber = employee.employeeNumber;
+            // 직원번호가 5자리이고 해당 연도 패턴으로 시작하는지 확인
+            if (employeeNumber.length === 5 && employeeNumber.startsWith(employeeNumberPrefix)) {
+                const sequence = parseInt(employeeNumber.slice(2)); // 뒤 3자리 추출
+                console.log('sequence', sequence);
+                if (!isNaN(sequence)) {
+                    maxSequence = Math.max(maxSequence, sequence);
+                    currentCount++;
+                }
+            }
+        });
+
+        // 다음 순번 계산
+        const nextSequence = maxSequence + 1;
+        const nextEmployeeNumber = `${yearSuffix}${nextSequence.toString().padStart(3, '0')}`;
+
+        return {
+            nextEmployeeNumber,
+            year,
+            currentCount,
         };
     }
 
