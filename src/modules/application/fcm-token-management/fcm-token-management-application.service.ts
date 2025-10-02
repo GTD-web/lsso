@@ -36,15 +36,8 @@ export class FcmTokenManagementApplicationService {
                 return await this.validateAndGetEmployeeWithBothIdentifiers(dto.employeeId, dto.employeeNumber);
             }
 
-            // employeeId만 있는 경우
-            if (dto.employeeId) {
-                return await this.organizationContextService.직원_ID값으로_직원정보를_조회한다(dto.employeeId);
-            }
-
-            // employeeNumber만 있는 경우
-            if (dto.employeeNumber) {
-                return await this.organizationContextService.직원_사번으로_직원정보를_조회한다(dto.employeeNumber);
-            }
+            // 직원 조회 (ID 또는 사번)
+            return await this.organizationContextService.직원을_조회한다(dto.employeeId || dto.employeeNumber);
         } catch (error) {
             if (error instanceof BadRequestException) {
                 throw error; // 정합성 체크 에러는 그대로 전파
@@ -64,8 +57,8 @@ export class FcmTokenManagementApplicationService {
     ): Promise<Employee> {
         // 병렬로 두 조회를 실행
         const [employeeById, employeeByNumber] = await Promise.all([
-            this.organizationContextService.직원_ID값으로_직원정보를_조회한다(employeeId).catch(() => null),
-            this.organizationContextService.직원_사번으로_직원정보를_조회한다(employeeNumber).catch(() => null),
+            this.organizationContextService.직원을_조회한다(employeeId, false).catch(() => null),
+            this.organizationContextService.직원을_조회한다(employeeNumber, false).catch(() => null),
         ]);
 
         // 둘 중 하나라도 조회되지 않은 경우
@@ -163,11 +156,8 @@ export class FcmTokenManagementApplicationService {
 
         for (const identifier of identifiers) {
             try {
-                // 직원 정보 조회
-                const employee =
-                    type === 'id'
-                        ? await this.organizationContextService.직원_ID값으로_직원정보를_조회한다(identifier)
-                        : await this.organizationContextService.직원_사번으로_직원정보를_조회한다(identifier);
+                // 직원 정보 조회 (통합 함수 사용)
+                const employee = await this.organizationContextService.직원을_조회한다(identifier);
                 // 직원의 FCM 토큰 목록 조회
                 const employeeFcmTokens =
                     await this.fcmTokenManagementContextService.직원의_활성_FCM토큰_목록을_조회한다(employee.id);

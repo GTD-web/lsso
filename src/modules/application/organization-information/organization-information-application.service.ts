@@ -30,16 +30,8 @@ export class OrganizationInformationApplicationService {
             throw new BadRequestException('직원 ID 또는 사번 중 하나는 반드시 필요합니다.');
         }
 
-        let employee: Employee;
-
-        if (employeeId) {
-            employee = await this.organizationContextService.직원_ID값으로_직원정보를_조회한다(employeeId);
-        } else if (employeeNumber) {
-            employee = await this.organizationContextService.직원_사번으로_직원정보를_조회한다(employeeNumber);
-        }
-        if (!employee) {
-            throw new NotFoundException('해당 직원 정보를 찾을 수 없습니다.');
-        }
+        // 직원 조회 (ID 또는 사번)
+        const employee = await this.organizationContextService.직원을_조회한다(employeeId || employeeNumber);
 
         // 기본 응답 데이터 구성
         let response: EmployeeResponseDto = {
@@ -66,26 +58,16 @@ export class OrganizationInformationApplicationService {
     }
 
     async 여러_직원정보를_조회한다(requestDto: EmployeesRequestDto): Promise<EmployeesResponseDto> {
-        const { employeeIds, employeeNumbers, withDetail = false, includeTerminated = false } = requestDto;
+        const { identifiers, withDetail = false, includeTerminated = false } = requestDto;
 
         let employees: Employee[] = [];
 
         try {
-            // 직원 ID 배열이 제공된 경우
-            if (employeeIds && employeeIds.length > 0) {
-                employees = await this.organizationContextService.여러_직원_ID값으로_직원정보를_조회한다(
-                    employeeIds,
-                    includeTerminated,
-                );
+            // 식별자 배열이 제공된 경우
+            if (identifiers && identifiers.length > 0) {
+                employees = await this.organizationContextService.여러_직원을_조회한다(identifiers, includeTerminated);
             }
-            // 사번 배열이 제공된 경우
-            else if (employeeNumbers && employeeNumbers.length > 0) {
-                employees = await this.organizationContextService.여러_직원_사번으로_직원정보를_조회한다(
-                    employeeNumbers,
-                    includeTerminated,
-                );
-            }
-            // 배열이 비어있거나 제공되지 않은 경우 전체 직원 조회
+            // 식별자가 제공되지 않은 경우 전체 직원 조회
             else {
                 employees = await this.organizationContextService.전체_직원정보를_조회한다(includeTerminated);
             }

@@ -100,18 +100,11 @@ export class OrganizationInformationApplicationController {
             '직원 ID 배열 또는 사번 배열로 여러 직원의 정보를 조회합니다. 배열이 비어있으면 전체 직원을 조회합니다.',
     })
     @ApiQuery({
-        name: 'employeeIds',
-        description: '직원 ID 배열 (쉼표로 구분)',
+        name: 'identifiers',
+        description: '직원 식별자 배열 (직원 ID 또는 사번, 쉼표로 구분)',
         required: false,
         type: String,
-        example: 'emp123,emp456',
-    })
-    @ApiQuery({
-        name: 'employeeNumbers',
-        description: '사번 배열 (쉼표로 구분)',
-        required: false,
-        type: String,
-        example: 'E2023001,E2023002',
+        example: 'emp123,E2023001,emp456,E2023002',
     })
     @ApiQuery({
         name: 'withDetail',
@@ -136,29 +129,21 @@ export class OrganizationInformationApplicationController {
     @ApiResponse({ status: 404, description: '직원 정보를 조회할 수 없음' })
     async getEmployees(
         @User() user: AuthenticatedUser,
-        @Query('employeeIds') employeeIds?: string,
-        @Query('employeeNumbers') employeeNumbers?: string,
+        @Query('identifiers') identifiers?: string,
         @Query('withDetail') withDetail?: boolean,
         @Query('includeTerminated') includeTerminated?: boolean,
     ): Promise<EmployeesResponseDto> {
         // 쉼표로 구분된 문자열을 배열로 변환
-        const employeeIdsArray = employeeIds
-            ? employeeIds
+        const identifiersArray = identifiers
+            ? identifiers
                   .split(',')
                   .map((id) => id.trim())
                   .filter((id) => id.length > 0)
             : undefined;
-        const employeeNumbersArray = employeeNumbers
-            ? employeeNumbers
-                  .split(',')
-                  .map((num) => num.trim())
-                  .filter((num) => num.length > 0)
-            : undefined;
 
         // Query 파라미터를 DTO로 변환
         const requestDto: EmployeesRequestDto = {
-            employeeIds: employeeIdsArray,
-            employeeNumbers: employeeNumbersArray,
+            identifiers: identifiersArray,
             withDetail: withDetail || false,
             includeTerminated: includeTerminated || false,
         };

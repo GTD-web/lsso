@@ -4631,7 +4631,7 @@ let OrganizationApplicationService = class OrganizationApplicationService {
         return await this.organizationContextService.연도별_다음직원번호를_조회한다(year);
     }
     async 직원상세조회(id) {
-        const employee = await this.organizationContextService.직원_ID값으로_직원정보를_조회한다(id);
+        const employee = await this.organizationContextService.직원을_조회한다(id);
         return this.직원을_응답DTO로_변환한다(employee);
     }
     async 직원생성(createEmployeeDto) {
@@ -6788,12 +6788,7 @@ let FcmTokenManagementApplicationService = class FcmTokenManagementApplicationSe
             if (dto.employeeId && dto.employeeNumber) {
                 return await this.validateAndGetEmployeeWithBothIdentifiers(dto.employeeId, dto.employeeNumber);
             }
-            if (dto.employeeId) {
-                return await this.organizationContextService.직원_ID값으로_직원정보를_조회한다(dto.employeeId);
-            }
-            if (dto.employeeNumber) {
-                return await this.organizationContextService.직원_사번으로_직원정보를_조회한다(dto.employeeNumber);
-            }
+            return await this.organizationContextService.직원을_조회한다(dto.employeeId || dto.employeeNumber);
         }
         catch (error) {
             if (error instanceof common_1.BadRequestException) {
@@ -6805,8 +6800,8 @@ let FcmTokenManagementApplicationService = class FcmTokenManagementApplicationSe
     }
     async validateAndGetEmployeeWithBothIdentifiers(employeeId, employeeNumber) {
         const [employeeById, employeeByNumber] = await Promise.all([
-            this.organizationContextService.직원_ID값으로_직원정보를_조회한다(employeeId).catch(() => null),
-            this.organizationContextService.직원_사번으로_직원정보를_조회한다(employeeNumber).catch(() => null),
+            this.organizationContextService.직원을_조회한다(employeeId, false).catch(() => null),
+            this.organizationContextService.직원을_조회한다(employeeNumber, false).catch(() => null),
         ]);
         if (!employeeById && !employeeByNumber) {
             throw new common_1.NotFoundException('제공된 employeeId와 employeeNumber로 직원 정보를 찾을 수 없습니다.');
@@ -6866,9 +6861,7 @@ let FcmTokenManagementApplicationService = class FcmTokenManagementApplicationSe
         const allTokens = [];
         for (const identifier of identifiers) {
             try {
-                const employee = type === 'id'
-                    ? await this.organizationContextService.직원_ID값으로_직원정보를_조회한다(identifier)
-                    : await this.organizationContextService.직원_사번으로_직원정보를_조회한다(identifier);
+                const employee = await this.organizationContextService.직원을_조회한다(identifier);
                 const employeeFcmTokens = await this.fcmTokenManagementContextService.직원의_활성_FCM토큰_목록을_조회한다(employee.id);
                 if (employeeFcmTokens.length > 0) {
                     const tokens = employeeFcmTokens.map((employeeFcmToken) => ({
@@ -6957,22 +6950,15 @@ let OrganizationInformationApplicationController = class OrganizationInformation
         };
         return this.organizationInformationApplicationService.직원정보를_조회한다(requestDto);
     }
-    async getEmployees(user, employeeIds, employeeNumbers, withDetail, includeTerminated) {
-        const employeeIdsArray = employeeIds
-            ? employeeIds
+    async getEmployees(user, identifiers, withDetail, includeTerminated) {
+        const identifiersArray = identifiers
+            ? identifiers
                 .split(',')
                 .map((id) => id.trim())
                 .filter((id) => id.length > 0)
             : undefined;
-        const employeeNumbersArray = employeeNumbers
-            ? employeeNumbers
-                .split(',')
-                .map((num) => num.trim())
-                .filter((num) => num.length > 0)
-            : undefined;
         const requestDto = {
-            employeeIds: employeeIdsArray,
-            employeeNumbers: employeeNumbersArray,
+            identifiers: identifiersArray,
             withDetail: withDetail || false,
             includeTerminated: includeTerminated || false,
         };
@@ -7077,18 +7063,11 @@ __decorate([
         description: '직원 ID 배열 또는 사번 배열로 여러 직원의 정보를 조회합니다. 배열이 비어있으면 전체 직원을 조회합니다.',
     }),
     (0, swagger_1.ApiQuery)({
-        name: 'employeeIds',
-        description: '직원 ID 배열 (쉼표로 구분)',
+        name: 'identifiers',
+        description: '직원 식별자 배열 (직원 ID 또는 사번, 쉼표로 구분)',
         required: false,
         type: String,
-        example: 'emp123,emp456',
-    }),
-    (0, swagger_1.ApiQuery)({
-        name: 'employeeNumbers',
-        description: '사번 배열 (쉼표로 구분)',
-        required: false,
-        type: String,
-        example: 'E2023001,E2023002',
+        example: 'emp123,E2023001,emp456,E2023002',
     }),
     (0, swagger_1.ApiQuery)({
         name: 'withDetail',
@@ -7112,12 +7091,11 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 401, description: '인증이 필요합니다' }),
     (0, swagger_1.ApiResponse)({ status: 404, description: '직원 정보를 조회할 수 없음' }),
     __param(0, (0, user_decorator_1.User)()),
-    __param(1, (0, common_1.Query)('employeeIds')),
-    __param(2, (0, common_1.Query)('employeeNumbers')),
-    __param(3, (0, common_1.Query)('withDetail')),
-    __param(4, (0, common_1.Query)('includeTerminated')),
+    __param(1, (0, common_1.Query)('identifiers')),
+    __param(2, (0, common_1.Query)('withDetail')),
+    __param(3, (0, common_1.Query)('includeTerminated')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_e = typeof user_decorator_1.AuthenticatedUser !== "undefined" && user_decorator_1.AuthenticatedUser) === "function" ? _e : Object, String, String, Boolean, Boolean]),
+    __metadata("design:paramtypes", [typeof (_e = typeof user_decorator_1.AuthenticatedUser !== "undefined" && user_decorator_1.AuthenticatedUser) === "function" ? _e : Object, String, Boolean, Boolean]),
     __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
 ], OrganizationInformationApplicationController.prototype, "getEmployees", null);
 __decorate([
@@ -7936,26 +7914,15 @@ class EmployeesRequestDto {
 exports.EmployeesRequestDto = EmployeesRequestDto;
 __decorate([
     (0, swagger_1.ApiPropertyOptional)({
-        description: '직원 ID 배열 (비어있으면 전체 직원 조회)',
-        example: ['emp123', 'emp456'],
+        description: '직원 식별자 배열 (직원 ID 또는 사번, 비어있으면 전체 직원 조회)',
+        example: ['emp123', 'E2023001', 'emp456', 'E2023002'],
         type: [String],
     }),
     (0, class_validator_1.IsArray)(),
     (0, class_validator_1.IsOptional)(),
     (0, class_transformer_1.Type)(() => String),
     __metadata("design:type", Array)
-], EmployeesRequestDto.prototype, "employeeIds", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({
-        description: '사번 배열 (비어있으면 전체 직원 조회)',
-        example: ['E2023001', 'E2023002'],
-        type: [String],
-    }),
-    (0, class_validator_1.IsArray)(),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_transformer_1.Type)(() => String),
-    __metadata("design:type", Array)
-], EmployeesRequestDto.prototype, "employeeNumbers", void 0);
+], EmployeesRequestDto.prototype, "identifiers", void 0);
 __decorate([
     (0, swagger_1.ApiPropertyOptional)({
         description: '상세 정보 포함 여부 (부서, 직책, 직급의 상세 정보)',
@@ -8236,16 +8203,7 @@ let OrganizationInformationApplicationService = class OrganizationInformationApp
         if (!employeeId && !employeeNumber) {
             throw new common_1.BadRequestException('직원 ID 또는 사번 중 하나는 반드시 필요합니다.');
         }
-        let employee;
-        if (employeeId) {
-            employee = await this.organizationContextService.직원_ID값으로_직원정보를_조회한다(employeeId);
-        }
-        else if (employeeNumber) {
-            employee = await this.organizationContextService.직원_사번으로_직원정보를_조회한다(employeeNumber);
-        }
-        if (!employee) {
-            throw new common_1.NotFoundException('해당 직원 정보를 찾을 수 없습니다.');
-        }
+        const employee = await this.organizationContextService.직원을_조회한다(employeeId || employeeNumber);
         let response = {
             id: employee.id,
             name: employee.name,
@@ -8266,14 +8224,11 @@ let OrganizationInformationApplicationService = class OrganizationInformationApp
         return response;
     }
     async 여러_직원정보를_조회한다(requestDto) {
-        const { employeeIds, employeeNumbers, withDetail = false, includeTerminated = false } = requestDto;
+        const { identifiers, withDetail = false, includeTerminated = false } = requestDto;
         let employees = [];
         try {
-            if (employeeIds && employeeIds.length > 0) {
-                employees = await this.organizationContextService.여러_직원_ID값으로_직원정보를_조회한다(employeeIds, includeTerminated);
-            }
-            else if (employeeNumbers && employeeNumbers.length > 0) {
-                employees = await this.organizationContextService.여러_직원_사번으로_직원정보를_조회한다(employeeNumbers, includeTerminated);
+            if (identifiers && identifiers.length > 0) {
+                employees = await this.organizationContextService.여러_직원을_조회한다(identifiers, includeTerminated);
             }
             else {
                 employees = await this.organizationContextService.전체_직원정보를_조회한다(includeTerminated);
@@ -10856,8 +10811,34 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
         this.직원직급이력서비스 = 직원직급이력서비스;
         this.직원검증서비스 = 직원검증서비스;
     }
-    async 직원_ID값으로_직원정보를_조회한다(employeeId) {
-        return this.직원서비스.findByEmployeeId(employeeId);
+    async 직원을_조회한다(identifier, throwOnNotFound = true) {
+        try {
+            const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(identifier);
+            if (isUUID) {
+                return await this.직원서비스.findByEmployeeId(identifier);
+            }
+            else {
+                return await this.직원서비스.findByEmployeeNumber(identifier);
+            }
+        }
+        catch (error) {
+            if (throwOnNotFound) {
+                throw new Error(`직원을 찾을 수 없습니다: ${identifier}`);
+            }
+            return null;
+        }
+    }
+    async 여러_직원을_조회한다(identifiers, includeTerminated = false) {
+        if (identifiers.length === 0) {
+            return [];
+        }
+        const isFirstIdUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(identifiers[0]);
+        if (isFirstIdUUID) {
+            return await this.직원서비스.findByEmployeeIds(identifiers, includeTerminated);
+        }
+        else {
+            return await this.직원서비스.findByEmployeeNumbers(identifiers, includeTerminated);
+        }
     }
     async 부서_ID로_부서를_조회한다(departmentId) {
         return this.부서서비스.findById(departmentId);
@@ -10914,9 +10895,6 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
         }
         await this.직원서비스.deleteEmployee(employeeId);
     }
-    async 직원_사번으로_직원정보를_조회한다(employeeNumber) {
-        return this.직원서비스.findByEmployeeNumber(employeeNumber);
-    }
     async 직원의_부서_직책_직급을_조회한다(employee) {
         const 부서직책정보 = await this.직원부서직책서비스.findByEmployeeId(employee.id);
         const department = 부서직책정보?.departmentId
@@ -10925,12 +10903,6 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
         const position = 부서직책정보?.positionId ? await this.직책서비스.findById(부서직책정보.positionId) : null;
         const rank = employee.currentRankId ? await this.직급서비스.findById(employee.currentRankId) : null;
         return { department, position, rank };
-    }
-    async 여러_직원_ID값으로_직원정보를_조회한다(employeeIds, includeTerminated = false) {
-        return this.직원서비스.findByEmployeeIds(employeeIds, includeTerminated);
-    }
-    async 여러_직원_사번으로_직원정보를_조회한다(employeeNumbers, includeTerminated = false) {
-        return this.직원서비스.findByEmployeeNumbers(employeeNumbers, includeTerminated);
     }
     async 전체_직원정보를_조회한다(includeTerminated = false) {
         return this.직원서비스.findAllEmployees(includeTerminated);
@@ -11198,15 +11170,6 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
             employee: updatedEmployee,
             message: `${employee.name}(${employee.employeeNumber}) 직원이 성공적으로 퇴사처리되었습니다.`,
         };
-    }
-    async 직원을_조회한다(identifier) {
-        const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(identifier);
-        if (isUUID) {
-            return await this.직원서비스.findByEmployeeId(identifier);
-        }
-        else {
-            return await this.직원서비스.findByEmployeeNumber(identifier);
-        }
     }
     퇴사처리_검증을_수행한다(employee, terminationDate) {
         if (employee.status === enums_1.EmployeeStatus.Terminated) {

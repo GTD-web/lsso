@@ -77,7 +77,7 @@ export class OrganizationApplicationService {
     }
 
     async 직원상세조회(id: string): Promise<EmployeeResponseDto> {
-        const employee = await this.organizationContextService.직원_ID값으로_직원정보를_조회한다(id);
+        const employee = await this.organizationContextService.직원을_조회한다(id);
         return this.직원을_응답DTO로_변환한다(employee);
     }
 

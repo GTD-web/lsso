@@ -41,9 +41,57 @@ export class OrganizationManagementContextService {
 
     // ==================== 직원 조회 관련 ====================
 
-    async 직원_ID값으로_직원정보를_조회한다(employeeId: string): Promise<Employee> {
-        return this.직원서비스.findByEmployeeId(employeeId);
+    /**
+     * 직원을 조회한다 (통합 함수)
+     * ID 또는 사번으로 직원을 조회하고, 존재하지 않으면 에러를 발생시킨다.
+     *
+     * @param identifier 직원 ID (UUID) 또는 사번 (5자리)
+     * @param throwOnNotFound 존재하지 않을 때 에러 발생 여부 (기본값: true)
+     * @returns 직원 엔티티
+     * @throws NotFoundException 직원을 찾을 수 없을 때
+     */
+    async 직원을_조회한다(identifier: string, throwOnNotFound = true): Promise<Employee | null> {
+        try {
+            // UUID 형식인지 확인 (직원 ID)
+            const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(identifier);
+
+            if (isUUID) {
+                return await this.직원서비스.findByEmployeeId(identifier);
+            } else {
+                return await this.직원서비스.findByEmployeeNumber(identifier);
+            }
+        } catch (error) {
+            if (throwOnNotFound) {
+                throw new Error(`직원을 찾을 수 없습니다: ${identifier}`);
+            }
+            return null;
+        }
     }
+
+    /**
+     * 여러 직원을 조회한다 (통합 함수)
+     * ID 배열 또는 사번 배열로 여러 직원을 조회한다.
+     *
+     * @param identifiers 직원 ID 배열 또는 사번 배열
+     * @param includeTerminated 퇴사자 포함 여부 (기본값: false)
+     * @returns 직원 엔티티 배열
+     */
+    async 여러_직원을_조회한다(identifiers: string[], includeTerminated = false): Promise<Employee[]> {
+        if (identifiers.length === 0) {
+            return [];
+        }
+
+        // 첫 번째 식별자로 ID인지 사번인지 판단
+        const isFirstIdUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(identifiers[0]);
+
+        if (isFirstIdUUID) {
+            return await this.직원서비스.findByEmployeeIds(identifiers, includeTerminated);
+        } else {
+            return await this.직원서비스.findByEmployeeNumbers(identifiers, includeTerminated);
+        }
+    }
+
+    // ==================== 기존 함수들 (하위 호환성 유지) ====================
 
     // ==================== 부서 조회 관련 ====================
 
@@ -140,10 +188,6 @@ export class OrganizationManagementContextService {
         await this.직원서비스.deleteEmployee(employeeId);
     }
 
-    async 직원_사번으로_직원정보를_조회한다(employeeNumber: string): Promise<Employee> {
-        return this.직원서비스.findByEmployeeNumber(employeeNumber);
-    }
-
     async 직원의_부서_직책_직급을_조회한다(
         employee: Employee,
     ): Promise<{ department: Department; position: Position; rank: Rank }> {
@@ -154,20 +198,6 @@ export class OrganizationManagementContextService {
         const position = 부서직책정보?.positionId ? await this.직책서비스.findById(부서직책정보.positionId) : null;
         const rank = employee.currentRankId ? await this.직급서비스.findById(employee.currentRankId) : null;
         return { department, position, rank };
-    }
-
-    async 여러_직원_ID값으로_직원정보를_조회한다(
-        employeeIds: string[],
-        includeTerminated = false,
-    ): Promise<Employee[]> {
-        return this.직원서비스.findByEmployeeIds(employeeIds, includeTerminated);
-    }
-
-    async 여러_직원_사번으로_직원정보를_조회한다(
-        employeeNumbers: string[],
-        includeTerminated = false,
-    ): Promise<Employee[]> {
-        return this.직원서비스.findByEmployeeNumbers(employeeNumbers, includeTerminated);
     }
 
     async 전체_직원정보를_조회한다(includeTerminated = false): Promise<Employee[]> {
@@ -638,20 +668,6 @@ export class OrganizationManagementContextService {
             employee: updatedEmployee,
             message: `${employee.name}(${employee.employeeNumber}) 직원이 성공적으로 퇴사처리되었습니다.`,
         };
-    }
-
-    /**
-     * 직원 조회 (ID 또는 사번으로)
-     */
-    private async 직원을_조회한다(identifier: string): Promise<Employee> {
-        // UUID 형식인지 확인 (직원 ID)
-        const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(identifier);
-
-        if (isUUID) {
-            return await this.직원서비스.findByEmployeeId(identifier);
-        } else {
-            return await this.직원서비스.findByEmployeeNumber(identifier);
-        }
     }
 
     /**
