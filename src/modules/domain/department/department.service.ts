@@ -121,4 +121,29 @@ export class DomainDepartmentService extends BaseService<Department> {
     async deleteDepartment(departmentId: string): Promise<void> {
         return this.delete(departmentId);
     }
+
+    // ==================== 단순한 도메인 함수들 (기존 컨텍스트에서 이동) ====================
+
+    /**
+     * 부서 존재여부 확인
+     */
+    async exists(departmentId: string): Promise<boolean> {
+        const department = await this.findById(departmentId);
+        console.log('department', department);
+        if (department) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 부서 코드 중복 확인
+     */
+    async isCodeDuplicate(departmentCode: string, excludeId?: string): Promise<boolean> {
+        const department = await this.findByCode(departmentCode);
+        if (department) {
+            return true;
+        }
+        return false;
+    }
 }

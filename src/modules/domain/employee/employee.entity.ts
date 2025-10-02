@@ -24,8 +24,8 @@ export class Employee {
     @Column({ comment: '이름' })
     name: string;
 
-    @Column({ unique: true, comment: '이메일' })
-    email: string;
+    @Column({ unique: true, comment: '이메일', nullable: true })
+    email?: string;
 
     @Column({ comment: '비밀번호', nullable: true })
     password?: string;
@@ -67,6 +67,9 @@ export class Employee {
 
     @Column({ comment: '퇴사일', type: 'date', nullable: true })
     terminationDate?: Date;
+
+    @Column({ comment: '퇴사 사유', type: 'text', nullable: true })
+    terminationReason?: string;
 
     @Column({ comment: '초기 비밀번호 설정 여부', default: false })
     isInitialPasswordSet: boolean;

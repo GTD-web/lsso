@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { AuthorizationContextService } from '../../context/authorization/authorization-context.service';
 import { SystemManagementContextService } from '../../context/system-management/system-management-context.service';
-import { OrganizationContextService } from '../../context/organization-management/organization-management-context.service';
+import { OrganizationManagementContextService } from '../../context/organization-management/organization-management-context.service';
 import {
     LoginRequestDto,
     LoginResponseDto,
@@ -18,7 +18,7 @@ export class SsoApplicationService {
     constructor(
         private readonly authorizationContextService: AuthorizationContextService,
         private readonly systemManagementContextService: SystemManagementContextService,
-        private readonly organizationContextService: OrganizationContextService,
+        private readonly organizationContextService: OrganizationManagementContextService,
     ) {}
 
     async login(body: LoginRequestDto, authHeader?: string): Promise<LoginResponseDto> {

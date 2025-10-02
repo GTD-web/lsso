@@ -5,7 +5,7 @@ export { SystemManagementContextModule } from './system-management/system-manage
 export { MigrationModule } from './migration/migration.module';
 export { FcmTokenManagementContextModule } from './fcm-token-management/fcm-token-management-context.module';
 
-export { OrganizationContextService } from './organization-management/organization-management-context.service';
+export { OrganizationManagementContextService } from './organization-management/organization-management-context.service';
 export { AuthorizationContextService } from './authorization/authorization-context.service';
 export { EmployeeSystemRoleManagementContextService } from './employee-management/employee-system-role-management-context.service';
 export { EmployeeTokenManagementContextService } from './employee-management/employee-token-management-context.service';

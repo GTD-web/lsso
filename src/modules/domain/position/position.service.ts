@@ -31,9 +31,6 @@ export class DomainPositionService extends BaseService<Position> {
         const position = await this.positionRepository.findOne({
             where: { positionTitle },
         });
-        if (!position) {
-            throw new NotFoundException('직책을 찾을 수 없습니다.');
-        }
         return position;
     }
 
@@ -91,5 +88,32 @@ export class DomainPositionService extends BaseService<Position> {
     // 직책 삭제
     async deletePosition(positionId: string): Promise<void> {
         return this.delete(positionId);
+    }
+
+    // ==================== 단순한 도메인 함수들 (기존 컨텍스트에서 이동) ====================
+
+    /**
+     * 직책 존재여부 확인
+     */
+    async exists(positionId: string): Promise<boolean> {
+        const position = await this.findById(positionId);
+        console.log('position', position);
+        if (position) {
+            await this.findById(positionId);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 직책 코드 중복 확인
+     */
+    async isCodeDuplicate(positionCode: string, excludeId?: string): Promise<boolean> {
+        const position = await this.findByCode(positionCode);
+        console.log('position', position);
+        if (position) {
+            return true;
+        }
+        return false;
     }
 }

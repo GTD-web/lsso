@@ -123,20 +123,27 @@ export class DomainEmployeeService extends BaseService<Employee> {
         });
     }
 
+    async saveEmployee(data: any): Promise<Employee> {
+        return this.save({
+            ...data,
+            password: this.hashPassword(data.employeeNumber),
+            isInitialPasswordSet: true,
+        });
+    }
+
     /**
      * 직원 생성
      */
     async createEmployee(data: {
         employeeNumber: string;
         name: string;
-        email: string;
+        email?: string;
         phoneNumber?: string;
         dateOfBirth?: Date;
         gender?: any;
         hireDate: Date;
         status: EmployeeStatus;
         currentRankId?: string;
-        isInitialPasswordSet: boolean;
     }): Promise<Employee> {
         return this.save({
             ...data,
@@ -157,5 +164,188 @@ export class DomainEmployeeService extends BaseService<Employee> {
      */
     async deleteEmployee(employeeId: string): Promise<void> {
         return this.delete(employeeId);
+    }
+
+    /**
+     * 현재 연도의 다음 직원번호를 자동 생성
+     * 기존 findByEmployeeNumberPattern을 활용하되 최적화
+     */
+    async generateNextEmployeeNumber(): Promise<string> {
+        const currentYear = new Date().getFullYear();
+        const yearSuffix = currentYear.toString().slice(-2);
+
+        // 해당 연도의 직원들을 조회
+        const employees = await this.findByEmployeeNumberPattern(yearSuffix);
+
+        // prefix로 시작하는 5자리 사번들 중에서 가장 큰 sequence 찾기
+        const sequences = employees
+            .map((employee) => employee.employeeNumber)
+            .filter((employeeNumber) => employeeNumber.length === 5 && employeeNumber.startsWith(yearSuffix))
+            .map((employeeNumber) => parseInt(employeeNumber.slice(2)))
+            .filter((sequence) => !isNaN(sequence));
+
+        const maxSequence = sequences.length > 0 ? Math.max(...sequences) : 0;
+        const nextSequence = maxSequence + 1;
+        return `${yearSuffix}${nextSequence.toString().padStart(3, '0')}`;
+    }
+
+    /**
+     * 이름 중복 시 순번을 붙여서 고유한 이름 생성 (최적화된 버전)
+     * @param baseName 기본 이름 (예: "홍길동")
+     * @returns 고유한 이름 (예: "홍길동", "홍길동1", "홍길동2", ...)
+     */
+    async generateUniqueEmployeeName(baseName: string): Promise<string> {
+        // 1. 기본 이름이 중복되지 않는지 확인
+        const existingEmployee = await this.findByName(baseName);
+        if (!existingEmployee) {
+            return baseName; // 중복되지 않으면 그대로 반환
+        }
+
+        // 2. 중복되는 경우 해당 패턴의 모든 이름을 한 번에 조회
+        const patternNames = await this.findNamesByPattern(baseName);
+
+        // 3. 숫자로 끝나는 이름들에서 최대 순번 찾기
+        const maxNumber = this.findMaxNumberFromNames(baseName, patternNames);
+        const nextNumber = maxNumber + 1;
+
+        return `${baseName}${nextNumber}`;
+    }
+
+    /**
+     * 이름 패턴으로 직원들 조회 (정확한 패턴 매칭)
+     * @param baseName 기본 이름
+     * @returns 해당 패턴의 모든 직원 이름 배열
+     */
+    private async findNamesByPattern(baseName: string): Promise<string[]> {
+        try {
+            // 1. 정확히 일치하는 이름 조회
+            const exactMatch = await this.employeeRepository.findAll({
+                where: {
+                    name: baseName,
+                },
+            });
+
+            // 2. baseName으로 시작하는 모든 이름 조회 (광범위하게)
+            const allNamesStartingWith = await this.employeeRepository.findAll({
+                where: {
+                    name: Like(`${baseName}%`),
+                },
+            });
+
+            // 3. 애플리케이션 레벨에서 정확한 패턴 필터링
+            const patternNames = allNamesStartingWith
+                .map((emp) => emp.name)
+                .filter((name) => this.isExactPatternMatch(baseName, name));
+
+            // 4. 결과 합치기
+            const allNames = [...exactMatch.map((emp) => emp.name), ...patternNames];
+
+            return allNames;
+        } catch {
+            return [];
+        }
+    }
+
+    /**
+     * 정확한 패턴 매칭 확인
+     * @param baseName 기본 이름
+     * @param name 확인할 이름
+     * @returns 패턴에 맞는지 여부
+     */
+    private isExactPatternMatch(baseName: string, name: string): boolean {
+        // 1. 정확히 일치하는 경우
+        if (name === baseName) {
+            return true;
+        }
+
+        // 2. baseName + 숫자 패턴인지 확인
+        // 예: "홍길동" -> "홍길동1", "홍길동2", "홍길동10" 등은 true
+        //     "홍길동" -> "홍길동기", "홍길동이" 등은 false
+        if (name.startsWith(baseName)) {
+            const suffix = name.slice(baseName.length);
+            // suffix가 숫자로만 구성되어 있는지 확인
+            return /^\d+$/.test(suffix);
+        }
+
+        return false;
+    }
+
+    /**
+     * 이름 배열에서 해당 패턴의 최대 숫자 찾기
+     * @param baseName 기본 이름
+     * @param names 이름 배열
+     * @returns 최대 숫자 (없으면 0)
+     */
+    private findMaxNumberFromNames(baseName: string, names: string[]): number {
+        let maxNumber = 0;
+
+        for (const name of names) {
+            if (name === baseName) {
+                // 정확히 일치하는 경우 (순번 없음)
+                maxNumber = Math.max(maxNumber, 0);
+            } else if (name.startsWith(baseName)) {
+                // baseName으로 시작하는 경우
+                const suffix = name.slice(baseName.length);
+
+                // suffix가 숫자로만 구성되어 있는지 확인
+                if (/^\d+$/.test(suffix)) {
+                    const number = parseInt(suffix);
+                    if (!isNaN(number)) {
+                        maxNumber = Math.max(maxNumber, number);
+                    }
+                }
+            }
+        }
+
+        return maxNumber;
+    }
+
+    /**
+     * 이름으로 직원 조회
+     * @param name 직원 이름
+     * @returns 직원 엔티티 또는 null
+     */
+    async findByName(name: string): Promise<Employee | null> {
+        try {
+            return await this.employeeRepository.findOne({ where: { name } });
+        } catch {
+            return null;
+        }
+    }
+
+    // ==================== 단순한 도메인 함수들 (기존 컨텍스트에서 이동) ====================
+
+    /**
+     * 직원 사번 중복 확인
+     */
+    async isEmployeeNumberDuplicate(employeeNumber: string, excludeId?: string): Promise<boolean> {
+        try {
+            const employee = await this.findByEmployeeNumber(employeeNumber);
+            if (!employee) {
+                return false; // 직원이 없으면 중복 아님
+            }
+            // excludeId가 있고 찾은 직원이 제외할 직원이면 중복 아님
+            return excludeId ? employee.id !== excludeId : true;
+        } catch {
+            return false; // 에러 발생시 중복 아님으로 처리
+        }
+    }
+
+    /**
+     * 직원 이메일 중복 확인 (nullable 처리)
+     */
+    async isEmailDuplicate(email: string, excludeId?: string): Promise<boolean> {
+        if (!email) return false; // nullable 이메일은 중복 체크 안함
+
+        try {
+            const employee = await this.findByEmail(email);
+            if (!employee) {
+                return false; // 직원이 없으면 중복 아님
+            }
+            // excludeId가 있고 찾은 직원이 제외할 직원이면 중복 아님
+            return excludeId ? employee.id !== excludeId : true;
+        } catch {
+            return false; // 에러 발생시 중복 아님으로 처리
+        }
     }
 }

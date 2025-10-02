@@ -1,5 +1,4 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
-import { OrganizationContextService } from '../../context/organization-management/organization-management-context.service';
 import { FcmTokenManagementContextService } from '../../context/fcm-token-management/fcm-token-management-context.service';
 import {
     FcmSubscribeRequestDto,
@@ -13,11 +12,12 @@ import {
 } from './dto';
 // DeviceType enum 제거 - 이제 문자열로 처리
 import { Employee } from '../../domain/employee/employee.entity';
+import { OrganizationManagementContextService } from 'src/modules/context/organization-management/organization-management-context.service';
 
 @Injectable()
 export class FcmTokenManagementApplicationService {
     constructor(
-        private readonly organizationContextService: OrganizationContextService,
+        private readonly organizationContextService: OrganizationManagementContextService,
         private readonly fcmTokenManagementContextService: FcmTokenManagementContextService,
     ) {}
 
