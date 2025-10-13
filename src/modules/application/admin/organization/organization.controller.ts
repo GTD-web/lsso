@@ -9,6 +9,7 @@ import {
     DepartmentListResponseDto,
     UpdateDepartmentOrderRequestDto,
     UpdateDepartmentParentRequestDto,
+    DepartmentHierarchyResponseDto,
     CreateEmployeeRequestDto,
     UpdateEmployeeRequestDto,
     EmployeeResponseDto,
@@ -32,6 +33,22 @@ import {
 @Controller('admin/organizations')
 export class OrganizationController {
     constructor(private readonly organizationApplicationService: OrganizationApplicationService) {}
+
+    @Get('')
+    @ApiOperation({
+        summary: '부서 계층구조별 직원 정보 조회',
+        description: '부서의 계층구조를 따라 각 부서에 속한 직원들의 목록을 깊이와 함께 조회합니다.',
+    })
+    @ApiResponse({
+        status: 200,
+        description: '부서 계층구조별 직원 정보 조회 성공',
+        type: DepartmentHierarchyResponseDto,
+    })
+    @ApiResponse({ status: 401, description: '인증이 필요합니다' })
+    @ApiResponse({ status: 404, description: '부서 계층구조 정보를 조회할 수 없음' })
+    async getDepartmentHierarchy(): Promise<DepartmentHierarchyResponseDto> {
+        return this.organizationApplicationService.부서_계층구조별_직원정보를_조회한다();
+    }
 
     // 부서 관리 API
     @Get('departments')

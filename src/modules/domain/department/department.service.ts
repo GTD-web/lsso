@@ -85,10 +85,9 @@ export class DomainDepartmentService extends BaseService<Department> {
         });
     }
 
-    // 전체 부서 목록 조회
+    // 전체 부서 목록 조회 (relations 제거 - 수동으로 계층구조 구축)
     async findAllDepartmentsWithChildren(): Promise<Department[]> {
         return this.departmentRepository.findAll({
-            relations: ['childDepartments'],
             order: { order: 'ASC' },
         });
     }

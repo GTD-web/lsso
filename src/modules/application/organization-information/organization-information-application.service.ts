@@ -191,7 +191,7 @@ export class OrganizationInformationApplicationService {
                 this.부서_계층구조_통계를_계산한다(departmentHierarchy);
 
             return {
-                departments: departmentHierarchy,
+                departments: departmentHierarchy.filter((department) => department.parentDepartmentId === null),
                 totalDepartments,
                 totalEmployees,
                 maxDepth: maxDepthCalculated,

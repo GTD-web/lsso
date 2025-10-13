@@ -6,6 +6,9 @@ import {
     DepartmentListResponseDto,
     UpdateDepartmentOrderRequestDto,
     UpdateDepartmentParentRequestDto,
+    DepartmentHierarchyResponseDto,
+    DepartmentWithEmployeesDto,
+    DepartmentEmployeeInfoDto,
     CreateEmployeeRequestDto,
     UpdateEmployeeRequestDto,
     EmployeeResponseDto,
@@ -24,10 +27,33 @@ import {
     EmployeeRankHistoryResponseDto,
 } from './dto';
 import { OrganizationManagementContextService } from 'src/modules/context/organization-management/organization-management-context.service';
+import { Department } from 'src/modules/domain/department/department.entity';
+import { Employee } from 'src/modules/domain/employee/employee.entity';
+import { Position } from 'src/modules/domain/position/position.entity';
+import { Rank } from 'src/modules/domain/rank/rank.entity';
 
 @Injectable()
 export class OrganizationApplicationService {
     constructor(private readonly organizationContextService: OrganizationManagementContextService) {}
+
+    // 부서 계층구조별 직원 정보 조회
+    async 부서_계층구조별_직원정보를_조회한다(): Promise<DepartmentHierarchyResponseDto> {
+        const result = await this.organizationContextService.부서_계층구조별_직원정보를_조회한다(
+            undefined, // rootDepartmentId
+            undefined, // maxDepth
+            true, // withEmployeeDetail
+            true, // includeTerminated
+            true, // includeEmptyDepartments
+        );
+        console.log(result);
+        const departments = this.부서_계층구조를_직원정보와_함께_변환한다(
+            result.departments,
+            result.employeesByDepartment,
+            result.departmentDetails,
+        );
+
+        return { departments: departments.filter((department) => department.parentDepartmentId === null) };
+    }
 
     // 부서 관리 함수들
     async 부서목록조회(): Promise<DepartmentListResponseDto> {
@@ -296,4 +322,68 @@ export class OrganizationApplicationService {
         createdAt: history.createdAt,
         updatedAt: history.updatedAt,
     });
+
+    private 부서_계층구조를_직원정보와_함께_변환한다(
+        departments: Department[],
+        employeesByDepartment: Map<string, { employees: Employee[]; departmentPositions: Map<string, any> }>,
+        departmentDetails?: Map<string, { department: Department; position: Position; rank: Rank }[]>,
+    ): DepartmentWithEmployeesDto[] {
+        const result: DepartmentWithEmployeesDto[] = [];
+
+        for (const department of departments) {
+            // 해당 부서의 직원 정보 조회
+            const departmentEmployeeInfo = employeesByDepartment.get(department.id) || {
+                employees: [],
+                departmentPositions: new Map(),
+            };
+
+            // 직원 정보를 DepartmentEmployeeInfoDto로 변환
+            const employees: DepartmentEmployeeInfoDto[] = [];
+            for (const employee of departmentEmployeeInfo.employees) {
+                const departmentPosition = departmentEmployeeInfo.departmentPositions.get(employee.id);
+                const deptDetails = departmentDetails?.get(department.id);
+                const employeeDetail = deptDetails?.find(
+                    (d) =>
+                        departmentEmployeeInfo.departmentPositions.has(employee.id) &&
+                        d.department.id === department.id,
+                );
+
+                employees.push({
+                    id: employee.id,
+                    employeeNumber: employee.employeeNumber,
+                    name: employee.name,
+                    email: employee.email,
+                    phoneNumber: employee.phoneNumber,
+                    positionId: departmentPosition?.positionId,
+                    positionTitle: employeeDetail?.position?.positionTitle,
+                    rankId: employee.currentRankId,
+                    rankName: employeeDetail?.rank?.rankName,
+                    isManager: departmentPosition?.isManager || false,
+                });
+            }
+
+            // 하위 부서 재귀 처리
+            const childDepartments = this.부서_계층구조를_직원정보와_함께_변환한다(
+                department.childDepartments || [],
+                employeesByDepartment,
+                departmentDetails,
+            );
+
+            const departmentDto: DepartmentWithEmployeesDto = {
+                id: department.id,
+                departmentName: department.departmentName,
+                departmentCode: department.departmentCode,
+                type: department.type,
+                parentDepartmentId: department.parentDepartmentId,
+                order: department.order,
+                employees: employees.sort((a, b) => a.name.localeCompare(b.name)),
+                childDepartments:
+                    childDepartments.length > 0 ? childDepartments.sort((a, b) => a.order - b.order) : undefined,
+            };
+
+            result.push(departmentDto);
+        }
+
+        return result.sort((a, b) => a.order - b.order);
+    }
 }
