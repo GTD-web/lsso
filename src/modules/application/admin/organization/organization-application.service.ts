@@ -4,6 +4,8 @@ import {
     UpdateDepartmentRequestDto,
     DepartmentResponseDto,
     DepartmentListResponseDto,
+    UpdateDepartmentOrderRequestDto,
+    UpdateDepartmentParentRequestDto,
     CreateEmployeeRequestDto,
     UpdateEmployeeRequestDto,
     EmployeeResponseDto,
@@ -62,6 +64,26 @@ export class OrganizationApplicationService {
     async 부서삭제(id: string): Promise<void> {
         // 완전한 비즈니스 로직 사이클 실행 (존재 확인 → 제약 조건 확인 → 삭제)
         await this.organizationContextService.부서를_삭제한다(id);
+    }
+
+    async 부서순서변경(id: string, updateOrderDto: UpdateDepartmentOrderRequestDto): Promise<DepartmentResponseDto> {
+        // 완전한 비즈니스 로직 사이클 실행 (존재 확인 → 순서 재배치 → 변경)
+        const updatedDepartment = await this.organizationContextService.부서순서를_변경한다(
+            id,
+            updateOrderDto.newOrder,
+        );
+        return this.부서를_응답DTO로_변환한다(updatedDepartment);
+    }
+
+    async 부서상위부서변경(
+        id: string,
+        updateParentDto: UpdateDepartmentParentRequestDto,
+    ): Promise<DepartmentResponseDto> {
+        // 완전한 비즈니스 로직 사이클 실행 (존재 확인 → 상위 부서 확인 → 변경)
+        const updatedDepartment = await this.organizationContextService.부서를_수정한다(id, {
+            parentDepartmentId: updateParentDto.newParentDepartmentId,
+        });
+        return this.부서를_응답DTO로_변환한다(updatedDepartment);
     }
 
     // 직원 관리 함수들

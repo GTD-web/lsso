@@ -146,4 +146,60 @@ export class DomainDepartmentService extends BaseService<Department> {
         }
         return false;
     }
+
+    /**
+     * 같은 부모를 가진 부서들의 순서 범위 내 부서들 조회
+     */
+    async findDepartmentsInOrderRange(
+        parentDepartmentId: string | null,
+        minOrder: number,
+        maxOrder: number,
+    ): Promise<Department[]> {
+        const queryBuilder = this.departmentRepository.createQueryBuilder('department');
+
+        if (parentDepartmentId === null) {
+            queryBuilder.where('department.parentDepartmentId IS NULL');
+        } else {
+            queryBuilder.where('department.parentDepartmentId = :parentDepartmentId', { parentDepartmentId });
+        }
+
+        return queryBuilder
+            .andWhere('department.order >= :minOrder', { minOrder })
+            .andWhere('department.order <= :maxOrder', { maxOrder })
+            .getMany();
+    }
+
+    /**
+     * 여러 부서의 순서를 일괄 업데이트
+     */
+    async bulkUpdateOrders(updates: { id: string; order: number }[]): Promise<void> {
+        await this.departmentRepository.manager.transaction(async (transactionalEntityManager) => {
+            for (const update of updates) {
+                await transactionalEntityManager.update(Department, { id: update.id }, { order: update.order });
+            }
+        });
+    }
+
+    /**
+     * 같은 부모를 가진 부서들의 개수 조회
+     */
+    async countByParentDepartmentId(parentDepartmentId: string | null): Promise<number> {
+        const queryBuilder = this.departmentRepository.createQueryBuilder('department');
+
+        if (parentDepartmentId === null) {
+            queryBuilder.where('department.parentDepartmentId IS NULL');
+        } else {
+            queryBuilder.where('department.parentDepartmentId = :parentDepartmentId', { parentDepartmentId });
+        }
+
+        return queryBuilder.getCount();
+    }
+
+    /**
+     * 같은 부모를 가진 부서들의 다음 순서 번호를 조회
+     */
+    async getNextOrderForParent(parentDepartmentId: string | null): Promise<number> {
+        const count = await this.countByParentDepartmentId(parentDepartmentId);
+        return count;
+    }
 }

@@ -716,13 +716,19 @@ export class OrganizationManagementContextService {
             }
         }
 
-        // 3. 부서 생성
+        // 3. 순서가 지정되지 않은 경우 자동으로 다음 순서 조회
+        let order = 부서정보.order;
+        if (order === undefined) {
+            order = await this.부서서비스.getNextOrderForParent(부서정보.parentDepartmentId || null);
+        }
+
+        // 4. 부서 생성
         return await this.부서서비스.createDepartment({
             departmentName: 부서정보.departmentName,
             departmentCode: 부서정보.departmentCode,
             type: 부서정보.type,
             parentDepartmentId: 부서정보.parentDepartmentId,
-            order: 부서정보.order || 0,
+            order,
         });
     }
 
@@ -785,6 +791,71 @@ export class OrganizationManagementContextService {
 
         // 4. 부서 삭제
         await this.부서서비스.deleteDepartment(departmentId);
+    }
+
+    /**
+     * 부서 순서 변경 (완전한 비즈니스 로직 사이클)
+     * 존재 확인 → 순서 재배치 → 변경
+     */
+    async 부서순서를_변경한다(departmentId: string, newOrder: number): Promise<Department> {
+        // 1. 부서 존재 확인 및 현재 순서 조회
+        const department = await this.부서서비스.findById(departmentId);
+        if (!department) {
+            throw new Error('부서를 찾을 수 없습니다.');
+        }
+
+        const currentOrder = department.order;
+
+        // 2. 순서가 같으면 변경할 필요 없음
+        if (currentOrder === newOrder) {
+            return department;
+        }
+
+        // 3. 같은 부모를 가진 부서들의 순서 재배치
+        const parentDepartmentId = department.parentDepartmentId || null;
+
+        // 현재 순서와 새로운 순서 사이에 있는 부서들을 조회
+        const minOrder = Math.min(currentOrder, newOrder);
+        const maxOrder = Math.max(currentOrder, newOrder);
+
+        const affectedDepartments = await this.부서서비스.findDepartmentsInOrderRange(
+            parentDepartmentId,
+            minOrder,
+            maxOrder,
+        );
+
+        // 4. 순서 업데이트 목록 생성
+        const updates: { id: string; order: number }[] = [];
+
+        if (currentOrder < newOrder) {
+            // 아래로 이동: 현재 순서보다 크고 새로운 순서 이하인 부서들을 -1
+            for (const dept of affectedDepartments) {
+                if (dept.id === departmentId) {
+                    // 현재 부서는 새로운 순서로
+                    updates.push({ id: dept.id, order: newOrder });
+                } else if (dept.order > currentOrder && dept.order <= newOrder) {
+                    // 사이에 있는 부서들은 -1
+                    updates.push({ id: dept.id, order: dept.order - 1 });
+                }
+            }
+        } else {
+            // 위로 이동: 새로운 순서 이상이고 현재 순서보다 작은 부서들을 +1
+            for (const dept of affectedDepartments) {
+                if (dept.id === departmentId) {
+                    // 현재 부서는 새로운 순서로
+                    updates.push({ id: dept.id, order: newOrder });
+                } else if (dept.order >= newOrder && dept.order < currentOrder) {
+                    // 사이에 있는 부서들은 +1
+                    updates.push({ id: dept.id, order: dept.order + 1 });
+                }
+            }
+        }
+
+        // 5. 일괄 업데이트 실행
+        await this.부서서비스.bulkUpdateOrders(updates);
+
+        // 6. 업데이트된 부서 반환
+        return await this.부서서비스.findById(departmentId);
     }
 
     // ==================== 직책 생성/수정/삭제 관련 ====================

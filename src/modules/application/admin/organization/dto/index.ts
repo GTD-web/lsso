@@ -4,6 +4,8 @@ export {
     UpdateDepartmentRequestDto,
     DepartmentResponseDto,
     DepartmentListResponseDto,
+    UpdateDepartmentOrderRequestDto,
+    UpdateDepartmentParentRequestDto,
 } from './department.dto';
 
 // Employee DTOs

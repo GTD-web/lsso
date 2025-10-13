@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Patch, Body, Param, Query, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam, ApiBody, ApiQuery } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../../../../libs/common/guards/jwt-auth.guard';
 import { OrganizationApplicationService } from './organization-application.service';
@@ -7,6 +7,8 @@ import {
     UpdateDepartmentRequestDto,
     DepartmentResponseDto,
     DepartmentListResponseDto,
+    UpdateDepartmentOrderRequestDto,
+    UpdateDepartmentParentRequestDto,
     CreateEmployeeRequestDto,
     UpdateEmployeeRequestDto,
     EmployeeResponseDto,
@@ -73,6 +75,30 @@ export class OrganizationController {
     @ApiResponse({ status: 200 })
     async deleteDepartment(@Param('id') id: string): Promise<void> {
         return await this.organizationApplicationService.부서삭제(id);
+    }
+
+    @Patch('departments/:id/order')
+    @ApiOperation({ summary: '부서 순서 변경' })
+    @ApiParam({ name: 'id', description: '부서 ID' })
+    @ApiBody({ type: UpdateDepartmentOrderRequestDto })
+    @ApiResponse({ status: 200, type: DepartmentResponseDto })
+    async updateDepartmentOrder(
+        @Param('id') id: string,
+        @Body() updateOrderDto: UpdateDepartmentOrderRequestDto,
+    ): Promise<DepartmentResponseDto> {
+        return await this.organizationApplicationService.부서순서변경(id, updateOrderDto);
+    }
+
+    @Patch('departments/:id/parent')
+    @ApiOperation({ summary: '부서 상위 부서 변경' })
+    @ApiParam({ name: 'id', description: '부서 ID' })
+    @ApiBody({ type: UpdateDepartmentParentRequestDto })
+    @ApiResponse({ status: 200, type: DepartmentResponseDto })
+    async updateDepartmentParent(
+        @Param('id') id: string,
+        @Body() updateParentDto: UpdateDepartmentParentRequestDto,
+    ): Promise<DepartmentResponseDto> {
+        return await this.organizationApplicationService.부서상위부서변경(id, updateParentDto);
     }
 
     // 직원 관리 API

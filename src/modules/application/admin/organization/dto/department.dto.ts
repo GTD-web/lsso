@@ -94,3 +94,15 @@ export class DepartmentListResponseDto {
     @ApiProperty({ description: '부서 목록', type: [DepartmentResponseDto] })
     departments: DepartmentResponseDto[];
 }
+
+export class UpdateDepartmentOrderRequestDto {
+    @ApiProperty({ description: '새로운 정렬 순서', example: 25 })
+    @IsNumber()
+    newOrder: number;
+}
+
+export class UpdateDepartmentParentRequestDto {
+    @ApiProperty({ description: '새로운 상위 부서 ID', example: 'uuid' })
+    @IsUUID()
+    newParentDepartmentId: string;
+}
