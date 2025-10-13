@@ -21,12 +21,35 @@ import {
     ChangePasswordResponseDto,
     CheckPasswordRequestDto,
     CheckPasswordResponseDto,
+    SystemAuthResponseDto,
 } from '../dto';
 
 @ApiTags('Client - 인증 API')
 @Controller('auth')
 export class SsoApplicationController {
     constructor(private readonly ssoApplicationService: SsoApplicationService) {}
+
+    @Post('system')
+    @HttpCode(HttpStatus.OK)
+    @ApiBasicAuth()
+    @ApiOperation({
+        summary: '시스템 인증',
+        description: 'SDK가 Basic Auth로 시스템을 인증하고 액세스 토큰을 발급받습니다.',
+    })
+    @ApiHeader({
+        name: 'Authorization',
+        description: 'Basic Auth 헤더, 형식: Basic base64(clientId:clientSecret)',
+        required: true,
+    })
+    @ApiResponse({
+        status: 200,
+        description: '시스템 인증 성공',
+        type: SystemAuthResponseDto,
+    })
+    @ApiResponse({ status: 401, description: '인증 실패' })
+    async authenticateSystem(@Headers('authorization') authHeader?: string): Promise<SystemAuthResponseDto> {
+        return this.ssoApplicationService.authenticateSystem(authHeader);
+    }
 
     // @ApiBasicAuth()
     @Post('login')

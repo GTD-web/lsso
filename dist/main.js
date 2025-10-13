@@ -414,6 +414,7 @@ let LoggingInterceptor = class LoggingInterceptor {
         if (ip === '::ffff:127.0.0.1' || ip === '::1') {
             ip = '127.0.0.1';
         }
+        const systemName = request.headers['x-system-name'];
         const logData = {
             origin: request.headers.origin,
             host: request.headers.host,
@@ -429,7 +430,7 @@ let LoggingInterceptor = class LoggingInterceptor {
             responseTime: null,
             statusCode: null,
             response: null,
-            system: null,
+            system: systemName || null,
             error: null,
             isError: false,
         };
@@ -8757,7 +8758,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SsoApplicationController = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
@@ -8767,6 +8768,9 @@ const dto_1 = __webpack_require__(/*! ../dto */ "./src/modules/application/singl
 let SsoApplicationController = class SsoApplicationController {
     constructor(ssoApplicationService) {
         this.ssoApplicationService = ssoApplicationService;
+    }
+    async authenticateSystem(authHeader) {
+        return this.ssoApplicationService.authenticateSystem(authHeader);
     }
     async login(body) {
         const result = await this.ssoApplicationService.login(body);
@@ -8787,6 +8791,30 @@ let SsoApplicationController = class SsoApplicationController {
 };
 exports.SsoApplicationController = SsoApplicationController;
 __decorate([
+    (0, common_1.Post)('system'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, swagger_1.ApiBasicAuth)(),
+    (0, swagger_1.ApiOperation)({
+        summary: '시스템 인증',
+        description: 'SDK가 Basic Auth로 시스템을 인증하고 액세스 토큰을 발급받습니다.',
+    }),
+    (0, swagger_1.ApiHeader)({
+        name: 'Authorization',
+        description: 'Basic Auth 헤더, 형식: Basic base64(clientId:clientSecret)',
+        required: true,
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: '시스템 인증 성공',
+        type: dto_1.SystemAuthResponseDto,
+    }),
+    (0, swagger_1.ApiResponse)({ status: 401, description: '인증 실패' }),
+    __param(0, (0, common_1.Headers)('authorization')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", typeof (_b = typeof Promise !== "undefined" && Promise) === "function" ? _b : Object)
+], SsoApplicationController.prototype, "authenticateSystem", null);
+__decorate([
     (0, common_1.Post)('login'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     (0, swagger_1.ApiOperation)({
@@ -8804,8 +8832,8 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 404, description: '사용자 또는 시스템을 찾을 수 없음' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_b = typeof dto_1.LoginRequestDto !== "undefined" && dto_1.LoginRequestDto) === "function" ? _b : Object]),
-    __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
+    __metadata("design:paramtypes", [typeof (_c = typeof dto_1.LoginRequestDto !== "undefined" && dto_1.LoginRequestDto) === "function" ? _c : Object]),
+    __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
 ], SsoApplicationController.prototype, "login", null);
 __decorate([
     (0, swagger_1.ApiBearerAuth)(),
@@ -8826,7 +8854,7 @@ __decorate([
     __param(0, (0, common_1.Headers)('Authorization')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
+    __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
 ], SsoApplicationController.prototype, "verifyToken", null);
 __decorate([
     (0, swagger_1.ApiBearerAuth)(),
@@ -8852,8 +8880,8 @@ __decorate([
     __param(0, (0, common_1.Headers)('Authorization')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, typeof (_e = typeof dto_1.ChangePasswordRequestDto !== "undefined" && dto_1.ChangePasswordRequestDto) === "function" ? _e : Object]),
-    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
+    __metadata("design:paramtypes", [String, typeof (_f = typeof dto_1.ChangePasswordRequestDto !== "undefined" && dto_1.ChangePasswordRequestDto) === "function" ? _f : Object]),
+    __metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
 ], SsoApplicationController.prototype, "changePassword", null);
 __decorate([
     (0, swagger_1.ApiBearerAuth)(),
@@ -8879,8 +8907,8 @@ __decorate([
     __param(0, (0, common_1.Headers)('Authorization')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, typeof (_g = typeof dto_1.CheckPasswordRequestDto !== "undefined" && dto_1.CheckPasswordRequestDto) === "function" ? _g : Object]),
-    __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
+    __metadata("design:paramtypes", [String, typeof (_h = typeof dto_1.CheckPasswordRequestDto !== "undefined" && dto_1.CheckPasswordRequestDto) === "function" ? _h : Object]),
+    __metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
 ], SsoApplicationController.prototype, "checkPassword", null);
 __decorate([
     (0, common_1.Get)('cron/clean-up/token'),
@@ -8909,7 +8937,7 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 500, description: '서버 내부 오류' }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
+    __metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
 ], SsoApplicationController.prototype, "cleanUpExpiredTokens", null);
 exports.SsoApplicationController = SsoApplicationController = __decorate([
     (0, swagger_1.ApiTags)('Client - 인증 API'),
@@ -9048,6 +9076,7 @@ __exportStar(__webpack_require__(/*! ./login-response.dto */ "./src/modules/appl
 __exportStar(__webpack_require__(/*! ./token-verify-response.dto */ "./src/modules/application/single-sign-on/dto/token-verify-response.dto.ts"), exports);
 __exportStar(__webpack_require__(/*! ./change-password.dto */ "./src/modules/application/single-sign-on/dto/change-password.dto.ts"), exports);
 __exportStar(__webpack_require__(/*! ./check-password.dto */ "./src/modules/application/single-sign-on/dto/check-password.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./system-auth.dto */ "./src/modules/application/single-sign-on/dto/system-auth.dto.ts"), exports);
 
 
 /***/ }),
@@ -9221,6 +9250,40 @@ __decorate([
     }),
     __metadata("design:type", typeof (_e = typeof Record !== "undefined" && Record) === "function" ? _e : Object)
 ], LoginResponseDto.prototype, "systemRoles", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/single-sign-on/dto/system-auth.dto.ts":
+/*!***********************************************************************!*\
+  !*** ./src/modules/application/single-sign-on/dto/system-auth.dto.ts ***!
+  \***********************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SystemAuthResponseDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+class SystemAuthResponseDto {
+}
+exports.SystemAuthResponseDto = SystemAuthResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '시스템 ID' }),
+    __metadata("design:type", String)
+], SystemAuthResponseDto.prototype, "systemId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '시스템 이름' }),
+    __metadata("design:type", String)
+], SystemAuthResponseDto.prototype, "systemName", void 0);
 
 
 /***/ }),
@@ -9439,6 +9502,18 @@ let SsoApplicationService = class SsoApplicationService {
         const isPasswordValid = await this.authorizationContextService.비밀번호를_검증한다(employee, currentPassword);
         return {
             isValid: isPasswordValid,
+        };
+    }
+    async authenticateSystem(authHeader) {
+        const result = this.BASIC_헤더_파싱하기(authHeader);
+        if (!result) {
+            throw new common_1.UnauthorizedException('유효하지 않은 인증정보입니다. Basic Auth 헤더가 필요합니다.');
+        }
+        const { clientId, clientSecret } = result;
+        const system = await this.authorizationContextService.시스템을_인증한다(clientId, clientSecret);
+        return {
+            systemId: system.id,
+            systemName: system.name,
         };
     }
     BASIC_헤더_파싱하기(authHeader) {

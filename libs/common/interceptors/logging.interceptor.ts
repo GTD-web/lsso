@@ -29,6 +29,10 @@ export class LoggingInterceptor implements NestInterceptor {
             ip = '127.0.0.1';
         }
 
+        // SDK에서 전송한 시스템 정보 추출 (X-System-ID, X-System-Name 헤더)
+        // const systemId = request.headers['x-system-id'] as string;
+        const systemName = request.headers['x-system-name'] as string;
+
         // 요청 정보 수집
         const logData = {
             // 요청 정보
@@ -47,7 +51,7 @@ export class LoggingInterceptor implements NestInterceptor {
             responseTime: null,
             statusCode: null,
             response: null,
-            system: null,
+            system: systemName || null,
             error: null,
             isError: false,
         };

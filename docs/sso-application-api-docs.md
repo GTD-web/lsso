@@ -6,16 +6,99 @@
 
 **Base URL**: `/auth`
 
+## 목차
+
+-   [인증 방식](#인증-방식)
+-   [SDK 통합 가이드](#sdk-통합-가이드)
+-   [API 엔드포인트](#api-엔드포인트)
+    -   [1. 시스템 인증](#1-시스템-인증)
+    -   [2. 로그인 및 토큰 발급](#2-로그인-및-토큰-발급)
+    -   [3. 토큰 검증](#3-토큰-검증)
+    -   [4. 비밀번호 변경](#4-비밀번호-변경)
+    -   [5. 비밀번호 확인](#5-비밀번호-확인)
+    -   [6. 만료된 토큰 정리](#6-만료된-토큰-정리-배치작업)
+-   [에러 처리](#에러-처리)
+-   [보안 고려사항](#보안-고려사항)
+-   [사용 예시](#사용-예시)
+-   [변경 이력](#변경-이력)
+
 ## 인증 방식
 
 -   **Bearer Token**: 대부분의 API에서 `Authorization: Bearer {access_token}` 헤더를 사용
--   **Basic Auth**: 시스템 인증이 필요한 경우 `Authorization: Basic {base64(clientId:clientSecret)}` 사용
+-   **Basic Auth**: 시스템 인증 시 `Authorization: Basic {base64(clientId:clientSecret)}` 사용
+
+## SDK 통합 가이드
+
+SDK를 사용하는 외부 시스템은 다음 순서로 인증을 진행합니다:
+
+### 1단계: 시스템 인증
+
+-   `/auth/system` 엔드포인트로 Basic Auth를 통해 시스템 인증
+-   `clientId`와 `clientSecret`을 Base64로 인코딩하여 `Authorization: Basic {encoded}` 헤더에 포함
+
+### 2단계: 시스템 정보 저장
+
+-   응답받은 `systemId`와 `systemName`을 저장
+-   이 정보는 이후 모든 API 요청에서 사용됨
+
+### 3단계: API 요청 시 시스템 식별
+
+-   모든 후속 API 요청 시 `X-System-Name: {systemName}` 헤더를 포함
+-   이 헤더는 로깅 및 추적 목적으로 사용됨 (선택사항이지만 권장)
+-   서버는 이 헤더를 통해 어떤 시스템에서 요청이 왔는지 기록함
+
+### 보안 참고사항
+
+-   `clientId`와 `clientSecret`은 안전하게 보관해야 함
+-   시스템 인증은 SDK 초기화 시 한 번만 수행
+-   `systemName`은 민감한 정보가 아니므로 헤더에 포함해도 안전함
 
 ---
 
 ## API 엔드포인트
 
-### 1. 로그인 및 토큰 발급
+### 1. 시스템 인증
+
+**POST** `/auth/system`
+
+SDK가 시스템을 인증하여 시스템 정보를 받습니다. 이후 모든 API 요청 시 `X-System-Name` 헤더에 시스템 이름을 포함해야 합니다.
+
+#### 요청
+
+**Headers:**
+
+-   `Authorization: Basic {base64(clientId:clientSecret)}` (필수)
+
+**Body:** 없음
+
+#### 응답
+
+**성공 (200 OK):**
+
+```json
+{
+    "systemId": "550e8400-e29b-41d4-a716-446655440000",
+    "systemName": "LRIM System"
+}
+```
+
+**에러 응답:**
+
+-   `401 Unauthorized`: 인증 실패 (잘못된 clientId 또는 clientSecret)
+
+#### 사용 예시
+
+```bash
+# clientId: my-app, clientSecret: secret123
+# base64("my-app:secret123") = bXktYXBwOnNlY3JldDEyMw==
+
+curl -X POST http://localhost:3000/auth/system \
+  -H "Authorization: Basic bXktYXBwOnNlY3JldDEyMw=="
+```
+
+---
+
+### 2. 로그인 및 토큰 발급
 
 **POST** `/auth/login`
 
@@ -26,7 +109,7 @@ OAuth2 방식의 로그인을 지원합니다. 이메일/비밀번호 로그인(
 **Headers:**
 
 -   `Content-Type: application/json`
--   `Authorization: Basic {base64(clientId:clientSecret)}` (선택사항)
+-   `X-System-Name: {systemName}` (선택사항, 로깅 목적)
 
 **Body:**
 
@@ -87,7 +170,7 @@ OAuth2 방식의 로그인을 지원합니다. 이메일/비밀번호 로그인(
 
 ---
 
-### 2. 토큰 검증
+### 3. 토큰 검증
 
 **POST** `/auth/verify`
 
@@ -99,6 +182,7 @@ OAuth2 방식의 로그인을 지원합니다. 이메일/비밀번호 로그인(
 
 -   `Content-Type: application/json`
 -   `Authorization: Bearer {access_token}` (필수)
+-   `X-System-Name: {systemName}` (선택사항, 로깅 목적)
 
 **Body:** 없음
 
@@ -125,7 +209,7 @@ OAuth2 방식의 로그인을 지원합니다. 이메일/비밀번호 로그인(
 
 ---
 
-### 3. 비밀번호 변경
+### 4. 비밀번호 변경
 
 **POST** `/auth/change-password`
 
@@ -137,6 +221,7 @@ OAuth2 방식의 로그인을 지원합니다. 이메일/비밀번호 로그인(
 
 -   `Content-Type: application/json`
 -   `Authorization: Bearer {access_token}` (필수)
+-   `X-System-Name: {systemName}` (선택사항, 로깅 목적)
 
 **Body:**
 
@@ -165,7 +250,7 @@ OAuth2 방식의 로그인을 지원합니다. 이메일/비밀번호 로그인(
 
 ---
 
-### 4. 비밀번호 확인
+### 5. 비밀번호 확인
 
 **POST** `/auth/check-password`
 
@@ -177,6 +262,7 @@ OAuth2 방식의 로그인을 지원합니다. 이메일/비밀번호 로그인(
 
 -   `Content-Type: application/json`
 -   `Authorization: Bearer {access_token}` (필수)
+-   `X-System-Name: {systemName}` (선택사항, 로깅 목적)
 
 **Body:**
 
@@ -206,7 +292,7 @@ OAuth2 방식의 로그인을 지원합니다. 이메일/비밀번호 로그인(
 
 ---
 
-### 5. 만료된 토큰 정리 (배치작업)
+### 6. 만료된 토큰 정리 (배치작업)
 
 **GET** `/auth/cron/clean-up/token`
 
@@ -256,14 +342,29 @@ OAuth2 방식의 로그인을 지원합니다. 이메일/비밀번호 로그인(
 
 ## 사용 예시
 
-### JavaScript (fetch)
+### JavaScript (fetch) - SDK 통합 예시
 
 ```javascript
-// 로그인
+// 1. 시스템 인증
+const systemAuthResponse = await fetch('/auth/system', {
+    method: 'POST',
+    headers: {
+        Authorization: 'Basic bXktYXBwOnNlY3JldDEyMw==', // base64(clientId:clientSecret)
+    },
+});
+
+const systemData = await systemAuthResponse.json();
+const { systemId, systemName } = systemData;
+
+// 시스템 정보를 저장 (이후 모든 요청에 사용)
+localStorage.setItem('systemName', systemName);
+
+// 2. 로그인
 const loginResponse = await fetch('/auth/login', {
     method: 'POST',
     headers: {
         'Content-Type': 'application/json',
+        'X-System-Name': systemName, // 시스템 식별 헤더
     },
     body: JSON.stringify({
         grant_type: 'password',
@@ -275,12 +376,13 @@ const loginResponse = await fetch('/auth/login', {
 const loginData = await loginResponse.json();
 const accessToken = loginData.accessToken;
 
-// 토큰 검증
+// 3. 토큰 검증
 const verifyResponse = await fetch('/auth/verify', {
     method: 'POST',
     headers: {
         Authorization: `Bearer ${accessToken}`,
         'Content-Type': 'application/json',
+        'X-System-Name': systemName, // 시스템 식별 헤더
     },
 });
 
@@ -290,32 +392,56 @@ const verifyData = await verifyResponse.json();
 ### cURL
 
 ```bash
-# 로그인
-# 이메일/비밀번호 로그인
-curl -X POST /auth/login \
+# 1. 시스템 인증
+curl -X POST http://localhost:3000/auth/system \
+  -H "Authorization: Basic bXktYXBwOnNlY3JldDEyMw=="
+
+# Response: { "systemId": "...", "systemName": "LRIM System" }
+
+# 2. 로그인 - 이메일/비밀번호
+curl -X POST http://localhost:3000/auth/login \
   -H "Content-Type: application/json" \
+  -H "X-System-Name: LRIM System" \
   -d '{
     "grant_type": "password",
     "email": "user@example.com",
     "password": "password123"
   }'
 
-# 리프레시 토큰으로 재발급
-curl -X POST /auth/login \
+# 3. 로그인 - 리프레시 토큰으로 재발급
+curl -X POST http://localhost:3000/auth/login \
   -H "Content-Type: application/json" \
+  -H "X-System-Name: LRIM System" \
   -d '{
     "grant_type": "refresh_token",
     "refresh_token": "your_refresh_token"
   }'
 
-# 토큰 검증
-curl -X POST /auth/verify \
+# 4. 토큰 검증
+curl -X POST http://localhost:3000/auth/verify \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
-  -H "Content-Type: application/json"
+  -H "Content-Type: application/json" \
+  -H "X-System-Name: LRIM System"
 ```
 
 ---
 
-**문서 버전**: 1.0  
+## 변경 이력
+
+### v1.1 (2024)
+
+-   시스템 인증 API 추가 (`POST /auth/system`)
+-   SDK 통합 가이드 추가
+-   `X-System-Name` 헤더를 통한 시스템 식별 기능 추가
+-   모든 API 엔드포인트 번호 재정렬
+
+### v1.0 (2024)
+
+-   초기 버전
+-   로그인, 토큰 검증, 비밀번호 관리 API
+
+---
+
+**문서 버전**: 1.1  
 **최종 업데이트**: 2024년  
 **담당자**: SSO 개발팀

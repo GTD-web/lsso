@@ -10,6 +10,7 @@ import {
     ChangePasswordResponseDto,
     CheckPasswordRequestDto,
     CheckPasswordResponseDto,
+    SystemAuthResponseDto,
 } from './dto';
 import { Employee, Token } from '../../../../libs/database/entities';
 
@@ -140,6 +141,24 @@ export class SsoApplicationService {
         const isPasswordValid = await this.authorizationContextService.비밀번호를_검증한다(employee, currentPassword);
         return {
             isValid: isPasswordValid,
+        };
+    }
+
+    async authenticateSystem(authHeader?: string): Promise<SystemAuthResponseDto> {
+        // Basic Auth 헤더 파싱
+        const result = this.BASIC_헤더_파싱하기(authHeader);
+        if (!result) {
+            throw new UnauthorizedException('유효하지 않은 인증정보입니다. Basic Auth 헤더가 필요합니다.');
+        }
+
+        const { clientId, clientSecret } = result;
+
+        // 시스템 인증
+        const system = await this.authorizationContextService.시스템을_인증한다(clientId, clientSecret);
+
+        return {
+            systemId: system.id,
+            systemName: system.name,
         };
     }
 
