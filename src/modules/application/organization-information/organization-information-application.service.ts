@@ -197,6 +197,7 @@ export class OrganizationInformationApplicationService {
                 maxDepth: maxDepthCalculated,
             };
         } catch (error) {
+            console.error('부서 계층구조 정보 조회 중 오류 발생:', error);
             throw new NotFoundException('부서 계층구조 정보를 조회할 수 없습니다.');
         }
     }

@@ -7199,7 +7199,7 @@ __decorate([
     (0, common_1.Post)('employee'),
     (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),
     (0, swagger_1.ApiOperation)({
-        summary: '직원 생성',
+        summary: '채용 프로세스 완료 후 - 직원 생성',
         description: '새로운 직원을 생성합니다. 검증 규칙 4단계에 따라 완전한 검증을 수행합니다.',
     }),
     (0, swagger_1.ApiBody)({
@@ -7244,7 +7244,7 @@ __decorate([
     (0, common_1.Post)('employee/terminate'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     (0, swagger_1.ApiOperation)({
-        summary: '직원 퇴사처리',
+        summary: '수습평가 후 - 직원 퇴사처리',
         description: '수습기간 평가 후 불합격 시 직원을 퇴사처리합니다. 3개월 수습기간이 지난 후에만 가능합니다.',
     }),
     (0, swagger_1.ApiBody)({
@@ -8321,6 +8321,7 @@ let OrganizationInformationApplicationService = class OrganizationInformationApp
             };
         }
         catch (error) {
+            console.error('부서 계층구조 정보 조회 중 오류 발생:', error);
             throw new common_1.NotFoundException('부서 계층구조 정보를 조회할 수 없습니다.');
         }
     }

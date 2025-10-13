@@ -300,7 +300,7 @@ export class OrganizationInformationApplicationController {
     @Post('employee')
     @HttpCode(HttpStatus.CREATED)
     @ApiOperation({
-        summary: '직원 생성',
+        summary: '채용 프로세스 완료 후 - 직원 생성',
         description: '새로운 직원을 생성합니다. 검증 규칙 4단계에 따라 완전한 검증을 수행합니다.',
     })
     @ApiBody({
@@ -345,7 +345,7 @@ export class OrganizationInformationApplicationController {
     @Post('employee/terminate')
     @HttpCode(HttpStatus.OK)
     @ApiOperation({
-        summary: '직원 퇴사처리',
+        summary: '수습평가 후 - 직원 퇴사처리',
         description: '수습기간 평가 후 불합격 시 직원을 퇴사처리합니다. 3개월 수습기간이 지난 후에만 가능합니다.',
     })
     @ApiBody({
