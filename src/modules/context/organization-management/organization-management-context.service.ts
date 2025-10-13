@@ -765,6 +765,11 @@ export class OrganizationManagementContextService {
             }
         }
 
+        수정정보.order = await this.부서서비스.getNextOrderForParent(수정정보.parentDepartmentId || null);
+        if (수정정보.order === undefined) {
+            throw new Error('순서를 찾을 수 없습니다.');
+        }
+
         // 4. 부서 수정
         return await this.부서서비스.updateDepartment(departmentId, 수정정보);
     }

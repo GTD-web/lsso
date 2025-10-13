@@ -11283,6 +11283,10 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
                 throw new Error('상위 부서를 찾을 수 없습니다.');
             }
         }
+        수정정보.order = await this.부서서비스.getNextOrderForParent(수정정보.parentDepartmentId || null);
+        if (수정정보.order === undefined) {
+            throw new Error('순서를 찾을 수 없습니다.');
+        }
         return await this.부서서비스.updateDepartment(departmentId, 수정정보);
     }
     async 부서를_삭제한다(departmentId) {

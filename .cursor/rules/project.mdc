@@ -2,6 +2,8 @@
 alwaysApply: true
 ---
 
+커밋메시지는 한국어로 생성한다.
+
 모듈의 단위는 Business(Application) > Context > Domain 으로 나뉘어진다.
 
 Domain은 가장 작은 단위이며 Repository를 통해 데이터베이스와 직접 데이터를 주고 받고 Service를 통해 데이터를 활용한다.
