@@ -17070,6 +17070,8 @@ async function bootstrap() {
     }
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     const ALLOW_ORIGINS = [
+        'https://lsso.vercel.app',
+        'https://lsso-git-dev-lumir-tech7s-projects.vercel.app',
         'https://lsso-admin.vercel.app',
         'https://lsso-admin-git-dev-lumir-tech7s-projects.vercel.app',
         'https://portal.lumir.space',
