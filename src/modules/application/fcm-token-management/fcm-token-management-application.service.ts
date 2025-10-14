@@ -105,7 +105,9 @@ export class FcmTokenManagementApplicationService {
     async FCM토큰을_조회한다(requestDto: BaseEmployeeIdentifierDto): Promise<FcmTokensResponseDto> {
         // 직원 정보 조회
         const employee = await this.getEmployeeFromIdentifier(requestDto);
-
+        if (!employee) {
+            throw new NotFoundException('직원 정보를 찾을 수 없습니다.');
+        }
         // 직원의 FCM 토큰 목록 조회
         const employeeFcmTokens = await this.fcmTokenManagementContextService.직원의_활성_FCM토큰_목록을_조회한다(
             employee.id,

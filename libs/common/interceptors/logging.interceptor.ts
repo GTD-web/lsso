@@ -64,6 +64,7 @@ export class LoggingInterceptor implements NestInterceptor {
                 logData.responseTime = logData.responseTimestamp - startTime;
                 logData.statusCode = context.switchToHttp().getResponse<Response>().statusCode;
                 logData.response = request.method !== 'GET' ? response : null;
+                logData.system = !logData.system && response?.systemName ? response.systemName : null;
             }),
             catchError(async (error) => {
                 // 에러 정보 추가

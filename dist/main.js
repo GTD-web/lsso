@@ -440,6 +440,7 @@ let LoggingInterceptor = class LoggingInterceptor {
             logData.responseTime = logData.responseTimestamp - startTime;
             logData.statusCode = context.switchToHttp().getResponse().statusCode;
             logData.response = request.method !== 'GET' ? response : null;
+            logData.system = !logData.system && response?.systemName ? response.systemName : null;
         }), (0, operators_1.catchError)(async (error) => {
             logData.responseTimestamp = new Date();
             logData.responseTime = logData.responseTimestamp - startTime;
@@ -7051,6 +7052,9 @@ let FcmTokenManagementApplicationService = class FcmTokenManagementApplicationSe
     }
     async FCM토큰을_조회한다(requestDto) {
         const employee = await this.getEmployeeFromIdentifier(requestDto);
+        if (!employee) {
+            throw new common_1.NotFoundException('직원 정보를 찾을 수 없습니다.');
+        }
         const employeeFcmTokens = await this.fcmTokenManagementContextService.직원의_활성_FCM토큰_목록을_조회한다(employee.id);
         const tokens = employeeFcmTokens.map((employeeFcmToken) => ({
             fcmToken: employeeFcmToken.fcmToken,
