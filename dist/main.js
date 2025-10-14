@@ -6300,7 +6300,6 @@ __decorate([
 ], SystemController.prototype, "regenerateApiKeys", null);
 exports.SystemController = SystemController = __decorate([
     (0, swagger_1.ApiTags)('Admin - 시스템 관리'),
-    (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.Controller)('admin/systems'),
     __metadata("design:paramtypes", [typeof (_a = typeof system_application_service_1.SystemApplicationService !== "undefined" && system_application_service_1.SystemApplicationService) === "function" ? _a : Object])
 ], SystemController);

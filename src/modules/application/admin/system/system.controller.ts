@@ -5,7 +5,7 @@ import { SystemApplicationService } from './system-application.service';
 import { CreateSystemDto, UpdateSystemDto, SystemResponseDto } from './dto';
 
 @ApiTags('Admin - 시스템 관리')
-@ApiBearerAuth()
+// @ApiBearerAuth()
 @Controller('admin/systems')
 export class SystemController {
     constructor(private readonly systemApplicationService: SystemApplicationService) {}
