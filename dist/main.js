@@ -415,6 +415,7 @@ let LoggingInterceptor = class LoggingInterceptor {
             ip = '127.0.0.1';
         }
         const systemName = request.headers['x-system-name'];
+        console.log('systemName', systemName);
         const logData = {
             origin: request.headers.origin,
             host: request.headers.host,
@@ -439,12 +440,10 @@ let LoggingInterceptor = class LoggingInterceptor {
             logData.responseTime = logData.responseTimestamp - startTime;
             logData.statusCode = context.switchToHttp().getResponse().statusCode;
             logData.response = request.method !== 'GET' ? response : null;
-            logData.system = response?.system || null;
         }), (0, operators_1.catchError)(async (error) => {
             logData.responseTimestamp = new Date();
             logData.responseTime = logData.responseTimestamp - startTime;
             logData.statusCode = error.status || 500;
-            logData.system = error?.response?.system || null;
             logData.error = {
                 message: error.message,
             };

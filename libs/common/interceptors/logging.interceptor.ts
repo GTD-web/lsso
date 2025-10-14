@@ -32,6 +32,7 @@ export class LoggingInterceptor implements NestInterceptor {
         // SDK에서 전송한 시스템 정보 추출 (X-System-ID, X-System-Name 헤더)
         // const systemId = request.headers['x-system-id'] as string;
         const systemName = request.headers['x-system-name'] as string;
+        console.log('systemName', systemName);
 
         // 요청 정보 수집
         const logData = {
@@ -63,14 +64,12 @@ export class LoggingInterceptor implements NestInterceptor {
                 logData.responseTime = logData.responseTimestamp - startTime;
                 logData.statusCode = context.switchToHttp().getResponse<Response>().statusCode;
                 logData.response = request.method !== 'GET' ? response : null;
-                logData.system = response?.system || null;
             }),
             catchError(async (error) => {
                 // 에러 정보 추가
                 logData.responseTimestamp = new Date();
                 logData.responseTime = logData.responseTimestamp - startTime;
                 logData.statusCode = error.status || 500;
-                logData.system = error?.response?.system || null;
                 logData.error = {
                     message: error.message,
                     // stack: error.stack,
