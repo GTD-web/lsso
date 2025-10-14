@@ -1,5 +1,5 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam, ApiBody } from '@nestjs/swagger';
+import { Controller, Get, Post, Put, Delete, Patch, Body, Param, Query, UseGuards } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam, ApiBody, ApiQuery } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../../../../libs/common/guards/jwt-auth.guard';
 import { OrganizationApplicationService } from './organization-application.service';
 import {
@@ -7,10 +7,14 @@ import {
     UpdateDepartmentRequestDto,
     DepartmentResponseDto,
     DepartmentListResponseDto,
+    UpdateDepartmentOrderRequestDto,
+    UpdateDepartmentParentRequestDto,
+    DepartmentHierarchyResponseDto,
     CreateEmployeeRequestDto,
     UpdateEmployeeRequestDto,
     EmployeeResponseDto,
     EmployeeListResponseDto,
+    NextEmployeeNumberResponseDto,
     CreatePositionRequestDto,
     UpdatePositionRequestDto,
     PositionResponseDto,
@@ -29,6 +33,22 @@ import {
 @Controller('admin/organizations')
 export class OrganizationController {
     constructor(private readonly organizationApplicationService: OrganizationApplicationService) {}
+
+    @Get('')
+    @ApiOperation({
+        summary: '부서 계층구조별 직원 정보 조회',
+        description: '부서의 계층구조를 따라 각 부서에 속한 직원들의 목록을 깊이와 함께 조회합니다.',
+    })
+    @ApiResponse({
+        status: 200,
+        description: '부서 계층구조별 직원 정보 조회 성공',
+        type: DepartmentHierarchyResponseDto,
+    })
+    @ApiResponse({ status: 401, description: '인증이 필요합니다' })
+    @ApiResponse({ status: 404, description: '부서 계층구조 정보를 조회할 수 없음' })
+    async getDepartmentHierarchy(): Promise<DepartmentHierarchyResponseDto> {
+        return this.organizationApplicationService.부서_계층구조별_직원정보를_조회한다();
+    }
 
     // 부서 관리 API
     @Get('departments')
@@ -74,12 +94,53 @@ export class OrganizationController {
         return await this.organizationApplicationService.부서삭제(id);
     }
 
+    @Patch('departments/:id/order')
+    @ApiOperation({ summary: '부서 순서 변경' })
+    @ApiParam({ name: 'id', description: '부서 ID' })
+    @ApiBody({ type: UpdateDepartmentOrderRequestDto })
+    @ApiResponse({ status: 200, type: DepartmentResponseDto })
+    async updateDepartmentOrder(
+        @Param('id') id: string,
+        @Body() updateOrderDto: UpdateDepartmentOrderRequestDto,
+    ): Promise<DepartmentResponseDto> {
+        return await this.organizationApplicationService.부서순서변경(id, updateOrderDto);
+    }
+
+    @Patch('departments/:id/parent')
+    @ApiOperation({ summary: '부서 상위 부서 변경' })
+    @ApiParam({ name: 'id', description: '부서 ID' })
+    @ApiBody({ type: UpdateDepartmentParentRequestDto })
+    @ApiResponse({ status: 200, type: DepartmentResponseDto })
+    async updateDepartmentParent(
+        @Param('id') id: string,
+        @Body() updateParentDto: UpdateDepartmentParentRequestDto,
+    ): Promise<DepartmentResponseDto> {
+        return await this.organizationApplicationService.부서상위부서변경(id, updateParentDto);
+    }
+
     // 직원 관리 API
     @Get('employees')
     @ApiOperation({ summary: '직원 목록 조회' })
     @ApiResponse({ status: 200, type: EmployeeListResponseDto })
     async getEmployees(): Promise<EmployeeListResponseDto> {
         return await this.organizationApplicationService.직원목록조회();
+    }
+
+    @Get('employees/next-employee-number')
+    @ApiOperation({
+        summary: '다음 직원번호 조회',
+        description:
+            '해당 연도의 다음 순번 직원번호를 조회합니다. 연도를 지정하지 않으면 현재 연도 기준으로 조회합니다.',
+    })
+    @ApiResponse({
+        status: 200,
+        type: NextEmployeeNumberResponseDto,
+        description: '다음 직원번호 정보 (형식: YY + 순번 3자리, 예: 25001)',
+    })
+    @ApiQuery({ name: 'year', description: '연도', required: false })
+    async getNextEmployeeNumber(@Query('year') year?: number): Promise<NextEmployeeNumberResponseDto> {
+        const targetYear = year || new Date().getFullYear();
+        return await this.organizationApplicationService.다음직원번호조회(targetYear);
     }
 
     @Get('employees/:id')

@@ -25,8 +25,8 @@ async function bootstrap() {
     const ALLOW_ORIGINS = [
         'https://lsso-admin.vercel.app',
         'https://lsso-admin-git-dev-lumir-tech7s-projects.vercel.app',
-        'https://portal.lumir.space/',
-        'https://lsms.lumir.space/',
+        'https://portal.lumir.space',
+        'https://lsms.lumir.space',
         'https://lsso-dev.vercel.app',
         'http://localhost:3000',
         // 필요하면 스테이징/프로덕션 도메인 추가
@@ -57,8 +57,12 @@ async function bootstrap() {
     app.useGlobalInterceptors(new RequestInterceptor(), new ErrorInterceptor());
     app.useGlobalInterceptors(new LoggingInterceptor(app.get(LogApplicationService)));
 
+    // 정적 파일 서빙 설정 (Swagger 커스텀 JS 포함)
+    app.useStaticAssets(join(__dirname, '..', 'public'), {
+        prefix: '/static',
+    });
+
     // Handlebars 설정
-    app.useStaticAssets(join(__dirname, '..', 'public'));
     app.setBaseViewsDir(join(__dirname, '..', 'src', 'views'));
     app.setViewEngine('hbs');
 

@@ -4,3 +4,5 @@ export * from './employees-request.dto';
 export * from './employees-response.dto';
 export * from './department-hierarchy-request.dto';
 export * from './department-hierarchy-response.dto';
+export * from './create-employee.dto';
+export * from './terminate-employee.dto';

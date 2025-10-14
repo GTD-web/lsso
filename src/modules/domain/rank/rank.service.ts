@@ -85,4 +85,30 @@ export class DomainRankService extends BaseService<Rank> {
     async deleteRank(rankId: string): Promise<void> {
         return this.delete(rankId);
     }
+
+    // ==================== 단순한 도메인 함수들 (기존 컨텍스트에서 이동) ====================
+
+    /**
+     * 직급 존재여부 확인
+     */
+    async exists(rankId: string): Promise<boolean> {
+        const rank = await this.findById(rankId);
+        console.log('rank', rank);
+        if (rank) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 직급 코드 중복 확인
+     */
+    async isCodeDuplicate(rankCode: string, excludeId?: string): Promise<boolean> {
+        const rank = await this.findByCode(rankCode);
+        console.log('rank', rank);
+        if (rank) {
+            return true;
+        }
+        return false;
+    }
 }

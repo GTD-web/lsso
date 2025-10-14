@@ -5,11 +5,19 @@
             "src": "api/index.ts",
             "use": "@vercel/node",
             "config": {
-                "includeFiles": ["src/**", "libs/**", "views/**", "public/**"]
+                "includeFiles": ["src/**", "libs/**", "views/**", "public/**", "dist/**"],
+                "maxLambdaSize": "50mb"
             }
         }
     ],
     "routes": [
+        {
+            "src": "/static/(.*)",
+            "dest": "/public/$1",
+            "headers": {
+                "Cache-Control": "public, max-age=86400"
+            }
+        },
         {
             "src": "/(.*)",
             "dest": "api/index.ts",

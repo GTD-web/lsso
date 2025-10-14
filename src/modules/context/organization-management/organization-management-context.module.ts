@@ -1,7 +1,5 @@
 import { Module } from '@nestjs/common';
-import { OrganizationContextService } from './organization-management-context.service';
-import { OrganizationManagementQueryContextService } from './organization-management-query-context.service';
-import { OrganizationManagementMutationContextService } from './organization-management-mutation-context.service';
+import { OrganizationManagementContextService } from './organization-management-context.service';
 
 // 조직 관리 관련 도메인 모듈들 import
 import { DomainEmployeeModule } from '../../domain/employee/employee.module';
@@ -20,15 +18,7 @@ import { DomainEmployeeRankHistoryModule } from '../../domain/employee-rank-hist
         DomainEmployeeDepartmentPositionModule,
         DomainEmployeeRankHistoryModule,
     ],
-    providers: [
-        OrganizationContextService,
-        OrganizationManagementQueryContextService,
-        OrganizationManagementMutationContextService,
-    ],
-    exports: [
-        OrganizationContextService,
-        OrganizationManagementQueryContextService,
-        OrganizationManagementMutationContextService,
-    ],
+    providers: [OrganizationManagementContextService],
+    exports: [OrganizationManagementContextService],
 })
 export class OrganizationManagementContextModule {}

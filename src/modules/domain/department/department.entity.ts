@@ -7,6 +7,8 @@ import {
     OneToMany,
     ManyToOne,
     JoinColumn,
+    Unique,
+    Index,
 } from 'typeorm';
 
 export enum DepartmentType {
@@ -17,6 +19,12 @@ export enum DepartmentType {
 }
 
 @Entity('departments')
+@Unique('UQ_departments_parent_order', ['parentDepartmentId', 'order'])
+@Index('IDX_departments_parent_order', ['parentDepartmentId', 'order'])
+@Index('UQ_departments_root_order', ['order'], {
+    unique: true,
+    where: '"parentDepartmentId" IS NULL',
+})
 export class Department {
     @PrimaryGeneratedColumn('uuid')
     id: string;

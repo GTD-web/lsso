@@ -1,15 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { OrganizationManagementQueryContextService } from '../../../context/organization-management/organization-management-query-context.service';
-import { OrganizationManagementMutationContextService } from '../../../context/organization-management/organization-management-mutation-context.service';
 import {
     CreateDepartmentRequestDto,
     UpdateDepartmentRequestDto,
     DepartmentResponseDto,
     DepartmentListResponseDto,
+    UpdateDepartmentOrderRequestDto,
+    UpdateDepartmentParentRequestDto,
+    DepartmentHierarchyResponseDto,
+    DepartmentWithEmployeesDto,
+    DepartmentEmployeeInfoDto,
     CreateEmployeeRequestDto,
     UpdateEmployeeRequestDto,
     EmployeeResponseDto,
     EmployeeListResponseDto,
+    NextEmployeeNumberResponseDto,
     CreatePositionRequestDto,
     UpdatePositionRequestDto,
     PositionResponseDto,
@@ -22,38 +26,51 @@ import {
     PromoteEmployeeRequestDto,
     EmployeeRankHistoryResponseDto,
 } from './dto';
+import { OrganizationManagementContextService } from 'src/modules/context/organization-management/organization-management-context.service';
+import { Department } from 'src/modules/domain/department/department.entity';
+import { Employee } from 'src/modules/domain/employee/employee.entity';
+import { Position } from 'src/modules/domain/position/position.entity';
+import { Rank } from 'src/modules/domain/rank/rank.entity';
 
 @Injectable()
 export class OrganizationApplicationService {
-    constructor(
-        private readonly queryContextService: OrganizationManagementQueryContextService,
-        private readonly mutationContextService: OrganizationManagementMutationContextService,
-    ) {}
+    constructor(private readonly organizationContextService: OrganizationManagementContextService) {}
+
+    // 부서 계층구조별 직원 정보 조회
+    async 부서_계층구조별_직원정보를_조회한다(): Promise<DepartmentHierarchyResponseDto> {
+        const result = await this.organizationContextService.부서_계층구조별_직원정보를_조회한다(
+            undefined, // rootDepartmentId
+            undefined, // maxDepth
+            true, // withEmployeeDetail
+            true, // includeTerminated
+            true, // includeEmptyDepartments
+        );
+        console.log(result);
+        const departments = this.부서_계층구조를_직원정보와_함께_변환한다(
+            result.departments,
+            result.employeesByDepartment,
+            result.departmentDetails,
+        );
+
+        return { departments: departments.filter((department) => department.parentDepartmentId === null) };
+    }
 
     // 부서 관리 함수들
     async 부서목록조회(): Promise<DepartmentListResponseDto> {
-        const departments = await this.queryContextService.모든_부서를_계층구조로_조회한다();
+        const departments = await this.organizationContextService.부서_계층구조를_조회한다();
         return {
             departments: departments.map(this.부서를_응답DTO로_변환한다),
         };
     }
 
     async 부서상세조회(id: string): Promise<DepartmentResponseDto> {
-        const department = await this.queryContextService.부서_ID로_부서를_조회한다(id);
+        const department = await this.organizationContextService.부서_ID로_부서를_조회한다(id);
         return this.부서를_응답DTO로_변환한다(department);
     }
 
     async 부서생성(createDepartmentDto: CreateDepartmentRequestDto): Promise<DepartmentResponseDto> {
-        // 부서 코드 중복 확인
-        const isDuplicate = await this.queryContextService.부서_코드가_중복되는지_확인한다(
-            createDepartmentDto.departmentCode,
-        );
-        console.log('isDuplicate', isDuplicate);
-        if (isDuplicate) {
-            throw new Error('이미 존재하는 부서 코드입니다.');
-        }
-
-        const newDepartment = await this.mutationContextService.새로운_부서를_생성한다({
+        // 완전한 비즈니스 로직 사이클 실행 (검증 → 생성 → 반환)
+        const newDepartment = await this.organizationContextService.부서를_생성한다({
             departmentName: createDepartmentDto.departmentName,
             departmentCode: createDepartmentDto.departmentCode,
             type: createDepartmentDto.type,
@@ -65,63 +82,56 @@ export class OrganizationApplicationService {
     }
 
     async 부서수정(id: string, updateDepartmentDto: UpdateDepartmentRequestDto): Promise<DepartmentResponseDto> {
-        // 부서 존재 확인
-        await this.queryContextService.부서_ID로_부서를_조회한다(id);
-
-        // 부서 코드 중복 확인 (자신 제외)
-        if (updateDepartmentDto.departmentCode) {
-            const isDuplicate = await this.queryContextService.부서_코드가_중복되는지_확인한다(
-                updateDepartmentDto.departmentCode,
-                id,
-            );
-            if (isDuplicate) {
-                throw new Error('이미 존재하는 부서 코드입니다.');
-            }
-        }
-
-        const updatedDepartment = await this.mutationContextService.부서정보를_수정한다(id, updateDepartmentDto);
+        // 완전한 비즈니스 로직 사이클 실행 (존재 확인 → 검증 → 수정 → 반환)
+        const updatedDepartment = await this.organizationContextService.부서를_수정한다(id, updateDepartmentDto);
         return this.부서를_응답DTO로_변환한다(updatedDepartment);
     }
 
     async 부서삭제(id: string): Promise<void> {
-        // 부서 존재 확인
-        await this.queryContextService.부서_ID로_부서를_조회한다(id);
+        // 완전한 비즈니스 로직 사이클 실행 (존재 확인 → 제약 조건 확인 → 삭제)
+        await this.organizationContextService.부서를_삭제한다(id);
+    }
 
-        // 삭제 실행 (하위 부서 및 배치된 직원 확인은 mutationContextService에서 처리)
-        await this.mutationContextService.부서를_삭제한다(id);
+    async 부서순서변경(id: string, updateOrderDto: UpdateDepartmentOrderRequestDto): Promise<DepartmentResponseDto> {
+        // 완전한 비즈니스 로직 사이클 실행 (존재 확인 → 순서 재배치 → 변경)
+        const updatedDepartment = await this.organizationContextService.부서순서를_변경한다(
+            id,
+            updateOrderDto.newOrder,
+        );
+        return this.부서를_응답DTO로_변환한다(updatedDepartment);
+    }
+
+    async 부서상위부서변경(
+        id: string,
+        updateParentDto: UpdateDepartmentParentRequestDto,
+    ): Promise<DepartmentResponseDto> {
+        // 완전한 비즈니스 로직 사이클 실행 (존재 확인 → 상위 부서 확인 → 변경)
+        const updatedDepartment = await this.organizationContextService.부서를_수정한다(id, {
+            parentDepartmentId: updateParentDto.newParentDepartmentId,
+        });
+        return this.부서를_응답DTO로_변환한다(updatedDepartment);
     }
 
     // 직원 관리 함수들
     async 직원목록조회(): Promise<EmployeeListResponseDto> {
-        const employees = await this.queryContextService.모든_직원을_조회한다();
+        const employees = await this.organizationContextService.전체_직원정보를_조회한다();
         return {
             employees: employees.map(this.직원을_응답DTO로_변환한다),
         };
     }
 
+    async 다음직원번호조회(year: number): Promise<NextEmployeeNumberResponseDto> {
+        return await this.organizationContextService.연도별_다음직원번호를_조회한다(year);
+    }
+
     async 직원상세조회(id: string): Promise<EmployeeResponseDto> {
-        const employee = await this.queryContextService.직원_ID로_직원을_조회한다(id);
+        const employee = await this.organizationContextService.직원을_조회한다(id);
         return this.직원을_응답DTO로_변환한다(employee);
     }
 
     async 직원생성(createEmployeeDto: CreateEmployeeRequestDto): Promise<EmployeeResponseDto> {
-        // 사번 중복 확인
-        const isEmployeeNumberDuplicate = await this.queryContextService.직원_사번이_중복되는지_확인한다(
-            createEmployeeDto.employeeNumber,
-        );
-        if (isEmployeeNumberDuplicate) {
-            throw new Error('이미 존재하는 사번입니다.');
-        }
-
-        // 이메일 중복 확인
-        const isEmailDuplicate = await this.queryContextService.직원_이메일이_중복되는지_확인한다(
-            createEmployeeDto.email,
-        );
-        if (isEmailDuplicate) {
-            throw new Error('이미 존재하는 이메일입니다.');
-        }
-
-        const newEmployee = await this.mutationContextService.새로운_직원을_생성한다({
+        // 완전한 비즈니스 로직 사이클 실행 (전처리 → 검증 → 생성 → 반환)
+        const result = await this.organizationContextService.직원을_생성한다({
             employeeNumber: createEmployeeDto.employeeNumber,
             name: createEmployeeDto.name,
             email: createEmployeeDto.email,
@@ -132,25 +142,12 @@ export class OrganizationApplicationService {
             currentRankId: createEmployeeDto.currentRankId,
         });
 
-        return this.직원을_응답DTO로_변환한다(newEmployee);
+        return this.직원을_응답DTO로_변환한다(result.employee);
     }
 
     async 직원수정(id: string, updateEmployeeDto: UpdateEmployeeRequestDto): Promise<EmployeeResponseDto> {
-        // 직원 존재 확인
-        await this.queryContextService.직원_ID로_직원을_조회한다(id);
-
-        // 이메일 중복 확인 (자신 제외)
-        if (updateEmployeeDto.email) {
-            const isEmailDuplicate = await this.queryContextService.직원_이메일이_중복되는지_확인한다(
-                updateEmployeeDto.email,
-                id,
-            );
-            if (isEmailDuplicate) {
-                throw new Error('이미 존재하는 이메일입니다.');
-            }
-        }
-
-        const updatedEmployee = await this.mutationContextService.직원정보를_수정한다(id, {
+        // 완전한 비즈니스 로직 사이클 실행 (존재 확인 → 검증 → 수정 → 반환)
+        const updatedEmployee = await this.organizationContextService.직원정보를_수정한다(id, {
             ...updateEmployeeDto,
             dateOfBirth: updateEmployeeDto.dateOfBirth ? new Date(updateEmployeeDto.dateOfBirth) : undefined,
             hireDate: updateEmployeeDto.hireDate ? new Date(updateEmployeeDto.hireDate) : undefined,
@@ -163,111 +160,60 @@ export class OrganizationApplicationService {
     }
 
     async 직원삭제(id: string): Promise<void> {
-        // 직원 존재 확인
-        await this.queryContextService.직원_ID로_직원을_조회한다(id);
-
-        // 삭제 실행 (관련 데이터 정리는 mutationContextService에서 처리)
-        await this.mutationContextService.직원을_삭제한다(id);
+        // 완전한 비즈니스 로직 사이클 실행 (존재 확인 → 제약 조건 확인 → 삭제)
+        await this.organizationContextService.직원을_삭제한다(id);
     }
 
     // 직책 관리 함수들
     async 직책목록조회(): Promise<PositionResponseDto[]> {
-        const positions = await this.queryContextService.모든_직책을_조회한다();
+        const positions = await this.organizationContextService.모든_직책을_조회한다();
         return positions.map(this.직책을_응답DTO로_변환한다);
     }
 
     async 직책생성(createPositionDto: CreatePositionRequestDto): Promise<PositionResponseDto> {
-        // 직책 코드 중복 확인
-        const isDuplicate = await this.queryContextService.직책_코드가_중복되는지_확인한다(
-            createPositionDto.positionCode,
-        );
-        if (isDuplicate) {
-            throw new Error('이미 존재하는 직책 코드입니다.');
-        }
-
-        const newPosition = await this.mutationContextService.새로운_직책을_생성한다(createPositionDto);
+        // 완전한 비즈니스 로직 사이클 실행 (검증 → 생성 → 반환)
+        const newPosition = await this.organizationContextService.직책을_생성한다(createPositionDto);
         return this.직책을_응답DTO로_변환한다(newPosition);
     }
 
     async 직책수정(id: string, updatePositionDto: UpdatePositionRequestDto): Promise<PositionResponseDto> {
-        // 직책 존재 확인
-        await this.queryContextService.직책_ID로_직책을_조회한다(id);
-
-        // 직책 코드 중복 확인 (자신 제외)
-        if (updatePositionDto.positionCode) {
-            const isDuplicate = await this.queryContextService.직책_코드가_중복되는지_확인한다(
-                updatePositionDto.positionCode,
-                id,
-            );
-            if (isDuplicate) {
-                throw new Error('이미 존재하는 직책 코드입니다.');
-            }
-        }
-
-        const updatedPosition = await this.mutationContextService.직책정보를_수정한다(id, updatePositionDto);
+        // 완전한 비즈니스 로직 사이클 실행 (존재 확인 → 검증 → 수정 → 반환)
+        const updatedPosition = await this.organizationContextService.직책을_수정한다(id, updatePositionDto);
         return this.직책을_응답DTO로_변환한다(updatedPosition);
     }
 
     async 직책삭제(id: string): Promise<void> {
-        // 직책 존재 확인
-        await this.queryContextService.직책_ID로_직책을_조회한다(id);
-
-        // 삭제 실행 (배치된 직원 확인은 mutationContextService에서 처리)
-        await this.mutationContextService.직책을_삭제한다(id);
+        // 완전한 비즈니스 로직 사이클 실행 (존재 확인 → 제약 조건 확인 → 삭제)
+        await this.organizationContextService.직책을_삭제한다(id);
     }
 
     // 직급 관리 함수들
     async 직급목록조회(): Promise<RankResponseDto[]> {
-        const ranks = await this.queryContextService.모든_직급을_조회한다();
+        const ranks = await this.organizationContextService.모든_직급을_조회한다();
         return ranks.map(this.직급을_응답DTO로_변환한다);
     }
 
     async 직급생성(createRankDto: CreateRankRequestDto): Promise<RankResponseDto> {
-        // 직급 코드 중복 확인
-        const isDuplicate = await this.queryContextService.직급_코드가_중복되는지_확인한다(createRankDto.rankCode);
-        if (isDuplicate) {
-            throw new Error('이미 존재하는 직급 코드입니다.');
-        }
-
-        const newRank = await this.mutationContextService.새로운_직급을_생성한다(createRankDto);
+        // 완전한 비즈니스 로직 사이클 실행 (검증 → 생성 → 반환)
+        const newRank = await this.organizationContextService.직급을_생성한다(createRankDto);
         return this.직급을_응답DTO로_변환한다(newRank);
     }
 
     async 직급수정(id: string, updateRankDto: UpdateRankRequestDto): Promise<RankResponseDto> {
-        // 직급 존재 확인
-        await this.queryContextService.직급_ID로_직급을_조회한다(id);
-
-        // 직급 코드 중복 확인 (자신 제외)
-        if (updateRankDto.rankCode) {
-            const isDuplicate = await this.queryContextService.직급_코드가_중복되는지_확인한다(
-                updateRankDto.rankCode,
-                id,
-            );
-            if (isDuplicate) {
-                throw new Error('이미 존재하는 직급 코드입니다.');
-            }
-        }
-
-        const updatedRank = await this.mutationContextService.직급정보를_수정한다(id, updateRankDto);
+        // 완전한 비즈니스 로직 사이클 실행 (존재 확인 → 검증 → 수정 → 반환)
+        const updatedRank = await this.organizationContextService.직급을_수정한다(id, updateRankDto);
         return this.직급을_응답DTO로_변환한다(updatedRank);
     }
 
     async 직급삭제(id: string): Promise<void> {
-        // 직급 존재 확인
-        await this.queryContextService.직급_ID로_직급을_조회한다(id);
-
-        // 삭제 실행 (직급을 가진 직원 및 이력 확인은 mutationContextService에서 처리)
-        await this.mutationContextService.직급을_삭제한다(id);
+        // 완전한 비즈니스 로직 사이클 실행 (존재 확인 → 제약 조건 확인 → 삭제)
+        await this.organizationContextService.직급을_삭제한다(id);
     }
 
     // 직원 배치 관리 함수들
     async 직원배치(assignEmployeeDto: AssignEmployeeRequestDto): Promise<EmployeeAssignmentResponseDto> {
-        // 직원, 부서, 직책 존재 확인
-        await this.queryContextService.직원_ID로_직원을_조회한다(assignEmployeeDto.employeeId);
-        await this.queryContextService.부서_ID로_부서를_조회한다(assignEmployeeDto.departmentId);
-        await this.queryContextService.직책_ID로_직책을_조회한다(assignEmployeeDto.positionId);
-
-        const assignment = await this.mutationContextService.직원을_부서에_배치한다(assignEmployeeDto);
+        // 완전한 비즈니스 로직 사이클 실행 (존재 확인 → 검증 → 배치 → 반환)
+        const assignment = await this.organizationContextService.직원을_부서에_배치한다(assignEmployeeDto);
         return this.직원배치를_응답DTO로_변환한다(assignment);
     }
 
@@ -275,33 +221,22 @@ export class OrganizationApplicationService {
         id: string,
         updateAssignmentDto: UpdateEmployeeAssignmentRequestDto,
     ): Promise<EmployeeAssignmentResponseDto> {
-        // 배치 정보 존재 확인
-        await this.queryContextService.배치_ID로_배치정보를_조회한다(id);
-
-        // 변경할 부서나 직책이 있는 경우 존재 확인
-        if (updateAssignmentDto.departmentId) {
-            await this.queryContextService.부서_ID로_부서를_조회한다(updateAssignmentDto.departmentId);
-        }
-        if (updateAssignmentDto.positionId) {
-            await this.queryContextService.직책_ID로_직책을_조회한다(updateAssignmentDto.positionId);
-        }
-
-        const updatedAssignment = await this.mutationContextService.직원배치정보를_수정한다(id, updateAssignmentDto);
+        // 완전한 비즈니스 로직 사이클 실행 (존재 확인 → 검증 → 수정 → 반환)
+        const updatedAssignment = await this.organizationContextService.직원배치정보를_수정한다(
+            id,
+            updateAssignmentDto,
+        );
         return this.직원배치를_응답DTO로_변환한다(updatedAssignment);
     }
 
     async 직원배치해제(id: string): Promise<void> {
-        // 배치 정보 존재 확인
-        await this.queryContextService.배치_ID로_배치정보를_조회한다(id);
-
-        await this.mutationContextService.직원배치를_해제한다(id);
+        // 완전한 비즈니스 로직 사이클 실행 (존재 확인 → 해제)
+        await this.organizationContextService.직원배치를_해제한다(id);
     }
 
     async 직원배치현황조회(employeeId: string): Promise<EmployeeAssignmentResponseDto[]> {
-        // 직원 존재 확인
-        await this.queryContextService.직원_ID로_직원을_조회한다(employeeId);
-
-        const assignments = await this.queryContextService.직원의_모든_배치정보를_조회한다(employeeId);
+        // 완전한 비즈니스 로직 사이클 실행 (존재 확인 → 조회 → 반환)
+        const assignments = await this.organizationContextService.직원의_모든_배치정보를_조회한다(employeeId);
         return assignments.map(this.직원배치를_응답DTO로_변환한다);
     }
 
@@ -310,19 +245,17 @@ export class OrganizationApplicationService {
         employeeId: string,
         promoteDto: PromoteEmployeeRequestDto,
     ): Promise<EmployeeRankHistoryResponseDto> {
-        // 직원과 직급 존재 확인
-        await this.queryContextService.직원_ID로_직원을_조회한다(employeeId);
-        await this.queryContextService.직급_ID로_직급을_조회한다(promoteDto.rankId);
-
-        const { rankHistory } = await this.mutationContextService.직원의_직급을_변경한다(employeeId, promoteDto.rankId);
+        // 완전한 비즈니스 로직 사이클 실행 (존재 확인 → 검증 → 변경 → 반환)
+        const { rankHistory } = await this.organizationContextService.직원의_직급을_변경한다(
+            employeeId,
+            promoteDto.rankId,
+        );
         return this.직급이력을_응답DTO로_변환한다(rankHistory);
     }
 
     async 직원직급이력조회(employeeId: string): Promise<EmployeeRankHistoryResponseDto[]> {
-        // 직원 존재 확인
-        await this.queryContextService.직원_ID로_직원을_조회한다(employeeId);
-
-        const histories = await this.queryContextService.직원의_직급이력을_조회한다(employeeId);
+        // 완전한 비즈니스 로직 사이클 실행 (존재 확인 → 조회 → 반환)
+        const histories = await this.organizationContextService.직원의_직급이력을_조회한다(employeeId);
         return histories.map(this.직급이력을_응답DTO로_변환한다);
     }
 
@@ -389,4 +322,68 @@ export class OrganizationApplicationService {
         createdAt: history.createdAt,
         updatedAt: history.updatedAt,
     });
+
+    private 부서_계층구조를_직원정보와_함께_변환한다(
+        departments: Department[],
+        employeesByDepartment: Map<string, { employees: Employee[]; departmentPositions: Map<string, any> }>,
+        departmentDetails?: Map<string, { department: Department; position: Position; rank: Rank }[]>,
+    ): DepartmentWithEmployeesDto[] {
+        const result: DepartmentWithEmployeesDto[] = [];
+
+        for (const department of departments) {
+            // 해당 부서의 직원 정보 조회
+            const departmentEmployeeInfo = employeesByDepartment.get(department.id) || {
+                employees: [],
+                departmentPositions: new Map(),
+            };
+
+            // 직원 정보를 DepartmentEmployeeInfoDto로 변환
+            const employees: DepartmentEmployeeInfoDto[] = [];
+            for (const employee of departmentEmployeeInfo.employees) {
+                const departmentPosition = departmentEmployeeInfo.departmentPositions.get(employee.id);
+                const deptDetails = departmentDetails?.get(department.id);
+                const employeeDetail = deptDetails?.find(
+                    (d) =>
+                        departmentEmployeeInfo.departmentPositions.has(employee.id) &&
+                        d.department.id === department.id,
+                );
+
+                employees.push({
+                    id: employee.id,
+                    employeeNumber: employee.employeeNumber,
+                    name: employee.name,
+                    email: employee.email,
+                    phoneNumber: employee.phoneNumber,
+                    positionId: departmentPosition?.positionId,
+                    positionTitle: employeeDetail?.position?.positionTitle,
+                    rankId: employee.currentRankId,
+                    rankName: employeeDetail?.rank?.rankName,
+                    isManager: departmentPosition?.isManager || false,
+                });
+            }
+
+            // 하위 부서 재귀 처리
+            const childDepartments = this.부서_계층구조를_직원정보와_함께_변환한다(
+                department.childDepartments || [],
+                employeesByDepartment,
+                departmentDetails,
+            );
+
+            const departmentDto: DepartmentWithEmployeesDto = {
+                id: department.id,
+                departmentName: department.departmentName,
+                departmentCode: department.departmentCode,
+                type: department.type,
+                parentDepartmentId: department.parentDepartmentId,
+                order: department.order,
+                employees: employees.sort((a, b) => a.name.localeCompare(b.name)),
+                childDepartments:
+                    childDepartments.length > 0 ? childDepartments.sort((a, b) => a.order - b.order) : undefined,
+            };
+
+            result.push(departmentDto);
+        }
+
+        return result.sort((a, b) => a.order - b.order);
+    }
 }

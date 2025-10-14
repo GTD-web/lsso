@@ -5,3 +5,4 @@
 // export * from 'src/logs/dto';
 // export * from 'src/tokens/dto';
 export * from '../libs/common/dto';
+export * from './modules/application/organization-information/dto';

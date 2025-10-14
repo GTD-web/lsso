@@ -4,6 +4,11 @@ export {
     UpdateDepartmentRequestDto,
     DepartmentResponseDto,
     DepartmentListResponseDto,
+    UpdateDepartmentOrderRequestDto,
+    UpdateDepartmentParentRequestDto,
+    DepartmentHierarchyResponseDto,
+    DepartmentWithEmployeesDto,
+    DepartmentEmployeeInfoDto,
 } from './department.dto';
 
 // Employee DTOs
@@ -12,6 +17,7 @@ export {
     UpdateEmployeeRequestDto,
     EmployeeResponseDto,
     EmployeeListResponseDto,
+    NextEmployeeNumberResponseDto,
 } from './employee.dto';
 
 // Position DTOs

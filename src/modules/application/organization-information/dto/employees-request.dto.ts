@@ -4,24 +4,14 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class EmployeesRequestDto {
     @ApiPropertyOptional({
-        description: '직원 ID 배열 (비어있으면 전체 직원 조회)',
-        example: ['emp123', 'emp456'],
+        description: '직원 식별자 배열 (직원 ID 또는 사번, 비어있으면 전체 직원 조회)',
+        example: ['emp123', 'E2023001', 'emp456', 'E2023002'],
         type: [String],
     })
     @IsArray()
     @IsOptional()
     @Type(() => String)
-    employeeIds?: string[];
-
-    @ApiPropertyOptional({
-        description: '사번 배열 (비어있으면 전체 직원 조회)',
-        example: ['E2023001', 'E2023002'],
-        type: [String],
-    })
-    @IsArray()
-    @IsOptional()
-    @Type(() => String)
-    employeeNumbers?: string[];
+    identifiers?: string[];
 
     @ApiPropertyOptional({
         description: '상세 정보 포함 여부 (부서, 직책, 직급의 상세 정보)',

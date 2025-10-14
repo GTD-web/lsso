@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
-import { OrganizationContextService } from '../../context/organization-management/organization-management-context.service';
+import { OrganizationManagementContextService } from '../../context/organization-management/organization-management-context.service';
 import {
     EmployeeRequestDto,
     EmployeeResponseDto,
@@ -11,12 +11,16 @@ import {
     DepartmentHierarchyRequestDto,
     DepartmentHierarchyResponseDto,
     DepartmentWithEmployeesDto,
+    CreateEmployeeRequestDto,
+    CreateEmployeeResponseDto,
+    TerminateEmployeeRequestDto,
+    TerminateEmployeeResponseDto,
 } from './dto';
 import { Employee, Department, Position, Rank } from '../../../../libs/database/entities';
 
 @Injectable()
 export class OrganizationInformationApplicationService {
-    constructor(private readonly organizationContextService: OrganizationContextService) {}
+    constructor(private readonly organizationContextService: OrganizationManagementContextService) {}
 
     async 직원정보를_조회한다(requestDto: EmployeeRequestDto): Promise<EmployeeResponseDto> {
         const { employeeId, employeeNumber, withDetail } = requestDto;
@@ -26,17 +30,11 @@ export class OrganizationInformationApplicationService {
             throw new BadRequestException('직원 ID 또는 사번 중 하나는 반드시 필요합니다.');
         }
 
-        let employee: Employee;
-
-        if (employeeId) {
-            employee = await this.organizationContextService.직원_ID값으로_직원정보를_조회한다(employeeId);
-        } else if (employeeNumber) {
-            employee = await this.organizationContextService.직원_사번으로_직원정보를_조회한다(employeeNumber);
-        }
+        // 직원 조회 (ID 또는 사번)
+        const employee = await this.organizationContextService.직원을_조회한다(employeeId || employeeNumber);
         if (!employee) {
-            throw new NotFoundException('해당 직원 정보를 찾을 수 없습니다.');
+            throw new NotFoundException('직원 정보를 찾을 수 없습니다.');
         }
-
         // 기본 응답 데이터 구성
         let response: EmployeeResponseDto = {
             id: employee.id,
@@ -62,26 +60,16 @@ export class OrganizationInformationApplicationService {
     }
 
     async 여러_직원정보를_조회한다(requestDto: EmployeesRequestDto): Promise<EmployeesResponseDto> {
-        const { employeeIds, employeeNumbers, withDetail = false, includeTerminated = false } = requestDto;
+        const { identifiers, withDetail = false, includeTerminated = false } = requestDto;
 
         let employees: Employee[] = [];
 
         try {
-            // 직원 ID 배열이 제공된 경우
-            if (employeeIds && employeeIds.length > 0) {
-                employees = await this.organizationContextService.여러_직원_ID값으로_직원정보를_조회한다(
-                    employeeIds,
-                    includeTerminated,
-                );
+            // 식별자 배열이 제공된 경우
+            if (identifiers && identifiers.length > 0) {
+                employees = await this.organizationContextService.여러_직원을_조회한다(identifiers, includeTerminated);
             }
-            // 사번 배열이 제공된 경우
-            else if (employeeNumbers && employeeNumbers.length > 0) {
-                employees = await this.organizationContextService.여러_직원_사번으로_직원정보를_조회한다(
-                    employeeNumbers,
-                    includeTerminated,
-                );
-            }
-            // 배열이 비어있거나 제공되지 않은 경우 전체 직원 조회
+            // 식별자가 제공되지 않은 경우 전체 직원 조회
             else {
                 employees = await this.organizationContextService.전체_직원정보를_조회한다(includeTerminated);
             }
@@ -205,12 +193,13 @@ export class OrganizationInformationApplicationService {
                 this.부서_계층구조_통계를_계산한다(departmentHierarchy);
 
             return {
-                departments: departmentHierarchy,
+                departments: departmentHierarchy.filter((department) => department.parentDepartmentId === null),
                 totalDepartments,
                 totalEmployees,
                 maxDepth: maxDepthCalculated,
             };
         } catch (error) {
+            console.error('부서 계층구조 정보 조회 중 오류 발생:', error);
             throw new NotFoundException('부서 계층구조 정보를 조회할 수 없습니다.');
         }
     }
@@ -326,5 +315,157 @@ export class OrganizationInformationApplicationService {
             totalEmployees,
             maxDepthCalculated,
         };
+    }
+
+    // ==================== 직원 생성 ====================
+
+    /**
+     * 직원을 생성한다 (Business Layer - 1단계 Transport 검증)
+     * 검증 규칙 1단계: 입력/전송 검증 (DTO validation)
+     * 전체 흐름 오케스트레이션
+     */
+    async 직원을_채용한다(createDto: CreateEmployeeRequestDto): Promise<CreateEmployeeResponseDto> {
+        // 1단계 검증은 이미 DTO validation에서 완료됨 (@IsString, @IsEmail 등)
+
+        try {
+            // 날짜 문자열을 Date 객체로 변환
+            const hireDate = new Date(createDto.hireDate);
+            const dateOfBirth = createDto.dateOfBirth ? new Date(createDto.dateOfBirth) : undefined;
+
+            // Context Layer 호출 (2-4단계 검증 포함)
+            const result = await this.organizationContextService.직원을_생성한다({
+                employeeNumber: createDto.employeeNumber, // 선택사항 - 없으면 자동 생성
+                name: createDto.name,
+                email: createDto.email,
+                phoneNumber: createDto.phoneNumber,
+                dateOfBirth,
+                gender: createDto.gender,
+                hireDate,
+                status: createDto.status,
+                currentRankId: createDto.currentRankId,
+                departmentId: createDto.departmentId,
+                positionId: createDto.positionId,
+                isManager: createDto.isManager,
+            });
+
+            // Response DTO로 변환
+            return this.직원생성결과를_응답DTO로_변환한다(result);
+        } catch (error) {
+            // 도메인/컨텍스트 에러들을 적절한 HTTP 에러로 매핑
+            this.에러를_HTTP응답으로_매핑한다(error);
+        }
+    }
+
+    // ==================== 헬퍼 함수들 ====================
+
+    private 직원생성결과를_응답DTO로_변환한다(result: {
+        employee: any;
+        assignment?: any;
+        rankHistory?: any;
+    }): CreateEmployeeResponseDto {
+        const response: CreateEmployeeResponseDto = {
+            employee: {
+                id: result.employee.id,
+                employeeNumber: result.employee.employeeNumber,
+                name: result.employee.name,
+                email: result.employee.email,
+                phoneNumber: result.employee.phoneNumber,
+                dateOfBirth: result.employee.dateOfBirth?.toISOString().split('T')[0],
+                gender: result.employee.gender,
+                hireDate: result.employee.hireDate.toISOString().split('T')[0],
+                status: result.employee.status,
+                currentRankId: result.employee.currentRankId,
+                isInitialPasswordSet: result.employee.isInitialPasswordSet,
+                createdAt: result.employee.createdAt,
+                updatedAt: result.employee.updatedAt,
+            },
+        };
+
+        if (result.assignment) {
+            response.assignment = {
+                id: result.assignment.id,
+                departmentId: result.assignment.departmentId,
+                positionId: result.assignment.positionId,
+                isManager: result.assignment.isManager,
+                createdAt: result.assignment.createdAt,
+            };
+        }
+
+        if (result.rankHistory) {
+            response.rankHistory = {
+                id: result.rankHistory.id,
+                employeeId: result.rankHistory.employeeId,
+                rankId: result.rankHistory.rankId,
+                createdAt: result.rankHistory.createdAt,
+            };
+        }
+
+        return response;
+    }
+
+    /**
+     * 직원 퇴사처리 (수습기간 평가 불합격)
+     * 목적: 수습기간 평가 후 불합격 시 직원 상태를 퇴사로 변경
+     */
+    async 직원을_퇴사처리한다(terminateDto: TerminateEmployeeRequestDto): Promise<TerminateEmployeeResponseDto> {
+        try {
+            // 날짜 문자열을 Date 객체로 변환
+            const terminationDate = new Date(terminateDto.terminationDate);
+
+            // Context Layer 호출
+            const result = await this.organizationContextService.직원을_퇴사처리한다({
+                employeeIdentifier: terminateDto.employeeIdentifier,
+                terminationDate,
+                terminationReason: terminateDto.terminationReason,
+                processedBy: terminateDto.processedBy,
+            });
+
+            // Response DTO로 변환
+            return this.퇴사처리결과를_응답DTO로_변환한다(result);
+        } catch (error) {
+            // 도메인/컨텍스트 에러들을 적절한 HTTP 에러로 매핑
+            if (error instanceof Error) {
+                throw new BadRequestException(error.message);
+            }
+            throw new BadRequestException('직원 퇴사처리 중 오류가 발생했습니다.');
+        }
+    }
+
+    /**
+     * 퇴사처리 결과를 응답 DTO로 변환
+     */
+    private 퇴사처리결과를_응답DTO로_변환한다(result: {
+        employee: Employee;
+        message: string;
+    }): TerminateEmployeeResponseDto {
+        return {
+            success: true,
+            employee: {
+                id: result.employee.id,
+                employeeNumber: result.employee.employeeNumber,
+                name: result.employee.name,
+                status: result.employee.status,
+                terminationDate: result.employee.terminationDate?.toISOString().split('T')[0] || '',
+                terminationReason: result.employee.terminationReason,
+                updatedAt: result.employee.updatedAt.toISOString(),
+            },
+            message: result.message,
+        };
+    }
+
+    private 에러를_HTTP응답으로_매핑한다(error: any): never {
+        // 도메인 에러들을 적절한 HTTP 상태코드로 매핑
+        if (error.statusCode) {
+            if (error.statusCode === 422) {
+                throw new BadRequestException(error.message);
+            } else if (error.statusCode === 409) {
+                throw new BadRequestException(error.message);
+            } else if (error.statusCode === 404) {
+                throw new NotFoundException(error.message);
+            }
+        }
+
+        // 예상하지 못한 에러
+        throw new BadRequestException('직원 생성 중 오류가 발생했습니다.');
     }
 }

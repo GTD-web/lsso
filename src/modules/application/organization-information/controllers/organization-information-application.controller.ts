@@ -1,5 +1,15 @@
-import { Controller, Get, Post, Query, HttpCode, HttpStatus, BadRequestException, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiResponse, ApiQuery, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import {
+    Controller,
+    Get,
+    Post,
+    Query,
+    Body,
+    HttpCode,
+    HttpStatus,
+    BadRequestException,
+    UseGuards,
+} from '@nestjs/common';
+import { ApiTags, ApiResponse, ApiQuery, ApiOperation, ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 import { OrganizationInformationApplicationService } from '../organization-information-application.service';
 import {
     EmployeeRequestDto,
@@ -8,6 +18,10 @@ import {
     EmployeesResponseDto,
     DepartmentHierarchyRequestDto,
     DepartmentHierarchyResponseDto,
+    CreateEmployeeRequestDto,
+    CreateEmployeeResponseDto,
+    TerminateEmployeeRequestDto,
+    TerminateEmployeeResponseDto,
 } from '../dto';
 import { JwtAuthGuard } from '../../../../../libs/common/guards/jwt-auth.guard';
 import { User, AuthenticatedUser } from '../../../../../libs/common/decorators/user.decorator';
@@ -86,18 +100,11 @@ export class OrganizationInformationApplicationController {
             '직원 ID 배열 또는 사번 배열로 여러 직원의 정보를 조회합니다. 배열이 비어있으면 전체 직원을 조회합니다.',
     })
     @ApiQuery({
-        name: 'employeeIds',
-        description: '직원 ID 배열 (쉼표로 구분)',
+        name: 'identifiers',
+        description: '직원 식별자 배열 (직원 ID 또는 사번, 쉼표로 구분)',
         required: false,
         type: String,
-        example: 'emp123,emp456',
-    })
-    @ApiQuery({
-        name: 'employeeNumbers',
-        description: '사번 배열 (쉼표로 구분)',
-        required: false,
-        type: String,
-        example: 'E2023001,E2023002',
+        example: 'emp123,E2023001,emp456,E2023002',
     })
     @ApiQuery({
         name: 'withDetail',
@@ -122,29 +129,21 @@ export class OrganizationInformationApplicationController {
     @ApiResponse({ status: 404, description: '직원 정보를 조회할 수 없음' })
     async getEmployees(
         @User() user: AuthenticatedUser,
-        @Query('employeeIds') employeeIds?: string,
-        @Query('employeeNumbers') employeeNumbers?: string,
+        @Query('identifiers') identifiers?: string,
         @Query('withDetail') withDetail?: boolean,
         @Query('includeTerminated') includeTerminated?: boolean,
     ): Promise<EmployeesResponseDto> {
         // 쉼표로 구분된 문자열을 배열로 변환
-        const employeeIdsArray = employeeIds
-            ? employeeIds
+        const identifiersArray = identifiers
+            ? identifiers
                   .split(',')
                   .map((id) => id.trim())
                   .filter((id) => id.length > 0)
             : undefined;
-        const employeeNumbersArray = employeeNumbers
-            ? employeeNumbers
-                  .split(',')
-                  .map((num) => num.trim())
-                  .filter((num) => num.length > 0)
-            : undefined;
 
         // Query 파라미터를 DTO로 변환
         const requestDto: EmployeesRequestDto = {
-            employeeIds: employeeIdsArray,
-            employeeNumbers: employeeNumbersArray,
+            identifiers: identifiersArray,
             withDetail: withDetail || false,
             includeTerminated: includeTerminated || false,
         };
@@ -296,5 +295,107 @@ export class OrganizationInformationApplicationController {
                 timestamp,
             };
         }
+    }
+
+    @Post('employee')
+    @HttpCode(HttpStatus.CREATED)
+    @ApiOperation({
+        summary: '채용 프로세스 완료 후 - 직원 생성',
+        description: '새로운 직원을 생성합니다. 검증 규칙 4단계에 따라 완전한 검증을 수행합니다.',
+    })
+    @ApiBody({
+        type: CreateEmployeeRequestDto,
+        description: '생성할 직원 정보',
+    })
+    @ApiResponse({
+        status: HttpStatus.CREATED,
+        description: '직원이 성공적으로 생성되었습니다.',
+        type: CreateEmployeeResponseDto,
+    })
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description: '입력 데이터가 유효하지 않거나 비즈니스 규칙을 위반했습니다.',
+        schema: {
+            type: 'object',
+            properties: {
+                statusCode: { type: 'number', example: 400 },
+                message: { type: 'string', example: '이미 존재하는 사번입니다: 25001' },
+                error: { type: 'string', example: 'Bad Request' },
+            },
+        },
+    })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: '참조하는 직급, 부서, 직책이 존재하지 않습니다.',
+        schema: {
+            type: 'object',
+            properties: {
+                statusCode: { type: 'number', example: 404 },
+                message: { type: 'string', example: '존재하지 않는 직급입니다: rank-uuid' },
+                error: { type: 'string', example: 'Not Found' },
+            },
+        },
+    })
+    async 채용프로세스에_합격한_직원을_생성한다(
+        @Body() createEmployeeDto: CreateEmployeeRequestDto,
+    ): Promise<CreateEmployeeResponseDto> {
+        return await this.organizationInformationApplicationService.직원을_채용한다(createEmployeeDto);
+    }
+
+    @Post('employee/terminate')
+    @HttpCode(HttpStatus.OK)
+    @ApiOperation({
+        summary: '수습평가 후 - 직원 퇴사처리',
+        description: '수습기간 평가 후 불합격 시 직원을 퇴사처리합니다. 3개월 수습기간이 지난 후에만 가능합니다.',
+    })
+    @ApiBody({
+        type: TerminateEmployeeRequestDto,
+        description: '퇴사처리할 직원 정보',
+    })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: '직원이 성공적으로 퇴사처리되었습니다.',
+        type: TerminateEmployeeResponseDto,
+    })
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description: '입력 데이터가 유효하지 않거나 비즈니스 규칙을 위반했습니다.',
+        schema: {
+            type: 'object',
+            properties: {
+                statusCode: { type: 'number', example: 400 },
+                message: { type: 'string', example: '수습기간(3개월)이 지나지 않았습니다. 최소 퇴사일: 2025-04-01' },
+                error: { type: 'string', example: 'Bad Request' },
+            },
+        },
+    })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: '해당 직원을 찾을 수 없습니다.',
+        schema: {
+            type: 'object',
+            properties: {
+                statusCode: { type: 'number', example: 404 },
+                message: { type: 'string', example: '직원을 찾을 수 없습니다: 25001' },
+                error: { type: 'string', example: 'Not Found' },
+            },
+        },
+    })
+    @ApiResponse({
+        status: HttpStatus.CONFLICT,
+        description: '이미 퇴사처리된 직원입니다.',
+        schema: {
+            type: 'object',
+            properties: {
+                statusCode: { type: 'number', example: 409 },
+                message: { type: 'string', example: '이미 퇴사처리된 직원입니다: 홍길동(25001)' },
+                error: { type: 'string', example: 'Conflict' },
+            },
+        },
+    })
+    async 수습기간_평가_불합격으로_직원을_퇴사처리한다(
+        @Body() terminateEmployeeDto: TerminateEmployeeRequestDto,
+    ): Promise<TerminateEmployeeResponseDto> {
+        return await this.organizationInformationApplicationService.직원을_퇴사처리한다(terminateEmployeeDto);
     }
 }
