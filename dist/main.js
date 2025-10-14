@@ -8427,6 +8427,9 @@ let OrganizationInformationApplicationService = class OrganizationInformationApp
             throw new common_1.BadRequestException('직원 ID 또는 사번 중 하나는 반드시 필요합니다.');
         }
         const employee = await this.organizationContextService.직원을_조회한다(employeeId || employeeNumber);
+        if (!employee) {
+            throw new common_1.NotFoundException('직원 정보를 찾을 수 없습니다.');
+        }
         let response = {
             id: employee.id,
             name: employee.name,

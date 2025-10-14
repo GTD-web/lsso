@@ -32,7 +32,9 @@ export class OrganizationInformationApplicationService {
 
         // 직원 조회 (ID 또는 사번)
         const employee = await this.organizationContextService.직원을_조회한다(employeeId || employeeNumber);
-
+        if (!employee) {
+            throw new NotFoundException('직원 정보를 찾을 수 없습니다.');
+        }
         // 기본 응답 데이터 구성
         let response: EmployeeResponseDto = {
             id: employee.id,
