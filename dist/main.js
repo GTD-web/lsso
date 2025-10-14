@@ -440,7 +440,7 @@ let LoggingInterceptor = class LoggingInterceptor {
             logData.responseTime = logData.responseTimestamp - startTime;
             logData.statusCode = context.switchToHttp().getResponse().statusCode;
             logData.response = request.method !== 'GET' ? response : null;
-            logData.system = !logData.system && response?.systemName ? response.systemName : null;
+            logData.system = logData.system !== null ? logData.system : response?.systemName;
         }), (0, operators_1.catchError)(async (error) => {
             logData.responseTimestamp = new Date();
             logData.responseTime = logData.responseTimestamp - startTime;

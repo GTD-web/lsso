@@ -46,17 +46,19 @@ Firebase Cloud Messaging (FCM) 토큰 관리를 위한 API입니다. 이 API는 
 {
     "employeeId": "123e4567-e89b-12d3-a456-426614174000",
     "employeeNumber": "25001",
-    "fcmToken": "fXyZ1234abcd..."
+    "fcmToken": "eGb1fxhAPTM6F-XYvVQFNu:APA91bEniVqcKgVLvVeS5Z5FZ5Z5Z5Z5Z5Z5Z5Z5Z5Z",
+    "deviceType": "pc"
 }
 ```
 
 **Body Parameters:**
 
-| 필드             | 타입   | 필수   | 설명                          | 예시                                   |
-| ---------------- | ------ | ------ | ----------------------------- | -------------------------------------- |
-| `employeeId`     | string | 선택\* | 직원 ID (UUID)                | `123e4567-e89b-12d3-a456-426614174000` |
-| `employeeNumber` | string | 선택\* | 직원 번호                     | `25001`                                |
-| `fcmToken`       | string | 필수   | Firebase Cloud Messaging 토큰 | `fXyZ1234abcd...`                      |
+| 필드             | 타입   | 필수   | 설명                                  | 예시                                                                 |
+| ---------------- | ------ | ------ | ------------------------------------- | -------------------------------------------------------------------- |
+| `employeeId`     | string | 선택\* | 직원 ID (UUID)                        | `123e4567-e89b-12d3-a456-426614174000`                               |
+| `employeeNumber` | string | 선택\* | 직원 번호                             | `25001`                                                              |
+| `fcmToken`       | string | 필수   | Firebase Cloud Messaging 토큰         | `eGb1fxhAPTM6F-XYvVQFNu:APA91bEniVqcKgVLvVeS5Z5FZ5Z5Z5Z5Z5Z5Z5Z5Z5Z` |
+| `deviceType`     | string | 필수   | 기기 타입 (예: android, ios, pc, web) | `pc`                                                                 |
 
 _\* `employeeId` 또는 `employeeNumber` 중 하나는 필수. 둘 다 제공된 경우 정합성 체크_
 
@@ -66,10 +68,7 @@ _\* `employeeId` 또는 `employeeNumber` 중 하나는 필수. 둘 다 제공된
 
 ```json
 {
-    "success": true,
-    "message": "FCM 토큰이 성공적으로 등록되었습니다.",
-    "employeeId": "123e4567-e89b-12d3-a456-426614174000",
-    "fcmToken": "fXyZ1234abcd..."
+    "fcmToken": "eGb1fxhAPTM6F-XYvVQFNu:APA91bEniVqcKgVLvVeS5Z5FZ5Z5Z5Z5Z5Z5Z5Z5Z5Z"
 }
 ```
 
@@ -126,21 +125,20 @@ _\* `employeeId` 또는 `employeeNumber` 중 하나는 필수_
 {
     "employeeId": "123e4567-e89b-12d3-a456-426614174000",
     "employeeNumber": "25001",
-    "fcmTokens": [
+    "tokens": [
         {
-            "id": "token-uuid-1",
-            "fcmToken": "fXyZ1234abcd...",
+            "fcmToken": "eGb1fxhAPTM6F-XYvVQFNu:APA91bEniVqcKgVLvVeS5Z5FZ5Z5Z5Z5Z5Z5Z5Z5Z5Z",
+            "deviceType": "pc",
             "createdAt": "2024-01-01T10:00:00.000Z",
             "updatedAt": "2024-01-01T10:00:00.000Z"
         },
         {
-            "id": "token-uuid-2",
-            "fcmToken": "aBcD5678efgh...",
+            "fcmToken": "aBcD5678efgh:APA91bEniVqcKgVLvVeS5Z5FZ5Z5Z5Z5Z5Z5Z5Z5Z5Z",
+            "deviceType": "android",
             "createdAt": "2024-01-02T15:30:00.000Z",
             "updatedAt": "2024-01-02T15:30:00.000Z"
         }
-    ],
-    "totalCount": 2
+    ]
 }
 ```
 
@@ -169,20 +167,18 @@ employeeId 또는 employeeNumber로 FCM 토큰 구독을 해지합니다. 둘 �
 ```json
 {
     "employeeId": "123e4567-e89b-12d3-a456-426614174000",
-    "employeeNumber": "25001",
-    "fcmToken": "fXyZ1234abcd..."
+    "employeeNumber": "25001"
 }
 ```
 
 **Body Parameters:**
 
-| 필드             | 타입   | 필수   | 설명                                       | 예시                                   |
-| ---------------- | ------ | ------ | ------------------------------------------ | -------------------------------------- |
-| `employeeId`     | string | 선택\* | 직원 ID (UUID)                             | `123e4567-e89b-12d3-a456-426614174000` |
-| `employeeNumber` | string | 선택\* | 직원 번호                                  | `25001`                                |
-| `fcmToken`       | string | 필수   | 해지할 FCM 토큰 (선택 시 특정 토큰만 해지) | `fXyZ1234abcd...`                      |
+| 필드             | 타입   | 필수   | 설명           | 예시                                   |
+| ---------------- | ------ | ------ | -------------- | -------------------------------------- |
+| `employeeId`     | string | 선택\* | 직원 ID (UUID) | `123e4567-e89b-12d3-a456-426614174000` |
+| `employeeNumber` | string | 선택\* | 직원 번호      | `25001`                                |
 
-_\* `employeeId` 또는 `employeeNumber` 중 하나는 필수_
+_\* `employeeId` 또는 `employeeNumber` 중 하나는 필수. 해당 직원의 모든 FCM 토큰을 해지합니다._
 
 #### 응답
 
@@ -226,33 +222,61 @@ _\* `employeeIds` 또는 `employeeNumbers` 중 하나는 필수. `employeeIds`�
 
 ```json
 {
-    "employees": [
+    "byEmployee": [
         {
             "employeeId": "123e4567-e89b-12d3-a456-426614174000",
             "employeeNumber": "25001",
-            "fcmTokens": [
+            "tokens": [
                 {
-                    "id": "token-uuid-1",
-                    "fcmToken": "fXyZ1234abcd...",
-                    "createdAt": "2024-01-01T10:00:00.000Z"
+                    "fcmToken": "eGb1fxhAPTM6F-XYvVQFNu:APA91bEniVqcKgVLvVeS5Z5FZ5Z5Z5Z5Z5Z5Z5Z5Z5Z",
+                    "deviceType": "pc",
+                    "createdAt": "2024-01-01T10:00:00.000Z",
+                    "updatedAt": "2024-01-01T10:00:00.000Z"
                 }
             ]
         },
         {
             "employeeId": "123e4567-e89b-12d3-a456-426614174001",
             "employeeNumber": "25002",
-            "fcmTokens": [
+            "tokens": [
                 {
-                    "id": "token-uuid-2",
-                    "fcmToken": "aBcD5678efgh...",
-                    "createdAt": "2024-01-02T15:30:00.000Z"
+                    "fcmToken": "aBcD5678efgh:APA91bEniVqcKgVLvVeS5Z5FZ5Z5Z5Z5Z5Z5Z5Z5Z5Z",
+                    "deviceType": "android",
+                    "createdAt": "2024-01-02T15:30:00.000Z",
+                    "updatedAt": "2024-01-02T15:30:00.000Z"
                 }
             ]
         }
     ],
-    "totalCount": 2
+    "allTokens": [
+        {
+            "employeeId": "123e4567-e89b-12d3-a456-426614174000",
+            "employeeNumber": "25001",
+            "fcmToken": "eGb1fxhAPTM6F-XYvVQFNu:APA91bEniVqcKgVLvVeS5Z5FZ5Z5Z5Z5Z5Z5Z5Z5Z5Z",
+            "deviceType": "pc",
+            "createdAt": "2024-01-01T10:00:00.000Z",
+            "updatedAt": "2024-01-01T10:00:00.000Z"
+        },
+        {
+            "employeeId": "123e4567-e89b-12d3-a456-426614174001",
+            "employeeNumber": "25002",
+            "fcmToken": "aBcD5678efgh:APA91bEniVqcKgVLvVeS5Z5FZ5Z5Z5Z5Z5Z5Z5Z5Z5Z",
+            "deviceType": "android",
+            "createdAt": "2024-01-02T15:30:00.000Z",
+            "updatedAt": "2024-01-02T15:30:00.000Z"
+        }
+    ],
+    "totalEmployees": 2,
+    "totalTokens": 2
 }
 ```
+
+**응답 필드 설명:**
+
+-   `byEmployee`: 직원별로 그룹핑된 토큰 정보 배열
+-   `allTokens`: 모든 토큰을 flat하게 나열한 배열 (직원 정보 포함)
+-   `totalEmployees`: 총 직원 수
+-   `totalTokens`: 총 토큰 수
 
 **에러 응답:**
 
@@ -299,7 +323,7 @@ _\* `employeeIds` 또는 `employeeNumbers` 중 하나는 필수. `employeeIds`�
 
 ```javascript
 // 1. FCM 토큰 구독
-const subscribeFcm = async (employeeNumber, fcmToken, systemName) => {
+const subscribeFcm = async (employeeNumber, fcmToken, deviceType, systemName) => {
     const response = await fetch('/fcm/subscribe', {
         method: 'POST',
         headers: {
@@ -309,6 +333,7 @@ const subscribeFcm = async (employeeNumber, fcmToken, systemName) => {
         body: JSON.stringify({
             employeeNumber,
             fcmToken,
+            deviceType, // 'pc', 'android', 'ios', 'web' 등
         }),
     });
     return await response.json();
@@ -326,7 +351,7 @@ const getFcmToken = async (employeeNumber, systemName) => {
 };
 
 // 3. FCM 토큰 구독 해지
-const unsubscribeFcm = async (employeeNumber, fcmToken, systemName) => {
+const unsubscribeFcm = async (employeeNumber, systemName) => {
     const response = await fetch('/fcm/unsubscribe', {
         method: 'POST',
         headers: {
@@ -335,7 +360,6 @@ const unsubscribeFcm = async (employeeNumber, fcmToken, systemName) => {
         },
         body: JSON.stringify({
             employeeNumber,
-            fcmToken,
         }),
     });
     return await response.json();
@@ -362,20 +386,20 @@ curl -X POST http://localhost:3000/fcm/subscribe \
   -H "X-System-Name: LRIM System" \
   -d '{
     "employeeNumber": "25001",
-    "fcmToken": "fXyZ1234abcd..."
+    "fcmToken": "eGb1fxhAPTM6F-XYvVQFNu:APA91bEniVqcKgVLvVeS5Z5FZ5Z5Z5Z5Z5Z5Z5Z5Z5Z",
+    "deviceType": "pc"
   }'
 
 # 2. FCM 토큰 조회
 curl -X GET "http://localhost:3000/fcm/token?employeeNumber=25001" \
   -H "X-System-Name: LRIM System"
 
-# 3. FCM 토큰 구독 해지
+# 3. FCM 토큰 구독 해지 (해당 직원의 모든 토큰 해지)
 curl -X POST http://localhost:3000/fcm/unsubscribe \
   -H "Content-Type: application/json" \
   -H "X-System-Name: LRIM System" \
   -d '{
-    "employeeNumber": "25001",
-    "fcmToken": "fXyZ1234abcd..."
+    "employeeNumber": "25001"
   }'
 
 # 4. 여러 직원의 FCM 토큰 조회 (employeeIds 사용)
@@ -406,8 +430,11 @@ const setupFCM = async (employeeNumber) => {
             // FCM 토큰 가져오기
             const fcmToken = await messaging().getToken();
 
+            // 디바이스 타입 감지
+            const deviceType = Platform.OS; // 'android' 또는 'ios'
+
             // 서버에 FCM 토큰 등록
-            await subscribeFcm(employeeNumber, fcmToken, 'LRIM Mobile App');
+            await subscribeFcm(employeeNumber, fcmToken, deviceType, 'LRIM Mobile App');
 
             console.log('FCM 토큰 등록 완료:', fcmToken);
         }
@@ -419,8 +446,7 @@ const setupFCM = async (employeeNumber) => {
 // 앱 로그아웃 시 FCM 토큰 해지
 const handleLogout = async (employeeNumber) => {
     try {
-        const fcmToken = await messaging().getToken();
-        await unsubscribeFcm(employeeNumber, fcmToken, 'LRIM Mobile App');
+        await unsubscribeFcm(employeeNumber, 'LRIM Mobile App');
         console.log('FCM 토큰 해지 완료');
     } catch (error) {
         console.error('FCM 토큰 해지 오류:', error);
@@ -435,10 +461,11 @@ const handleLogout = async (employeeNumber) => {
 ### FCM 토큰 관리 규칙
 
 1. **직원 식별자 정합성**: `employeeId`와 `employeeNumber`가 모두 제공된 경우, 동일한 직원을 가리켜야 합니다.
-2. **토큰 중복 등록**: 동일한 FCM 토큰이 이미 등록되어 있으면 업데이트됩니다.
+2. **디바이스 타입 필수**: FCM 토큰 등록 시 `deviceType`은 필수입니다 (예: `pc`, `android`, `ios`, `web`).
 3. **다중 디바이스 지원**: 한 직원이 여러 디바이스에서 로그인할 수 있으므로, 여러 FCM 토큰을 가질 수 있습니다.
-4. **토큰 만료**: FCM 토큰은 만료되거나 갱신될 수 있으므로, 주기적으로 업데이트해야 합니다.
-5. **구독 해지**: 로그아웃 시 또는 앱 삭제 시 FCM 토큰을 해지해야 합니다.
+4. **토큰 중복 방지**: 동일한 `fcmToken`과 `deviceType` 조합이 이미 존재하면 업데이트됩니다.
+5. **토큰 만료**: FCM 토큰은 만료되거나 갱신될 수 있으므로, 주기적으로 업데이트해야 합니다.
+6. **전체 구독 해지**: 구독 해지 시 해당 직원의 모든 디바이스의 FCM 토큰이 삭제됩니다.
 
 ### 알림 서버 통합
 
