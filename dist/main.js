@@ -5515,6 +5515,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 __exportStar(__webpack_require__(/*! ./create-system.dto */ "./src/modules/application/admin/system/dto/create-system.dto.ts"), exports);
 __exportStar(__webpack_require__(/*! ./update-system.dto */ "./src/modules/application/admin/system/dto/update-system.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./update-system-status.dto */ "./src/modules/application/admin/system/dto/update-system-status.dto.ts"), exports);
 __exportStar(__webpack_require__(/*! ./system-response.dto */ "./src/modules/application/admin/system/dto/system-response.dto.ts"), exports);
 __exportStar(__webpack_require__(/*! ./create-system-role.dto */ "./src/modules/application/admin/system/dto/create-system-role.dto.ts"), exports);
 __exportStar(__webpack_require__(/*! ./update-system-role.dto */ "./src/modules/application/admin/system/dto/update-system-role.dto.ts"), exports);
@@ -5543,6 +5544,7 @@ var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SystemResponseDto = void 0;
 const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const system_role_response_dto_1 = __webpack_require__(/*! ./system-role-response.dto */ "./src/modules/application/admin/system/dto/system-role-response.dto.ts");
 class SystemResponseDto {
 }
 exports.SystemResponseDto = SystemResponseDto;
@@ -5582,6 +5584,10 @@ __decorate([
     (0, swagger_1.ApiProperty)({ description: '활성화 상태' }),
     __metadata("design:type", Boolean)
 ], SystemResponseDto.prototype, "isActive", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '시스템 역할 목록', type: [system_role_response_dto_1.SystemRoleResponseDto] }),
+    __metadata("design:type", Array)
+], SystemResponseDto.prototype, "roles", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '생성일시' }),
     __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
@@ -5729,6 +5735,39 @@ __decorate([
 
 /***/ }),
 
+/***/ "./src/modules/application/admin/system/dto/update-system-status.dto.ts":
+/*!******************************************************************************!*\
+  !*** ./src/modules/application/admin/system/dto/update-system-status.dto.ts ***!
+  \******************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdateSystemStatusDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+class UpdateSystemStatusDto {
+}
+exports.UpdateSystemStatusDto = UpdateSystemStatusDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '활성화 상태', example: true }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", Boolean)
+], UpdateSystemStatusDto.prototype, "isActive", void 0);
+
+
+/***/ }),
+
 /***/ "./src/modules/application/admin/system/dto/update-system.dto.ts":
 /*!***********************************************************************!*\
   !*** ./src/modules/application/admin/system/dto/update-system.dto.ts ***!
@@ -5787,12 +5826,6 @@ __decorate([
     (0, class_validator_1.IsUrl)(),
     __metadata("design:type", String)
 ], UpdateSystemDto.prototype, "healthCheckUrl", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: '활성화 상태', example: true }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsBoolean)(),
-    __metadata("design:type", Boolean)
-], UpdateSystemDto.prototype, "isActive", void 0);
 
 
 /***/ }),
@@ -5884,7 +5917,6 @@ let SystemApplicationService = class SystemApplicationService {
                 domain: updateDto.domain,
                 allowedOrigin: updateDto.allowedOrigin,
                 healthCheckUrl: updateDto.healthCheckUrl,
-                isActive: updateDto.isActive,
             });
             return this.시스템_엔티티를_DTO로_변환(updatedSystem);
         }
@@ -5896,6 +5928,18 @@ let SystemApplicationService = class SystemApplicationService {
                 throw new common_1.NotFoundException('해당 시스템을 찾을 수 없습니다.');
             }
             throw new common_1.ConflictException('시스템 수정에 실패했습니다.');
+        }
+    }
+    async 시스템활성상태변경(id, isActive) {
+        try {
+            const updatedSystem = await this.시스템관리컨텍스트서비스.시스템_활성상태를_변경한다(id, isActive);
+            return this.시스템_엔티티를_DTO로_변환(updatedSystem);
+        }
+        catch (error) {
+            if (error.message?.includes('해당 시스템을 찾을 수 없습니다')) {
+                throw new common_1.NotFoundException('해당 시스템을 찾을 수 없습니다.');
+            }
+            throw new common_1.NotFoundException('시스템 활성 상태 변경에 실패했습니다.');
         }
     }
     async 시스템삭제(id) {
@@ -6016,6 +6060,7 @@ let SystemApplicationService = class SystemApplicationService {
             allowedOrigin: system.allowedOrigin,
             healthCheckUrl: system.healthCheckUrl,
             isActive: system.isActive,
+            roles: system.roles ? system.roles.map((role) => this.시스템롤_엔티티를_DTO로_변환(role)) : [],
             createdAt: system.createdAt,
             updatedAt: system.updatedAt,
         };
@@ -6177,7 +6222,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SystemController = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
@@ -6205,6 +6250,9 @@ let SystemController = class SystemController {
     }
     async updateSystem(id, updateSystemDto) {
         return await this.systemApplicationService.시스템수정(id, updateSystemDto);
+    }
+    async updateSystemStatus(id, updateStatusDto) {
+        return await this.systemApplicationService.시스템활성상태변경(id, updateStatusDto.isActive);
     }
     async deleteSystem(id) {
         return await this.systemApplicationService.시스템삭제(id);
@@ -6274,6 +6322,22 @@ __decorate([
     __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
 ], SystemController.prototype, "updateSystem", null);
 __decorate([
+    (0, common_1.Patch)(':id/status'),
+    (0, swagger_1.ApiOperation)({
+        summary: '시스템 활성화 상태 변경',
+        description: '시스템의 활성화/비활성화 상태를 변경합니다.',
+    }),
+    (0, swagger_1.ApiBody)({ type: dto_1.UpdateSystemStatusDto }),
+    (0, swagger_1.ApiResponse)({ status: 200, type: dto_1.SystemResponseDto }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: '시스템을 찾을 수 없음' }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: '시스템 ID' }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, typeof (_j = typeof dto_1.UpdateSystemStatusDto !== "undefined" && dto_1.UpdateSystemStatusDto) === "function" ? _j : Object]),
+    __metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
+], SystemController.prototype, "updateSystemStatus", null);
+__decorate([
     (0, common_1.Delete)(':id'),
     (0, swagger_1.ApiOperation)({ summary: '시스템 삭제' }),
     (0, swagger_1.ApiResponse)({ status: 200 }),
@@ -6282,7 +6346,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
+    __metadata("design:returntype", typeof (_l = typeof Promise !== "undefined" && Promise) === "function" ? _l : Object)
 ], SystemController.prototype, "deleteSystem", null);
 __decorate([
     (0, common_1.Post)(':id/regenerate-keys'),
@@ -6296,7 +6360,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
+    __metadata("design:returntype", typeof (_m = typeof Promise !== "undefined" && Promise) === "function" ? _m : Object)
 ], SystemController.prototype, "regenerateApiKeys", null);
 exports.SystemController = SystemController = __decorate([
     (0, swagger_1.ApiTags)('Admin - 시스템 관리'),
@@ -11854,18 +11918,33 @@ let SystemManagementContextService = SystemManagementContextService_1 = class Sy
         };
         const savedSystem = await this.시스템서비스.save(systemData);
         return {
-            system: savedSystem,
+            system: { ...savedSystem, roles: [] },
             originalSecret: clientSecret,
         };
     }
     async 모든_시스템을_조회한다() {
-        return this.시스템서비스.findAllSystems();
+        const systems = await this.시스템서비스.findAllSystems();
+        const systemsWithRoles = await Promise.all(systems.map(async (system) => {
+            const roles = await this.시스템역할서비스.findBySystemId(system.id);
+            return { ...system, roles };
+        }));
+        return systemsWithRoles;
     }
     async 시스템을_검색한다(query) {
-        return this.시스템서비스.searchSystems(query);
+        const systems = await this.시스템서비스.searchSystems(query);
+        const systemsWithRoles = await Promise.all(systems.map(async (system) => {
+            const roles = await this.시스템역할서비스.findBySystemId(system.id);
+            return { ...system, roles };
+        }));
+        return systemsWithRoles;
     }
     async 시스템을_ID로_조회한다(systemId) {
-        return this.시스템서비스.findOne({ where: { id: systemId } });
+        const system = await this.시스템서비스.findOne({ where: { id: systemId } });
+        if (!system) {
+            return null;
+        }
+        const roles = await this.시스템역할서비스.findBySystemId(system.id);
+        return { ...system, roles };
     }
     async 시스템을_수정한다(systemId, data) {
         const system = await this.시스템서비스.findOne({ where: { id: systemId } });
@@ -11878,7 +11957,18 @@ let SystemManagementContextService = SystemManagementContextService_1 = class Sy
                 throw new Error('이미 존재하는 시스템 이름입니다.');
             }
         }
-        return this.시스템서비스.update(systemId, data);
+        const updatedSystem = await this.시스템서비스.update(systemId, data);
+        const roles = await this.시스템역할서비스.findBySystemId(systemId);
+        return { ...updatedSystem, roles };
+    }
+    async 시스템_활성상태를_변경한다(systemId, isActive) {
+        const system = await this.시스템서비스.findOne({ where: { id: systemId } });
+        if (!system) {
+            throw new Error('해당 시스템을 찾을 수 없습니다.');
+        }
+        const updatedSystem = await this.시스템서비스.update(systemId, { isActive });
+        const roles = await this.시스템역할서비스.findBySystemId(systemId);
+        return { ...updatedSystem, roles };
     }
     async 시스템을_삭제한다(systemId) {
         const system = await this.시스템서비스.findOne({ where: { id: systemId } });
@@ -11896,8 +11986,9 @@ let SystemManagementContextService = SystemManagementContextService_1 = class Sy
         const updatedSystem = await this.시스템서비스.update(systemId, {
             clientSecret: hash,
         });
+        const roles = await this.시스템역할서비스.findBySystemId(systemId);
         return {
-            system: updatedSystem,
+            system: { ...updatedSystem, roles },
             originalSecret: clientSecret,
         };
     }
