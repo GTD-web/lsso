@@ -1453,7 +1453,6 @@ __decorate([
 ], EmployeeFcmTokenController.prototype, "cleanupOldTokens", null);
 exports.EmployeeFcmTokenController = EmployeeFcmTokenController = __decorate([
     (0, swagger_1.ApiTags)('Admin - 직원 FCM 토큰 관리'),
-    (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.Controller)('admin/employee-fcm-tokens'),
     __metadata("design:paramtypes", [typeof (_a = typeof employee_fcm_token_application_service_1.EmployeeFcmTokenApplicationService !== "undefined" && employee_fcm_token_application_service_1.EmployeeFcmTokenApplicationService) === "function" ? _a : Object])
 ], EmployeeFcmTokenController);
@@ -1563,7 +1562,6 @@ __decorate([
 ], EmployeeSystemRoleController.prototype, "removeAllByEmployee", null);
 exports.EmployeeSystemRoleController = EmployeeSystemRoleController = __decorate([
     (0, swagger_1.ApiTags)('Admin - 직원 시스템 역할 관리'),
-    (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.Controller)('admin/employee-system-roles'),
     __metadata("design:paramtypes", [typeof (_a = typeof employee_system_role_application_service_1.EmployeeSystemRoleApplicationService !== "undefined" && employee_system_role_application_service_1.EmployeeSystemRoleApplicationService) === "function" ? _a : Object])
 ], EmployeeSystemRoleController);
@@ -1700,7 +1698,6 @@ __decorate([
 ], EmployeeTokenController.prototype, "removeBulkByTokens", null);
 exports.EmployeeTokenController = EmployeeTokenController = __decorate([
     (0, swagger_1.ApiTags)('Admin - 직원 토큰 관리'),
-    (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.Controller)('admin/employee-tokens'),
     __metadata("design:paramtypes", [typeof (_a = typeof employee_token_application_service_1.EmployeeTokenApplicationService !== "undefined" && employee_token_application_service_1.EmployeeTokenApplicationService) === "function" ? _a : Object])
 ], EmployeeTokenController);
@@ -3728,7 +3725,6 @@ __decorate([
 ], LogController.prototype, "filter", null);
 exports.LogController = LogController = __decorate([
     (0, swagger_1.ApiTags)('Admin - 로그 관리'),
-    (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.Controller)('admin/logs'),
     __metadata("design:paramtypes", [typeof (_a = typeof log_application_service_1.LogApplicationService !== "undefined" && log_application_service_1.LogApplicationService) === "function" ? _a : Object])
 ], LogController);
@@ -5315,7 +5311,6 @@ __decorate([
 ], OrganizationController.prototype, "getEmployeeRankHistory", null);
 exports.OrganizationController = OrganizationController = __decorate([
     (0, swagger_1.ApiTags)('Admin - 조직 관리'),
-    (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.Controller)('admin/organizations'),
     __metadata("design:paramtypes", [typeof (_a = typeof organization_application_service_1.OrganizationApplicationService !== "undefined" && organization_application_service_1.OrganizationApplicationService) === "function" ? _a : Object])
 ], OrganizationController);
@@ -6156,7 +6151,6 @@ __decorate([
 ], SystemRoleController.prototype, "deleteSystemRole", null);
 exports.SystemRoleController = SystemRoleController = __decorate([
     (0, swagger_1.ApiTags)('Admin - 시스템 역할 관리'),
-    (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.Controller)('admin/system-roles'),
     __metadata("design:paramtypes", [typeof (_a = typeof system_application_service_1.SystemApplicationService !== "undefined" && system_application_service_1.SystemApplicationService) === "function" ? _a : Object])
 ], SystemRoleController);

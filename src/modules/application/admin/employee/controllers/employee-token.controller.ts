@@ -9,7 +9,7 @@ import {
 } from '../dto';
 
 @ApiTags('Admin - 직원 토큰 관리')
-@ApiBearerAuth()
+// @ApiBearerAuth()
 @Controller('admin/employee-tokens')
 export class EmployeeTokenController {
     constructor(private readonly employeeTokenApplicationService: EmployeeTokenApplicationService) {}

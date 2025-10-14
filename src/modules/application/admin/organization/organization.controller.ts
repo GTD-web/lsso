@@ -29,7 +29,7 @@ import {
 } from './dto';
 
 @ApiTags('Admin - 조직 관리')
-@ApiBearerAuth()
+// @ApiBearerAuth()
 @Controller('admin/organizations')
 export class OrganizationController {
     constructor(private readonly organizationApplicationService: OrganizationApplicationService) {}

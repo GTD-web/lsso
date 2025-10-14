@@ -10,7 +10,7 @@ import {
 } from '../dto';
 
 @ApiTags('Admin - 직원 FCM 토큰 관리')
-@ApiBearerAuth()
+// @ApiBearerAuth()
 @Controller('admin/employee-fcm-tokens')
 export class EmployeeFcmTokenController {
     constructor(private readonly employeeFcmTokenApplicationService: EmployeeFcmTokenApplicationService) {}

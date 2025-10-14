@@ -8,7 +8,7 @@ import {
 } from '../dto';
 
 @ApiTags('Admin - 직원 시스템 역할 관리')
-@ApiBearerAuth()
+// @ApiBearerAuth()
 @Controller('admin/employee-system-roles')
 export class EmployeeSystemRoleController {
     constructor(private readonly employeeSystemRoleApplicationService: EmployeeSystemRoleApplicationService) {}

@@ -5,7 +5,7 @@ import { LogApplicationService } from './log-application.service';
 import { LogFilterDto, LogResponseDto, LogsResponseDto } from './dto';
 
 @ApiTags('Admin - 로그 관리')
-@ApiBearerAuth()
+// @ApiBearerAuth()
 @Controller('admin/logs')
 export class LogController {
     constructor(private readonly logApplicationService: LogApplicationService) {}
