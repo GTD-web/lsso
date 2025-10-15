@@ -99,6 +99,20 @@ export class OrganizationManagementContextService {
         return this.부서서비스.findById(departmentId);
     }
 
+    // ==================== 전체 데이터 조회 (마이그레이션용) ====================
+
+    async 모든_부서를_조회한다(): Promise<Department[]> {
+        return this.부서서비스.findAll();
+    }
+
+    async 모든_직원을_조회한다(): Promise<Employee[]> {
+        return this.직원서비스.findAll();
+    }
+
+    async 모든_직원부서직책매핑을_조회한다(): Promise<EmployeeDepartmentPosition[]> {
+        return this.직원부서직책서비스.findAll();
+    }
+
     // ==================== 직책 조회 관련 ====================
 
     async 모든_직책을_조회한다(): Promise<Position[]> {

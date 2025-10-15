@@ -15,6 +15,7 @@ import {
     CreateEmployeeResponseDto,
     TerminateEmployeeRequestDto,
     TerminateEmployeeResponseDto,
+    ExportAllDataResponseDto,
 } from './dto';
 import { Employee, Department, Position, Rank } from '../../../../libs/database/entities';
 
@@ -451,6 +452,83 @@ export class OrganizationInformationApplicationService {
             },
             message: result.message,
         };
+    }
+
+    async 전체_조직_데이터를_조회한다(): Promise<ExportAllDataResponseDto> {
+        try {
+            // 모든 데이터를 병렬로 조회
+            const [departments, employees, positions, ranks, employeeDepartmentPositions] = await Promise.all([
+                this.organizationContextService.모든_부서를_조회한다(),
+                this.organizationContextService.모든_직원을_조회한다(),
+                this.organizationContextService.모든_직책을_조회한다(),
+                this.organizationContextService.모든_직급을_조회한다(),
+                this.organizationContextService.모든_직원부서직책매핑을_조회한다(),
+            ]);
+
+            return {
+                departments: departments.map((dept) => ({
+                    id: dept.id,
+                    departmentName: dept.departmentName,
+                    departmentCode: dept.departmentCode,
+                    type: dept.type,
+                    parentDepartmentId: dept.parentDepartmentId,
+                    order: dept.order,
+                    createdAt: dept.createdAt,
+                    updatedAt: dept.updatedAt,
+                })),
+                employees: employees.map((emp) => ({
+                    id: emp.id,
+                    employeeNumber: emp.employeeNumber,
+                    name: emp.name,
+                    email: emp.email,
+                    password: emp.password,
+                    phoneNumber: emp.phoneNumber,
+                    dateOfBirth: emp.dateOfBirth,
+                    gender: emp.gender,
+                    hireDate: emp.hireDate,
+                    status: emp.status,
+                    currentRankId: emp.currentRankId,
+                    terminationDate: emp.terminationDate,
+                    terminationReason: emp.terminationReason,
+                    isInitialPasswordSet: emp.isInitialPasswordSet,
+                    createdAt: emp.createdAt,
+                    updatedAt: emp.updatedAt,
+                })),
+                positions: positions.map((pos) => ({
+                    id: pos.id,
+                    positionTitle: pos.positionTitle,
+                    positionCode: pos.positionCode,
+                    level: pos.level,
+                    hasManagementAuthority: pos.hasManagementAuthority,
+                })),
+                ranks: ranks.map((rank) => ({
+                    id: rank.id,
+                    rankName: rank.rankName,
+                    rankCode: rank.rankCode,
+                    level: rank.level,
+                })),
+                employeeDepartmentPositions: employeeDepartmentPositions.map((edp) => ({
+                    id: edp.id,
+                    employeeId: edp.employeeId,
+                    departmentId: edp.departmentId,
+                    positionId: edp.positionId,
+                    isManager: edp.isManager,
+                    createdAt: edp.createdAt,
+                    updatedAt: edp.updatedAt,
+                })),
+                totalCounts: {
+                    departments: departments.length,
+                    employees: employees.length,
+                    positions: positions.length,
+                    ranks: ranks.length,
+                    employeeDepartmentPositions: employeeDepartmentPositions.length,
+                },
+                exportedAt: new Date(),
+            };
+        } catch (error) {
+            console.error('전체 조직 데이터 조회 중 오류 발생:', error);
+            throw new NotFoundException('조직 데이터를 조회할 수 없습니다.');
+        }
     }
 
     private 에러를_HTTP응답으로_매핑한다(error: any): never {
