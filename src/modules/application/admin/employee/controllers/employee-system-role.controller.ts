@@ -34,31 +34,31 @@ export class EmployeeSystemRoleController {
         return await this.employeeSystemRoleApplicationService.직원_시스템_역할_상세_조회(id);
     }
 
-    @Post()
-    @ApiOperation({ summary: '직원에게 시스템 역할 할당' })
-    @ApiBody({ type: CreateEmployeeSystemRoleDto })
-    @ApiResponse({ status: 201, type: EmployeeSystemRoleListResponseDto })
-    @ApiResponse({ status: 400, description: '이미 할당된 역할이거나 잘못된 요청' })
-    async create(@Body() createDto: CreateEmployeeSystemRoleDto): Promise<EmployeeSystemRoleListResponseDto> {
-        return await this.employeeSystemRoleApplicationService.직원_시스템_역할_할당(createDto);
-    }
+    // @Post()
+    // @ApiOperation({ summary: '직원에게 시스템 역할 할당' })
+    // @ApiBody({ type: CreateEmployeeSystemRoleDto })
+    // @ApiResponse({ status: 201, type: EmployeeSystemRoleListResponseDto })
+    // @ApiResponse({ status: 400, description: '이미 할당된 역할이거나 잘못된 요청' })
+    // async create(@Body() createDto: CreateEmployeeSystemRoleDto): Promise<EmployeeSystemRoleListResponseDto> {
+    //     return await this.employeeSystemRoleApplicationService.직원_시스템_역할_할당(createDto);
+    // }
 
-    @Delete(':id')
-    @ApiOperation({ summary: '직원 시스템 역할 해제' })
-    @ApiResponse({ status: 200, description: '역할 해제 성공' })
-    @ApiResponse({ status: 404, description: '직원 시스템 역할을 찾을 수 없음' })
-    @ApiParam({ name: 'id', description: '직원 시스템 역할 ID' })
-    async remove(@Param('id') id: string): Promise<{ message: string }> {
-        return await this.employeeSystemRoleApplicationService.직원_시스템_역할_해제(id);
-    }
+    // @Delete(':id')
+    // @ApiOperation({ summary: '직원 시스템 역할 해제' })
+    // @ApiResponse({ status: 200, description: '역할 해제 성공' })
+    // @ApiResponse({ status: 404, description: '직원 시스템 역할을 찾을 수 없음' })
+    // @ApiParam({ name: 'id', description: '직원 시스템 역할 ID' })
+    // async remove(@Param('id') id: string): Promise<{ message: string }> {
+    //     return await this.employeeSystemRoleApplicationService.직원_시스템_역할_해제(id);
+    // }
 
-    @Delete('employee/:employeeId/all')
-    @ApiOperation({ summary: '직원의 모든 시스템 역할 해제' })
-    @ApiResponse({ status: 200, description: '모든 역할 해제 성공' })
-    @ApiParam({ name: 'employeeId', description: '직원 ID' })
-    async removeAllByEmployee(@Param('employeeId') employeeId: string): Promise<{ message: string }> {
-        return await this.employeeSystemRoleApplicationService.직원_모든_시스템_역할_해제(employeeId);
-    }
+    // @Delete('employee/:employeeId/all')
+    // @ApiOperation({ summary: '직원의 모든 시스템 역할 해제' })
+    // @ApiResponse({ status: 200, description: '모든 역할 해제 성공' })
+    // @ApiParam({ name: 'employeeId', description: '직원 ID' })
+    // async removeAllByEmployee(@Param('employeeId') employeeId: string): Promise<{ message: string }> {
+    //     return await this.employeeSystemRoleApplicationService.직원_모든_시스템_역할_해제(employeeId);
+    // }
 
     @Put('employee/bulk')
     @ApiOperation({ summary: '직원 시스템 역할 일괄 업데이트 (기존 전체 삭제 후 새로 할당)' })

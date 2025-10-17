@@ -182,6 +182,20 @@ export class EmployeeTokenApplicationService {
     }
 
     /**
+     * 직원의 모든 토큰 삭제
+     */
+    async 직원의_모든_토큰_삭제(employeeId: string): Promise<{ deletedCount: number }> {
+        // 삭제 전에 개수 조회
+        const existingTokens = await this.employeeTokenManagementContext.직원별_토큰_관계_조회(employeeId);
+        const deletedCount = existingTokens.length;
+
+        // 모든 토큰 삭제
+        await this.employeeTokenManagementContext.직원의_모든_토큰_관계_삭제(employeeId);
+
+        return { deletedCount };
+    }
+
+    /**
      * 직원별로 그룹핑된 토큰 관계 조회
      */
     async 직원별_그룹핑된_토큰_관계_조회(employeeId?: string): Promise<EmployeeTokenGroupedListResponseDto> {
