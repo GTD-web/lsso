@@ -22,6 +22,7 @@ import {
     CreateEmployeeResponseDto,
     TerminateEmployeeRequestDto,
     TerminateEmployeeResponseDto,
+    ExportAllDataResponseDto,
 } from '../dto';
 import { JwtAuthGuard } from '../../../../../libs/common/guards/jwt-auth.guard';
 import { User, AuthenticatedUser } from '../../../../../libs/common/decorators/user.decorator';
@@ -397,5 +398,43 @@ export class OrganizationInformationApplicationController {
         @Body() terminateEmployeeDto: TerminateEmployeeRequestDto,
     ): Promise<TerminateEmployeeResponseDto> {
         return await this.organizationInformationApplicationService.직원을_퇴사처리한다(terminateEmployeeDto);
+    }
+
+    @Get('export/all')
+    @Public()
+    @HttpCode(HttpStatus.OK)
+    @ApiOperation({
+        summary: '전체 조직 데이터 Export (마이그레이션용)',
+        description:
+            '5개 테이블(departments, employees, positions, ranks, employee_department_positions)의 전체 데이터를 ID 값을 포함하여 그대로 조회합니다. 마이그레이션 목적으로 사용됩니다.',
+    })
+    @ApiResponse({
+        status: 200,
+        description: '전체 조직 데이터 조회 성공',
+        type: ExportAllDataResponseDto,
+    })
+    @ApiResponse({
+        status: 404,
+        description: '데이터 조회 실패',
+        schema: {
+            type: 'object',
+            properties: {
+                statusCode: { type: 'number', example: 404 },
+                message: { type: 'string', example: '조직 데이터를 조회할 수 없습니다.' },
+                error: { type: 'string', example: 'Not Found' },
+            },
+        },
+    })
+    async exportAllOrganizationData(): Promise<ExportAllDataResponseDto> {
+        console.log('[Export All Data] 전체 조직 데이터 조회 시작');
+        const result = await this.organizationInformationApplicationService.전체_조직_데이터를_조회한다();
+        console.log('[Export All Data] 조회 완료:', {
+            departments: result.totalCounts.departments,
+            employees: result.totalCounts.employees,
+            positions: result.totalCounts.positions,
+            ranks: result.totalCounts.ranks,
+            employeeDepartmentPositions: result.totalCounts.employeeDepartmentPositions,
+        });
+        return result;
     }
 }

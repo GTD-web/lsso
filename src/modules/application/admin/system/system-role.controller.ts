@@ -5,7 +5,7 @@ import { SystemApplicationService } from './system-application.service';
 import { CreateSystemRoleDto, UpdateSystemRoleDto, SystemRoleResponseDto } from './dto';
 
 @ApiTags('Admin - 시스템 역할 관리')
-@ApiBearerAuth()
+// @ApiBearerAuth()
 @Controller('admin/system-roles')
 export class SystemRoleController {
     constructor(private readonly systemApplicationService: SystemApplicationService) {}

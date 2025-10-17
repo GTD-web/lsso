@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString, IsOptional, IsUUID } from 'class-validator';
+import { IsString, IsOptional, IsUUID, IsArray } from 'class-validator';
 
 export class CreateEmployeeSystemRoleDto {
     @ApiProperty({ description: '직원 ID', example: 'uuid-employee-id' })
@@ -126,4 +126,29 @@ export class EmployeeSystemRoleGroupedListResponseDto {
 
     @ApiProperty({ description: '전체 관계 수' })
     totalRelations: number;
+}
+
+export class BulkUpdateEmployeeSystemRolesDto {
+    @ApiProperty({ description: '직원 ID', example: 'uuid-employee-id' })
+    @IsUUID()
+    employeeId: string;
+
+    @ApiProperty({ description: '시스템 역할 ID 목록', type: [String], example: ['uuid-1', 'uuid-2'] })
+    @IsArray()
+    @IsUUID('4', { each: true })
+    systemRoleIds: string[];
+}
+
+export class BulkUpdateEmployeeSystemRolesResultDto {
+    @ApiProperty({ description: '직원 ID' })
+    employeeId: string;
+
+    @ApiProperty({ description: '삭제된 역할 수' })
+    deletedCount: number;
+
+    @ApiProperty({ description: '추가된 역할 수' })
+    addedCount: number;
+
+    @ApiProperty({ description: '할당된 시스템 역할 목록', type: [EmployeeSystemRoleListResponseDto] })
+    systemRoles: EmployeeSystemRoleListResponseDto[];
 }

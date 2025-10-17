@@ -82,7 +82,6 @@ export class SystemApplicationService {
                 domain: updateDto.domain,
                 allowedOrigin: updateDto.allowedOrigin,
                 healthCheckUrl: updateDto.healthCheckUrl,
-                isActive: updateDto.isActive,
             });
             return this.시스템_엔티티를_DTO로_변환(updatedSystem);
         } catch (error) {
@@ -93,6 +92,18 @@ export class SystemApplicationService {
                 throw new NotFoundException('해당 시스템을 찾을 수 없습니다.');
             }
             throw new ConflictException('시스템 수정에 실패했습니다.');
+        }
+    }
+
+    async 시스템활성상태변경(id: string, isActive: boolean): Promise<SystemResponseDto> {
+        try {
+            const updatedSystem = await this.시스템관리컨텍스트서비스.시스템_활성상태를_변경한다(id, isActive);
+            return this.시스템_엔티티를_DTO로_변환(updatedSystem);
+        } catch (error) {
+            if (error.message?.includes('해당 시스템을 찾을 수 없습니다')) {
+                throw new NotFoundException('해당 시스템을 찾을 수 없습니다.');
+            }
+            throw new NotFoundException('시스템 활성 상태 변경에 실패했습니다.');
         }
     }
 
@@ -210,7 +221,7 @@ export class SystemApplicationService {
 
     // ==================== 헬퍼 메서드 ====================
 
-    private 시스템_엔티티를_DTO로_변환(system: System): SystemResponseDto {
+    private 시스템_엔티티를_DTO로_변환(system: any): SystemResponseDto {
         return {
             id: system.id,
             clientId: system.clientId,
@@ -221,6 +232,7 @@ export class SystemApplicationService {
             allowedOrigin: system.allowedOrigin,
             healthCheckUrl: system.healthCheckUrl,
             isActive: system.isActive,
+            roles: system.roles ? system.roles.map((role: SystemRole) => this.시스템롤_엔티티를_DTO로_변환(role)) : [],
             createdAt: system.createdAt,
             updatedAt: system.updatedAt,
         };

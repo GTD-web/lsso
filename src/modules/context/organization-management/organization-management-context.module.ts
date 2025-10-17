@@ -8,6 +8,9 @@ import { DomainPositionModule } from '../../domain/position/position.module';
 import { DomainRankModule } from '../../domain/rank/rank.module';
 import { DomainEmployeeDepartmentPositionModule } from '../../domain/employee-department-position/employee-department-position.module';
 import { DomainEmployeeRankHistoryModule } from '../../domain/employee-rank-history/employee-rank-history.module';
+import { DomainEmployeeTokenModule } from '../../domain/employee-token/employee-token.module';
+import { DomainEmployeeFcmTokenModule } from '../../domain/employee-fcm-token/employee-fcm-token.module';
+import { DomainEmployeeSystemRoleModule } from '../../domain/employee-system-role/employee-system-role.module';
 
 @Module({
     imports: [
@@ -17,6 +20,9 @@ import { DomainEmployeeRankHistoryModule } from '../../domain/employee-rank-hist
         DomainRankModule,
         DomainEmployeeDepartmentPositionModule,
         DomainEmployeeRankHistoryModule,
+        DomainEmployeeTokenModule,
+        DomainEmployeeFcmTokenModule,
+        DomainEmployeeSystemRoleModule,
     ],
     providers: [OrganizationManagementContextService],
     exports: [OrganizationManagementContextService],

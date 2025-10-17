@@ -2,10 +2,10 @@ import { Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards } f
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam, ApiQuery, ApiBody } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../../../../libs/common/guards/jwt-auth.guard';
 import { SystemApplicationService } from './system-application.service';
-import { CreateSystemDto, UpdateSystemDto, SystemResponseDto } from './dto';
+import { CreateSystemDto, UpdateSystemDto, UpdateSystemStatusDto, SystemResponseDto } from './dto';
 
 @ApiTags('Admin - 시스템 관리')
-@ApiBearerAuth()
+// @ApiBearerAuth()
 @Controller('admin/systems')
 export class SystemController {
     constructor(private readonly systemApplicationService: SystemApplicationService) {}
@@ -59,6 +59,22 @@ export class SystemController {
     @ApiParam({ name: 'id', description: '시스템 ID' })
     async updateSystem(@Param('id') id: string, @Body() updateSystemDto: UpdateSystemDto): Promise<SystemResponseDto> {
         return await this.systemApplicationService.시스템수정(id, updateSystemDto);
+    }
+
+    @Patch(':id/status')
+    @ApiOperation({
+        summary: '시스템 활성화 상태 변경',
+        description: '시스템의 활성화/비활성화 상태를 변경합니다.',
+    })
+    @ApiBody({ type: UpdateSystemStatusDto })
+    @ApiResponse({ status: 200, type: SystemResponseDto })
+    @ApiResponse({ status: 404, description: '시스템을 찾을 수 없음' })
+    @ApiParam({ name: 'id', description: '시스템 ID' })
+    async updateSystemStatus(
+        @Param('id') id: string,
+        @Body() updateStatusDto: UpdateSystemStatusDto,
+    ): Promise<SystemResponseDto> {
+        return await this.systemApplicationService.시스템활성상태변경(id, updateStatusDto.isActive);
     }
 
     @Delete(':id')

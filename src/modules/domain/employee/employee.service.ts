@@ -101,6 +101,16 @@ export class DomainEmployeeService extends BaseService<Employee> {
     }
 
     /**
+     * 재직상태별로 직원을 조회합니다
+     */
+    async findByStatus(status: EmployeeStatus): Promise<Employee[]> {
+        return this.employeeRepository.findAll({
+            where: { status },
+            order: { employeeNumber: 'ASC' },
+        });
+    }
+
+    /**
      * 직원번호 패턴으로 직원을 조회합니다
      * @param pattern 직원번호 패턴 (예: "25" - 2025년도 직원들)
      */

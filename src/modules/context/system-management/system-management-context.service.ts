@@ -106,23 +106,45 @@ export class SystemManagementContextService {
 
         const savedSystem = await this.시스템서비스.save(systemData);
 
-        // 원본 시크릿과 함께 반환
+        // 원본 시크릿과 함께 반환 (새로 생성된 시스템이므로 역할은 빈 배열)
         return {
-            system: savedSystem,
+            system: { ...savedSystem, roles: [] },
             originalSecret: clientSecret,
         };
     }
 
     async 모든_시스템을_조회한다(): Promise<any[]> {
-        return this.시스템서비스.findAllSystems();
+        const systems = await this.시스템서비스.findAllSystems();
+        // 각 시스템의 역할 정보 조회
+        const systemsWithRoles = await Promise.all(
+            systems.map(async (system) => {
+                const roles = await this.시스템역할서비스.findBySystemId(system.id);
+                return { ...system, roles };
+            }),
+        );
+        return systemsWithRoles;
     }
 
     async 시스템을_검색한다(query: string): Promise<any[]> {
-        return this.시스템서비스.searchSystems(query);
+        const systems = await this.시스템서비스.searchSystems(query);
+        // 각 시스템의 역할 정보 조회
+        const systemsWithRoles = await Promise.all(
+            systems.map(async (system) => {
+                const roles = await this.시스템역할서비스.findBySystemId(system.id);
+                return { ...system, roles };
+            }),
+        );
+        return systemsWithRoles;
     }
 
     async 시스템을_ID로_조회한다(systemId: string): Promise<any | null> {
-        return this.시스템서비스.findOne({ where: { id: systemId } });
+        const system = await this.시스템서비스.findOne({ where: { id: systemId } });
+        if (!system) {
+            return null;
+        }
+        // 시스템의 역할 정보 조회
+        const roles = await this.시스템역할서비스.findBySystemId(system.id);
+        return { ...system, roles };
     }
 
     async 시스템을_수정한다(
@@ -133,7 +155,6 @@ export class SystemManagementContextService {
             domain?: string;
             allowedOrigin?: string[];
             healthCheckUrl?: string;
-            isActive?: boolean;
         },
     ): Promise<any> {
         const system = await this.시스템서비스.findOne({ where: { id: systemId } });
@@ -149,7 +170,26 @@ export class SystemManagementContextService {
             }
         }
 
-        return this.시스템서비스.update(systemId, data);
+        const updatedSystem = await this.시스템서비스.update(systemId, data);
+
+        // 시스템의 역할 정보 조회
+        const roles = await this.시스템역할서비스.findBySystemId(systemId);
+
+        return { ...updatedSystem, roles };
+    }
+
+    async 시스템_활성상태를_변경한다(systemId: string, isActive: boolean): Promise<any> {
+        const system = await this.시스템서비스.findOne({ where: { id: systemId } });
+        if (!system) {
+            throw new Error('해당 시스템을 찾을 수 없습니다.');
+        }
+
+        const updatedSystem = await this.시스템서비스.update(systemId, { isActive });
+
+        // 시스템의 역할 정보 조회
+        const roles = await this.시스템역할서비스.findBySystemId(systemId);
+
+        return { ...updatedSystem, roles };
     }
 
     async 시스템을_삭제한다(systemId: string): Promise<void> {
@@ -174,8 +214,11 @@ export class SystemManagementContextService {
             clientSecret: hash,
         });
 
+        // 시스템의 역할 정보 조회
+        const roles = await this.시스템역할서비스.findBySystemId(systemId);
+
         return {
-            system: updatedSystem,
+            system: { ...updatedSystem, roles },
             originalSecret: clientSecret,
         };
     }

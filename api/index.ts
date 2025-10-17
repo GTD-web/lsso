@@ -22,6 +22,9 @@ async function createApp(): Promise<NestExpressApplication> {
         // CORS setup
 
         const ALLOW_ORIGINS = [
+            'https://lsso.vercel.app',
+            'https://lsso-git-dev-lumir-tech7s-projects.vercel.app',
+
             'https://lsso-admin.vercel.app',
             'https://lsso-admin-git-dev-lumir-tech7s-projects.vercel.app',
             'https://portal.lumir.space',

@@ -10,7 +10,7 @@ import {
 } from '../dto';
 
 @ApiTags('Admin - 직원 FCM 토큰 관리')
-@ApiBearerAuth()
+// @ApiBearerAuth()
 @Controller('admin/employee-fcm-tokens')
 export class EmployeeFcmTokenController {
     constructor(private readonly employeeFcmTokenApplicationService: EmployeeFcmTokenApplicationService) {}
@@ -25,12 +25,12 @@ export class EmployeeFcmTokenController {
         return await this.employeeFcmTokenApplicationService.직원별_그룹핑된_FCM_토큰_관계_조회(employeeId);
     }
 
-    @Get('stats')
-    @ApiOperation({ summary: 'FCM 토큰 통계 조회' })
-    @ApiResponse({ status: 200, type: EmployeeFcmTokenStatsDto })
-    async getStats(): Promise<EmployeeFcmTokenStatsDto> {
-        return await this.employeeFcmTokenApplicationService.FCM_토큰_통계_조회();
-    }
+    // @Get('stats')
+    // @ApiOperation({ summary: 'FCM 토큰 통계 조회' })
+    // @ApiResponse({ status: 200, type: EmployeeFcmTokenStatsDto })
+    // async getStats(): Promise<EmployeeFcmTokenStatsDto> {
+    //     return await this.employeeFcmTokenApplicationService.FCM_토큰_통계_조회();
+    // }
 
     @Get(':id')
     @ApiOperation({ summary: '직원 FCM 토큰 관계 상세 조회' })
@@ -41,27 +41,27 @@ export class EmployeeFcmTokenController {
         return await this.employeeFcmTokenApplicationService.직원_FCM_토큰_관계_상세_조회(id);
     }
 
-    @Post()
-    @ApiOperation({ summary: '직원 FCM 토큰 관계 생성' })
-    @ApiBody({ type: CreateEmployeeFcmTokenDto })
-    @ApiResponse({ status: 201, type: EmployeeFcmTokenListResponseDto })
-    @ApiResponse({ status: 400, description: '잘못된 요청' })
-    async create(@Body() createDto: CreateEmployeeFcmTokenDto): Promise<EmployeeFcmTokenListResponseDto> {
-        return await this.employeeFcmTokenApplicationService.직원_FCM_토큰_관계_생성(createDto);
-    }
+    // @Post()
+    // @ApiOperation({ summary: '직원 FCM 토큰 관계 생성' })
+    // @ApiBody({ type: CreateEmployeeFcmTokenDto })
+    // @ApiResponse({ status: 201, type: EmployeeFcmTokenListResponseDto })
+    // @ApiResponse({ status: 400, description: '잘못된 요청' })
+    // async create(@Body() createDto: CreateEmployeeFcmTokenDto): Promise<EmployeeFcmTokenListResponseDto> {
+    //     return await this.employeeFcmTokenApplicationService.직원_FCM_토큰_관계_생성(createDto);
+    // }
 
-    @Put(':id')
-    @ApiOperation({ summary: '직원 FCM 토큰 관계 수정' })
-    @ApiBody({ type: UpdateEmployeeFcmTokenDto })
-    @ApiResponse({ status: 200, type: EmployeeFcmTokenListResponseDto })
-    @ApiResponse({ status: 404, description: '직원 FCM 토큰 관계를 찾을 수 없음' })
-    @ApiParam({ name: 'id', description: '직원 FCM 토큰 관계 ID' })
-    async update(
-        @Param('id') id: string,
-        @Body() updateDto: UpdateEmployeeFcmTokenDto,
-    ): Promise<EmployeeFcmTokenListResponseDto> {
-        return await this.employeeFcmTokenApplicationService.직원_FCM_토큰_관계_수정(id, updateDto);
-    }
+    // @Put(':id')
+    // @ApiOperation({ summary: '직원 FCM 토큰 관계 수정' })
+    // @ApiBody({ type: UpdateEmployeeFcmTokenDto })
+    // @ApiResponse({ status: 200, type: EmployeeFcmTokenListResponseDto })
+    // @ApiResponse({ status: 404, description: '직원 FCM 토큰 관계를 찾을 수 없음' })
+    // @ApiParam({ name: 'id', description: '직원 FCM 토큰 관계 ID' })
+    // async update(
+    //     @Param('id') id: string,
+    //     @Body() updateDto: UpdateEmployeeFcmTokenDto,
+    // ): Promise<EmployeeFcmTokenListResponseDto> {
+    //     return await this.employeeFcmTokenApplicationService.직원_FCM_토큰_관계_수정(id, updateDto);
+    // }
 
     @Delete(':id')
     @ApiOperation({ summary: '직원 FCM 토큰 관계 삭제' })
@@ -80,24 +80,24 @@ export class EmployeeFcmTokenController {
         return await this.employeeFcmTokenApplicationService.직원_모든_FCM_토큰_관계_삭제(employeeId);
     }
 
-    @Put(':employeeId/:fcmTokenId/usage')
-    @ApiOperation({ summary: 'FCM 토큰 사용일 업데이트' })
-    @ApiResponse({ status: 200, type: EmployeeFcmTokenListResponseDto })
-    @ApiResponse({ status: 404, description: '직원 FCM 토큰 관계를 찾을 수 없음' })
-    @ApiParam({ name: 'employeeId', description: '직원 ID' })
-    @ApiParam({ name: 'fcmTokenId', description: 'FCM 토큰 ID' })
-    async updateUsage(
-        @Param('employeeId') employeeId: string,
-        @Param('fcmTokenId') fcmTokenId: string,
-    ): Promise<EmployeeFcmTokenListResponseDto> {
-        return await this.employeeFcmTokenApplicationService.FCM_토큰_사용일_업데이트(employeeId, fcmTokenId);
-    }
+    // @Put(':employeeId/:fcmTokenId/usage')
+    // @ApiOperation({ summary: 'FCM 토큰 사용일 업데이트' })
+    // @ApiResponse({ status: 200, type: EmployeeFcmTokenListResponseDto })
+    // @ApiResponse({ status: 404, description: '직원 FCM 토큰 관계를 찾을 수 없음' })
+    // @ApiParam({ name: 'employeeId', description: '직원 ID' })
+    // @ApiParam({ name: 'fcmTokenId', description: 'FCM 토큰 ID' })
+    // async updateUsage(
+    //     @Param('employeeId') employeeId: string,
+    //     @Param('fcmTokenId') fcmTokenId: string,
+    // ): Promise<EmployeeFcmTokenListResponseDto> {
+    //     return await this.employeeFcmTokenApplicationService.FCM_토큰_사용일_업데이트(employeeId, fcmTokenId);
+    // }
 
-    @Delete('cleanup/old-tokens')
-    @ApiOperation({ summary: '오래된 FCM 토큰 관계 정리' })
-    @ApiResponse({ status: 200, description: '정리 완료' })
-    @ApiQuery({ name: 'cutoffDays', required: false, description: '기준 일수 (기본: 30일)' })
-    async cleanupOldTokens(@Query('cutoffDays') cutoffDays?: number): Promise<{ deletedCount: number }> {
-        return await this.employeeFcmTokenApplicationService.오래된_FCM_토큰_관계_정리(cutoffDays);
-    }
+    // @Delete('cleanup/old-tokens')
+    // @ApiOperation({ summary: '오래된 FCM 토큰 관계 정리' })
+    // @ApiResponse({ status: 200, description: '정리 완료' })
+    // @ApiQuery({ name: 'cutoffDays', required: false, description: '기준 일수 (기본: 30일)' })
+    // async cleanupOldTokens(@Query('cutoffDays') cutoffDays?: number): Promise<{ deletedCount: number }> {
+    //     return await this.employeeFcmTokenApplicationService.오래된_FCM_토큰_관계_정리(cutoffDays);
+    // }
 }

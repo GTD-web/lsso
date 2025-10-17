@@ -31,9 +31,4 @@ export class UpdateSystemDto {
     @IsOptional()
     @IsUrl()
     healthCheckUrl?: string;
-
-    @ApiPropertyOptional({ description: '활성화 상태', example: true })
-    @IsOptional()
-    @IsBoolean()
-    isActive?: boolean;
 }

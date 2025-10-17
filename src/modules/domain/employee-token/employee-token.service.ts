@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { DomainEmployeeTokenRepository } from './employee-token.repository';
 import { BaseService } from '../../../../libs/common/services/base.service';
 import { EmployeeToken } from '../../../../libs/database/entities';
+import { In } from 'typeorm';
 
 @Injectable()
 export class DomainEmployeeTokenService extends BaseService<EmployeeToken> {
@@ -13,6 +14,16 @@ export class DomainEmployeeTokenService extends BaseService<EmployeeToken> {
     async findByEmployeeId(employeeId: string): Promise<EmployeeToken[]> {
         return this.employeeTokenRepository.findAll({
             where: { employeeId },
+            relations: ['token'],
+        });
+    }
+
+    // 여러 직원의 토큰 목록을 일괄 조회
+    async findByEmployeeIds(employeeIds: string[]): Promise<EmployeeToken[]> {
+        if (employeeIds.length === 0) return [];
+        return this.employeeTokenRepository.findAll({
+            where: { employeeId: In(employeeIds) },
+            relations: ['token'],
         });
     }
 
@@ -51,13 +62,13 @@ export class DomainEmployeeTokenService extends BaseService<EmployeeToken> {
             const relations = await this.employeeTokenRepository.findAll({
                 where: { tokenId },
             });
-            
+
             for (const relation of relations) {
                 await this.employeeTokenRepository.delete(relation.id);
                 deletedCount++;
             }
         }
-        
+
         return { deletedCount };
     }
 }

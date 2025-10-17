@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { SystemRoleResponseDto } from './system-role-response.dto';
 
 export class SystemResponseDto {
     @ApiProperty({ description: '시스템 ID' })
@@ -27,6 +28,9 @@ export class SystemResponseDto {
 
     @ApiProperty({ description: '활성화 상태' })
     isActive: boolean;
+
+    @ApiProperty({ description: '시스템 역할 목록', type: [SystemRoleResponseDto] })
+    roles: SystemRoleResponseDto[];
 
     @ApiProperty({ description: '생성일시' })
     createdAt: Date;
