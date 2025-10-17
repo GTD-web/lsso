@@ -1,10 +1,12 @@
-import { Controller, Get, Post, Delete, Param, Body, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Param, Body, Query, UseGuards, Put } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam, ApiQuery, ApiBody } from '@nestjs/swagger';
 import { EmployeeSystemRoleApplicationService } from '../services/employee-system-role-application.service';
 import {
     CreateEmployeeSystemRoleDto,
     EmployeeSystemRoleListResponseDto,
     EmployeeSystemRoleGroupedListResponseDto,
+    BulkUpdateEmployeeSystemRolesDto,
+    BulkUpdateEmployeeSystemRolesResultDto,
 } from '../dto';
 
 @ApiTags('Admin - 직원 시스템 역할 관리')
@@ -56,5 +58,17 @@ export class EmployeeSystemRoleController {
     @ApiParam({ name: 'employeeId', description: '직원 ID' })
     async removeAllByEmployee(@Param('employeeId') employeeId: string): Promise<{ message: string }> {
         return await this.employeeSystemRoleApplicationService.직원_모든_시스템_역할_해제(employeeId);
+    }
+
+    @Put('employee/bulk')
+    @ApiOperation({ summary: '직원 시스템 역할 일괄 업데이트 (기존 전체 삭제 후 새로 할당)' })
+    @ApiBody({ type: BulkUpdateEmployeeSystemRolesDto })
+    @ApiResponse({ status: 200, description: '역할 일괄 업데이트 성공', type: BulkUpdateEmployeeSystemRolesResultDto })
+    @ApiResponse({ status: 400, description: '잘못된 요청' })
+    @ApiResponse({ status: 404, description: '직원 또는 시스템 역할을 찾을 수 없음' })
+    async bulkUpdateEmployeeSystemRoles(
+        @Body() dto: BulkUpdateEmployeeSystemRolesDto,
+    ): Promise<BulkUpdateEmployeeSystemRolesResultDto> {
+        return await this.employeeSystemRoleApplicationService.직원_시스템_역할_일괄_업데이트(dto);
     }
 }

@@ -14,6 +14,8 @@ import {
     EmployeeResponseDto,
     EmployeeListResponseDto,
     NextEmployeeNumberResponseDto,
+    EmployeeDetailInfoDto,
+    EmployeeDetailListResponseDto,
     CreatePositionRequestDto,
     UpdatePositionRequestDto,
     PositionResponseDto,
@@ -31,6 +33,7 @@ import { Department } from 'src/modules/domain/department/department.entity';
 import { Employee } from 'src/modules/domain/employee/employee.entity';
 import { Position } from 'src/modules/domain/position/position.entity';
 import { Rank } from 'src/modules/domain/rank/rank.entity';
+import { EmployeeStatus } from 'libs/common/enums';
 
 @Injectable()
 export class OrganizationApplicationService {
@@ -120,6 +123,13 @@ export class OrganizationApplicationService {
         };
     }
 
+    async 직원상세목록조회(status?: EmployeeStatus): Promise<EmployeeDetailListResponseDto> {
+        const employeesWithDetails = await this.organizationContextService.전체_직원상세정보를_조회한다(status);
+        return {
+            employees: employeesWithDetails.map(this.직원상세정보를_응답DTO로_변환한다),
+        };
+    }
+
     async 다음직원번호조회(year: number): Promise<NextEmployeeNumberResponseDto> {
         return await this.organizationContextService.연도별_다음직원번호를_조회한다(year);
     }
@@ -140,6 +150,9 @@ export class OrganizationApplicationService {
             gender: createEmployeeDto.gender,
             hireDate: new Date(createEmployeeDto.hireDate),
             currentRankId: createEmployeeDto.currentRankId,
+            departmentId: createEmployeeDto.departmentId,
+            positionId: createEmployeeDto.positionId,
+            isManager: createEmployeeDto.isManager,
         });
 
         return this.직원을_응답DTO로_변환한다(result.employee);
@@ -148,12 +161,20 @@ export class OrganizationApplicationService {
     async 직원수정(id: string, updateEmployeeDto: UpdateEmployeeRequestDto): Promise<EmployeeResponseDto> {
         // 완전한 비즈니스 로직 사이클 실행 (존재 확인 → 검증 → 수정 → 반환)
         const updatedEmployee = await this.organizationContextService.직원정보를_수정한다(id, {
-            ...updateEmployeeDto,
+            name: updateEmployeeDto.name,
+            email: updateEmployeeDto.email,
+            phoneNumber: updateEmployeeDto.phoneNumber,
             dateOfBirth: updateEmployeeDto.dateOfBirth ? new Date(updateEmployeeDto.dateOfBirth) : undefined,
+            gender: updateEmployeeDto.gender,
             hireDate: updateEmployeeDto.hireDate ? new Date(updateEmployeeDto.hireDate) : undefined,
+            status: updateEmployeeDto.status,
+            currentRankId: updateEmployeeDto.currentRankId,
             terminationDate: updateEmployeeDto.terminationDate
                 ? new Date(updateEmployeeDto.terminationDate)
                 : undefined,
+            departmentId: updateEmployeeDto.departmentId,
+            positionId: updateEmployeeDto.positionId,
+            isManager: updateEmployeeDto.isManager,
         });
 
         return this.직원을_응답DTO로_변환한다(updatedEmployee);
@@ -323,6 +344,28 @@ export class OrganizationApplicationService {
         updatedAt: history.updatedAt,
     });
 
+    private 직원상세정보를_응답DTO로_변환한다 = (employeeWithDetails: any): EmployeeDetailInfoDto => ({
+        id: employeeWithDetails.id,
+        employeeNumber: employeeWithDetails.employeeNumber,
+        name: employeeWithDetails.name,
+        email: employeeWithDetails.email,
+        phoneNumber: employeeWithDetails.phoneNumber,
+        dateOfBirth: employeeWithDetails.dateOfBirth,
+        gender: employeeWithDetails.gender,
+        hireDate: employeeWithDetails.hireDate,
+        status: employeeWithDetails.status,
+        currentRankId: employeeWithDetails.currentRankId,
+        terminationDate: employeeWithDetails.terminationDate,
+        isInitialPasswordSet: employeeWithDetails.isInitialPasswordSet,
+        createdAt: employeeWithDetails.createdAt,
+        updatedAt: employeeWithDetails.updatedAt,
+        departments: employeeWithDetails.departments,
+        rank: employeeWithDetails.rank,
+        tokens: employeeWithDetails.tokens,
+        fcmTokens: employeeWithDetails.fcmTokens,
+        systemRoles: employeeWithDetails.systemRoles,
+    });
+
     private 부서_계층구조를_직원정보와_함께_변환한다(
         departments: Department[],
         employeesByDepartment: Map<string, { employees: Employee[]; departmentPositions: Map<string, any> }>,
@@ -385,5 +428,80 @@ export class OrganizationApplicationService {
         }
 
         return result.sort((a, b) => a.order - b.order);
+    }
+
+    // ==================== 직원 일괄 수정 관련 ====================
+
+    /**
+     * 직원 부서 일괄 수정
+     */
+    async 직원부서일괄수정(
+        employeeIds: string[],
+        departmentId: string,
+    ): Promise<{
+        successCount: number;
+        failCount: number;
+        successIds: string[];
+        failIds: string[];
+        errors?: { employeeId: string; message: string }[];
+    }> {
+        const result = await this.organizationContextService.직원_부서_일괄수정(employeeIds, departmentId);
+        return result;
+    }
+
+    /**
+     * 직원 직책 일괄 수정
+     */
+    async 직원직책일괄수정(
+        employeeIds: string[],
+        positionId: string,
+    ): Promise<{
+        successCount: number;
+        failCount: number;
+        successIds: string[];
+        failIds: string[];
+        errors?: { employeeId: string; message: string }[];
+    }> {
+        const result = await this.organizationContextService.직원_직책_일괄수정(employeeIds, positionId);
+        return result;
+    }
+
+    /**
+     * 직원 직급 일괄 수정
+     */
+    async 직원직급일괄수정(
+        employeeIds: string[],
+        rankId: string,
+    ): Promise<{
+        successCount: number;
+        failCount: number;
+        successIds: string[];
+        failIds: string[];
+        errors?: { employeeId: string; message: string }[];
+    }> {
+        const result = await this.organizationContextService.직원_직급_일괄수정(employeeIds, rankId);
+        return result;
+    }
+
+    /**
+     * 직원 재직상태 일괄 수정
+     */
+    async 직원재직상태일괄수정(
+        employeeIds: string[],
+        status: EmployeeStatus,
+        terminationDate?: Date,
+    ): Promise<{
+        successCount: number;
+        failCount: number;
+        successIds: string[];
+        failIds: string[];
+        errors?: { employeeId: string; message: string }[];
+    }> {
+        const result = await this.organizationContextService.직원_재직상태_일괄수정(
+            employeeIds,
+            status,
+            terminationDate,
+        );
+        return result;
     }
 }

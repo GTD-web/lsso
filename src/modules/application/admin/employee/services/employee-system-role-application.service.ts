@@ -7,6 +7,8 @@ import {
     EmployeeSystemRoleListResponseDto,
     EmployeeSystemRoleGroupedListResponseDto,
     EmployeeSystemRoleGroupedDto,
+    BulkUpdateEmployeeSystemRolesDto,
+    BulkUpdateEmployeeSystemRolesResultDto,
 } from '../dto';
 
 @Injectable()
@@ -227,6 +229,49 @@ export class EmployeeSystemRoleApplicationService {
             employees,
             totalEmployees: employees.length,
             totalRelations: relations.length,
+        };
+    }
+
+    /**
+     * 직원 시스템 역할 일괄 업데이트 (기존 전체 삭제 후 새로 할당)
+     */
+    async 직원_시스템_역할_일괄_업데이트(
+        dto: BulkUpdateEmployeeSystemRolesDto,
+    ): Promise<BulkUpdateEmployeeSystemRolesResultDto> {
+        const result = await this.employeeSystemRoleManagementContext.직원의_시스템_역할_일괄_업데이트(
+            dto.employeeId,
+            dto.systemRoleIds,
+        );
+
+        return {
+            employeeId: dto.employeeId,
+            deletedCount: result.deletedCount,
+            addedCount: result.addedCount,
+            systemRoles: result.systemRoles.map((relation) => ({
+                id: relation.id,
+                employeeId: relation.employeeId,
+                systemRoleId: relation.systemRoleId,
+                createdAt: relation.createdAt,
+                updatedAt: relation.updatedAt,
+                employee: relation.employee
+                    ? {
+                          id: relation.employee.id,
+                          name: relation.employee.name,
+                          employeeNumber: relation.employee.employeeNumber,
+                      }
+                    : undefined,
+                systemRole: relation.systemRole
+                    ? {
+                          id: relation.systemRole.id,
+                          roleName: relation.systemRole.roleName,
+                          roleCode: relation.systemRole.roleCode,
+                          system: {
+                              id: relation.systemRole.system.id,
+                              name: relation.systemRole.system.name,
+                          },
+                      }
+                    : undefined,
+            })),
         };
     }
 }

@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { DomainEmployeeSystemRoleRepository } from './employee-system-role.repository';
 import { BaseService } from '../../../../libs/common/services/base.service';
 import { EmployeeSystemRole } from './employee-system-role.entity';
+import { In } from 'typeorm';
 
 @Injectable()
 export class DomainEmployeeSystemRoleService extends BaseService<EmployeeSystemRole> {
@@ -16,6 +17,17 @@ export class DomainEmployeeSystemRoleService extends BaseService<EmployeeSystemR
     async findByEmployeeId(employeeId: string): Promise<EmployeeSystemRole[]> {
         return this.employeeSystemRoleRepository.findAll({
             where: { employeeId },
+            relations: ['systemRole', 'systemRole.system'],
+        });
+    }
+
+    /**
+     * 여러 직원의 시스템 역할 목록을 일괄 조회합니다
+     */
+    async findByEmployeeIds(employeeIds: string[]): Promise<EmployeeSystemRole[]> {
+        if (employeeIds.length === 0) return [];
+        return this.employeeSystemRoleRepository.findAll({
+            where: { employeeId: In(employeeIds) },
             relations: ['systemRole', 'systemRole.system'],
         });
     }

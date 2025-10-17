@@ -97,4 +97,35 @@ export class EmployeeSystemRoleManagementContextService {
     async 직원이_할당받은_시스템_역할_ID_목록_조회(employeeId: string): Promise<string[]> {
         return this.employeeSystemRoleService.getSystemRoleIdsByEmployeeId(employeeId);
     }
+
+    /**
+     * 직원의 시스템 역할을 일괄 업데이트합니다 (기존 전체 삭제 후 새로 할당)
+     */
+    async 직원의_시스템_역할_일괄_업데이트(
+        employeeId: string,
+        systemRoleIds: string[],
+    ): Promise<{ deletedCount: number; addedCount: number; systemRoles: EmployeeSystemRole[] }> {
+        // 1. 기존 역할 개수 조회
+        const existingRoles = await this.직원별_시스템_역할_조회(employeeId);
+        const deletedCount = existingRoles.length;
+
+        // 2. 기존 모든 시스템 역할 해제
+        await this.직원의_모든_시스템_역할_해제(employeeId);
+
+        // 3. 새로운 시스템 역할 할당
+        const addedRoles: EmployeeSystemRole[] = [];
+        for (const systemRoleId of systemRoleIds) {
+            const role = await this.직원에게_시스템_역할_할당(employeeId, systemRoleId);
+            addedRoles.push(role);
+        }
+
+        // 4. 할당된 역할 목록 조회 (관계 포함)
+        const systemRoles = await this.직원별_시스템_역할_조회(employeeId);
+
+        return {
+            deletedCount,
+            addedCount: addedRoles.length,
+            systemRoles,
+        };
+    }
 }

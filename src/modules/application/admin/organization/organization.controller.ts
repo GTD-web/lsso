@@ -15,6 +15,12 @@ import {
     EmployeeResponseDto,
     EmployeeListResponseDto,
     NextEmployeeNumberResponseDto,
+    EmployeeDetailListResponseDto,
+    BulkUpdateDepartmentRequestDto,
+    BulkUpdatePositionRequestDto,
+    BulkUpdateRankRequestDto,
+    BulkUpdateStatusRequestDto,
+    BulkUpdateResultDto,
     CreatePositionRequestDto,
     UpdatePositionRequestDto,
     PositionResponseDto,
@@ -27,6 +33,7 @@ import {
     PromoteEmployeeRequestDto,
     EmployeeRankHistoryResponseDto,
 } from './dto';
+import { EmployeeStatus } from '../../../../../libs/common/enums';
 
 @ApiTags('Admin - 조직 관리')
 // @ApiBearerAuth()
@@ -120,10 +127,20 @@ export class OrganizationController {
 
     // 직원 관리 API
     @Get('employees')
-    @ApiOperation({ summary: '직원 목록 조회' })
-    @ApiResponse({ status: 200, type: EmployeeListResponseDto })
-    async getEmployees(): Promise<EmployeeListResponseDto> {
-        return await this.organizationApplicationService.직원목록조회();
+    @ApiOperation({
+        summary: '직원 상세 목록 조회',
+        description:
+            '직원 목록을 부서, 직책, 직급, 토큰, FCM토큰, 시스템 역할 정보와 함께 조회합니다. 재직상태로 필터링할 수 있습니다.',
+    })
+    @ApiQuery({
+        name: 'status',
+        description: '재직상태 (재직중, 휴직, 퇴사)',
+        enum: EmployeeStatus,
+        required: false,
+    })
+    @ApiResponse({ status: 200, type: EmployeeDetailListResponseDto })
+    async getEmployees(@Query('status') status?: EmployeeStatus): Promise<EmployeeDetailListResponseDto> {
+        return await this.organizationApplicationService.직원상세목록조회(status);
     }
 
     @Get('employees/next-employee-number')
@@ -169,6 +186,48 @@ export class OrganizationController {
         @Body() updateEmployeeDto: UpdateEmployeeRequestDto,
     ): Promise<EmployeeResponseDto> {
         return await this.organizationApplicationService.직원수정(id, updateEmployeeDto);
+    }
+
+    // ==================== 직원 일괄 수정 ====================
+
+    @Patch('employees/bulk/department')
+    @ApiOperation({ summary: '직원 부서 일괄 수정' })
+    @ApiResponse({ status: 200, description: '부서 일괄 수정 성공', type: BulkUpdateResultDto })
+    @ApiResponse({ status: 400, description: '잘못된 요청' })
+    @ApiResponse({ status: 404, description: '부서를 찾을 수 없음' })
+    async bulkUpdateEmployeeDepartment(@Body() dto: BulkUpdateDepartmentRequestDto): Promise<BulkUpdateResultDto> {
+        return await this.organizationApplicationService.직원부서일괄수정(dto.employeeIds, dto.departmentId);
+    }
+
+    @Patch('employees/bulk/position')
+    @ApiOperation({ summary: '직원 직책 일괄 수정' })
+    @ApiResponse({ status: 200, description: '직책 일괄 수정 성공', type: BulkUpdateResultDto })
+    @ApiResponse({ status: 400, description: '잘못된 요청' })
+    @ApiResponse({ status: 404, description: '직책을 찾을 수 없음' })
+    async bulkUpdateEmployeePosition(@Body() dto: BulkUpdatePositionRequestDto): Promise<BulkUpdateResultDto> {
+        return await this.organizationApplicationService.직원직책일괄수정(dto.employeeIds, dto.positionId);
+    }
+
+    @Patch('employees/bulk/rank')
+    @ApiOperation({ summary: '직원 직급 일괄 수정' })
+    @ApiResponse({ status: 200, description: '직급 일괄 수정 성공', type: BulkUpdateResultDto })
+    @ApiResponse({ status: 400, description: '잘못된 요청' })
+    @ApiResponse({ status: 404, description: '직급을 찾을 수 없음' })
+    async bulkUpdateEmployeeRank(@Body() dto: BulkUpdateRankRequestDto): Promise<BulkUpdateResultDto> {
+        return await this.organizationApplicationService.직원직급일괄수정(dto.employeeIds, dto.rankId);
+    }
+
+    @Patch('employees/bulk/status')
+    @ApiOperation({ summary: '직원 재직상태 일괄 수정' })
+    @ApiResponse({ status: 200, description: '재직상태 일괄 수정 성공', type: BulkUpdateResultDto })
+    @ApiResponse({ status: 400, description: '잘못된 요청' })
+    async bulkUpdateEmployeeStatus(@Body() dto: BulkUpdateStatusRequestDto): Promise<BulkUpdateResultDto> {
+        const terminationDate = dto.terminationDate ? new Date(dto.terminationDate) : undefined;
+        return await this.organizationApplicationService.직원재직상태일괄수정(
+            dto.employeeIds,
+            dto.status,
+            terminationDate,
+        );
     }
 
     @Delete('employees/:id')

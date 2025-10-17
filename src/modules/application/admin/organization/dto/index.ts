@@ -18,6 +18,13 @@ export {
     EmployeeResponseDto,
     EmployeeListResponseDto,
     NextEmployeeNumberResponseDto,
+    EmployeeDetailInfoDto,
+    EmployeeDetailListResponseDto,
+    BulkUpdateDepartmentRequestDto,
+    BulkUpdatePositionRequestDto,
+    BulkUpdateRankRequestDto,
+    BulkUpdateStatusRequestDto,
+    BulkUpdateResultDto,
 } from './employee.dto';
 
 // Position DTOs

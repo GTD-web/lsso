@@ -6,6 +6,9 @@ import { DomainRankService } from '../../domain/rank/rank.service';
 import { DomainEmployeeDepartmentPositionService } from '../../domain/employee-department-position/employee-department-position.service';
 import { DomainEmployeeRankHistoryService } from '../../domain/employee-rank-history/employee-rank-history.service';
 import { DomainEmployeeValidationService } from '../../domain/employee/employee-validation.service';
+import { DomainEmployeeTokenService } from '../../domain/employee-token/employee-token.service';
+import { DomainEmployeeFcmTokenService } from '../../domain/employee-fcm-token/employee-fcm-token.service';
+import { DomainEmployeeSystemRoleService } from '../../domain/employee-system-role/employee-system-role.service';
 import {
     Department,
     Employee,
@@ -22,6 +25,7 @@ import {
     PositionNotFoundError,
 } from '../../domain/employee/employee.errors';
 import { EmployeeStatus, Gender } from '../../../../libs/common/enums';
+import { DepartmentType } from '../../domain/department/department.entity';
 
 /**
  * 조직 관리 통합 컨텍스트 서비스
@@ -37,6 +41,9 @@ export class OrganizationManagementContextService {
         private readonly 직원부서직책서비스: DomainEmployeeDepartmentPositionService,
         private readonly 직원직급이력서비스: DomainEmployeeRankHistoryService,
         private readonly 직원검증서비스: DomainEmployeeValidationService,
+        private readonly 직원토큰서비스: DomainEmployeeTokenService,
+        private readonly 직원FCM토큰서비스: DomainEmployeeFcmTokenService,
+        private readonly 직원시스템역할서비스: DomainEmployeeSystemRoleService,
     ) {}
 
     // ==================== 직원 조회 관련 ====================
@@ -113,6 +120,157 @@ export class OrganizationManagementContextService {
         return this.직원부서직책서비스.findAll();
     }
 
+    /**
+     * 전체 직원 정보를 상세하게 조회한다 (관리자용) - 최적화 버전
+     * 부서, 직책, 직급, 토큰, FCM토큰, 시스템 역할 정보를 포함하여 조회
+     * N+1 쿼리를 방지하기 위해 배치 조회 사용
+     *
+     * @param status 재직상태 (옵셔널)
+     * @returns 직원 상세 정보 배열
+     */
+    async 전체_직원상세정보를_조회한다(status?: EmployeeStatus): Promise<any[]> {
+        // 1. 직원 목록 조회 (재직상태 필터링)
+        let employees: Employee[];
+        if (status) {
+            employees = await this.직원서비스.findByStatus(status);
+        } else {
+            employees = await this.직원서비스.findAll();
+        }
+
+        if (employees.length === 0) {
+            return [];
+        }
+
+        const employeeIds = employees.map((emp) => emp.id);
+
+        // 2. 모든 관련 데이터를 배치로 조회 (병렬 처리)
+        const [allAssignments, allEmployeeTokens, allEmployeeFcmTokens, allEmployeeSystemRoles] = await Promise.all([
+            this.직원부서직책서비스.findAllByEmployeeIds(employeeIds),
+            this.직원토큰서비스.findByEmployeeIds(employeeIds),
+            this.직원FCM토큰서비스.findByEmployeeIds(employeeIds),
+            this.직원시스템역할서비스.findByEmployeeIds(employeeIds),
+        ]);
+
+        // 3. 필요한 부서, 직책, 직급 ID 수집
+        const departmentIds = [...new Set(allAssignments.map((a) => a.departmentId))];
+        const positionIds = [...new Set(allAssignments.map((a) => a.positionId))];
+        const rankIds = [...new Set(employees.map((e) => e.currentRankId).filter((id) => id))];
+
+        // 4. 부서, 직책, 직급 정보를 배치로 조회 (병렬 처리)
+        const [departments, positions, ranks] = await Promise.all([
+            departmentIds.length > 0 ? this.부서서비스.findByIds(departmentIds) : Promise.resolve([]),
+            positionIds.length > 0 ? this.직책서비스.findByIds(positionIds) : Promise.resolve([]),
+            rankIds.length > 0 ? this.직급서비스.findByIds(rankIds) : Promise.resolve([]),
+        ]);
+
+        // 5. Map으로 빠른 조회를 위한 인덱싱
+        const departmentMap = new Map(departments.map((d) => [d.id, d]));
+        const positionMap = new Map(positions.map((p) => [p.id, p]));
+        const rankMap = new Map(ranks.map((r) => [r.id, r]));
+
+        // 직원별 데이터를 그룹화
+        const assignmentsByEmployee = new Map<string, typeof allAssignments>();
+        const tokensByEmployee = new Map<string, typeof allEmployeeTokens>();
+        const fcmTokensByEmployee = new Map<string, typeof allEmployeeFcmTokens>();
+        const systemRolesByEmployee = new Map<string, typeof allEmployeeSystemRoles>();
+
+        allAssignments.forEach((assignment) => {
+            if (!assignmentsByEmployee.has(assignment.employeeId)) {
+                assignmentsByEmployee.set(assignment.employeeId, []);
+            }
+            assignmentsByEmployee.get(assignment.employeeId)!.push(assignment);
+        });
+
+        allEmployeeTokens.forEach((token) => {
+            if (!tokensByEmployee.has(token.employeeId)) {
+                tokensByEmployee.set(token.employeeId, []);
+            }
+            tokensByEmployee.get(token.employeeId)!.push(token);
+        });
+
+        allEmployeeFcmTokens.forEach((fcmToken) => {
+            if (!fcmTokensByEmployee.has(fcmToken.employeeId)) {
+                fcmTokensByEmployee.set(fcmToken.employeeId, []);
+            }
+            fcmTokensByEmployee.get(fcmToken.employeeId)!.push(fcmToken);
+        });
+
+        allEmployeeSystemRoles.forEach((systemRole) => {
+            if (!systemRolesByEmployee.has(systemRole.employeeId)) {
+                systemRolesByEmployee.set(systemRole.employeeId, []);
+            }
+            systemRolesByEmployee.get(systemRole.employeeId)!.push(systemRole);
+        });
+
+        // 6. 직원별 상세 정보 조합 (메모리에서 처리)
+        const employeesWithDetails = employees.map((employee) => {
+            // 부서/직책 배치 정보
+            const assignments = assignmentsByEmployee.get(employee.id) || [];
+            const departmentsInfo = assignments.map((assignment) => {
+                const department = departmentMap.get(assignment.departmentId);
+                const position = positionMap.get(assignment.positionId);
+                return {
+                    departmentId: department?.id || '',
+                    departmentName: department?.departmentName || '',
+                    positionId: position?.id || '',
+                    positionTitle: position?.positionTitle || '',
+                    isManager: assignment.isManager,
+                };
+            });
+
+            // 직급 정보
+            let rankInfo = null;
+            if (employee.currentRankId) {
+                const rankEntity = rankMap.get(employee.currentRankId);
+                if (rankEntity) {
+                    rankInfo = {
+                        rankId: rankEntity.id,
+                        rankName: rankEntity.rankName,
+                        rankCode: rankEntity.rankCode,
+                        level: rankEntity.level,
+                    };
+                }
+            }
+
+            // 인증 토큰 정보
+            const employeeTokensList = tokensByEmployee.get(employee.id) || [];
+            const tokensInfo = employeeTokensList.map((et) => ({
+                tokenId: et.tokenId,
+                accessToken: et.token?.accessToken || '',
+                tokenExpiresAt: et.token?.tokenExpiresAt || new Date(),
+            }));
+
+            // FCM 토큰 정보
+            const employeeFcmTokensList = fcmTokensByEmployee.get(employee.id) || [];
+            const fcmTokensInfo = employeeFcmTokensList.map((eft) => ({
+                fcmTokenId: eft.fcmTokenId,
+                fcmToken: eft.fcmToken?.fcmToken || '',
+                deviceType: eft.fcmToken?.deviceType || '',
+            }));
+
+            // 시스템 역할 정보
+            const employeeSystemRolesList = systemRolesByEmployee.get(employee.id) || [];
+            const systemRolesInfo = employeeSystemRolesList.map((esr) => ({
+                systemRoleId: esr.systemRoleId,
+                systemId: esr.systemRole?.systemId || '',
+                systemName: esr.systemRole?.system?.name || '',
+                roleName: esr.systemRole?.roleName || '',
+                roleCode: esr.systemRole?.roleCode || '',
+            }));
+
+            return {
+                ...employee,
+                departments: departmentsInfo,
+                rank: rankInfo,
+                tokens: tokensInfo,
+                fcmTokens: fcmTokensInfo,
+                systemRoles: systemRolesInfo,
+            };
+        });
+
+        return employeesWithDetails;
+    }
+
     // ==================== 직책 조회 관련 ====================
 
     async 모든_직책을_조회한다(): Promise<Position[]> {
@@ -152,7 +310,74 @@ export class OrganizationManagementContextService {
     // ==================== 직원 수정/삭제 관련 ====================
 
     async 직원정보를_수정한다(employeeId: string, 수정정보: any): Promise<Employee> {
-        return this.직원서비스.updateEmployee(employeeId, 수정정보);
+        // 1. 직원 기본 정보 수정
+        const updatedEmployee = await this.직원서비스.updateEmployee(employeeId, 수정정보);
+
+        // 2. 배치 정보 업데이트 (부서 또는 직책 정보가 제공된 경우)
+        const hasDepartmentId = 수정정보.departmentId !== undefined;
+        const hasPositionId = 수정정보.positionId !== undefined;
+
+        if (hasDepartmentId || hasPositionId) {
+            // 기존 배치 정보 조회
+            const existingAssignments = await this.직원부서직책서비스.findAllByEmployeeId(employeeId);
+
+            if (existingAssignments.length > 0) {
+                // 각 배치의 부서 정보 조회하여 DEPARTMENT 타입 찾기
+                const departmentAssignments = [];
+                for (const assignment of existingAssignments) {
+                    const department = await this.부서서비스.findById(assignment.departmentId);
+                    if (department.type === DepartmentType.DEPARTMENT) {
+                        departmentAssignments.push({ assignment, department });
+                    }
+                }
+
+                if (departmentAssignments.length > 0) {
+                    // DEPARTMENT 타입의 배치가 있는 경우 - 첫 번째를 업데이트
+                    const { assignment: currentAssignment } = departmentAssignments[0];
+
+                    const newDepartmentId = hasDepartmentId ? 수정정보.departmentId : currentAssignment.departmentId;
+                    const newPositionId = hasPositionId ? 수정정보.positionId : currentAssignment.positionId;
+                    const newIsManager =
+                        수정정보.isManager !== undefined ? 수정정보.isManager : currentAssignment.isManager;
+
+                    // 부서/직책 존재 검증
+                    await this.부서서비스.findById(newDepartmentId);
+                    await this.직책서비스.findById(newPositionId);
+
+                    // 기존 배치 업데이트
+                    await this.직원배치정보를_수정한다(currentAssignment.id, {
+                        departmentId: newDepartmentId,
+                        positionId: newPositionId,
+                        isManager: newIsManager,
+                    });
+                } else if (hasDepartmentId && hasPositionId) {
+                    // DEPARTMENT 타입의 배치가 없고 부서와 직책이 모두 제공된 경우 - 새로운 배치 생성
+                    await this.부서서비스.findById(수정정보.departmentId);
+                    await this.직책서비스.findById(수정정보.positionId);
+
+                    await this.직원을_부서에_배치한다({
+                        employeeId,
+                        departmentId: 수정정보.departmentId,
+                        positionId: 수정정보.positionId,
+                        isManager: 수정정보.isManager,
+                    });
+                }
+            } else if (hasDepartmentId && hasPositionId) {
+                // 기존 배치가 없고 부서와 직책이 모두 제공된 경우 - 새로운 배치 생성
+                await this.부서서비스.findById(수정정보.departmentId);
+                await this.직책서비스.findById(수정정보.positionId);
+
+                await this.직원을_부서에_배치한다({
+                    employeeId,
+                    departmentId: 수정정보.departmentId,
+                    positionId: 수정정보.positionId,
+                    isManager: 수정정보.isManager,
+                });
+            }
+            // 기존 배치가 없는데 부서나 직책 중 하나만 제공된 경우는 무시
+        }
+
+        return updatedEmployee;
     }
 
     // ==================== 직원 번호 생성 관련 ====================
@@ -200,6 +425,241 @@ export class OrganizationManagementContextService {
 
         // 직원 정보 삭제
         await this.직원서비스.deleteEmployee(employeeId);
+    }
+
+    // ==================== 직원 일괄 수정 관련 ====================
+
+    /**
+     * 직원 부서 일괄 수정
+     * DEPARTMENT 타입의 부서를 일괄 변경
+     */
+    async 직원_부서_일괄수정(
+        employeeIds: string[],
+        departmentId: string,
+    ): Promise<{
+        successCount: number;
+        failCount: number;
+        successIds: string[];
+        failIds: string[];
+        errors: { employeeId: string; message: string }[];
+    }> {
+        // 부서 존재 검증
+        await this.부서서비스.findById(departmentId);
+
+        const successIds: string[] = [];
+        const failIds: string[] = [];
+        const errors: { employeeId: string; message: string }[] = [];
+
+        for (const employeeId of employeeIds) {
+            try {
+                // 직원 존재 확인
+                await this.직원을_조회한다(employeeId);
+
+                // 기존 DEPARTMENT 타입 배치 조회
+                const existingAssignments = await this.직원부서직책서비스.findAllByEmployeeId(employeeId);
+                let departmentAssignment = null;
+
+                for (const assignment of existingAssignments) {
+                    const department = await this.부서서비스.findById(assignment.departmentId);
+                    if (department.type === DepartmentType.DEPARTMENT) {
+                        departmentAssignment = assignment;
+                        break;
+                    }
+                }
+
+                if (departmentAssignment) {
+                    // DEPARTMENT 타입 배치가 있으면 부서만 변경
+                    await this.직원배치정보를_수정한다(departmentAssignment.id, {
+                        departmentId: departmentId,
+                        positionId: departmentAssignment.positionId,
+                        isManager: departmentAssignment.isManager,
+                    });
+                } else {
+                    // DEPARTMENT 타입 배치가 없으면 스킵
+                    throw new Error('DEPARTMENT 타입의 기존 배치가 없습니다.');
+                }
+
+                successIds.push(employeeId);
+            } catch (error) {
+                failIds.push(employeeId);
+                errors.push({
+                    employeeId,
+                    message: error.message || '알 수 없는 오류',
+                });
+            }
+        }
+
+        return {
+            successCount: successIds.length,
+            failCount: failIds.length,
+            successIds,
+            failIds,
+            errors,
+        };
+    }
+
+    /**
+     * 직원 직책 일괄 수정
+     * DEPARTMENT 타입의 직책을 일괄 변경
+     */
+    async 직원_직책_일괄수정(
+        employeeIds: string[],
+        positionId: string,
+    ): Promise<{
+        successCount: number;
+        failCount: number;
+        successIds: string[];
+        failIds: string[];
+        errors: { employeeId: string; message: string }[];
+    }> {
+        // 직책 존재 검증
+        await this.직책서비스.findById(positionId);
+
+        const successIds: string[] = [];
+        const failIds: string[] = [];
+        const errors: { employeeId: string; message: string }[] = [];
+
+        for (const employeeId of employeeIds) {
+            try {
+                // 직원 존재 확인
+                await this.직원을_조회한다(employeeId);
+
+                // 기존 DEPARTMENT 타입 배치 조회
+                const existingAssignments = await this.직원부서직책서비스.findAllByEmployeeId(employeeId);
+                let departmentAssignment = null;
+
+                for (const assignment of existingAssignments) {
+                    const department = await this.부서서비스.findById(assignment.departmentId);
+                    if (department.type === DepartmentType.DEPARTMENT) {
+                        departmentAssignment = assignment;
+                        break;
+                    }
+                }
+
+                if (departmentAssignment) {
+                    // DEPARTMENT 타입 배치가 있으면 직책만 변경
+                    await this.직원배치정보를_수정한다(departmentAssignment.id, {
+                        departmentId: departmentAssignment.departmentId,
+                        positionId: positionId,
+                        isManager: departmentAssignment.isManager,
+                    });
+                } else {
+                    // DEPARTMENT 타입 배치가 없으면 스킵
+                    throw new Error('DEPARTMENT 타입의 기존 배치가 없습니다.');
+                }
+
+                successIds.push(employeeId);
+            } catch (error) {
+                failIds.push(employeeId);
+                errors.push({
+                    employeeId,
+                    message: error.message || '알 수 없는 오류',
+                });
+            }
+        }
+
+        return {
+            successCount: successIds.length,
+            failCount: failIds.length,
+            successIds,
+            failIds,
+            errors,
+        };
+    }
+
+    /**
+     * 직원 직급 일괄 수정
+     */
+    async 직원_직급_일괄수정(
+        employeeIds: string[],
+        rankId: string,
+    ): Promise<{
+        successCount: number;
+        failCount: number;
+        successIds: string[];
+        failIds: string[];
+        errors: { employeeId: string; message: string }[];
+    }> {
+        // 직급 존재 검증
+        await this.직급서비스.findById(rankId);
+
+        const successIds: string[] = [];
+        const failIds: string[] = [];
+        const errors: { employeeId: string; message: string }[] = [];
+
+        for (const employeeId of employeeIds) {
+            try {
+                // 직원 존재 확인
+                await this.직원을_조회한다(employeeId);
+
+                // 직급 변경
+                await this.직원의_직급을_변경한다(employeeId, rankId);
+
+                successIds.push(employeeId);
+            } catch (error) {
+                failIds.push(employeeId);
+                errors.push({
+                    employeeId,
+                    message: error.message || '알 수 없는 오류',
+                });
+            }
+        }
+
+        return {
+            successCount: successIds.length,
+            failCount: failIds.length,
+            successIds,
+            failIds,
+            errors,
+        };
+    }
+
+    /**
+     * 직원 재직상태 일괄 수정
+     */
+    async 직원_재직상태_일괄수정(
+        employeeIds: string[],
+        status: EmployeeStatus,
+        terminationDate?: Date,
+    ): Promise<{
+        successCount: number;
+        failCount: number;
+        successIds: string[];
+        failIds: string[];
+        errors: { employeeId: string; message: string }[];
+    }> {
+        const successIds: string[] = [];
+        const failIds: string[] = [];
+        const errors: { employeeId: string; message: string }[] = [];
+
+        for (const employeeId of employeeIds) {
+            try {
+                // 직원 존재 확인
+                await this.직원을_조회한다(employeeId);
+
+                // 재직상태 변경
+                await this.직원서비스.updateEmployee(employeeId, {
+                    status,
+                    terminationDate: status === EmployeeStatus.Terminated ? terminationDate : null,
+                });
+
+                successIds.push(employeeId);
+            } catch (error) {
+                failIds.push(employeeId);
+                errors.push({
+                    employeeId,
+                    message: error.message || '알 수 없는 오류',
+                });
+            }
+        }
+
+        return {
+            successCount: successIds.length,
+            failCount: failIds.length,
+            successIds,
+            failIds,
+            errors,
+        };
     }
 
     async 직원의_부서_직책_직급을_조회한다(

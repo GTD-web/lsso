@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { DomainEmployeeFcmTokenRepository } from './employee-fcm-token.repository';
 import { BaseService } from '../../../../libs/common/services/base.service';
 import { EmployeeFcmToken } from './employee-fcm-token.entity';
+import { In } from 'typeorm';
 
 @Injectable()
 export class DomainEmployeeFcmTokenService extends BaseService<EmployeeFcmToken> {
@@ -13,6 +14,15 @@ export class DomainEmployeeFcmTokenService extends BaseService<EmployeeFcmToken>
     async findByEmployeeId(employeeId: string): Promise<EmployeeFcmToken[]> {
         return this.employeeFcmTokenRepository.findAll({
             where: { employeeId },
+            relations: ['fcmToken'],
+        });
+    }
+
+    // 여러 직원의 FCM 토큰 목록을 일괄 조회
+    async findByEmployeeIds(employeeIds: string[]): Promise<EmployeeFcmToken[]> {
+        if (employeeIds.length === 0) return [];
+        return this.employeeFcmTokenRepository.findAll({
+            where: { employeeId: In(employeeIds) },
             relations: ['fcmToken'],
         });
     }
