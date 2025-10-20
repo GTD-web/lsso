@@ -11659,6 +11659,9 @@ let MigrationService = class MigrationService {
                     hireDate: employee.hire_date,
                     dateOfBirth: employee.date_of_birth,
                     gender: employee.gender,
+                    password: existingEmployee.password === null
+                        ? this.employeeService.hashPassword(employee.employee_number)
+                        : existingEmployee.password,
                 });
             }
             else {
@@ -11669,6 +11672,7 @@ let MigrationService = class MigrationService {
                     phoneNumber: employee.phone_number || '',
                     status: employee.status,
                     currentRankId: rank?.id,
+                    password: this.employeeService.hashPassword(employee.employee_number),
                     hireDate: employee.hire_date,
                     dateOfBirth: employee.date_of_birth,
                     gender: employee.gender,
@@ -11679,14 +11683,6 @@ let MigrationService = class MigrationService {
             }
             if (employee.department) {
                 department = await this.departmentService.findByCode(employee.department.department_code);
-            }
-            const user = await this.userService.findByEmployeeNumber(employee.employee_number);
-            if (!user) {
-                console.log(`${employee.name} 직원은 유저 정보가 없습니다.`);
-            }
-            else {
-                existingEmployee.password = user.password;
-                existingEmployee.isInitialPasswordSet = user.isInitialPasswordSet;
             }
             const savedEmployee = await this.employeeService.save(existingEmployee);
             const existingEmployeeDepartmentPosition = await this.employeeDepartmentPositionService.findOne({
