@@ -335,7 +335,7 @@ export class OrganizationInformationApplicationService {
 
             // Context Layer 호출 (2-4단계 검증 포함)
             const result = await this.organizationContextService.직원을_생성한다({
-                employeeNumber: createDto.employeeNumber, // 선택사항 - 없으면 자동 생성
+                // employeeNumber: createDto.employeeNumber, // 선택사항 - 없으면 자동 생성
                 name: createDto.name,
                 email: createDto.email,
                 phoneNumber: createDto.phoneNumber,

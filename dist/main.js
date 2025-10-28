@@ -9363,7 +9363,6 @@ let OrganizationInformationApplicationService = class OrganizationInformationApp
             const hireDate = new Date(createDto.hireDate);
             const dateOfBirth = createDto.dateOfBirth ? new Date(createDto.dateOfBirth) : undefined;
             const result = await this.organizationContextService.직원을_생성한다({
-                employeeNumber: createDto.employeeNumber,
                 name: createDto.name,
                 email: createDto.email,
                 phoneNumber: createDto.phoneNumber,
