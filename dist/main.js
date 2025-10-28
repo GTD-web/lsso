@@ -12153,7 +12153,23 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
         return this.직원직급이력서비스.findByEmployeeId(employeeId);
     }
     async 직원정보를_수정한다(employeeId, 수정정보) {
-        const updatedEmployee = await this.직원서비스.updateEmployee(employeeId, 수정정보);
+        const employeeBasicInfo = {
+            name: 수정정보.name,
+            email: 수정정보.email,
+            phoneNumber: 수정정보.phoneNumber,
+            dateOfBirth: 수정정보.dateOfBirth,
+            gender: 수정정보.gender,
+            hireDate: 수정정보.hireDate,
+            status: 수정정보.status,
+            currentRankId: 수정정보.currentRankId,
+            terminationDate: 수정정보.terminationDate,
+        };
+        Object.keys(employeeBasicInfo).forEach((key) => {
+            if (employeeBasicInfo[key] === undefined) {
+                delete employeeBasicInfo[key];
+            }
+        });
+        const updatedEmployee = await this.직원서비스.updateEmployee(employeeId, employeeBasicInfo);
         const hasDepartmentId = 수정정보.departmentId !== undefined;
         const hasPositionId = 수정정보.positionId !== undefined;
         if (hasDepartmentId || hasPositionId) {
