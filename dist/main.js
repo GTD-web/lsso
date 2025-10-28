@@ -12734,28 +12734,26 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
         const minOrder = Math.min(currentOrder, newOrder);
         const maxOrder = Math.max(currentOrder, newOrder);
         const affectedDepartments = await this.부서서비스.findDepartmentsInOrderRange(parentDepartmentId, minOrder, maxOrder);
+        await this.부서서비스.updateDepartment(departmentId, { order: -999 });
         const updates = [];
         if (currentOrder < newOrder) {
             for (const dept of affectedDepartments) {
-                if (dept.id === departmentId) {
-                    updates.push({ id: dept.id, order: newOrder });
-                }
-                else if (dept.order > currentOrder && dept.order <= newOrder) {
+                if (dept.id !== departmentId && dept.order > currentOrder && dept.order <= newOrder) {
                     updates.push({ id: dept.id, order: dept.order - 1 });
                 }
             }
         }
         else {
             for (const dept of affectedDepartments) {
-                if (dept.id === departmentId) {
-                    updates.push({ id: dept.id, order: newOrder });
-                }
-                else if (dept.order >= newOrder && dept.order < currentOrder) {
+                if (dept.id !== departmentId && dept.order >= newOrder && dept.order < currentOrder) {
                     updates.push({ id: dept.id, order: dept.order + 1 });
                 }
             }
         }
-        await this.부서서비스.bulkUpdateOrders(updates);
+        if (updates.length > 0) {
+            await this.부서서비스.bulkUpdateOrders(updates);
+        }
+        await this.부서서비스.updateDepartment(departmentId, { order: newOrder });
         return await this.부서서비스.findById(departmentId);
     }
     async 직책을_생성한다(직책정보) {
