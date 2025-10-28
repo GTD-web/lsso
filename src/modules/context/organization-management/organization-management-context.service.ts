@@ -366,11 +366,47 @@ export class OrganizationManagementContextService {
 
     // ==================== 직원 수정/삭제 관련 ====================
 
-    async 직원정보를_수정한다(employeeId: string, 수정정보: any): Promise<Employee> {
-        // 1. 직원 기본 정보 수정
-        const updatedEmployee = await this.직원서비스.updateEmployee(employeeId, 수정정보);
+    async 직원정보를_수정한다(
+        employeeId: string,
+        수정정보: {
+            name?: string;
+            email?: string;
+            phoneNumber?: string;
+            dateOfBirth?: Date;
+            gender?: Gender;
+            hireDate?: Date;
+            status?: EmployeeStatus;
+            currentRankId?: string;
+            terminationDate?: Date;
+            departmentId?: string;
+            positionId?: string;
+            isManager?: boolean;
+        },
+    ): Promise<Employee> {
+        // 1. Employee 엔티티의 기본 정보만 추출
+        const employeeBasicInfo: Partial<Employee> = {
+            name: 수정정보.name,
+            email: 수정정보.email,
+            phoneNumber: 수정정보.phoneNumber,
+            dateOfBirth: 수정정보.dateOfBirth,
+            gender: 수정정보.gender,
+            hireDate: 수정정보.hireDate,
+            status: 수정정보.status,
+            currentRankId: 수정정보.currentRankId,
+            terminationDate: 수정정보.terminationDate,
+        };
 
-        // 2. 배치 정보 업데이트 (부서 또는 직책 정보가 제공된 경우)
+        // undefined 값 제거
+        Object.keys(employeeBasicInfo).forEach((key) => {
+            if (employeeBasicInfo[key] === undefined) {
+                delete employeeBasicInfo[key];
+            }
+        });
+
+        // 2. 직원 기본 정보 수정
+        const updatedEmployee = await this.직원서비스.updateEmployee(employeeId, employeeBasicInfo);
+
+        // 3. 배치 정보 업데이트 (부서 또는 직책 정보가 제공된 경우)
         const hasDepartmentId = 수정정보.departmentId !== undefined;
         const hasPositionId = 수정정보.positionId !== undefined;
 
