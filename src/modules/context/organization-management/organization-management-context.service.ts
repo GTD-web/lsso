@@ -1361,37 +1361,37 @@ export class OrganizationManagementContextService {
             maxOrder,
         );
 
-        // 4. 순서 업데이트 목록 생성
-        const updates: { id: string; order: number }[] = [];
+        // 4. 순서 업데이트 실행 (unique 제약 충돌 회피)
+        // Step 1: 이동할 부서를 임시 음수 값으로 변경 (unique 제약 회피)
+        await this.부서서비스.updateDepartment(departmentId, { order: -999 });
 
+        // Step 2: 나머지 부서들의 순서 업데이트
+        const updates: { id: string; order: number }[] = [];
         if (currentOrder < newOrder) {
             // 아래로 이동: 현재 순서보다 크고 새로운 순서 이하인 부서들을 -1
             for (const dept of affectedDepartments) {
-                if (dept.id === departmentId) {
-                    // 현재 부서는 새로운 순서로
-                    updates.push({ id: dept.id, order: newOrder });
-                } else if (dept.order > currentOrder && dept.order <= newOrder) {
-                    // 사이에 있는 부서들은 -1
+                if (dept.id !== departmentId && dept.order > currentOrder && dept.order <= newOrder) {
                     updates.push({ id: dept.id, order: dept.order - 1 });
                 }
             }
         } else {
             // 위로 이동: 새로운 순서 이상이고 현재 순서보다 작은 부서들을 +1
             for (const dept of affectedDepartments) {
-                if (dept.id === departmentId) {
-                    // 현재 부서는 새로운 순서로
-                    updates.push({ id: dept.id, order: newOrder });
-                } else if (dept.order >= newOrder && dept.order < currentOrder) {
-                    // 사이에 있는 부서들은 +1
+                if (dept.id !== departmentId && dept.order >= newOrder && dept.order < currentOrder) {
                     updates.push({ id: dept.id, order: dept.order + 1 });
                 }
             }
         }
 
-        // 5. 일괄 업데이트 실행
-        await this.부서서비스.bulkUpdateOrders(updates);
+        // Step 3: 나머지 부서들 일괄 업데이트
+        if (updates.length > 0) {
+            await this.부서서비스.bulkUpdateOrders(updates);
+        }
 
-        // 6. 업데이트된 부서 반환
+        // Step 4: 이동할 부서를 최종 순서로 변경
+        await this.부서서비스.updateDepartment(departmentId, { order: newOrder });
+
+        // 5. 업데이트된 부서 반환
         return await this.부서서비스.findById(departmentId);
     }
 
