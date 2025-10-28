@@ -210,8 +210,10 @@ export class OrganizationManagementContextService {
                 const department = departmentMap.get(assignment.departmentId);
                 const position = positionMap.get(assignment.positionId);
                 return {
+                    assignmentId: assignment.id,
                     departmentId: department?.id || '',
                     departmentName: department?.departmentName || '',
+                    departmentType: department?.type || '',
                     positionId: position?.id || '',
                     positionTitle: position?.positionTitle || '',
                     isManager: assignment.isManager,
