@@ -244,8 +244,10 @@ export class EmployeeDetailInfoDto {
     // 추가 정보
     @ApiProperty({ description: '부서 정보 목록', type: 'array', items: { type: 'object' }, required: false })
     departments?: {
+        assignmentId: string;
         departmentId: string;
         departmentName: string;
+        departmentType: string;
         positionId: string;
         positionTitle: string;
         isManager: boolean;
