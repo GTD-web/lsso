@@ -301,6 +301,61 @@ export class OrganizationManagementContextService {
         return this.직원부서직책서비스.findAllByEmployeeId(employeeId);
     }
 
+    async 전체_배치정보를_조회한다(): Promise<EmployeeDepartmentPosition[]> {
+        return this.직원부서직책서비스.findAllAssignments();
+    }
+
+    async 전체_배치상세정보를_조회한다(): Promise<
+        Array<{
+            assignment: EmployeeDepartmentPosition;
+            employee: Employee;
+            department: Department;
+            position: Position;
+            rank?: Rank;
+        }>
+    > {
+        // 1. 모든 배치 정보 조회
+        const assignments = await this.직원부서직책서비스.findAllAssignments();
+
+        // 2. 필요한 ID들 수집
+        const employeeIds = [...new Set(assignments.map((a) => a.employeeId))];
+        const departmentIds = [...new Set(assignments.map((a) => a.departmentId))];
+        const positionIds = [...new Set(assignments.map((a) => a.positionId))];
+
+        // 3. 병렬로 관련 정보들 조회
+        const [employees, departments, positions] = await Promise.all([
+            this.직원서비스.findByEmployeeIds(employeeIds, true), // 퇴사자 포함
+            this.부서서비스.findByIds(departmentIds),
+            this.직책서비스.findByIds(positionIds),
+        ]);
+
+        // 4. 직급 ID 수집 및 조회
+        const rankIds = [...new Set(employees.filter((e) => e.currentRankId).map((e) => e.currentRankId))];
+        const ranks = rankIds.length > 0 ? await this.직급서비스.findByIds(rankIds) : [];
+
+        // 5. Map으로 변환하여 빠른 조회 가능하도록 최적화
+        const employeeMap = new Map(employees.map((e) => [e.id, e]));
+        const departmentMap = new Map(departments.map((d) => [d.id, d]));
+        const positionMap = new Map(positions.map((p) => [p.id, p]));
+        const rankMap = new Map(ranks.map((r) => [r.id, r]));
+
+        // 6. 조인된 결과 생성
+        return assignments.map((assignment) => {
+            const employee = employeeMap.get(assignment.employeeId);
+            const department = departmentMap.get(assignment.departmentId);
+            const position = positionMap.get(assignment.positionId);
+            const rank = employee?.currentRankId ? rankMap.get(employee.currentRankId) : undefined;
+
+            return {
+                assignment,
+                employee,
+                department,
+                position,
+                rank,
+            };
+        });
+    }
+
     // ==================== 직급 이력 조회 관련 ====================
 
     async 직원의_직급이력을_조회한다(employeeId: string): Promise<EmployeeRankHistory[]> {
@@ -1217,7 +1272,7 @@ export class OrganizationManagementContextService {
             departmentCode?: string;
             type?: any;
             parentDepartmentId?: string;
-            order?: number;
+            // order?: number;
         },
     ): Promise<Department> {
         // 1. 부서 존재 확인
@@ -1239,10 +1294,11 @@ export class OrganizationManagementContextService {
             }
         }
 
-        수정정보.order = await this.부서서비스.getNextOrderForParent(수정정보.parentDepartmentId || null);
-        if (수정정보.order === undefined) {
-            throw new Error('순서를 찾을 수 없습니다.');
-        }
+        // 순서 변경은 다른 API를 통해 수행한다.
+        // 수정정보.order = await this.부서서비스.getNextOrderForParent(수정정보.parentDepartmentId || null);
+        // if (수정정보.order === undefined) {
+        //     throw new Error('순서를 찾을 수 없습니다.');
+        // }
 
         // 4. 부서 수정
         return await this.부서서비스.updateDepartment(departmentId, 수정정보);
@@ -1529,6 +1585,20 @@ export class OrganizationManagementContextService {
 
     async 직원배치를_해제한다(assignmentId: string): Promise<void> {
         await this.직원부서직책서비스.deleteAssignment(assignmentId);
+    }
+
+    async 직원배치_관리자상태를_변경한다(
+        assignmentId: string,
+        isManager: boolean,
+    ): Promise<EmployeeDepartmentPosition> {
+        // 배치 정보 존재 확인
+        const assignment = await this.배치_ID로_배치정보를_조회한다(assignmentId);
+        if (!assignment) {
+            throw new Error('배치 정보를 찾을 수 없습니다.');
+        }
+
+        // 관리자 상태만 변경
+        return await this.직원부서직책서비스.updateAssignment(assignmentId, { isManager });
     }
 
     // ==================== 직급 이력 관련 ====================

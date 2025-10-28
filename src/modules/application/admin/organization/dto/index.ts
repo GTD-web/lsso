@@ -37,7 +37,10 @@ export { CreateRankRequestDto, UpdateRankRequestDto, RankResponseDto } from './r
 export {
     AssignEmployeeRequestDto,
     UpdateEmployeeAssignmentRequestDto,
+    UpdateManagerStatusRequestDto,
     EmployeeAssignmentResponseDto,
+    EmployeeAssignmentListResponseDto,
+    EmployeeAssignmentDetailResponseDto,
 } from './employee-assignment.dto';
 
 // Employee Rank History DTOs

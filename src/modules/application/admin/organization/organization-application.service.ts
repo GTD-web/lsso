@@ -24,7 +24,10 @@ import {
     RankResponseDto,
     AssignEmployeeRequestDto,
     UpdateEmployeeAssignmentRequestDto,
+    UpdateManagerStatusRequestDto,
     EmployeeAssignmentResponseDto,
+    EmployeeAssignmentListResponseDto,
+    EmployeeAssignmentDetailResponseDto,
     PromoteEmployeeRequestDto,
     EmployeeRankHistoryResponseDto,
 } from './dto';
@@ -255,10 +258,28 @@ export class OrganizationApplicationService {
         await this.organizationContextService.직원배치를_해제한다(id);
     }
 
+    async 직원배치_관리자상태변경(
+        id: string,
+        updateManagerStatusDto: UpdateManagerStatusRequestDto,
+    ): Promise<EmployeeAssignmentResponseDto> {
+        // 완전한 비즈니스 로직 사이클 실행 (존재 확인 → 수정 → 반환)
+        const updatedAssignment = await this.organizationContextService.직원배치_관리자상태를_변경한다(
+            id,
+            updateManagerStatusDto.isManager,
+        );
+        return this.직원배치를_응답DTO로_변환한다(updatedAssignment);
+    }
+
     async 직원배치현황조회(employeeId: string): Promise<EmployeeAssignmentResponseDto[]> {
         // 완전한 비즈니스 로직 사이클 실행 (존재 확인 → 조회 → 반환)
         const assignments = await this.organizationContextService.직원의_모든_배치정보를_조회한다(employeeId);
         return assignments.map(this.직원배치를_응답DTO로_변환한다);
+    }
+
+    async 전체배치목록조회(): Promise<EmployeeAssignmentDetailResponseDto[]> {
+        // 완전한 비즈니스 로직 사이클 실행 (조회 → 조인 → 반환)
+        const assignmentsWithDetails = await this.organizationContextService.전체_배치상세정보를_조회한다();
+        return assignmentsWithDetails.map(this.직원배치상세를_응답DTO로_변환한다);
     }
 
     // 직급 이력 관리 함수들
@@ -342,6 +363,31 @@ export class OrganizationApplicationService {
         rankId: history.rankId,
         createdAt: history.createdAt,
         updatedAt: history.updatedAt,
+    });
+
+    private 직원배치상세를_응답DTO로_변환한다 = (data: {
+        assignment: any;
+        employee: any;
+        department: any;
+        position: any;
+        rank?: any;
+    }): EmployeeAssignmentDetailResponseDto => ({
+        id: data.assignment.id,
+        employeeId: data.assignment.employeeId,
+        employeeNumber: data.employee?.employeeNumber || '',
+        employeeName: data.employee?.name || '',
+        departmentId: data.assignment.departmentId,
+        departmentName: data.department?.departmentName || '',
+        departmentCode: data.department?.departmentCode || '',
+        positionId: data.assignment.positionId,
+        positionTitle: data.position?.positionTitle || '',
+        positionCode: data.position?.positionCode || '',
+        rankId: data.rank?.id,
+        rankName: data.rank?.rankName,
+        rankCode: data.rank?.rankCode,
+        isManager: data.assignment.isManager,
+        createdAt: data.assignment.createdAt,
+        updatedAt: data.assignment.updatedAt,
     });
 
     private 직원상세정보를_응답DTO로_변환한다 = (employeeWithDetails: any): EmployeeDetailInfoDto => ({
