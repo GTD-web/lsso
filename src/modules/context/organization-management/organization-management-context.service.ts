@@ -1035,15 +1035,15 @@ export class OrganizationManagementContextService {
     /**
      * 직원 생성을 위한 전처리 (사번/이름 자동 생성)
      */
-    async 직원생성_전처리를_수행한다(data: { employeeNumber?: string; name: string }): Promise<{
+    async 직원생성_전처리를_수행한다(name: string): Promise<{
         employeeNumber: string;
         name: string;
     }> {
-        const employeeNumber = data.employeeNumber || (await this.직원서비스.generateNextEmployeeNumber());
-        const name = await this.직원서비스.generateUniqueEmployeeName(data.name);
+        const employeeNumber = await this.직원서비스.generateNextEmployeeNumber();
+        const uniqueName = await this.직원서비스.generateUniqueEmployeeName(name);
         return {
             employeeNumber,
-            name,
+            name: uniqueName,
         };
     }
 
@@ -1100,7 +1100,7 @@ export class OrganizationManagementContextService {
      * 검증 규칙 4단계에 따른 완전한 직원 생성 프로세스
      */
     async 직원을_생성한다(data: {
-        employeeNumber?: string;
+        // employeeNumber?: string;
         name: string;
         email?: string;
         phoneNumber?: string;
@@ -1118,7 +1118,7 @@ export class OrganizationManagementContextService {
         rankHistory?: EmployeeRankHistory;
     }> {
         // 1. 전처리 (사번/이름 자동 생성)
-        const { employeeNumber, name } = await this.직원생성_전처리를_수행한다(data);
+        const { employeeNumber, name } = await this.직원생성_전처리를_수행한다(data.name);
 
         // 2. 컨텍스트 검증 (중복, 존재 확인)
         await this.직원생성_컨텍스트_검증을_수행한다({

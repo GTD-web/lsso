@@ -4210,11 +4210,6 @@ class CreateEmployeeRequestDto {
 }
 exports.CreateEmployeeRequestDto = CreateEmployeeRequestDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({ description: '사번', example: 'EMP001' }),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], CreateEmployeeRequestDto.prototype, "employeeNumber", void 0);
-__decorate([
     (0, swagger_1.ApiProperty)({ description: '이름', example: '홍길동' }),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
@@ -5040,7 +5035,6 @@ let OrganizationApplicationService = class OrganizationApplicationService {
     }
     async 직원생성(createEmployeeDto) {
         const result = await this.organizationContextService.직원을_생성한다({
-            employeeNumber: createEmployeeDto.employeeNumber,
             name: createEmployeeDto.name,
             email: createEmployeeDto.email,
             phoneNumber: createEmployeeDto.phoneNumber,
@@ -9369,7 +9363,6 @@ let OrganizationInformationApplicationService = class OrganizationInformationApp
             const hireDate = new Date(createDto.hireDate);
             const dateOfBirth = createDto.dateOfBirth ? new Date(createDto.dateOfBirth) : undefined;
             const result = await this.organizationContextService.직원을_생성한다({
-                employeeNumber: createDto.employeeNumber,
                 name: createDto.name,
                 email: createDto.email,
                 phoneNumber: createDto.phoneNumber,
@@ -12571,12 +12564,12 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
         collectIds(departments);
         return departmentIds;
     }
-    async 직원생성_전처리를_수행한다(data) {
-        const employeeNumber = data.employeeNumber || (await this.직원서비스.generateNextEmployeeNumber());
-        const name = await this.직원서비스.generateUniqueEmployeeName(data.name);
+    async 직원생성_전처리를_수행한다(name) {
+        const employeeNumber = await this.직원서비스.generateNextEmployeeNumber();
+        const uniqueName = await this.직원서비스.generateUniqueEmployeeName(name);
         return {
             employeeNumber,
-            name,
+            name: uniqueName,
         };
     }
     async 직원생성_컨텍스트_검증을_수행한다(data) {
@@ -12608,7 +12601,7 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
         }
     }
     async 직원을_생성한다(data) {
-        const { employeeNumber, name } = await this.직원생성_전처리를_수행한다(data);
+        const { employeeNumber, name } = await this.직원생성_전처리를_수행한다(data.name);
         await this.직원생성_컨텍스트_검증을_수행한다({
             employeeNumber,
             email: data.email,
