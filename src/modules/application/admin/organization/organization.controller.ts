@@ -29,7 +29,10 @@ import {
     RankResponseDto,
     AssignEmployeeRequestDto,
     UpdateEmployeeAssignmentRequestDto,
+    UpdateManagerStatusRequestDto,
     EmployeeAssignmentResponseDto,
+    EmployeeAssignmentListResponseDto,
+    EmployeeAssignmentDetailResponseDto,
     PromoteEmployeeRequestDto,
     EmployeeRankHistoryResponseDto,
 } from './dto';
@@ -308,6 +311,13 @@ export class OrganizationController {
     }
 
     // 직원 배치 관리 API
+    @Get('employee-assignments')
+    @ApiOperation({ summary: '전체 직원 배치 목록 조회 (직원/부서/직책/직급 정보 포함)' })
+    @ApiResponse({ status: 200, type: [EmployeeAssignmentDetailResponseDto] })
+    async getAllEmployeeAssignments(): Promise<EmployeeAssignmentDetailResponseDto[]> {
+        return await this.organizationApplicationService.전체배치목록조회();
+    }
+
     @Post('employee-assignments')
     @ApiOperation({ summary: '직원 부서/직책 배치' })
     @ApiBody({ type: AssignEmployeeRequestDto })
@@ -326,6 +336,19 @@ export class OrganizationController {
         @Body() updateAssignmentDto: UpdateEmployeeAssignmentRequestDto,
     ): Promise<EmployeeAssignmentResponseDto> {
         return await this.organizationApplicationService.직원배치변경(id, updateAssignmentDto);
+    }
+
+    @Patch('employee-assignments/:id/manager-status')
+    @ApiOperation({ summary: '직원 배치 관리자 상태 변경' })
+    @ApiParam({ name: 'id', description: '배치 ID' })
+    @ApiBody({ type: UpdateManagerStatusRequestDto })
+    @ApiResponse({ status: 200, type: EmployeeAssignmentResponseDto, description: '관리자 상태 변경 성공' })
+    @ApiResponse({ status: 404, description: '배치 정보를 찾을 수 없음' })
+    async updateManagerStatus(
+        @Param('id') id: string,
+        @Body() updateManagerStatusDto: UpdateManagerStatusRequestDto,
+    ): Promise<EmployeeAssignmentResponseDto> {
+        return await this.organizationApplicationService.직원배치_관리자상태변경(id, updateManagerStatusDto);
     }
 
     @Delete('employee-assignments/:id')
