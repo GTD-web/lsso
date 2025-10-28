@@ -3,10 +3,6 @@ import { IsString, IsOptional, IsEnum, IsEmail, IsDateString, IsUUID, IsBoolean,
 import { Gender, EmployeeStatus } from '../../../../../../libs/common/enums';
 
 export class CreateEmployeeRequestDto {
-    @ApiProperty({ description: '사번', example: 'EMP001' })
-    @IsString()
-    employeeNumber: string;
-
     @ApiProperty({ description: '이름', example: '홍길동' })
     @IsString()
     name: string;

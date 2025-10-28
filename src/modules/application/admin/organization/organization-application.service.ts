@@ -145,7 +145,7 @@ export class OrganizationApplicationService {
     async 직원생성(createEmployeeDto: CreateEmployeeRequestDto): Promise<EmployeeResponseDto> {
         // 완전한 비즈니스 로직 사이클 실행 (전처리 → 검증 → 생성 → 반환)
         const result = await this.organizationContextService.직원을_생성한다({
-            employeeNumber: createEmployeeDto.employeeNumber,
+            // employeeNumber: createEmployeeDto.employeeNumber,
             name: createEmployeeDto.name,
             email: createEmployeeDto.email,
             phoneNumber: createEmployeeDto.phoneNumber,
