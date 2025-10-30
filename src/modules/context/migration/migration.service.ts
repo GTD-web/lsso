@@ -205,6 +205,7 @@ export class MigrationService {
             const existingEmployeeDepartmentPosition = await this.employeeDepartmentPositionService.findOne({
                 where: {
                     employeeId: existingEmployee.id,
+                    departmentId: department?.id,
                 },
             });
 

@@ -7,3 +7,4 @@ export * from './department-hierarchy-response.dto';
 export * from './create-employee.dto';
 export * from './terminate-employee.dto';
 export * from './export-all-data.dto';
+export * from './employee-managers-response.dto';
