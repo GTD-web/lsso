@@ -7608,7 +7608,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OrganizationInformationApplicationController = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
@@ -7702,6 +7702,11 @@ let OrganizationInformationApplicationController = class OrganizationInformation
             employeeDepartmentPositions: result.totalCounts.employeeDepartmentPositions,
         });
         return result;
+    }
+    async getEmployeesManagers(user) {
+        console.log('직원 관리자 라인 조회 - 인증된 사용자:', user);
+        const includeTerminatedFlag = false;
+        return this.organizationInformationApplicationService.전체_직원의_관리자_라인을_조회한다(includeTerminatedFlag);
     }
 };
 exports.OrganizationInformationApplicationController = OrganizationInformationApplicationController;
@@ -8020,6 +8025,25 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", typeof (_p = typeof Promise !== "undefined" && Promise) === "function" ? _p : Object)
 ], OrganizationInformationApplicationController.prototype, "exportAllOrganizationData", null);
+__decorate([
+    (0, common_1.Get)('employees/managers'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, swagger_1.ApiOperation)({
+        summary: '전체 직원의 부서 직속 라인 관리자 정보 조회',
+        description: '전체 직원을 조회하여 각 직원의 소속 부서부터 최상위 부서까지 올라가면서 isManager=true인 관리자 정보를 조회합니다.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: '직원별 관리자 라인 정보 조회 성공',
+        type: dto_1.EmployeesManagersResponseDto,
+    }),
+    (0, swagger_1.ApiResponse)({ status: 401, description: '인증이 필요합니다' }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: '관리자 라인 정보를 조회할 수 없음' }),
+    __param(0, (0, user_decorator_1.User)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_q = typeof user_decorator_1.AuthenticatedUser !== "undefined" && user_decorator_1.AuthenticatedUser) === "function" ? _q : Object]),
+    __metadata("design:returntype", typeof (_r = typeof Promise !== "undefined" && Promise) === "function" ? _r : Object)
+], OrganizationInformationApplicationController.prototype, "getEmployeesManagers", null);
 exports.OrganizationInformationApplicationController = OrganizationInformationApplicationController = __decorate([
     (0, swagger_1.ApiTags)('Client - 조직 정보 API'),
     (0, common_1.Controller)('organization'),
@@ -8391,6 +8415,140 @@ __decorate([
     }),
     __metadata("design:type", Number)
 ], DepartmentHierarchyResponseDto.prototype, "maxDepth", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/organization-information/dto/employee-managers-response.dto.ts":
+/*!************************************************************************************************!*\
+  !*** ./src/modules/application/organization-information/dto/employee-managers-response.dto.ts ***!
+  \************************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EmployeesManagersResponseDto = exports.EmployeeManagersDto = exports.EmployeeDepartmentManagersDto = exports.DepartmentManagerDto = exports.ManagerInfoDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const entities_1 = __webpack_require__(/*! ../../../../../libs/database/entities */ "./libs/database/entities/index.ts");
+class ManagerInfoDto {
+}
+exports.ManagerInfoDto = ManagerInfoDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '관리자 직원 ID' }),
+    __metadata("design:type", String)
+], ManagerInfoDto.prototype, "employeeId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '관리자 이름' }),
+    __metadata("design:type", String)
+], ManagerInfoDto.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '관리자 사번' }),
+    __metadata("design:type", String)
+], ManagerInfoDto.prototype, "employeeNumber", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '관리자 이메일' }),
+    __metadata("design:type", String)
+], ManagerInfoDto.prototype, "email", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '관리자 직책 ID' }),
+    __metadata("design:type", String)
+], ManagerInfoDto.prototype, "positionId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '관리자 직책명' }),
+    __metadata("design:type", String)
+], ManagerInfoDto.prototype, "positionTitle", void 0);
+class DepartmentManagerDto {
+}
+exports.DepartmentManagerDto = DepartmentManagerDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '부서 ID' }),
+    __metadata("design:type", String)
+], DepartmentManagerDto.prototype, "departmentId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '부서명' }),
+    __metadata("design:type", String)
+], DepartmentManagerDto.prototype, "departmentName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '부서 코드' }),
+    __metadata("design:type", String)
+], DepartmentManagerDto.prototype, "departmentCode", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '부서 유형', enum: entities_1.DepartmentType }),
+    __metadata("design:type", typeof (_a = typeof entities_1.DepartmentType !== "undefined" && entities_1.DepartmentType) === "function" ? _a : Object)
+], DepartmentManagerDto.prototype, "type", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '상위 부서 ID' }),
+    __metadata("design:type", String)
+], DepartmentManagerDto.prototype, "parentDepartmentId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '부서 계층 깊이 (최상위 부서가 0)', example: 0 }),
+    __metadata("design:type", Number)
+], DepartmentManagerDto.prototype, "depth", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '해당 부서의 관리자 목록', type: [ManagerInfoDto] }),
+    __metadata("design:type", Array)
+], DepartmentManagerDto.prototype, "managers", void 0);
+class EmployeeDepartmentManagersDto {
+}
+exports.EmployeeDepartmentManagersDto = EmployeeDepartmentManagersDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '부서 ID' }),
+    __metadata("design:type", String)
+], EmployeeDepartmentManagersDto.prototype, "departmentId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '부서명' }),
+    __metadata("design:type", String)
+], EmployeeDepartmentManagersDto.prototype, "departmentName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '해당 부서의 직속 라인 관리자 정보 (소속 부서부터 최상위 부서까지)',
+        type: [DepartmentManagerDto],
+    }),
+    __metadata("design:type", Array)
+], EmployeeDepartmentManagersDto.prototype, "managerLine", void 0);
+class EmployeeManagersDto {
+}
+exports.EmployeeManagersDto = EmployeeManagersDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직원 ID' }),
+    __metadata("design:type", String)
+], EmployeeManagersDto.prototype, "employeeId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직원 이름' }),
+    __metadata("design:type", String)
+], EmployeeManagersDto.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '사번' }),
+    __metadata("design:type", String)
+], EmployeeManagersDto.prototype, "employeeNumber", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '직원이 소속된 모든 부서의 관리자 라인 정보',
+        type: [EmployeeDepartmentManagersDto],
+    }),
+    __metadata("design:type", Array)
+], EmployeeManagersDto.prototype, "departments", void 0);
+class EmployeesManagersResponseDto {
+}
+exports.EmployeesManagersResponseDto = EmployeesManagersResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직원별 관리자 정보 목록', type: [EmployeeManagersDto] }),
+    __metadata("design:type", Array)
+], EmployeesManagersResponseDto.prototype, "employees", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '총 직원 수' }),
+    __metadata("design:type", Number)
+], EmployeesManagersResponseDto.prototype, "total", void 0);
 
 
 /***/ }),
@@ -8987,6 +9145,7 @@ __exportStar(__webpack_require__(/*! ./department-hierarchy-response.dto */ "./s
 __exportStar(__webpack_require__(/*! ./create-employee.dto */ "./src/modules/application/organization-information/dto/create-employee.dto.ts"), exports);
 __exportStar(__webpack_require__(/*! ./terminate-employee.dto */ "./src/modules/application/organization-information/dto/terminate-employee.dto.ts"), exports);
 __exportStar(__webpack_require__(/*! ./export-all-data.dto */ "./src/modules/application/organization-information/dto/export-all-data.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./employee-managers-response.dto */ "./src/modules/application/organization-information/dto/employee-managers-response.dto.ts"), exports);
 
 
 /***/ }),
@@ -9539,6 +9698,44 @@ let OrganizationInformationApplicationService = class OrganizationInformationApp
             }
         }
         throw new common_1.BadRequestException('직원 생성 중 오류가 발생했습니다.');
+    }
+    async 전체_직원의_관리자_라인을_조회한다(includeTerminated = false) {
+        try {
+            const result = await this.organizationContextService.전체_직원의_관리자_라인을_조회한다(includeTerminated);
+            const employees = result.map((item) => ({
+                employeeId: item.employeeId,
+                name: item.name,
+                employeeNumber: item.employeeNumber,
+                departments: item.departments.map((dept) => ({
+                    departmentId: dept.departmentId,
+                    departmentName: dept.departmentName,
+                    managerLine: dept.managerLine.map((line) => ({
+                        departmentId: line.departmentId,
+                        departmentName: line.departmentName,
+                        departmentCode: line.departmentCode,
+                        type: line.type,
+                        parentDepartmentId: line.parentDepartmentId,
+                        depth: line.depth,
+                        managers: line.managers.map((manager) => ({
+                            employeeId: manager.employeeId,
+                            name: manager.name,
+                            employeeNumber: manager.employeeNumber,
+                            email: manager.email,
+                            positionId: manager.positionId,
+                            positionTitle: manager.positionTitle,
+                        })),
+                    })),
+                })),
+            }));
+            return {
+                employees,
+                total: employees.length,
+            };
+        }
+        catch (error) {
+            console.error('전체 직원의 관리자 라인 조회 중 오류 발생:', error);
+            throw new common_1.NotFoundException('직원의 관리자 라인 정보를 조회할 수 없습니다.');
+        }
     }
 };
 exports.OrganizationInformationApplicationService = OrganizationInformationApplicationService;
@@ -11819,6 +12016,7 @@ let MigrationService = class MigrationService {
             const existingEmployeeDepartmentPosition = await this.employeeDepartmentPositionService.findOne({
                 where: {
                     employeeId: existingEmployee.id,
+                    departmentId: department?.id,
                 },
             });
             if (existingEmployeeDepartmentPosition) {
@@ -12919,6 +13117,102 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
             }
         }
         return count;
+    }
+    async 전체_직원의_관리자_라인을_조회한다(includeTerminated = false) {
+        const employees = await this.전체_직원정보를_조회한다(includeTerminated);
+        if (employees.length === 0) {
+            return [];
+        }
+        const employeeIds = employees.map((emp) => emp.id);
+        const [allAssignments, allDepartments, allPositions] = await Promise.all([
+            this.직원부서직책서비스.findAllByEmployeeIds(employeeIds),
+            this.부서서비스.findAllDepartments(),
+            this.직책서비스.findAllPositions(),
+        ]);
+        const departmentMap = new Map(allDepartments.map((dept) => [dept.id, dept]));
+        const positionMap = new Map(allPositions.map((pos) => [pos.id, pos]));
+        const employeeAssignmentsMap = new Map();
+        for (const assignment of allAssignments) {
+            const assignments = employeeAssignmentsMap.get(assignment.employeeId) || [];
+            assignments.push(assignment);
+            employeeAssignmentsMap.set(assignment.employeeId, assignments);
+        }
+        const managersByDepartmentMap = new Map();
+        for (const assignment of allAssignments) {
+            if (assignment.isManager) {
+                const managers = managersByDepartmentMap.get(assignment.departmentId) || [];
+                managers.push(assignment);
+                managersByDepartmentMap.set(assignment.departmentId, managers);
+            }
+        }
+        const result = [];
+        for (const employee of employees) {
+            const employeeAssignments = employeeAssignmentsMap.get(employee.id);
+            if (!employeeAssignments || employeeAssignments.length === 0) {
+                continue;
+            }
+            const departments = [];
+            for (const assignment of employeeAssignments) {
+                const currentDepartmentId = assignment.departmentId;
+                const currentDepartment = departmentMap.get(currentDepartmentId);
+                if (!currentDepartment) {
+                    continue;
+                }
+                const managerLine = [];
+                let currentDeptId = currentDepartmentId;
+                let depth = 0;
+                while (currentDeptId) {
+                    const dept = departmentMap.get(currentDeptId);
+                    if (!dept) {
+                        break;
+                    }
+                    const managerAssignments = managersByDepartmentMap.get(currentDeptId) || [];
+                    const managers = managerAssignments
+                        .map((managerAssignment) => {
+                        const managerEmployee = employees.find((emp) => emp.id === managerAssignment.employeeId);
+                        if (!managerEmployee) {
+                            return null;
+                        }
+                        const position = positionMap.get(managerAssignment.positionId);
+                        if (!position) {
+                            return null;
+                        }
+                        return {
+                            employeeId: managerEmployee.id,
+                            name: managerEmployee.name,
+                            employeeNumber: managerEmployee.employeeNumber,
+                            email: managerEmployee.email,
+                            positionId: position.id,
+                            positionTitle: position.positionTitle,
+                        };
+                    })
+                        .filter((m) => m !== null);
+                    managerLine.push({
+                        departmentId: dept.id,
+                        departmentName: dept.departmentName,
+                        departmentCode: dept.departmentCode,
+                        type: dept.type,
+                        parentDepartmentId: dept.parentDepartmentId,
+                        depth,
+                        managers,
+                    });
+                    currentDeptId = dept.parentDepartmentId;
+                    depth++;
+                }
+                departments.push({
+                    departmentId: currentDepartment.id,
+                    departmentName: currentDepartment.departmentName,
+                    managerLine,
+                });
+            }
+            result.push({
+                employeeId: employee.id,
+                name: employee.name,
+                employeeNumber: employee.employeeNumber,
+                departments,
+            });
+        }
+        return result;
     }
 };
 exports.OrganizationManagementContextService = OrganizationManagementContextService;
