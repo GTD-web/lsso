@@ -446,13 +446,6 @@ export class OrganizationInformationApplicationController {
         description:
             '전체 직원을 조회하여 각 직원의 소속 부서부터 최상위 부서까지 올라가면서 isManager=true인 관리자 정보를 조회합니다.',
     })
-    // @ApiQuery({
-    //     name: 'includeTerminated',
-    //     description: '퇴사한 직원 포함 여부',
-    //     required: false,
-    //     type: Boolean,
-    //     example: false,
-    // })
     @ApiResponse({
         status: 200,
         description: '직원별 관리자 라인 정보 조회 성공',
@@ -460,10 +453,7 @@ export class OrganizationInformationApplicationController {
     })
     @ApiResponse({ status: 401, description: '인증이 필요합니다' })
     @ApiResponse({ status: 404, description: '관리자 라인 정보를 조회할 수 없음' })
-    async getEmployeesManagers(
-        @User() user: AuthenticatedUser,
-        // @Query('includeTerminated') includeTerminated?: boolean,
-    ): Promise<EmployeesManagersResponseDto> {
+    async getEmployeesManagers(@User() user: AuthenticatedUser): Promise<EmployeesManagersResponseDto> {
         // 인증된 사용자 정보 로깅 (개발용)
         console.log('직원 관리자 라인 조회 - 인증된 사용자:', user);
 
