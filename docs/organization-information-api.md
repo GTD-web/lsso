@@ -15,7 +15,8 @@
     -   [3. 부서 계층구조별 직원 정보 조회](#3-부서-계층구조별-직원-정보-조회)
     -   [4. 직원 생성 (채용)](#4-직원-생성-채용)
     -   [5. 직원 퇴사처리](#5-직원-퇴사처리)
-    -   [6. 조직 정보 마이그레이션 (Cron)](#6-조직-정보-마이그레이션-cron)
+    -   [6. 전체 직원의 부서 직속 라인 관리자 정보 조회](#6-전체-직원의-부서-직속-라인-관리자-정보-조회)
+    -   [7. 조직 정보 마이그레이션 (Cron)](#7-조직-정보-마이그레이션-cron)
 -   [에러 처리](#에러-처리)
 -   [사용 예시](#사용-예시)
 
@@ -442,7 +443,179 @@ _\* `employeeId` 또는 `employeeNumber` 중 하나는 필수_
 
 ---
 
-### 6. 조직 정보 마이그레이션 (Cron)
+### 6. 전체 직원의 부서 직속 라인 관리자 정보 조회
+
+**GET** `/organization/employees/managers`
+
+전체 직원을 조회하여 각 직원의 소속 부서부터 최상위 부서까지 올라가면서 `isManager=true`인 관리자 정보를 조회합니다. 각 직원은 여러 부서에 배치될 수 있으며, 각 부서별로 관리자 라인 정보를 제공합니다.
+
+#### 요청
+
+**Headers:**
+
+-   `Authorization: Bearer {access_token}` (필수)
+-   `X-System-Name: {systemName}` (선택사항)
+
+#### 응답
+
+**성공 (200 OK):**
+
+```json
+{
+    "employees": [
+        {
+            "employeeId": "emp-uuid-1",
+            "name": "홍길동",
+            "employeeNumber": "25001",
+            "departments": [
+                {
+                    "departmentId": "dept-uuid-1",
+                    "departmentName": "개발팀",
+                    "managerLine": [
+                        {
+                            "departmentId": "dept-uuid-1",
+                            "departmentName": "개발팀",
+                            "departmentCode": "DEV",
+                            "type": "TEAM",
+                            "parentDepartmentId": "dept-uuid-2",
+                            "depth": 0,
+                            "managers": [
+                                {
+                                    "employeeId": "emp-uuid-2",
+                                    "name": "김팀장",
+                                    "employeeNumber": "25002",
+                                    "email": "kim@example.com",
+                                    "positionId": "pos-uuid-1",
+                                    "positionTitle": "팀장"
+                                }
+                            ]
+                        },
+                        {
+                            "departmentId": "dept-uuid-2",
+                            "departmentName": "IT본부",
+                            "departmentCode": "IT",
+                            "type": "DIVISION",
+                            "parentDepartmentId": null,
+                            "depth": 1,
+                            "managers": [
+                                {
+                                    "employeeId": "emp-uuid-3",
+                                    "name": "이본부장",
+                                    "employeeNumber": "25003",
+                                    "email": "lee@example.com",
+                                    "positionId": "pos-uuid-2",
+                                    "positionTitle": "본부장"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "departmentId": "dept-uuid-4",
+                    "departmentName": "품질관리팀",
+                    "managerLine": [
+                        {
+                            "departmentId": "dept-uuid-4",
+                            "departmentName": "품질관리팀",
+                            "departmentCode": "QA",
+                            "type": "TEAM",
+                            "parentDepartmentId": "dept-uuid-5",
+                            "depth": 0,
+                            "managers": [
+                                {
+                                    "employeeId": "emp-uuid-5",
+                                    "name": "박팀장",
+                                    "employeeNumber": "25005",
+                                    "email": "park@example.com",
+                                    "positionId": "pos-uuid-3",
+                                    "positionTitle": "팀장"
+                                }
+                            ]
+                        },
+                        {
+                            "departmentId": "dept-uuid-5",
+                            "departmentName": "품질본부",
+                            "departmentCode": "QUALITY",
+                            "type": "DIVISION",
+                            "parentDepartmentId": null,
+                            "depth": 1,
+                            "managers": [
+                                {
+                                    "employeeId": "emp-uuid-6",
+                                    "name": "최본부장",
+                                    "employeeNumber": "25006",
+                                    "email": "choi@example.com",
+                                    "positionId": "pos-uuid-4",
+                                    "positionTitle": "본부장"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "total": 1
+}
+```
+
+**응답 필드 설명:**
+
+**EmployeeManagersDto:**
+
+| 필드             | 타입                            | 설명                                  |
+| ---------------- | ------------------------------- | ------------------------------------- |
+| `employeeId`     | string                          | 직원 ID                               |
+| `name`           | string                          | 직원 이름                             |
+| `employeeNumber` | string                          | 사번                                  |
+| `departments`    | EmployeeDepartmentManagersDto[] | 직원이 소속된 모든 부서의 관리자 정보 |
+
+**EmployeeDepartmentManagersDto:**
+
+| 필드             | 타입                   | 설명                         |
+| ---------------- | ---------------------- | ---------------------------- |
+| `departmentId`   | string                 | 부서 ID                      |
+| `departmentName` | string                 | 부서명                       |
+| `managerLine`    | DepartmentManagerDto[] | 해당 부서의 관리자 라인 정보 |
+
+**DepartmentManagerDto:**
+
+| 필드                 | 타입             | 설명                                         |
+| -------------------- | ---------------- | -------------------------------------------- |
+| `departmentId`       | string           | 부서 ID                                      |
+| `departmentName`     | string           | 부서명                                       |
+| `departmentCode`     | string           | 부서 코드                                    |
+| `type`               | string           | 부서 유형 (COMPANY/DIVISION/DEPARTMENT/TEAM) |
+| `parentDepartmentId` | string\|null     | 상위 부서 ID                                 |
+| `depth`              | number           | 부서 계층 깊이 (최상위 부서가 0)             |
+| `managers`           | ManagerInfoDto[] | 해당 부서의 관리자 목록                      |
+
+**ManagerInfoDto:**
+
+| 필드             | 타입   | 설명           |
+| ---------------- | ------ | -------------- |
+| `employeeId`     | string | 관리자 직원 ID |
+| `name`           | string | 관리자 이름    |
+| `employeeNumber` | string | 관리자 사번    |
+| `email`          | string | 관리자 이메일  |
+| `positionId`     | string | 직책 ID        |
+| `positionTitle`  | string | 직책명         |
+
+**에러 응답:**
+
+-   `401 Unauthorized`: 인증이 필요합니다
+-   `404 Not Found`: 관리자 라인 정보를 조회할 수 없음
+
+**참고:**
+
+-   각 직원은 여러 부서에 배치될 수 있으며, 각 부서별로 독립적인 관리자 라인 정보를 제공합니다.
+-   `managerLine` 배열은 소속 부서부터 최상위 부서까지의 계층 구조를 따라 순서대로 제공됩니다.
+-   각 부서 레벨에서 `isManager=true`인 직원만 `managers` 배열에 포함됩니다.
+-   `depth` 값은 0부터 시작하며, 소속 부서가 0, 상위 부서로 올라갈수록 1씩 증가합니다.
+
+---
+
+### 7. 조직 정보 마이그레이션 (Cron)
 
 **GET** `/organization/cron/sync`
 
@@ -565,6 +738,18 @@ const terminateEmployee = async (terminationData, token, systemName) => {
     });
     return await response.json();
 };
+
+// 5. 전체 직원의 부서 직속 라인 관리자 정보 조회
+const getEmployeesManagers = async (token, systemName) => {
+    const response = await fetch('/organization/employees/managers', {
+        method: 'GET',
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'X-System-Name': systemName,
+        },
+    });
+    return await response.json();
+};
 ```
 
 ### cURL
@@ -619,7 +804,12 @@ curl -X POST http://localhost:3000/organization/employee/terminate \
     "terminationReason": "수습기간 평가 불합격"
   }'
 
-# 6. 마이그레이션 실행 (Cron)
+# 6. 전체 직원의 부서 직속 라인 관리자 정보 조회
+curl -X GET "http://localhost:3000/organization/employees/managers" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "X-System-Name: LRIM System"
+
+# 7. 마이그레이션 실행 (Cron)
 curl -X GET http://localhost:3000/organization/cron/sync
 ```
 
