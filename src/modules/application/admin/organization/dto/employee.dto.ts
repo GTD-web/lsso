@@ -293,9 +293,20 @@ export class BulkUpdateDepartmentRequestDto {
     @IsUUID('4', { each: true })
     employeeIds: string[];
 
-    @ApiProperty({ description: '변경할 부서 ID' })
+    @ApiProperty({ description: '변경할 부서 ID (DEPARTMENT 타입만 허용)' })
     @IsUUID()
     departmentId: string;
+}
+
+export class BulkUpdateTeamRequestDto {
+    @ApiProperty({ description: '직원 ID 목록', type: [String] })
+    @IsArray()
+    @IsUUID('4', { each: true })
+    employeeIds: string[];
+
+    @ApiProperty({ description: '배치할 팀 ID (TEAM 타입만 허용)' })
+    @IsUUID()
+    teamId: string;
 }
 
 export class BulkUpdatePositionRequestDto {

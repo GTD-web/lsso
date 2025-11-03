@@ -496,6 +496,23 @@ export class OrganizationApplicationService {
     }
 
     /**
+     * 직원 팀 일괄 배치
+     */
+    async 직원팀일괄배치(
+        employeeIds: string[],
+        teamId: string,
+    ): Promise<{
+        successCount: number;
+        failCount: number;
+        successIds: string[];
+        failIds: string[];
+        errors?: { employeeId: string; message: string }[];
+    }> {
+        const result = await this.organizationContextService.직원_팀_일괄배치(employeeIds, teamId);
+        return result;
+    }
+
+    /**
      * 직원 직책 일괄 수정
      */
     async 직원직책일괄수정(

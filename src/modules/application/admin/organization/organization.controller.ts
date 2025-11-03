@@ -17,6 +17,7 @@ import {
     NextEmployeeNumberResponseDto,
     EmployeeDetailListResponseDto,
     BulkUpdateDepartmentRequestDto,
+    BulkUpdateTeamRequestDto,
     BulkUpdatePositionRequestDto,
     BulkUpdateRankRequestDto,
     BulkUpdateStatusRequestDto,
@@ -194,12 +195,28 @@ export class OrganizationController {
     // ==================== 직원 일괄 수정 ====================
 
     @Patch('employees/bulk/department')
-    @ApiOperation({ summary: '직원 부서 일괄 수정' })
+    @ApiOperation({
+        summary: '직원 부서 일괄 수정',
+        description: 'DEPARTMENT 타입의 부서에만 일괄 수정 가능합니다.',
+    })
     @ApiResponse({ status: 200, description: '부서 일괄 수정 성공', type: BulkUpdateResultDto })
-    @ApiResponse({ status: 400, description: '잘못된 요청' })
+    @ApiResponse({ status: 400, description: '잘못된 요청 (DEPARTMENT 타입이 아님)' })
     @ApiResponse({ status: 404, description: '부서를 찾을 수 없음' })
     async bulkUpdateEmployeeDepartment(@Body() dto: BulkUpdateDepartmentRequestDto): Promise<BulkUpdateResultDto> {
         return await this.organizationApplicationService.직원부서일괄수정(dto.employeeIds, dto.departmentId);
+    }
+
+    @Patch('employees/bulk/team')
+    @ApiOperation({
+        summary: '직원 팀 일괄 배치',
+        description: 'TEAM 타입의 부서에만 일괄 배치 가능합니다.',
+    })
+    @ApiBody({ type: BulkUpdateTeamRequestDto })
+    @ApiResponse({ status: 200, description: '팀 일괄 배치 성공', type: BulkUpdateResultDto })
+    @ApiResponse({ status: 400, description: '잘못된 요청 (TEAM 타입이 아님)' })
+    @ApiResponse({ status: 404, description: '팀을 찾을 수 없음' })
+    async bulkUpdateEmployeeTeam(@Body() dto: BulkUpdateTeamRequestDto): Promise<BulkUpdateResultDto> {
+        return await this.organizationApplicationService.직원팀일괄배치(dto.employeeIds, dto.teamId);
     }
 
     @Patch('employees/bulk/position')

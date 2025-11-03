@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { DomainEmployeeService } from '../../domain/employee/employee.service';
 import { DomainDepartmentService } from '../../domain/department/department.service';
 import { DomainPositionService } from '../../domain/position/position.service';
@@ -537,7 +537,12 @@ export class OrganizationManagementContextService {
         errors: { employeeId: string; message: string }[];
     }> {
         // 부서 존재 검증
-        await this.부서서비스.findById(departmentId);
+        const department = await this.부서서비스.findById(departmentId);
+
+        // DEPARTMENT 타입 검증
+        if (department.type !== DepartmentType.DEPARTMENT) {
+            throw new BadRequestException(`부서 타입이 DEPARTMENT가 아닙니다. 현재 타입: ${department.type}`);
+        }
 
         const successIds: string[] = [];
         const failIds: string[] = [];
@@ -573,6 +578,89 @@ export class OrganizationManagementContextService {
                 }
 
                 successIds.push(employeeId);
+            } catch (error) {
+                failIds.push(employeeId);
+                errors.push({
+                    employeeId,
+                    message: error.message || '알 수 없는 오류',
+                });
+            }
+        }
+
+        return {
+            successCount: successIds.length,
+            failCount: failIds.length,
+            successIds,
+            failIds,
+            errors,
+        };
+    }
+
+    /**
+     * 직원 팀 일괄 배치
+     * TEAM 타입의 부서에 직원을 일괄 배치
+     */
+    async 직원_팀_일괄배치(
+        employeeIds: string[],
+        teamId: string,
+    ): Promise<{
+        successCount: number;
+        failCount: number;
+        successIds: string[];
+        failIds: string[];
+        errors: { employeeId: string; message: string }[];
+    }> {
+        // 팀 존재 및 타입 검증
+        const team = await this.부서서비스.findById(teamId);
+
+        // TEAM 타입 검증
+        if (team.type !== DepartmentType.TEAM) {
+            throw new BadRequestException(`부서 타입이 TEAM이 아닙니다. 현재 타입: ${team.type}`);
+        }
+
+        // 성능 최적화: 기본 직책을 한 번만 조회
+        const allPositions = await this.직책서비스.findAllPositions();
+        if (allPositions.length === 0) {
+            throw new NotFoundException('시스템에 직책이 없습니다.');
+        }
+        const sortedPositions = [...allPositions].sort((a, b) => b.level - a.level);
+        const defaultPositionId = sortedPositions[0].id;
+
+        const successIds: string[] = [];
+        const failIds: string[] = [];
+        const errors: { employeeId: string; message: string }[] = [];
+
+        for (const employeeId of employeeIds) {
+            try {
+                // 직원 존재 확인
+                const employee = await this.직원을_조회한다(employeeId);
+
+                // 기존 TEAM 타입 배치 조회
+                const existingAssignments = await this.직원부서직책서비스.findAllByEmployeeId(employeeId);
+                let teamAssignment = null;
+
+                for (const assignment of existingAssignments) {
+                    const department = await this.부서서비스.findById(assignment.departmentId);
+                    if (department.type === DepartmentType.TEAM && department.id === teamId) {
+                        teamAssignment = assignment;
+                        break;
+                    }
+                }
+
+                if (teamAssignment) {
+                    // 동일한 TEAM에 이미 배치되어 있으면 스킵 (또는 업데이트)
+                    // 기존 배치 유지하거나 필요시 업데이트 가능
+                    successIds.push(employeeId);
+                } else {
+                    // 기본 직책을 사용하여 TEAM 배치 생성
+                    await this.직원부서직책서비스.createAssignment({
+                        employeeId: employee.id,
+                        departmentId: teamId,
+                        positionId: defaultPositionId,
+                        isManager: false, // TEAM 배치는 기본적으로 관리자가 아님
+                    });
+                    successIds.push(employeeId);
+                }
             } catch (error) {
                 failIds.push(employeeId);
                 errors.push({

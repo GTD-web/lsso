@@ -21,6 +21,7 @@ export {
     EmployeeDetailInfoDto,
     EmployeeDetailListResponseDto,
     BulkUpdateDepartmentRequestDto,
+    BulkUpdateTeamRequestDto,
     BulkUpdatePositionRequestDto,
     BulkUpdateRankRequestDto,
     BulkUpdateStatusRequestDto,
