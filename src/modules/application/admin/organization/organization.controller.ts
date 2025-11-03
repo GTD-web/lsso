@@ -12,7 +12,7 @@ import {
     DepartmentHierarchyResponseDto,
     CreateEmployeeRequestDto,
     UpdateEmployeeRequestDto,
-    EmployeeResponseDto,
+    AdminEmployeeResponseDto,
     EmployeeListResponseDto,
     NextEmployeeNumberResponseDto,
     EmployeeDetailListResponseDto,
@@ -167,16 +167,16 @@ export class OrganizationController {
     @Get('employees/:id')
     @ApiOperation({ summary: '직원 상세 조회' })
     @ApiParam({ name: 'id', description: '직원 ID' })
-    @ApiResponse({ status: 200, type: EmployeeResponseDto })
-    async getEmployee(@Param('id') id: string): Promise<EmployeeResponseDto> {
+    @ApiResponse({ status: 200, type: AdminEmployeeResponseDto })
+    async getEmployee(@Param('id') id: string): Promise<AdminEmployeeResponseDto> {
         return await this.organizationApplicationService.직원상세조회(id);
     }
 
     @Post('employees')
     @ApiOperation({ summary: '직원 생성' })
     @ApiBody({ type: CreateEmployeeRequestDto })
-    @ApiResponse({ status: 201, type: EmployeeResponseDto })
-    async createEmployee(@Body() createEmployeeDto: CreateEmployeeRequestDto): Promise<EmployeeResponseDto> {
+    @ApiResponse({ status: 201, type: AdminEmployeeResponseDto })
+    async createEmployee(@Body() createEmployeeDto: CreateEmployeeRequestDto): Promise<AdminEmployeeResponseDto> {
         return await this.organizationApplicationService.직원생성(createEmployeeDto);
     }
 
@@ -184,11 +184,11 @@ export class OrganizationController {
     @ApiOperation({ summary: '직원 수정' })
     @ApiParam({ name: 'id', description: '직원 ID' })
     @ApiBody({ type: UpdateEmployeeRequestDto })
-    @ApiResponse({ status: 200, type: EmployeeResponseDto })
+    @ApiResponse({ status: 200, type: AdminEmployeeResponseDto })
     async updateEmployee(
         @Param('id') id: string,
         @Body() updateEmployeeDto: UpdateEmployeeRequestDto,
-    ): Promise<EmployeeResponseDto> {
+    ): Promise<AdminEmployeeResponseDto> {
         return await this.organizationApplicationService.직원수정(id, updateEmployeeDto);
     }
 

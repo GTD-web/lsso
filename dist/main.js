@@ -1249,8 +1249,74 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LegacyLogFilterDto = exports.LegacyCreateLogDto = exports.ResponseSystemDto = exports.LegacyUpdateSystemDto = exports.LegacyCreateSystemDto = exports.LegacyAuthUserResponseDto = exports.RefreshTokenResponseDto = exports.LegacyAuthLoginResponseDto = exports.LegacyAuthTokenResponseDto = exports.UpdateAdminDto = exports.CreateAdminDto = exports.AdminTokenVerifyDto = exports.AdminTokenRefreshDto = exports.AdminResponseDto = exports.AdminProfileDto = exports.AdminLoginDto = exports.AdminLoginResponseDto = exports.SSODto = exports.EmployeeDetailListResponseDto = exports.EmployeeDetailInfoDto = exports.NextEmployeeNumberResponseDto = exports.EmployeeListResponseDto = exports.AdminEmployeeResponseDto = exports.BulkUpdateResultDto = exports.BulkUpdateStatusRequestDto = exports.BulkUpdateRankRequestDto = exports.BulkUpdatePositionRequestDto = exports.BulkUpdateTeamRequestDto = exports.BulkUpdateDepartmentRequestDto = exports.EmployeeAssignmentDetailDto = exports.EmployeeRankHistoryResponseDto = exports.PromoteEmployeeRequestDto = exports.EmployeeAssignmentDetailResponseDto = exports.EmployeeAssignmentListResponseDto = exports.EmployeeAssignmentResponseDto = exports.UpdateManagerStatusRequestDto = exports.UpdateEmployeeAssignmentRequestDto = exports.AssignEmployeeRequestDto = exports.RankResponseDto = exports.UpdateRankRequestDto = exports.CreateRankRequestDto = exports.PositionResponseDto = exports.UpdatePositionRequestDto = exports.CreatePositionRequestDto = exports.UpdateDepartmentParentRequestDto = exports.UpdateDepartmentOrderRequestDto = exports.DepartmentListResponseDto = exports.DepartmentResponseDto = exports.UpdateDepartmentRequestDto = exports.CreateDepartmentRequestDto = void 0;
+exports.LegacyLogsResponseDto = exports.LegacyLogResponseDto = void 0;
 __exportStar(__webpack_require__(/*! ../libs/common/dto */ "./libs/common/dto/index.ts"), exports);
 __exportStar(__webpack_require__(/*! ./modules/application/organization-information/dto */ "./src/modules/application/organization-information/dto/index.ts"), exports);
+var dto_1 = __webpack_require__(/*! ./modules/application/admin/organization/dto */ "./src/modules/application/admin/organization/dto/index.ts");
+Object.defineProperty(exports, "CreateDepartmentRequestDto", ({ enumerable: true, get: function () { return dto_1.CreateDepartmentRequestDto; } }));
+Object.defineProperty(exports, "UpdateDepartmentRequestDto", ({ enumerable: true, get: function () { return dto_1.UpdateDepartmentRequestDto; } }));
+Object.defineProperty(exports, "DepartmentResponseDto", ({ enumerable: true, get: function () { return dto_1.DepartmentResponseDto; } }));
+Object.defineProperty(exports, "DepartmentListResponseDto", ({ enumerable: true, get: function () { return dto_1.DepartmentListResponseDto; } }));
+Object.defineProperty(exports, "UpdateDepartmentOrderRequestDto", ({ enumerable: true, get: function () { return dto_1.UpdateDepartmentOrderRequestDto; } }));
+Object.defineProperty(exports, "UpdateDepartmentParentRequestDto", ({ enumerable: true, get: function () { return dto_1.UpdateDepartmentParentRequestDto; } }));
+Object.defineProperty(exports, "CreatePositionRequestDto", ({ enumerable: true, get: function () { return dto_1.CreatePositionRequestDto; } }));
+Object.defineProperty(exports, "UpdatePositionRequestDto", ({ enumerable: true, get: function () { return dto_1.UpdatePositionRequestDto; } }));
+Object.defineProperty(exports, "PositionResponseDto", ({ enumerable: true, get: function () { return dto_1.PositionResponseDto; } }));
+Object.defineProperty(exports, "CreateRankRequestDto", ({ enumerable: true, get: function () { return dto_1.CreateRankRequestDto; } }));
+Object.defineProperty(exports, "UpdateRankRequestDto", ({ enumerable: true, get: function () { return dto_1.UpdateRankRequestDto; } }));
+Object.defineProperty(exports, "RankResponseDto", ({ enumerable: true, get: function () { return dto_1.RankResponseDto; } }));
+Object.defineProperty(exports, "AssignEmployeeRequestDto", ({ enumerable: true, get: function () { return dto_1.AssignEmployeeRequestDto; } }));
+Object.defineProperty(exports, "UpdateEmployeeAssignmentRequestDto", ({ enumerable: true, get: function () { return dto_1.UpdateEmployeeAssignmentRequestDto; } }));
+Object.defineProperty(exports, "UpdateManagerStatusRequestDto", ({ enumerable: true, get: function () { return dto_1.UpdateManagerStatusRequestDto; } }));
+Object.defineProperty(exports, "EmployeeAssignmentResponseDto", ({ enumerable: true, get: function () { return dto_1.EmployeeAssignmentResponseDto; } }));
+Object.defineProperty(exports, "EmployeeAssignmentListResponseDto", ({ enumerable: true, get: function () { return dto_1.EmployeeAssignmentListResponseDto; } }));
+Object.defineProperty(exports, "EmployeeAssignmentDetailResponseDto", ({ enumerable: true, get: function () { return dto_1.EmployeeAssignmentDetailResponseDto; } }));
+Object.defineProperty(exports, "PromoteEmployeeRequestDto", ({ enumerable: true, get: function () { return dto_1.PromoteEmployeeRequestDto; } }));
+Object.defineProperty(exports, "EmployeeRankHistoryResponseDto", ({ enumerable: true, get: function () { return dto_1.EmployeeRankHistoryResponseDto; } }));
+Object.defineProperty(exports, "EmployeeAssignmentDetailDto", ({ enumerable: true, get: function () { return dto_1.EmployeeAssignmentDetailDto; } }));
+Object.defineProperty(exports, "BulkUpdateDepartmentRequestDto", ({ enumerable: true, get: function () { return dto_1.BulkUpdateDepartmentRequestDto; } }));
+Object.defineProperty(exports, "BulkUpdateTeamRequestDto", ({ enumerable: true, get: function () { return dto_1.BulkUpdateTeamRequestDto; } }));
+Object.defineProperty(exports, "BulkUpdatePositionRequestDto", ({ enumerable: true, get: function () { return dto_1.BulkUpdatePositionRequestDto; } }));
+Object.defineProperty(exports, "BulkUpdateRankRequestDto", ({ enumerable: true, get: function () { return dto_1.BulkUpdateRankRequestDto; } }));
+Object.defineProperty(exports, "BulkUpdateStatusRequestDto", ({ enumerable: true, get: function () { return dto_1.BulkUpdateStatusRequestDto; } }));
+Object.defineProperty(exports, "BulkUpdateResultDto", ({ enumerable: true, get: function () { return dto_1.BulkUpdateResultDto; } }));
+Object.defineProperty(exports, "AdminEmployeeResponseDto", ({ enumerable: true, get: function () { return dto_1.AdminEmployeeResponseDto; } }));
+Object.defineProperty(exports, "EmployeeListResponseDto", ({ enumerable: true, get: function () { return dto_1.EmployeeListResponseDto; } }));
+Object.defineProperty(exports, "NextEmployeeNumberResponseDto", ({ enumerable: true, get: function () { return dto_1.NextEmployeeNumberResponseDto; } }));
+Object.defineProperty(exports, "EmployeeDetailInfoDto", ({ enumerable: true, get: function () { return dto_1.EmployeeDetailInfoDto; } }));
+Object.defineProperty(exports, "EmployeeDetailListResponseDto", ({ enumerable: true, get: function () { return dto_1.EmployeeDetailListResponseDto; } }));
+__exportStar(__webpack_require__(/*! ./modules/application/admin/employee/dto */ "./src/modules/application/admin/employee/dto/index.ts"), exports);
+__exportStar(__webpack_require__(/*! ./modules/application/admin/log/dto */ "./src/modules/application/admin/log/dto/index.ts"), exports);
+__exportStar(__webpack_require__(/*! ./modules/application/admin/system/dto */ "./src/modules/application/admin/system/dto/index.ts"), exports);
+exports.SSODto = __webpack_require__(/*! ./modules/application/single-sign-on/dto */ "./src/modules/application/single-sign-on/dto/index.ts");
+__exportStar(__webpack_require__(/*! ./modules/application/fcm-token-management/dto */ "./src/modules/application/fcm-token-management/dto/index.ts"), exports);
+var dto_2 = __webpack_require__(/*! ./modules/application/legacy/auth/dto */ "./src/modules/application/legacy/auth/dto/index.ts");
+Object.defineProperty(exports, "AdminLoginResponseDto", ({ enumerable: true, get: function () { return dto_2.AdminLoginResponseDto; } }));
+Object.defineProperty(exports, "AdminLoginDto", ({ enumerable: true, get: function () { return dto_2.AdminLoginDto; } }));
+Object.defineProperty(exports, "AdminProfileDto", ({ enumerable: true, get: function () { return dto_2.AdminProfileDto; } }));
+Object.defineProperty(exports, "AdminResponseDto", ({ enumerable: true, get: function () { return dto_2.AdminResponseDto; } }));
+Object.defineProperty(exports, "AdminTokenRefreshDto", ({ enumerable: true, get: function () { return dto_2.AdminTokenRefreshDto; } }));
+Object.defineProperty(exports, "AdminTokenVerifyDto", ({ enumerable: true, get: function () { return dto_2.AdminTokenVerifyDto; } }));
+Object.defineProperty(exports, "CreateAdminDto", ({ enumerable: true, get: function () { return dto_2.CreateAdminDto; } }));
+Object.defineProperty(exports, "UpdateAdminDto", ({ enumerable: true, get: function () { return dto_2.UpdateAdminDto; } }));
+Object.defineProperty(exports, "LegacyAuthTokenResponseDto", ({ enumerable: true, get: function () { return dto_2.TokenResponseDto; } }));
+Object.defineProperty(exports, "LegacyAuthLoginResponseDto", ({ enumerable: true, get: function () { return dto_2.LoginResponseDto; } }));
+Object.defineProperty(exports, "RefreshTokenResponseDto", ({ enumerable: true, get: function () { return dto_2.RefreshTokenResponseDto; } }));
+Object.defineProperty(exports, "LegacyAuthUserResponseDto", ({ enumerable: true, get: function () { return dto_2.UserResponseDto; } }));
+__exportStar(__webpack_require__(/*! ./modules/application/legacy/users/dto */ "./src/modules/application/legacy/users/dto/index.ts"), exports);
+__exportStar(__webpack_require__(/*! ./modules/application/legacy/tokens/dto */ "./src/modules/application/legacy/tokens/dto/index.ts"), exports);
+var dto_3 = __webpack_require__(/*! ./modules/application/legacy/systems/dto */ "./src/modules/application/legacy/systems/dto/index.ts");
+Object.defineProperty(exports, "LegacyCreateSystemDto", ({ enumerable: true, get: function () { return dto_3.CreateSystemDto; } }));
+Object.defineProperty(exports, "LegacyUpdateSystemDto", ({ enumerable: true, get: function () { return dto_3.UpdateSystemDto; } }));
+Object.defineProperty(exports, "ResponseSystemDto", ({ enumerable: true, get: function () { return dto_3.ResponseSystemDto; } }));
+var dto_4 = __webpack_require__(/*! ./modules/application/legacy/logs/dto */ "./src/modules/application/legacy/logs/dto/index.ts");
+Object.defineProperty(exports, "LegacyCreateLogDto", ({ enumerable: true, get: function () { return dto_4.CreateLogDto; } }));
+Object.defineProperty(exports, "LegacyLogFilterDto", ({ enumerable: true, get: function () { return dto_4.LogFilterDto; } }));
+Object.defineProperty(exports, "LegacyLogResponseDto", ({ enumerable: true, get: function () { return dto_4.LogResponseDto; } }));
+Object.defineProperty(exports, "LegacyLogsResponseDto", ({ enumerable: true, get: function () { return dto_4.LogsResponseDto; } }));
+__exportStar(__webpack_require__(/*! ./modules/application/legacy/dashboard/dto/dashboard.dto */ "./src/modules/application/legacy/dashboard/dto/dashboard.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./modules/application/legacy/mail/dtos/sendMail.dto */ "./src/modules/application/legacy/mail/dtos/sendMail.dto.ts"), exports);
 
 
 /***/ }),
@@ -4200,12 +4266,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.BulkUpdateResultDto = exports.BulkUpdateStatusRequestDto = exports.BulkUpdateRankRequestDto = exports.BulkUpdatePositionRequestDto = exports.BulkUpdateTeamRequestDto = exports.BulkUpdateDepartmentRequestDto = exports.EmployeeDetailListResponseDto = exports.EmployeeDetailInfoDto = exports.NextEmployeeNumberResponseDto = exports.EmployeeListResponseDto = exports.EmployeeResponseDto = exports.UpdateEmployeeRequestDto = exports.CreateEmployeeRequestDto = void 0;
+exports.BulkUpdateResultDto = exports.BulkUpdateStatusRequestDto = exports.BulkUpdateRankRequestDto = exports.BulkUpdatePositionRequestDto = exports.BulkUpdateTeamRequestDto = exports.BulkUpdateDepartmentRequestDto = exports.EmployeeDetailListResponseDto = exports.EmployeeDetailInfoDto = exports.NextEmployeeNumberResponseDto = exports.EmployeeListResponseDto = exports.AdminEmployeeResponseDto = exports.EmployeeAssignmentDetailDto = exports.UpdateEmployeeRequestDto = exports.CreateEmployeeRequestDto = void 0;
 const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
 const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
 const enums_1 = __webpack_require__(/*! ../../../../../../libs/common/enums */ "./libs/common/enums/index.ts");
+const department_entity_1 = __webpack_require__(/*! ../../../../domain/department/department.entity */ "./src/modules/domain/department/department.entity.ts");
 class CreateEmployeeRequestDto {
 }
 exports.CreateEmployeeRequestDto = CreateEmployeeRequestDto;
@@ -4353,70 +4420,131 @@ __decorate([
     (0, class_validator_1.IsBoolean)(),
     __metadata("design:type", Boolean)
 ], UpdateEmployeeRequestDto.prototype, "isManager", void 0);
-class EmployeeResponseDto {
+class EmployeeAssignmentDetailDto {
 }
-exports.EmployeeResponseDto = EmployeeResponseDto;
+exports.EmployeeAssignmentDetailDto = EmployeeAssignmentDetailDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '배치 ID' }),
+    __metadata("design:type", String)
+], EmployeeAssignmentDetailDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '부서 ID' }),
+    __metadata("design:type", String)
+], EmployeeAssignmentDetailDto.prototype, "departmentId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '부서명' }),
+    __metadata("design:type", String)
+], EmployeeAssignmentDetailDto.prototype, "departmentName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '부서 코드' }),
+    __metadata("design:type", String)
+], EmployeeAssignmentDetailDto.prototype, "departmentCode", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '부서 타입', enum: department_entity_1.DepartmentType }),
+    __metadata("design:type", typeof (_d = typeof department_entity_1.DepartmentType !== "undefined" && department_entity_1.DepartmentType) === "function" ? _d : Object)
+], EmployeeAssignmentDetailDto.prototype, "departmentType", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직책 ID' }),
+    __metadata("design:type", String)
+], EmployeeAssignmentDetailDto.prototype, "positionId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직책명' }),
+    __metadata("design:type", String)
+], EmployeeAssignmentDetailDto.prototype, "positionTitle", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직책 코드' }),
+    __metadata("design:type", String)
+], EmployeeAssignmentDetailDto.prototype, "positionCode", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '관리자 권한 여부' }),
+    __metadata("design:type", Boolean)
+], EmployeeAssignmentDetailDto.prototype, "isManager", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '생성일' }),
+    __metadata("design:type", typeof (_e = typeof Date !== "undefined" && Date) === "function" ? _e : Object)
+], EmployeeAssignmentDetailDto.prototype, "createdAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '수정일' }),
+    __metadata("design:type", typeof (_f = typeof Date !== "undefined" && Date) === "function" ? _f : Object)
+], EmployeeAssignmentDetailDto.prototype, "updatedAt", void 0);
+class AdminEmployeeResponseDto {
+}
+exports.AdminEmployeeResponseDto = AdminEmployeeResponseDto;
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '직원 ID' }),
     __metadata("design:type", String)
-], EmployeeResponseDto.prototype, "id", void 0);
+], AdminEmployeeResponseDto.prototype, "id", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '사번' }),
     __metadata("design:type", String)
-], EmployeeResponseDto.prototype, "employeeNumber", void 0);
+], AdminEmployeeResponseDto.prototype, "employeeNumber", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '이름' }),
     __metadata("design:type", String)
-], EmployeeResponseDto.prototype, "name", void 0);
+], AdminEmployeeResponseDto.prototype, "name", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '이메일' }),
     __metadata("design:type", String)
-], EmployeeResponseDto.prototype, "email", void 0);
+], AdminEmployeeResponseDto.prototype, "email", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '전화번호', required: false }),
     __metadata("design:type", String)
-], EmployeeResponseDto.prototype, "phoneNumber", void 0);
+], AdminEmployeeResponseDto.prototype, "phoneNumber", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '생년월일', required: false }),
-    __metadata("design:type", typeof (_d = typeof Date !== "undefined" && Date) === "function" ? _d : Object)
-], EmployeeResponseDto.prototype, "dateOfBirth", void 0);
+    __metadata("design:type", typeof (_g = typeof Date !== "undefined" && Date) === "function" ? _g : Object)
+], AdminEmployeeResponseDto.prototype, "dateOfBirth", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '성별', enum: enums_1.Gender, required: false }),
-    __metadata("design:type", typeof (_e = typeof enums_1.Gender !== "undefined" && enums_1.Gender) === "function" ? _e : Object)
-], EmployeeResponseDto.prototype, "gender", void 0);
+    __metadata("design:type", typeof (_h = typeof enums_1.Gender !== "undefined" && enums_1.Gender) === "function" ? _h : Object)
+], AdminEmployeeResponseDto.prototype, "gender", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '입사일' }),
-    __metadata("design:type", typeof (_f = typeof Date !== "undefined" && Date) === "function" ? _f : Object)
-], EmployeeResponseDto.prototype, "hireDate", void 0);
+    __metadata("design:type", typeof (_j = typeof Date !== "undefined" && Date) === "function" ? _j : Object)
+], AdminEmployeeResponseDto.prototype, "hireDate", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '재직 상태', enum: enums_1.EmployeeStatus }),
-    __metadata("design:type", typeof (_g = typeof enums_1.EmployeeStatus !== "undefined" && enums_1.EmployeeStatus) === "function" ? _g : Object)
-], EmployeeResponseDto.prototype, "status", void 0);
+    __metadata("design:type", typeof (_k = typeof enums_1.EmployeeStatus !== "undefined" && enums_1.EmployeeStatus) === "function" ? _k : Object)
+], AdminEmployeeResponseDto.prototype, "status", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '현재 직급 ID', required: false }),
     __metadata("design:type", String)
-], EmployeeResponseDto.prototype, "currentRankId", void 0);
+], AdminEmployeeResponseDto.prototype, "currentRankId", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '퇴사일', required: false }),
-    __metadata("design:type", typeof (_h = typeof Date !== "undefined" && Date) === "function" ? _h : Object)
-], EmployeeResponseDto.prototype, "terminationDate", void 0);
+    __metadata("design:type", typeof (_l = typeof Date !== "undefined" && Date) === "function" ? _l : Object)
+], AdminEmployeeResponseDto.prototype, "terminationDate", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '초기 비밀번호 설정 여부' }),
     __metadata("design:type", Boolean)
-], EmployeeResponseDto.prototype, "isInitialPasswordSet", void 0);
+], AdminEmployeeResponseDto.prototype, "isInitialPasswordSet", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '생성일' }),
-    __metadata("design:type", typeof (_j = typeof Date !== "undefined" && Date) === "function" ? _j : Object)
-], EmployeeResponseDto.prototype, "createdAt", void 0);
+    __metadata("design:type", typeof (_m = typeof Date !== "undefined" && Date) === "function" ? _m : Object)
+], AdminEmployeeResponseDto.prototype, "createdAt", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '수정일' }),
-    __metadata("design:type", typeof (_k = typeof Date !== "undefined" && Date) === "function" ? _k : Object)
-], EmployeeResponseDto.prototype, "updatedAt", void 0);
+    __metadata("design:type", typeof (_o = typeof Date !== "undefined" && Date) === "function" ? _o : Object)
+], AdminEmployeeResponseDto.prototype, "updatedAt", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        description: 'DEPARTMENT 타입 배치 정보 (하나)',
+        type: EmployeeAssignmentDetailDto,
+    }),
+    __metadata("design:type", EmployeeAssignmentDetailDto)
+], AdminEmployeeResponseDto.prototype, "department", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        description: 'TEAM 타입 배치 정보 목록 (여러 개)',
+        type: [EmployeeAssignmentDetailDto],
+    }),
+    __metadata("design:type", Array)
+], AdminEmployeeResponseDto.prototype, "teams", void 0);
 class EmployeeListResponseDto {
 }
 exports.EmployeeListResponseDto = EmployeeListResponseDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({ description: '직원 목록', type: [EmployeeResponseDto] }),
+    (0, swagger_1.ApiProperty)({ description: '직원 목록', type: [AdminEmployeeResponseDto] }),
     __metadata("design:type", Array)
 ], EmployeeListResponseDto.prototype, "employees", void 0);
 class NextEmployeeNumberResponseDto {
@@ -4467,19 +4595,19 @@ __decorate([
 ], EmployeeDetailInfoDto.prototype, "phoneNumber", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '생년월일', required: false }),
-    __metadata("design:type", typeof (_l = typeof Date !== "undefined" && Date) === "function" ? _l : Object)
+    __metadata("design:type", typeof (_p = typeof Date !== "undefined" && Date) === "function" ? _p : Object)
 ], EmployeeDetailInfoDto.prototype, "dateOfBirth", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '성별', enum: enums_1.Gender, required: false }),
-    __metadata("design:type", typeof (_m = typeof enums_1.Gender !== "undefined" && enums_1.Gender) === "function" ? _m : Object)
+    __metadata("design:type", typeof (_q = typeof enums_1.Gender !== "undefined" && enums_1.Gender) === "function" ? _q : Object)
 ], EmployeeDetailInfoDto.prototype, "gender", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '입사일' }),
-    __metadata("design:type", typeof (_o = typeof Date !== "undefined" && Date) === "function" ? _o : Object)
+    __metadata("design:type", typeof (_r = typeof Date !== "undefined" && Date) === "function" ? _r : Object)
 ], EmployeeDetailInfoDto.prototype, "hireDate", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '재직 상태', enum: enums_1.EmployeeStatus }),
-    __metadata("design:type", typeof (_p = typeof enums_1.EmployeeStatus !== "undefined" && enums_1.EmployeeStatus) === "function" ? _p : Object)
+    __metadata("design:type", typeof (_s = typeof enums_1.EmployeeStatus !== "undefined" && enums_1.EmployeeStatus) === "function" ? _s : Object)
 ], EmployeeDetailInfoDto.prototype, "status", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '현재 직급 ID', required: false }),
@@ -4487,7 +4615,7 @@ __decorate([
 ], EmployeeDetailInfoDto.prototype, "currentRankId", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '퇴사일', required: false }),
-    __metadata("design:type", typeof (_q = typeof Date !== "undefined" && Date) === "function" ? _q : Object)
+    __metadata("design:type", typeof (_t = typeof Date !== "undefined" && Date) === "function" ? _t : Object)
 ], EmployeeDetailInfoDto.prototype, "terminationDate", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '초기 비밀번호 설정 여부' }),
@@ -4495,11 +4623,11 @@ __decorate([
 ], EmployeeDetailInfoDto.prototype, "isInitialPasswordSet", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '생성일' }),
-    __metadata("design:type", typeof (_r = typeof Date !== "undefined" && Date) === "function" ? _r : Object)
+    __metadata("design:type", typeof (_u = typeof Date !== "undefined" && Date) === "function" ? _u : Object)
 ], EmployeeDetailInfoDto.prototype, "createdAt", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '수정일' }),
-    __metadata("design:type", typeof (_s = typeof Date !== "undefined" && Date) === "function" ? _s : Object)
+    __metadata("design:type", typeof (_v = typeof Date !== "undefined" && Date) === "function" ? _v : Object)
 ], EmployeeDetailInfoDto.prototype, "updatedAt", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '부서 정보 목록', type: 'array', items: { type: 'object' }, required: false }),
@@ -4596,7 +4724,7 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '변경할 재직상태', enum: enums_1.EmployeeStatus }),
     (0, class_validator_1.IsEnum)(enums_1.EmployeeStatus),
-    __metadata("design:type", typeof (_t = typeof enums_1.EmployeeStatus !== "undefined" && enums_1.EmployeeStatus) === "function" ? _t : Object)
+    __metadata("design:type", typeof (_w = typeof enums_1.EmployeeStatus !== "undefined" && enums_1.EmployeeStatus) === "function" ? _w : Object)
 ], BulkUpdateStatusRequestDto.prototype, "status", void 0);
 __decorate([
     (0, swagger_1.ApiPropertyOptional)({ description: '퇴사일 (재직상태가 퇴사인 경우)', example: '2024-12-31' }),
@@ -4639,7 +4767,7 @@ __decorate([
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.EmployeeRankHistoryResponseDto = exports.PromoteEmployeeRequestDto = exports.EmployeeAssignmentDetailResponseDto = exports.EmployeeAssignmentListResponseDto = exports.EmployeeAssignmentResponseDto = exports.UpdateManagerStatusRequestDto = exports.UpdateEmployeeAssignmentRequestDto = exports.AssignEmployeeRequestDto = exports.RankResponseDto = exports.UpdateRankRequestDto = exports.CreateRankRequestDto = exports.PositionResponseDto = exports.UpdatePositionRequestDto = exports.CreatePositionRequestDto = exports.BulkUpdateResultDto = exports.BulkUpdateStatusRequestDto = exports.BulkUpdateRankRequestDto = exports.BulkUpdatePositionRequestDto = exports.BulkUpdateTeamRequestDto = exports.BulkUpdateDepartmentRequestDto = exports.EmployeeDetailListResponseDto = exports.EmployeeDetailInfoDto = exports.NextEmployeeNumberResponseDto = exports.EmployeeListResponseDto = exports.EmployeeResponseDto = exports.UpdateEmployeeRequestDto = exports.CreateEmployeeRequestDto = exports.DepartmentEmployeeInfoDto = exports.DepartmentWithEmployeesDto = exports.DepartmentHierarchyResponseDto = exports.UpdateDepartmentParentRequestDto = exports.UpdateDepartmentOrderRequestDto = exports.DepartmentListResponseDto = exports.DepartmentResponseDto = exports.UpdateDepartmentRequestDto = exports.CreateDepartmentRequestDto = void 0;
+exports.EmployeeRankHistoryResponseDto = exports.PromoteEmployeeRequestDto = exports.EmployeeAssignmentDetailResponseDto = exports.EmployeeAssignmentListResponseDto = exports.EmployeeAssignmentResponseDto = exports.UpdateManagerStatusRequestDto = exports.UpdateEmployeeAssignmentRequestDto = exports.AssignEmployeeRequestDto = exports.RankResponseDto = exports.UpdateRankRequestDto = exports.CreateRankRequestDto = exports.PositionResponseDto = exports.UpdatePositionRequestDto = exports.CreatePositionRequestDto = exports.BulkUpdateResultDto = exports.BulkUpdateStatusRequestDto = exports.BulkUpdateRankRequestDto = exports.BulkUpdatePositionRequestDto = exports.BulkUpdateTeamRequestDto = exports.BulkUpdateDepartmentRequestDto = exports.EmployeeAssignmentDetailDto = exports.EmployeeDetailListResponseDto = exports.EmployeeDetailInfoDto = exports.NextEmployeeNumberResponseDto = exports.EmployeeListResponseDto = exports.AdminEmployeeResponseDto = exports.UpdateEmployeeRequestDto = exports.CreateEmployeeRequestDto = exports.DepartmentEmployeeInfoDto = exports.DepartmentWithEmployeesDto = exports.DepartmentHierarchyResponseDto = exports.UpdateDepartmentParentRequestDto = exports.UpdateDepartmentOrderRequestDto = exports.DepartmentListResponseDto = exports.DepartmentResponseDto = exports.UpdateDepartmentRequestDto = exports.CreateDepartmentRequestDto = void 0;
 var department_dto_1 = __webpack_require__(/*! ./department.dto */ "./src/modules/application/admin/organization/dto/department.dto.ts");
 Object.defineProperty(exports, "CreateDepartmentRequestDto", ({ enumerable: true, get: function () { return department_dto_1.CreateDepartmentRequestDto; } }));
 Object.defineProperty(exports, "UpdateDepartmentRequestDto", ({ enumerable: true, get: function () { return department_dto_1.UpdateDepartmentRequestDto; } }));
@@ -4653,11 +4781,12 @@ Object.defineProperty(exports, "DepartmentEmployeeInfoDto", ({ enumerable: true,
 var employee_dto_1 = __webpack_require__(/*! ./employee.dto */ "./src/modules/application/admin/organization/dto/employee.dto.ts");
 Object.defineProperty(exports, "CreateEmployeeRequestDto", ({ enumerable: true, get: function () { return employee_dto_1.CreateEmployeeRequestDto; } }));
 Object.defineProperty(exports, "UpdateEmployeeRequestDto", ({ enumerable: true, get: function () { return employee_dto_1.UpdateEmployeeRequestDto; } }));
-Object.defineProperty(exports, "EmployeeResponseDto", ({ enumerable: true, get: function () { return employee_dto_1.EmployeeResponseDto; } }));
+Object.defineProperty(exports, "AdminEmployeeResponseDto", ({ enumerable: true, get: function () { return employee_dto_1.AdminEmployeeResponseDto; } }));
 Object.defineProperty(exports, "EmployeeListResponseDto", ({ enumerable: true, get: function () { return employee_dto_1.EmployeeListResponseDto; } }));
 Object.defineProperty(exports, "NextEmployeeNumberResponseDto", ({ enumerable: true, get: function () { return employee_dto_1.NextEmployeeNumberResponseDto; } }));
 Object.defineProperty(exports, "EmployeeDetailInfoDto", ({ enumerable: true, get: function () { return employee_dto_1.EmployeeDetailInfoDto; } }));
 Object.defineProperty(exports, "EmployeeDetailListResponseDto", ({ enumerable: true, get: function () { return employee_dto_1.EmployeeDetailListResponseDto; } }));
+Object.defineProperty(exports, "EmployeeAssignmentDetailDto", ({ enumerable: true, get: function () { return employee_dto_1.EmployeeAssignmentDetailDto; } }));
 Object.defineProperty(exports, "BulkUpdateDepartmentRequestDto", ({ enumerable: true, get: function () { return employee_dto_1.BulkUpdateDepartmentRequestDto; } }));
 Object.defineProperty(exports, "BulkUpdateTeamRequestDto", ({ enumerable: true, get: function () { return employee_dto_1.BulkUpdateTeamRequestDto; } }));
 Object.defineProperty(exports, "BulkUpdatePositionRequestDto", ({ enumerable: true, get: function () { return employee_dto_1.BulkUpdatePositionRequestDto; } }));
@@ -4887,6 +5016,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OrganizationApplicationService = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const organization_management_context_service_1 = __webpack_require__(/*! src/modules/context/organization-management/organization-management-context.service */ "./src/modules/context/organization-management/organization-management-context.service.ts");
+const department_entity_1 = __webpack_require__(/*! src/modules/domain/department/department.entity */ "./src/modules/domain/department/department.entity.ts");
 let OrganizationApplicationService = class OrganizationApplicationService {
     constructor(organizationContextService) {
         this.organizationContextService = organizationContextService;
@@ -5046,7 +5176,70 @@ let OrganizationApplicationService = class OrganizationApplicationService {
     }
     async 직원상세조회(id) {
         const employee = await this.organizationContextService.직원을_조회한다(id);
-        return this.직원을_응답DTO로_변환한다(employee);
+        const baseDto = this.직원을_응답DTO로_변환한다(employee);
+        const assignments = await this.organizationContextService.직원의_모든_배치정보를_조회한다(id);
+        if (assignments.length > 0) {
+            const departmentIds = [...new Set(assignments.map((a) => a.departmentId))];
+            const positionIds = [...new Set(assignments.map((a) => a.positionId))];
+            const [departments, positions] = await Promise.all([
+                Promise.all(departmentIds.map((deptId) => this.organizationContextService.부서_ID로_부서를_조회한다(deptId))),
+                Promise.all(positionIds.map((posId) => this.organizationContextService.직책_ID로_직책을_조회한다(posId))),
+            ]);
+            const departmentMap = new Map(departments.map((dept) => [dept.id, dept]));
+            const positionMap = new Map(positions.map((pos) => [pos.id, pos]));
+            const departmentAssignment = assignments.find((assignment) => {
+                const dept = departmentMap.get(assignment.departmentId);
+                return dept?.type === department_entity_1.DepartmentType.DEPARTMENT;
+            });
+            const teamAssignments = assignments.filter((assignment) => {
+                const dept = departmentMap.get(assignment.departmentId);
+                return dept?.type === department_entity_1.DepartmentType.TEAM;
+            });
+            if (departmentAssignment) {
+                const dept = departmentMap.get(departmentAssignment.departmentId);
+                const pos = positionMap.get(departmentAssignment.positionId);
+                if (dept && pos) {
+                    baseDto.department = {
+                        id: departmentAssignment.id,
+                        departmentId: dept.id,
+                        departmentName: dept.departmentName,
+                        departmentCode: dept.departmentCode,
+                        departmentType: dept.type,
+                        positionId: pos.id,
+                        positionTitle: pos.positionTitle,
+                        positionCode: pos.positionCode,
+                        isManager: departmentAssignment.isManager,
+                        createdAt: departmentAssignment.createdAt,
+                        updatedAt: departmentAssignment.updatedAt,
+                    };
+                }
+            }
+            if (teamAssignments.length > 0) {
+                baseDto.teams = teamAssignments
+                    .map((assignment) => {
+                    const dept = departmentMap.get(assignment.departmentId);
+                    const pos = positionMap.get(assignment.positionId);
+                    if (dept && pos) {
+                        return {
+                            id: assignment.id,
+                            departmentId: dept.id,
+                            departmentName: dept.departmentName,
+                            departmentCode: dept.departmentCode,
+                            departmentType: dept.type,
+                            positionId: pos.id,
+                            positionTitle: pos.positionTitle,
+                            positionCode: pos.positionCode,
+                            isManager: assignment.isManager,
+                            createdAt: assignment.createdAt,
+                            updatedAt: assignment.updatedAt,
+                        };
+                    }
+                    return null;
+                })
+                    .filter((team) => team !== null);
+            }
+        }
+        return baseDto;
     }
     async 직원생성(createEmployeeDto) {
         const result = await this.organizationContextService.직원을_생성한다({
@@ -5487,7 +5680,7 @@ __decorate([
     (0, common_1.Get)('employees/:id'),
     (0, swagger_1.ApiOperation)({ summary: '직원 상세 조회' }),
     (0, swagger_1.ApiParam)({ name: 'id', description: '직원 ID' }),
-    (0, swagger_1.ApiResponse)({ status: 200, type: dto_1.EmployeeResponseDto }),
+    (0, swagger_1.ApiResponse)({ status: 200, type: dto_1.AdminEmployeeResponseDto }),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -5497,7 +5690,7 @@ __decorate([
     (0, common_1.Post)('employees'),
     (0, swagger_1.ApiOperation)({ summary: '직원 생성' }),
     (0, swagger_1.ApiBody)({ type: dto_1.CreateEmployeeRequestDto }),
-    (0, swagger_1.ApiResponse)({ status: 201, type: dto_1.EmployeeResponseDto }),
+    (0, swagger_1.ApiResponse)({ status: 201, type: dto_1.AdminEmployeeResponseDto }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_t = typeof dto_1.CreateEmployeeRequestDto !== "undefined" && dto_1.CreateEmployeeRequestDto) === "function" ? _t : Object]),
@@ -5508,7 +5701,7 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: '직원 수정' }),
     (0, swagger_1.ApiParam)({ name: 'id', description: '직원 ID' }),
     (0, swagger_1.ApiBody)({ type: dto_1.UpdateEmployeeRequestDto }),
-    (0, swagger_1.ApiResponse)({ status: 200, type: dto_1.EmployeeResponseDto }),
+    (0, swagger_1.ApiResponse)({ status: 200, type: dto_1.AdminEmployeeResponseDto }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -7625,6 +7818,2287 @@ exports.FcmTokenManagementApplicationService = FcmTokenManagementApplicationServ
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [typeof (_a = typeof organization_management_context_service_1.OrganizationManagementContextService !== "undefined" && organization_management_context_service_1.OrganizationManagementContextService) === "function" ? _a : Object, typeof (_b = typeof fcm_token_management_context_service_1.FcmTokenManagementContextService !== "undefined" && fcm_token_management_context_service_1.FcmTokenManagementContextService) === "function" ? _b : Object])
 ], FcmTokenManagementApplicationService);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/legacy/auth/dto/admin/admin-login-response.dto.ts":
+/*!***********************************************************************************!*\
+  !*** ./src/modules/application/legacy/auth/dto/admin/admin-login-response.dto.ts ***!
+  \***********************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AdminLoginResponseDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const admin_response_dto_1 = __webpack_require__(/*! ./admin-response.dto */ "./src/modules/application/legacy/auth/dto/admin/admin-response.dto.ts");
+class AdminLoginResponseDto {
+}
+exports.AdminLoginResponseDto = AdminLoginResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '액세스 토큰',
+        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+    }),
+    __metadata("design:type", String)
+], AdminLoginResponseDto.prototype, "accessToken", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '리프레시 토큰',
+        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+    }),
+    __metadata("design:type", String)
+], AdminLoginResponseDto.prototype, "refreshToken", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '관리자 정보',
+        type: admin_response_dto_1.AdminResponseDto,
+    }),
+    __metadata("design:type", typeof (_a = typeof admin_response_dto_1.AdminResponseDto !== "undefined" && admin_response_dto_1.AdminResponseDto) === "function" ? _a : Object)
+], AdminLoginResponseDto.prototype, "admin", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/legacy/auth/dto/admin/admin-login.dto.ts":
+/*!**************************************************************************!*\
+  !*** ./src/modules/application/legacy/auth/dto/admin/admin-login.dto.ts ***!
+  \**************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AdminLoginDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+class AdminLoginDto {
+}
+exports.AdminLoginDto = AdminLoginDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '관리자 이메일',
+        example: 'admin@example.com',
+    }),
+    (0, class_validator_1.IsEmail)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], AdminLoginDto.prototype, "email", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '비밀번호',
+        example: 'password123',
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], AdminLoginDto.prototype, "password", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/legacy/auth/dto/admin/admin-profile.dto.ts":
+/*!****************************************************************************!*\
+  !*** ./src/modules/application/legacy/auth/dto/admin/admin-profile.dto.ts ***!
+  \****************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b, _c;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AdminProfileDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+class AdminProfileDto {
+}
+exports.AdminProfileDto = AdminProfileDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '관리자 ID',
+        example: '123e4567-e89b-12d3-a456-426614174000',
+    }),
+    __metadata("design:type", String)
+], AdminProfileDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '이메일',
+        example: 'admin@example.com',
+    }),
+    __metadata("design:type", String)
+], AdminProfileDto.prototype, "email", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '이름',
+        example: '홍길동',
+    }),
+    __metadata("design:type", String)
+], AdminProfileDto.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '역할',
+        example: 'admin',
+    }),
+    __metadata("design:type", String)
+], AdminProfileDto.prototype, "role", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '마지막 로그인 시간',
+        example: '2023-01-01T00:00:00Z',
+        required: false,
+    }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], AdminProfileDto.prototype, "lastLogin", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '생성일',
+        example: '2023-01-01T00:00:00Z',
+    }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], AdminProfileDto.prototype, "createdAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '수정일',
+        example: '2023-01-01T00:00:00Z',
+    }),
+    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
+], AdminProfileDto.prototype, "updatedAt", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/legacy/auth/dto/admin/admin-response.dto.ts":
+/*!*****************************************************************************!*\
+  !*** ./src/modules/application/legacy/auth/dto/admin/admin-response.dto.ts ***!
+  \*****************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AdminResponseDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+class AdminResponseDto {
+}
+exports.AdminResponseDto = AdminResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '관리자 ID',
+        example: '123e4567-e89b-12d3-a456-426614174000',
+    }),
+    __metadata("design:type", String)
+], AdminResponseDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '이메일',
+        example: 'admin@example.com',
+    }),
+    __metadata("design:type", String)
+], AdminResponseDto.prototype, "email", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '이름',
+        example: '홍길동',
+    }),
+    __metadata("design:type", String)
+], AdminResponseDto.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '역할',
+        example: 'admin',
+    }),
+    __metadata("design:type", String)
+], AdminResponseDto.prototype, "role", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '생성일',
+        example: '2023-01-01T00:00:00Z',
+    }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], AdminResponseDto.prototype, "createdAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '수정일',
+        example: '2023-01-01T00:00:00Z',
+    }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], AdminResponseDto.prototype, "updatedAt", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/legacy/auth/dto/admin/admin-token-refresh.dto.ts":
+/*!**********************************************************************************!*\
+  !*** ./src/modules/application/legacy/auth/dto/admin/admin-token-refresh.dto.ts ***!
+  \**********************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AdminTokenRefreshDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+class AdminTokenRefreshDto {
+}
+exports.AdminTokenRefreshDto = AdminTokenRefreshDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '리프레시 토큰',
+        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], AdminTokenRefreshDto.prototype, "refreshToken", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/legacy/auth/dto/admin/admin-token-verify.dto.ts":
+/*!*********************************************************************************!*\
+  !*** ./src/modules/application/legacy/auth/dto/admin/admin-token-verify.dto.ts ***!
+  \*********************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AdminTokenVerifyDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+class AdminTokenVerifyDto {
+}
+exports.AdminTokenVerifyDto = AdminTokenVerifyDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '검증할 토큰',
+        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], AdminTokenVerifyDto.prototype, "token", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/legacy/auth/dto/admin/change-password.dto.ts":
+/*!******************************************************************************!*\
+  !*** ./src/modules/application/legacy/auth/dto/admin/change-password.dto.ts ***!
+  \******************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ChangePasswordDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+class ChangePasswordDto {
+}
+exports.ChangePasswordDto = ChangePasswordDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '현재 비밀번호',
+        example: 'current_password',
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], ChangePasswordDto.prototype, "currentPassword", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '새 비밀번호',
+        example: 'new_password123',
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.MinLength)(8),
+    __metadata("design:type", String)
+], ChangePasswordDto.prototype, "newPassword", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/legacy/auth/dto/admin/create-admin.dto.ts":
+/*!***************************************************************************!*\
+  !*** ./src/modules/application/legacy/auth/dto/admin/create-admin.dto.ts ***!
+  \***************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CreateAdminDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+class CreateAdminDto {
+}
+exports.CreateAdminDto = CreateAdminDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '관리자 이메일',
+        example: 'admin@example.com',
+    }),
+    (0, class_validator_1.IsEmail)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateAdminDto.prototype, "email", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '관리자 이름',
+        example: '홍길동',
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateAdminDto.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '관리자 역할',
+        example: 'admin',
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateAdminDto.prototype, "role", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '비밀번호',
+        example: 'password123',
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.MinLength)(8),
+    __metadata("design:type", String)
+], CreateAdminDto.prototype, "password", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/legacy/auth/dto/admin/index.ts":
+/*!****************************************************************!*\
+  !*** ./src/modules/application/legacy/auth/dto/admin/index.ts ***!
+  \****************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(/*! ./admin-login.dto */ "./src/modules/application/legacy/auth/dto/admin/admin-login.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./admin-login-response.dto */ "./src/modules/application/legacy/auth/dto/admin/admin-login-response.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./admin-profile.dto */ "./src/modules/application/legacy/auth/dto/admin/admin-profile.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./admin-response.dto */ "./src/modules/application/legacy/auth/dto/admin/admin-response.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./create-admin.dto */ "./src/modules/application/legacy/auth/dto/admin/create-admin.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./update-admin.dto */ "./src/modules/application/legacy/auth/dto/admin/update-admin.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./change-password.dto */ "./src/modules/application/legacy/auth/dto/admin/change-password.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./admin-token-verify.dto */ "./src/modules/application/legacy/auth/dto/admin/admin-token-verify.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./admin-token-refresh.dto */ "./src/modules/application/legacy/auth/dto/admin/admin-token-refresh.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./token-response.dto */ "./src/modules/application/legacy/auth/dto/admin/token-response.dto.ts"), exports);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/legacy/auth/dto/admin/token-response.dto.ts":
+/*!*****************************************************************************!*\
+  !*** ./src/modules/application/legacy/auth/dto/admin/token-response.dto.ts ***!
+  \*****************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TokenResponseDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+class TokenResponseDto {
+}
+exports.TokenResponseDto = TokenResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '액세스 토큰',
+        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+    }),
+    __metadata("design:type", String)
+], TokenResponseDto.prototype, "accessToken", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '리프레시 토큰',
+        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+        required: false,
+    }),
+    __metadata("design:type", String)
+], TokenResponseDto.prototype, "refreshToken", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '토큰 만료 시간 (초)',
+        example: 3600,
+    }),
+    __metadata("design:type", Number)
+], TokenResponseDto.prototype, "expiresIn", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/legacy/auth/dto/admin/update-admin.dto.ts":
+/*!***************************************************************************!*\
+  !*** ./src/modules/application/legacy/auth/dto/admin/update-admin.dto.ts ***!
+  \***************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdateAdminDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+class UpdateAdminDto {
+}
+exports.UpdateAdminDto = UpdateAdminDto;
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        description: '관리자 이메일',
+        example: 'admin@example.com',
+    }),
+    (0, class_validator_1.IsEmail)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateAdminDto.prototype, "email", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        description: '관리자 이름',
+        example: '홍길동',
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateAdminDto.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        description: '관리자 역할',
+        example: 'admin',
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateAdminDto.prototype, "role", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/legacy/auth/dto/index.ts":
+/*!**********************************************************!*\
+  !*** ./src/modules/application/legacy/auth/dto/index.ts ***!
+  \**********************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(/*! ./admin */ "./src/modules/application/legacy/auth/dto/admin/index.ts"), exports);
+__exportStar(__webpack_require__(/*! ./user */ "./src/modules/application/legacy/auth/dto/user/index.ts"), exports);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/legacy/auth/dto/user/index.ts":
+/*!***************************************************************!*\
+  !*** ./src/modules/application/legacy/auth/dto/user/index.ts ***!
+  \***************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(/*! ./login.dto */ "./src/modules/application/legacy/auth/dto/user/login.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./login-response.dto */ "./src/modules/application/legacy/auth/dto/user/login-response.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./refresh-token.dto */ "./src/modules/application/legacy/auth/dto/user/refresh-token.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./refresh-token-response.dto */ "./src/modules/application/legacy/auth/dto/user/refresh-token-response.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./user-response.dto */ "./src/modules/application/legacy/auth/dto/user/user-response.dto.ts"), exports);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/legacy/auth/dto/user/login-response.dto.ts":
+/*!****************************************************************************!*\
+  !*** ./src/modules/application/legacy/auth/dto/user/login-response.dto.ts ***!
+  \****************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LoginResponseDto = exports.UserDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+class UserDto {
+}
+exports.UserDto = UserDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '사용자 ID',
+        example: '123e4567-e89b-12d3-a456-426614174000',
+    }),
+    __metadata("design:type", String)
+], UserDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '이메일',
+        example: 'user@example.com',
+    }),
+    __metadata("design:type", String)
+], UserDto.prototype, "email", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '이름',
+        example: '홍길동',
+    }),
+    __metadata("design:type", String)
+], UserDto.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '생성일',
+        example: '2023-01-01T00:00:00Z',
+    }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], UserDto.prototype, "createdAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '수정일',
+        example: '2023-01-01T00:00:00Z',
+    }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], UserDto.prototype, "updatedAt", void 0);
+class LoginResponseDto {
+}
+exports.LoginResponseDto = LoginResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '액세스 토큰',
+        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+    }),
+    __metadata("design:type", String)
+], LoginResponseDto.prototype, "accessToken", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '리프레시 토큰',
+        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+    }),
+    __metadata("design:type", String)
+], LoginResponseDto.prototype, "refreshToken", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '사용자 정보',
+        type: UserDto,
+    }),
+    __metadata("design:type", UserDto)
+], LoginResponseDto.prototype, "user", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/legacy/auth/dto/user/login.dto.ts":
+/*!*******************************************************************!*\
+  !*** ./src/modules/application/legacy/auth/dto/user/login.dto.ts ***!
+  \*******************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LoginDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+class LoginDto {
+}
+exports.LoginDto = LoginDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '사용자 이메일',
+        example: 'user@example.com',
+    }),
+    (0, class_validator_1.IsEmail)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], LoginDto.prototype, "email", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '비밀번호',
+        example: 'password123',
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], LoginDto.prototype, "password", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/legacy/auth/dto/user/refresh-token-response.dto.ts":
+/*!************************************************************************************!*\
+  !*** ./src/modules/application/legacy/auth/dto/user/refresh-token-response.dto.ts ***!
+  \************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.RefreshTokenResponseDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+class RefreshTokenResponseDto {
+}
+exports.RefreshTokenResponseDto = RefreshTokenResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '액세스 토큰',
+        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+    }),
+    __metadata("design:type", String)
+], RefreshTokenResponseDto.prototype, "accessToken", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '리프레시 토큰',
+        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+    }),
+    __metadata("design:type", String)
+], RefreshTokenResponseDto.prototype, "refreshToken", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '토큰 만료 시간 (초)',
+        example: 3600,
+    }),
+    __metadata("design:type", Number)
+], RefreshTokenResponseDto.prototype, "expiresIn", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/legacy/auth/dto/user/refresh-token.dto.ts":
+/*!***************************************************************************!*\
+  !*** ./src/modules/application/legacy/auth/dto/user/refresh-token.dto.ts ***!
+  \***************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.RefreshTokenDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+class RefreshTokenDto {
+}
+exports.RefreshTokenDto = RefreshTokenDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '리프레시 토큰',
+        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], RefreshTokenDto.prototype, "refreshToken", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/legacy/auth/dto/user/user-response.dto.ts":
+/*!***************************************************************************!*\
+  !*** ./src/modules/application/legacy/auth/dto/user/user-response.dto.ts ***!
+  \***************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UserResponseDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+class UserResponseDto {
+}
+exports.UserResponseDto = UserResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '사용자 ID',
+        example: '123e4567-e89b-12d3-a456-426614174000',
+    }),
+    __metadata("design:type", String)
+], UserResponseDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '이메일',
+        example: 'user@example.com',
+    }),
+    __metadata("design:type", String)
+], UserResponseDto.prototype, "email", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '이름',
+        example: '홍길동',
+    }),
+    __metadata("design:type", String)
+], UserResponseDto.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '생성일',
+        example: '2023-01-01T00:00:00Z',
+    }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], UserResponseDto.prototype, "createdAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '수정일',
+        example: '2023-01-01T00:00:00Z',
+    }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], UserResponseDto.prototype, "updatedAt", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/legacy/dashboard/dto/dashboard.dto.ts":
+/*!***********************************************************************!*\
+  !*** ./src/modules/application/legacy/dashboard/dto/dashboard.dto.ts ***!
+  \***********************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DashboardSummaryDto = exports.SecurityAlertDto = exports.TokenStatsDto = exports.LoginStatsDto = exports.SystemStatusDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const entities_1 = __webpack_require__(/*! ../../../../../../libs/database/entities */ "./libs/database/entities/index.ts");
+class SystemStatusDto {
+}
+exports.SystemStatusDto = SystemStatusDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '시스템 ID' }),
+    __metadata("design:type", String)
+], SystemStatusDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '시스템 이름' }),
+    __metadata("design:type", String)
+], SystemStatusDto.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '시스템 상태', enum: ['online', 'offline', 'warning'] }),
+    __metadata("design:type", String)
+], SystemStatusDto.prototype, "status", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '마지막 확인 시간' }),
+    __metadata("design:type", String)
+], SystemStatusDto.prototype, "lastCheck", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '응답 시간 (ms)' }),
+    __metadata("design:type", Number)
+], SystemStatusDto.prototype, "responseTime", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '업타임 (초)', required: false }),
+    __metadata("design:type", Number)
+], SystemStatusDto.prototype, "uptime", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '헬스 체크 URL', required: false }),
+    __metadata("design:type", String)
+], SystemStatusDto.prototype, "healthCheckUrl", void 0);
+class LoginStatsDto {
+}
+exports.LoginStatsDto = LoginStatsDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '전체 로그인 시도 수' }),
+    __metadata("design:type", Number)
+], LoginStatsDto.prototype, "total", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '성공한 로그인 수' }),
+    __metadata("design:type", Number)
+], LoginStatsDto.prototype, "success", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '실패한 로그인 수' }),
+    __metadata("design:type", Number)
+], LoginStatsDto.prototype, "failed", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '로그인 성공률 (%)' }),
+    __metadata("design:type", Number)
+], LoginStatsDto.prototype, "successRate", void 0);
+class TokenStatsDto {
+}
+exports.TokenStatsDto = TokenStatsDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '전체 토큰 수' }),
+    __metadata("design:type", Number)
+], TokenStatsDto.prototype, "total", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '활성 토큰 수' }),
+    __metadata("design:type", Number)
+], TokenStatsDto.prototype, "active", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '비활성 토큰 수' }),
+    __metadata("design:type", Number)
+], TokenStatsDto.prototype, "inactive", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '7일 이내 만료 예정인 토큰 수' }),
+    __metadata("design:type", Number)
+], TokenStatsDto.prototype, "expiringSoon", void 0);
+class SecurityAlertDto {
+}
+exports.SecurityAlertDto = SecurityAlertDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '알림 ID' }),
+    __metadata("design:type", String)
+], SecurityAlertDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '알림 유형', enum: ['warning', 'error', 'info'] }),
+    __metadata("design:type", String)
+], SecurityAlertDto.prototype, "type", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '알림 메시지' }),
+    __metadata("design:type", String)
+], SecurityAlertDto.prototype, "message", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '알림 발생 시간' }),
+    __metadata("design:type", String)
+], SecurityAlertDto.prototype, "timestamp", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '해결 여부' }),
+    __metadata("design:type", Boolean)
+], SecurityAlertDto.prototype, "resolved", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '관련 로그 ID', required: false }),
+    __metadata("design:type", String)
+], SecurityAlertDto.prototype, "relatedLogId", void 0);
+class DashboardSummaryDto {
+}
+exports.DashboardSummaryDto = DashboardSummaryDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '활성 사용자 수' }),
+    __metadata("design:type", Number)
+], DashboardSummaryDto.prototype, "activeUsers", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '전체 사용자 수' }),
+    __metadata("design:type", Number)
+], DashboardSummaryDto.prototype, "totalUsers", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '토큰 통계 정보', type: TokenStatsDto }),
+    __metadata("design:type", TokenStatsDto)
+], DashboardSummaryDto.prototype, "tokenStats", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '활성 시스템 수' }),
+    __metadata("design:type", Number)
+], DashboardSummaryDto.prototype, "activeSystems", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '전체 시스템 수' }),
+    __metadata("design:type", Number)
+], DashboardSummaryDto.prototype, "totalSystems", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '로그인 통계 정보', type: LoginStatsDto }),
+    __metadata("design:type", LoginStatsDto)
+], DashboardSummaryDto.prototype, "loginStats", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '평균 응답 시간 (ms)' }),
+    __metadata("design:type", Number)
+], DashboardSummaryDto.prototype, "avgResponseTime", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '보안 알림 목록', type: [SecurityAlertDto] }),
+    __metadata("design:type", Array)
+], DashboardSummaryDto.prototype, "securityAlerts", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '최근 로그 목록', type: [entities_1.Log] }),
+    __metadata("design:type", Array)
+], DashboardSummaryDto.prototype, "recentLogs", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '시스템 상태 목록', type: [SystemStatusDto] }),
+    __metadata("design:type", Array)
+], DashboardSummaryDto.prototype, "systemStatus", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/legacy/logs/dto/create-log.dto.ts":
+/*!*******************************************************************!*\
+  !*** ./src/modules/application/legacy/logs/dto/create-log.dto.ts ***!
+  \*******************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CreateLogDto = void 0;
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+class CreateLogDto {
+}
+exports.CreateLogDto = CreateLogDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateLogDto.prototype, "method", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateLogDto.prototype, "url", void 0);
+__decorate([
+    (0, class_validator_1.IsObject)(),
+    __metadata("design:type", Object)
+], CreateLogDto.prototype, "params", void 0);
+__decorate([
+    (0, class_validator_1.IsObject)(),
+    __metadata("design:type", Object)
+], CreateLogDto.prototype, "query", void 0);
+__decorate([
+    (0, class_validator_1.IsObject)(),
+    __metadata("design:type", Object)
+], CreateLogDto.prototype, "body", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateLogDto.prototype, "ip", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateLogDto.prototype, "userAgent", void 0);
+__decorate([
+    (0, class_validator_1.IsDate)(),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], CreateLogDto.prototype, "requestTimestamp", void 0);
+__decorate([
+    (0, class_validator_1.IsDate)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], CreateLogDto.prototype, "responseTimestamp", void 0);
+__decorate([
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], CreateLogDto.prototype, "responseTime", void 0);
+__decorate([
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], CreateLogDto.prototype, "statusCode", void 0);
+__decorate([
+    (0, class_validator_1.IsObject)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Object)
+], CreateLogDto.prototype, "response", void 0);
+__decorate([
+    (0, class_validator_1.IsObject)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Object)
+], CreateLogDto.prototype, "error", void 0);
+__decorate([
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], CreateLogDto.prototype, "isError", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/legacy/logs/dto/index.ts":
+/*!**********************************************************!*\
+  !*** ./src/modules/application/legacy/logs/dto/index.ts ***!
+  \**********************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(/*! ./create-log.dto */ "./src/modules/application/legacy/logs/dto/create-log.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./log-filter.dto */ "./src/modules/application/legacy/logs/dto/log-filter.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./log-response.dto */ "./src/modules/application/legacy/logs/dto/log-response.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./logs-response.dto */ "./src/modules/application/legacy/logs/dto/logs-response.dto.ts"), exports);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/legacy/logs/dto/log-filter.dto.ts":
+/*!*******************************************************************!*\
+  !*** ./src/modules/application/legacy/logs/dto/log-filter.dto.ts ***!
+  \*******************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LogFilterDto = exports.SortDirection = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const class_transformer_1 = __webpack_require__(/*! class-transformer */ "class-transformer");
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+var SortDirection;
+(function (SortDirection) {
+    SortDirection["ASC"] = "ASC";
+    SortDirection["DESC"] = "DESC";
+})(SortDirection || (exports.SortDirection = SortDirection = {}));
+class LogFilterDto {
+    constructor() {
+        this.page = 1;
+        this.limit = 10;
+        this.errorsOnly = false;
+        this.sortBy = 'requestTimestamp';
+        this.sortDirection = SortDirection.DESC;
+    }
+}
+exports.LogFilterDto = LogFilterDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Page number', required: false, default: 1 }),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], LogFilterDto.prototype, "page", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Number of logs per page', required: false, default: 10 }),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], LogFilterDto.prototype, "limit", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Start date for filtering logs', required: false }),
+    (0, class_transformer_1.Type)(() => Date),
+    (0, class_validator_1.IsDate)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], LogFilterDto.prototype, "startDate", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'End date for filtering logs', required: false }),
+    (0, class_transformer_1.Type)(() => Date),
+    (0, class_validator_1.IsDate)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], LogFilterDto.prototype, "endDate", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'HTTP method filter', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], LogFilterDto.prototype, "method", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'URL path filter', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], LogFilterDto.prototype, "url", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Status code filter', required: false }),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], LogFilterDto.prototype, "statusCode", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Host filter', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], LogFilterDto.prototype, "host", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'IP address filter', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], LogFilterDto.prototype, "ip", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'System filter', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], LogFilterDto.prototype, "system", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Show only errors (status >= 400)', required: false, default: false }),
+    (0, class_transformer_1.Type)(() => Boolean),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], LogFilterDto.prototype, "errorsOnly", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'Field to sort by',
+        required: false,
+        default: 'requestTimestamp',
+        enum: ['requestTimestamp', 'method', 'url', 'statusCode', 'responseTime', 'ip', 'host'],
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], LogFilterDto.prototype, "sortBy", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'Sort direction',
+        required: false,
+        default: SortDirection.DESC,
+        enum: SortDirection,
+    }),
+    (0, class_validator_1.IsEnum)(SortDirection),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], LogFilterDto.prototype, "sortDirection", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/legacy/logs/dto/log-response.dto.ts":
+/*!*********************************************************************!*\
+  !*** ./src/modules/application/legacy/logs/dto/log-response.dto.ts ***!
+  \*********************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b, _c;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LogResponseDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+class LogResponseDto {
+}
+exports.LogResponseDto = LogResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Unique identifier for the log entry' }),
+    __metadata("design:type", String)
+], LogResponseDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Timestamp when the log was created' }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], LogResponseDto.prototype, "requestTimestamp", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'HTTP method of the request' }),
+    __metadata("design:type", String)
+], LogResponseDto.prototype, "method", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'URL path of the request' }),
+    __metadata("design:type", String)
+], LogResponseDto.prototype, "url", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Query parameters of the request', required: false }),
+    __metadata("design:type", typeof (_b = typeof Record !== "undefined" && Record) === "function" ? _b : Object)
+], LogResponseDto.prototype, "query", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Request headers', required: false }),
+    __metadata("design:type", typeof (_c = typeof Record !== "undefined" && Record) === "function" ? _c : Object)
+], LogResponseDto.prototype, "headers", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Request body', required: false }),
+    __metadata("design:type", Object)
+], LogResponseDto.prototype, "body", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Response status code' }),
+    __metadata("design:type", Number)
+], LogResponseDto.prototype, "statusCode", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Response time in milliseconds' }),
+    __metadata("design:type", Number)
+], LogResponseDto.prototype, "responseTime", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Response body', required: false }),
+    __metadata("design:type", Object)
+], LogResponseDto.prototype, "response", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Error message if any', required: false }),
+    __metadata("design:type", String)
+], LogResponseDto.prototype, "error", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'IP address of the requester' }),
+    __metadata("design:type", String)
+], LogResponseDto.prototype, "ip", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Host of the request' }),
+    __metadata("design:type", String)
+], LogResponseDto.prototype, "host", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'User agent of the requester', required: false }),
+    __metadata("design:type", String)
+], LogResponseDto.prototype, "userAgent", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'System name', required: false }),
+    __metadata("design:type", String)
+], LogResponseDto.prototype, "system", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/legacy/logs/dto/logs-response.dto.ts":
+/*!**********************************************************************!*\
+  !*** ./src/modules/application/legacy/logs/dto/logs-response.dto.ts ***!
+  \**********************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LogsResponseDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const log_response_dto_1 = __webpack_require__(/*! ./log-response.dto */ "./src/modules/application/legacy/logs/dto/log-response.dto.ts");
+class LogsResponseDto {
+}
+exports.LogsResponseDto = LogsResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Array of log entries', type: [log_response_dto_1.LogResponseDto] }),
+    __metadata("design:type", Array)
+], LogsResponseDto.prototype, "logs", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Total number of log entries matching the criteria' }),
+    __metadata("design:type", Number)
+], LogsResponseDto.prototype, "total", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Current page number' }),
+    __metadata("design:type", Number)
+], LogsResponseDto.prototype, "page", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Number of logs per page' }),
+    __metadata("design:type", Number)
+], LogsResponseDto.prototype, "limit", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/legacy/mail/dtos/sendMail.dto.ts":
+/*!******************************************************************!*\
+  !*** ./src/modules/application/legacy/mail/dtos/sendMail.dto.ts ***!
+  \******************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SendMailDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+class SendMailDto {
+}
+exports.SendMailDto = SendMailDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ type: [String] }),
+    __metadata("design:type", Array)
+], SendMailDto.prototype, "recipients", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ type: String }),
+    __metadata("design:type", String)
+], SendMailDto.prototype, "subject", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ type: String }),
+    __metadata("design:type", String)
+], SendMailDto.prototype, "template", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ type: Object }),
+    __metadata("design:type", Object)
+], SendMailDto.prototype, "context", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/legacy/systems/dto/create-system.dto.ts":
+/*!*************************************************************************!*\
+  !*** ./src/modules/application/legacy/systems/dto/create-system.dto.ts ***!
+  \*************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CreateSystemDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+class CreateSystemDto {
+}
+exports.CreateSystemDto = CreateSystemDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '시스템 이름',
+        example: 'Sample System',
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateSystemDto.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '시스템 설명',
+        example: 'This is a sample system description',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateSystemDto.prototype, "description", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '시스템 도메인',
+        example: 'example.com',
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateSystemDto.prototype, "domain", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '허용된 출처 URL 목록',
+        example: ['https://sample-system.com'],
+        type: [String],
+        required: true,
+    }),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsString)({ each: true }),
+    __metadata("design:type", Array)
+], CreateSystemDto.prototype, "allowedOrigin", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '헬스 체크 URL',
+        example: 'https://sample-system.com/health',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateSystemDto.prototype, "healthCheckUrl", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '클라이언트 ID (입력하지 않으면 자동 생성)',
+        example: 'client-a1b2c3d4',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateSystemDto.prototype, "clientId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '클라이언트 시크릿 (입력하지 않으면 자동 생성)',
+        example: 'secret-a1b2c3d4e5f6',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateSystemDto.prototype, "clientSecret", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '활성 여부',
+        example: true,
+        required: false,
+        default: true,
+    }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], CreateSystemDto.prototype, "isActive", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/legacy/systems/dto/index.ts":
+/*!*************************************************************!*\
+  !*** ./src/modules/application/legacy/systems/dto/index.ts ***!
+  \*************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(/*! ./create-system.dto */ "./src/modules/application/legacy/systems/dto/create-system.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./update-system.dto */ "./src/modules/application/legacy/systems/dto/update-system.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./response-system.dto */ "./src/modules/application/legacy/systems/dto/response-system.dto.ts"), exports);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/legacy/systems/dto/response-system.dto.ts":
+/*!***************************************************************************!*\
+  !*** ./src/modules/application/legacy/systems/dto/response-system.dto.ts ***!
+  \***************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ResponseSystemDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+class ResponseSystemDto {
+}
+exports.ResponseSystemDto = ResponseSystemDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '시스템 ID',
+        example: '123e4567-e89b-12d3-a456-426614174000',
+    }),
+    __metadata("design:type", String)
+], ResponseSystemDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '시스템 이름',
+        example: 'Sample System',
+    }),
+    __metadata("design:type", String)
+], ResponseSystemDto.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '시스템 설명',
+        example: 'This is a sample system description',
+    }),
+    __metadata("design:type", String)
+], ResponseSystemDto.prototype, "description", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '시스템 도메인',
+        example: 'sample-system.com',
+    }),
+    __metadata("design:type", String)
+], ResponseSystemDto.prototype, "domain", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '허용된 출처 URL 목록',
+        example: ['https://sample-system.com'],
+        type: [String],
+    }),
+    __metadata("design:type", Array)
+], ResponseSystemDto.prototype, "allowedOrigin", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '헬스 체크 URL',
+        example: 'https://sample-system.com/health',
+    }),
+    __metadata("design:type", String)
+], ResponseSystemDto.prototype, "healthCheckUrl", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '시스템 활성화 상태',
+        example: true,
+    }),
+    __metadata("design:type", Boolean)
+], ResponseSystemDto.prototype, "isActive", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '클라이언트 ID',
+        example: '123e4567-e89b-12d3-a456-426614174000',
+    }),
+    __metadata("design:type", String)
+], ResponseSystemDto.prototype, "clientId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '클라이언트 시크릿',
+        example: 'c891e70e62fc104e7d92c30b920cfb9e4cd39fa2c117fd2cb6e1e05c4054c204',
+    }),
+    __metadata("design:type", String)
+], ResponseSystemDto.prototype, "clientSecret", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '생성일',
+        example: '2023-01-01T00:00:00Z',
+    }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], ResponseSystemDto.prototype, "createdAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '수정일',
+        example: '2023-01-01T00:00:00Z',
+    }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], ResponseSystemDto.prototype, "updatedAt", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/legacy/systems/dto/update-system.dto.ts":
+/*!*************************************************************************!*\
+  !*** ./src/modules/application/legacy/systems/dto/update-system.dto.ts ***!
+  \*************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdateSystemDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+class UpdateSystemDto {
+}
+exports.UpdateSystemDto = UpdateSystemDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '시스템 이름',
+        example: 'Sample System',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateSystemDto.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '시스템 설명',
+        example: 'This is a sample system description',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateSystemDto.prototype, "description", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '시스템 도메인',
+        example: 'example.com',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateSystemDto.prototype, "domain", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '허용된 출처 URL 목록',
+        example: ['https://sample-system.com'],
+        type: [String],
+        required: false,
+    }),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)({ each: true }),
+    __metadata("design:type", Array)
+], UpdateSystemDto.prototype, "allowedOrigin", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '헬스 체크 URL',
+        example: 'https://sample-system.com/health',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateSystemDto.prototype, "healthCheckUrl", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '클라이언트 ID',
+        example: 'client-a1b2c3d4',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateSystemDto.prototype, "clientId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '클라이언트 시크릿',
+        example: 'secret-a1b2c3d4e5f6',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateSystemDto.prototype, "clientSecret", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '활성 여부',
+        example: true,
+        required: false,
+    }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], UpdateSystemDto.prototype, "isActive", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/legacy/tokens/dto/create-token.dto.ts":
+/*!***********************************************************************!*\
+  !*** ./src/modules/application/legacy/tokens/dto/create-token.dto.ts ***!
+  \***********************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CreateTokenDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+class CreateTokenDto {
+}
+exports.CreateTokenDto = CreateTokenDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '직원 ID',
+        example: '987fcdeb-51a2-43b7-89cd-321654987000',
+    }),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsUUID)(),
+    __metadata("design:type", String)
+], CreateTokenDto.prototype, "employeeId", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '사번', example: '24020' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateTokenDto.prototype, "employeeNumber", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '액세스 토큰 만료 일수', default: 30, minimum: 1, maximum: 365 }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.Min)(1),
+    (0, class_validator_1.Max)(365),
+    __metadata("design:type", Number)
+], CreateTokenDto.prototype, "expiresInDays", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '리프레시 토큰 만료 일수', default: 90, minimum: 30, maximum: 730 }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.Min)(30),
+    (0, class_validator_1.Max)(730),
+    __metadata("design:type", Number)
+], CreateTokenDto.prototype, "refreshExpiresInDays", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '액세스 토큰' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateTokenDto.prototype, "accessToken", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '리프레시 토큰' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateTokenDto.prototype, "refreshToken", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '토큰 만료 일시' }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], CreateTokenDto.prototype, "tokenExpiresAt", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '리프레시 토큰 만료 일시' }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], CreateTokenDto.prototype, "refreshTokenExpiresAt", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '클라이언트 정보' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateTokenDto.prototype, "clientInfo", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: 'IP 주소' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateTokenDto.prototype, "ipAddress", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/legacy/tokens/dto/index.ts":
+/*!************************************************************!*\
+  !*** ./src/modules/application/legacy/tokens/dto/index.ts ***!
+  \************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(/*! ./create-token.dto */ "./src/modules/application/legacy/tokens/dto/create-token.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./token-response.dto */ "./src/modules/application/legacy/tokens/dto/token-response.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./renew-token.dto */ "./src/modules/application/legacy/tokens/dto/renew-token.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./update-token-status.dto */ "./src/modules/application/legacy/tokens/dto/update-token-status.dto.ts"), exports);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/legacy/tokens/dto/renew-token.dto.ts":
+/*!**********************************************************************!*\
+  !*** ./src/modules/application/legacy/tokens/dto/renew-token.dto.ts ***!
+  \**********************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.RenewTokenDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+class RenewTokenDto {
+}
+exports.RenewTokenDto = RenewTokenDto;
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '액세스 토큰 만료 일수', default: 30, minimum: 1, maximum: 365 }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.Min)(1),
+    (0, class_validator_1.Max)(365),
+    __metadata("design:type", Number)
+], RenewTokenDto.prototype, "expiresInDays", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '리프레시 토큰 만료 일수', default: 90, minimum: 30, maximum: 730 }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.Min)(30),
+    (0, class_validator_1.Max)(730),
+    __metadata("design:type", Number)
+], RenewTokenDto.prototype, "refreshExpiresInDays", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/legacy/tokens/dto/token-response.dto.ts":
+/*!*************************************************************************!*\
+  !*** ./src/modules/application/legacy/tokens/dto/token-response.dto.ts ***!
+  \*************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b, _c, _d, _e;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TokenResponseDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+class TokenResponseDto {
+}
+exports.TokenResponseDto = TokenResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '토큰 ID',
+        example: '123e4567-e89b-12d3-a456-426614174000',
+    }),
+    __metadata("design:type", String)
+], TokenResponseDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '사용자 ID',
+        example: '987fcdeb-51a2-43b7-89cd-321654987000',
+    }),
+    __metadata("design:type", String)
+], TokenResponseDto.prototype, "userId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '액세스 토큰',
+        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+    }),
+    __metadata("design:type", String)
+], TokenResponseDto.prototype, "accessToken", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        description: '리프레시 토큰',
+    }),
+    __metadata("design:type", String)
+], TokenResponseDto.prototype, "refreshToken", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '토큰 만료 일자',
+        example: '2023-12-31T23:59:59Z',
+    }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], TokenResponseDto.prototype, "tokenExpiresAt", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        description: '리프레시 토큰 만료일',
+    }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], TokenResponseDto.prototype, "refreshTokenExpiresAt", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        description: '마지막 접근 일자',
+        example: '2023-06-15T14:30:00Z',
+        required: false,
+    }),
+    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
+], TokenResponseDto.prototype, "lastAccess", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '토큰 활성화 상태',
+        example: true,
+    }),
+    __metadata("design:type", Boolean)
+], TokenResponseDto.prototype, "isActive", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '생성일',
+        example: '2023-01-01T00:00:00Z',
+    }),
+    __metadata("design:type", typeof (_d = typeof Date !== "undefined" && Date) === "function" ? _d : Object)
+], TokenResponseDto.prototype, "createdAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '수정일',
+        example: '2023-01-01T00:00:00Z',
+    }),
+    __metadata("design:type", typeof (_e = typeof Date !== "undefined" && Date) === "function" ? _e : Object)
+], TokenResponseDto.prototype, "updatedAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '사용자 이름',
+        example: '홍길동',
+        required: false,
+    }),
+    __metadata("design:type", String)
+], TokenResponseDto.prototype, "userName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '사용자 이메일',
+        example: 'user@example.com',
+        required: false,
+    }),
+    __metadata("design:type", String)
+], TokenResponseDto.prototype, "userEmail", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/legacy/tokens/dto/update-token-status.dto.ts":
+/*!******************************************************************************!*\
+  !*** ./src/modules/application/legacy/tokens/dto/update-token-status.dto.ts ***!
+  \******************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdateTokenStatusDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+class UpdateTokenStatusDto {
+}
+exports.UpdateTokenStatusDto = UpdateTokenStatusDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '토큰 활성화 상태',
+        example: true,
+    }),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsBoolean)(),
+    __metadata("design:type", Boolean)
+], UpdateTokenStatusDto.prototype, "isActive", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/legacy/users/dto/index.ts":
+/*!***********************************************************!*\
+  !*** ./src/modules/application/legacy/users/dto/index.ts ***!
+  \***********************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(/*! ./user-response.dto */ "./src/modules/application/legacy/users/dto/user-response.dto.ts"), exports);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/legacy/users/dto/user-response.dto.ts":
+/*!***********************************************************************!*\
+  !*** ./src/modules/application/legacy/users/dto/user-response.dto.ts ***!
+  \***********************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UserResponseDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+class UserResponseDto {
+    constructor(employee) {
+        this.id = employee.id;
+        this.employeeNumber = employee.employeeNumber;
+        this.name = employee.name;
+        this.email = employee.email;
+        this.phoneNumber = employee.phoneNumber;
+        this.dateOfBirth = employee.dateOfBirth ? String(employee.dateOfBirth).split('T')[0] : undefined;
+        this.gender = employee.gender ? employee.gender.toString() : undefined;
+        this.hireDate = employee.hireDate ? String(employee.hireDate).split('T')[0] : undefined;
+        this.status = employee.status ? employee.status.toString() : undefined;
+        this.rank = employee.currentRank?.rankName || undefined;
+        this.department = employee.departmentPositions?.[0]?.department?.departmentName || undefined;
+        this.position = employee.departmentPositions?.[0]?.position?.positionTitle || undefined;
+        this.createdAt = String(employee.createdAt).split('T')[0] || String(employee.createdAt);
+        this.updatedAt = String(employee.updatedAt).split('T')[0] || String(employee.updatedAt);
+        this.isInitialPasswordSet = employee.isInitialPasswordSet;
+    }
+}
+exports.UserResponseDto = UserResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '사용자 ID' }),
+    __metadata("design:type", String)
+], UserResponseDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직원 번호' }),
+    __metadata("design:type", String)
+], UserResponseDto.prototype, "employeeNumber", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '사용자 이름' }),
+    __metadata("design:type", String)
+], UserResponseDto.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '이메일' }),
+    __metadata("design:type", String)
+], UserResponseDto.prototype, "email", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '전화번호', required: false }),
+    __metadata("design:type", String)
+], UserResponseDto.prototype, "phoneNumber", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '생년월일', required: false }),
+    __metadata("design:type", String)
+], UserResponseDto.prototype, "dateOfBirth", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '성별', required: false }),
+    __metadata("design:type", String)
+], UserResponseDto.prototype, "gender", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '입사일', required: false }),
+    __metadata("design:type", String)
+], UserResponseDto.prototype, "hireDate", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '재직 상태', required: false }),
+    __metadata("design:type", String)
+], UserResponseDto.prototype, "status", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '현재 직급', required: false }),
+    __metadata("design:type", String)
+], UserResponseDto.prototype, "rank", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '부서명', required: false }),
+    __metadata("design:type", String)
+], UserResponseDto.prototype, "department", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직위명', required: false }),
+    __metadata("design:type", String)
+], UserResponseDto.prototype, "position", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '생성일' }),
+    __metadata("design:type", String)
+], UserResponseDto.prototype, "createdAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '수정일' }),
+    __metadata("design:type", String)
+], UserResponseDto.prototype, "updatedAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '초기 비밀번호 설정 여부', required: false }),
+    __metadata("design:type", Boolean)
+], UserResponseDto.prototype, "isInitialPasswordSet", void 0);
 
 
 /***/ }),
@@ -12999,7 +15473,10 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
         });
     }
     async 부서를_수정한다(departmentId, 수정정보) {
-        await this.부서서비스.findById(departmentId);
+        const department = await this.부서서비스.findById(departmentId);
+        if (!department) {
+            throw new common_1.NotFoundException('부서를 찾을 수 없습니다.');
+        }
         if (수정정보.departmentCode) {
             const isDuplicate = await this.부서서비스.isCodeDuplicate(수정정보.departmentCode, departmentId);
             if (isDuplicate) {
@@ -13042,6 +15519,7 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
         await this.부서서비스.updateDepartment(departmentId, { order: -999 });
         const updates = [];
         if (currentOrder < newOrder) {
+            console.log('affectedDepartments', affectedDepartments);
             for (const dept of affectedDepartments) {
                 if (dept.id !== departmentId && dept.order > currentOrder && dept.order <= newOrder) {
                     updates.push({ id: dept.id, order: dept.order - 1 });
@@ -13880,6 +16358,7 @@ let DomainDepartmentService = DomainDepartmentService_1 = class DomainDepartment
         return queryBuilder
             .andWhere('department.order >= :minOrder', { minOrder })
             .andWhere('department.order <= :maxOrder', { maxOrder })
+            .orderBy('department.order', 'ASC')
             .getMany();
     }
     async bulkUpdateOrders(updates) {

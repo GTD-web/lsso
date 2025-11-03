@@ -15,11 +15,12 @@ export {
 export {
     CreateEmployeeRequestDto,
     UpdateEmployeeRequestDto,
-    EmployeeResponseDto,
+    AdminEmployeeResponseDto,
     EmployeeListResponseDto,
     NextEmployeeNumberResponseDto,
     EmployeeDetailInfoDto,
     EmployeeDetailListResponseDto,
+    EmployeeAssignmentDetailDto,
     BulkUpdateDepartmentRequestDto,
     BulkUpdateTeamRequestDto,
     BulkUpdatePositionRequestDto,

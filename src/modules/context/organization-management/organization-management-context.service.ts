@@ -1402,7 +1402,10 @@ export class OrganizationManagementContextService {
         },
     ): Promise<Department> {
         // 1. 부서 존재 확인
-        await this.부서서비스.findById(departmentId);
+        const department = await this.부서서비스.findById(departmentId);
+        if (!department) {
+            throw new NotFoundException('부서를 찾을 수 없습니다.');
+        }
 
         // 2. 부서 코드 중복 확인 (자신 제외)
         if (수정정보.departmentCode) {
@@ -1493,6 +1496,7 @@ export class OrganizationManagementContextService {
         const updates: { id: string; order: number }[] = [];
         if (currentOrder < newOrder) {
             // 아래로 이동: 현재 순서보다 크고 새로운 순서 이하인 부서들을 -1
+            console.log('affectedDepartments', affectedDepartments);
             for (const dept of affectedDepartments) {
                 if (dept.id !== departmentId && dept.order > currentOrder && dept.order <= newOrder) {
                     updates.push({ id: dept.id, order: dept.order - 1 });

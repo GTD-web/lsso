@@ -165,6 +165,7 @@ export class DomainDepartmentService extends BaseService<Department> {
         return queryBuilder
             .andWhere('department.order >= :minOrder', { minOrder })
             .andWhere('department.order <= :maxOrder', { maxOrder })
+            .orderBy('department.order', 'ASC')
             .getMany();
     }
 
