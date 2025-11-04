@@ -152,7 +152,7 @@ export class EmployeeFcmTokenStatsDto {
     fcmTokenCount: number;
 }
 
-export class FcmTokenResponseDto {
+export class AdminFcmTokenResponseDto {
     @ApiProperty({ description: 'FCM 토큰 ID' })
     id: string;
 

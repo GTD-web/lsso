@@ -9,7 +9,7 @@ import {
     EmployeeFcmTokenStatsDto,
     EmployeeFcmTokenGroupedListResponseDto,
     EmployeeFcmTokenGroupedDto,
-    FcmTokenResponseDto,
+    AdminFcmTokenResponseDto,
 } from '../dto';
 
 @Injectable()
@@ -328,7 +328,7 @@ export class EmployeeFcmTokenApplicationService {
     /**
      * FCM 토큰 ID로 FCM 토큰 엔티티 조회
      */
-    async FCM_토큰_조회(fcmTokenId: string): Promise<FcmTokenResponseDto> {
+    async FCM_토큰_조회(fcmTokenId: string): Promise<AdminFcmTokenResponseDto> {
         const fcmToken = await this.domainFcmTokenService.findOne({
             where: { id: fcmTokenId },
         });

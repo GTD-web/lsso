@@ -71,46 +71,46 @@ export * from './modules/application/fcm-token-management/dto';
 // Legacy - Auth DTOs
 // 주의: LoginResponseDto, UserResponseDto, TokenResponseDto가 다른 모듈과 중복됩니다.
 // 중복 제외: LoginResponseDto (single-sign-on과 중복), UserResponseDto (users와 중복), TokenResponseDto (tokens와 중복)
-export {
-    AdminLoginResponseDto,
-    AdminLoginDto,
-    AdminProfileDto,
-    AdminResponseDto,
-    AdminTokenRefreshDto,
-    AdminTokenVerifyDto,
-    CreateAdminDto,
-    UpdateAdminDto,
-    TokenResponseDto as LegacyAuthTokenResponseDto,
-    LoginResponseDto as LegacyAuthLoginResponseDto,
-    RefreshTokenResponseDto,
-    UserResponseDto as LegacyAuthUserResponseDto,
-} from './modules/application/legacy/auth/dto';
+// export {
+//     AdminLoginResponseDto,
+//     AdminLoginDto,
+//     AdminProfileDto,
+//     AdminResponseDto,
+//     AdminTokenRefreshDto,
+//     AdminTokenVerifyDto,
+//     CreateAdminDto,
+//     UpdateAdminDto,
+//     TokenResponseDto as LegacyAuthTokenResponseDto,
+//     LoginResponseDto as LegacyAuthLoginResponseDto,
+//     RefreshTokenResponseDto,
+//     UserResponseDto as LegacyAuthUserResponseDto,
+// } from './modules/application/legacy/auth/dto';
 
-// Legacy - Users DTOs
-export * from './modules/application/legacy/users/dto';
+// // Legacy - Users DTOs
+// export * from './modules/application/legacy/users/dto';
 
-// Legacy - Tokens DTOs
-export * from './modules/application/legacy/tokens/dto';
+// // Legacy - Tokens DTOs
+// export * from './modules/application/legacy/tokens/dto';
 
-// Legacy - Systems DTOs
-// 주의: CreateSystemDto, UpdateSystemDto가 admin/system과 중복되어 별칭으로 export 합니다.
-export {
-    CreateSystemDto as LegacyCreateSystemDto,
-    UpdateSystemDto as LegacyUpdateSystemDto,
-    ResponseSystemDto,
-} from './modules/application/legacy/systems/dto';
+// // Legacy - Systems DTOs
+// // 주의: CreateSystemDto, UpdateSystemDto가 admin/system과 중복되어 별칭으로 export 합니다.
+// export {
+//     CreateSystemDto as LegacyCreateSystemDto,
+//     UpdateSystemDto as LegacyUpdateSystemDto,
+//     ResponseSystemDto,
+// } from './modules/application/legacy/systems/dto';
 
-// Legacy - Logs DTOs
-// 주의: Log 관련 DTO가 admin/log와 중복되어 별칭으로 export 합니다.
-export {
-    CreateLogDto as LegacyCreateLogDto,
-    LogFilterDto as LegacyLogFilterDto,
-    LogResponseDto as LegacyLogResponseDto,
-    LogsResponseDto as LegacyLogsResponseDto,
-} from './modules/application/legacy/logs/dto';
+// // Legacy - Logs DTOs
+// // 주의: Log 관련 DTO가 admin/log와 중복되어 별칭으로 export 합니다.
+// export {
+//     CreateLogDto as LegacyCreateLogDto,
+//     LogFilterDto as LegacyLogFilterDto,
+//     LogResponseDto as LegacyLogResponseDto,
+//     LogsResponseDto as LegacyLogsResponseDto,
+// } from './modules/application/legacy/logs/dto';
 
-// Legacy - Dashboard DTOs (index.ts가 없어 직접 export)
-export * from './modules/application/legacy/dashboard/dto/dashboard.dto';
+// // Legacy - Dashboard DTOs (index.ts가 없어 직접 export)
+// export * from './modules/application/legacy/dashboard/dto/dashboard.dto';
 
-// Legacy - Mail DTOs (index.ts가 없어 직접 export)
-export * from './modules/application/legacy/mail/dtos/sendMail.dto';
+// // Legacy - Mail DTOs (index.ts가 없어 직접 export)
+// export * from './modules/application/legacy/mail/dtos/sendMail.dto';
