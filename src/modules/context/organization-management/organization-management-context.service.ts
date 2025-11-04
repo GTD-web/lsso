@@ -1423,14 +1423,53 @@ export class OrganizationManagementContextService {
             }
         }
 
-        // 순서 변경은 다른 API를 통해 수행한다.
-        // 수정정보.order = await this.부서서비스.getNextOrderForParent(수정정보.parentDepartmentId || null);
-        // if (수정정보.order === undefined) {
-        //     throw new Error('순서를 찾을 수 없습니다.');
-        // }
+        // 4. 상위 부서가 변경되는 경우 순서 재배치 처리
+        const oldParentDepartmentId = department.parentDepartmentId || null;
+        const newParentDepartmentId =
+            수정정보.parentDepartmentId !== undefined ? 수정정보.parentDepartmentId || null : oldParentDepartmentId;
 
-        // 4. 부서 수정
-        return await this.부서서비스.updateDepartment(departmentId, 수정정보);
+        let newOrder: number | undefined = undefined;
+
+        if (oldParentDepartmentId !== newParentDepartmentId) {
+            const currentOrder = department.order;
+
+            // 4-1. 먼저 이동하려는 부서를 새로운 상위 부서의 맨 뒤로 이동
+            const nextOrder = await this.부서서비스.getNextOrderForParent(newParentDepartmentId);
+
+            // 이동하려는 부서를 임시로 음수로 설정 (unique constraint 충돌 방지)
+            await this.부서서비스.updateDepartment(departmentId, {
+                parentDepartmentId: newParentDepartmentId,
+                order: -999,
+            });
+
+            // 4-2. 원래 상위 부서의 하위 부서들 순서 재배치 (빈 자리 메꾸기)
+            const oldSiblingDepartments =
+                oldParentDepartmentId === null
+                    ? await this.부서서비스.findRootDepartments()
+                    : await this.부서서비스.findChildDepartments(oldParentDepartmentId);
+
+            // 이동된 부서의 다음 순번부터 순서를 1씩 감소
+            const orderUpdates: { id: string; order: number }[] = [];
+            for (const sibling of oldSiblingDepartments) {
+                if (sibling.id !== departmentId && sibling.order > currentOrder) {
+                    orderUpdates.push({ id: sibling.id, order: sibling.order - 1 });
+                }
+            }
+
+            if (orderUpdates.length > 0) {
+                await this.부서서비스.bulkUpdateOrders(orderUpdates);
+            }
+
+            // 4-3. 이동한 부서를 최종 순번으로 설정
+            newOrder = nextOrder;
+        }
+
+        // 5. 부서 수정
+        const updateData = {
+            ...수정정보,
+            ...(newOrder !== undefined && { order: newOrder }),
+        };
+        return await this.부서서비스.updateDepartment(departmentId, updateData);
     }
 
     /**

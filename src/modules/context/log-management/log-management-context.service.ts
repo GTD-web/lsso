@@ -71,10 +71,11 @@ export class LogManagementContextService {
         total: number;
         page: number;
         totalPages: number;
+        allFilteredLogs?: Log[];
     }> {
         const {
             page = 1,
-            limit = 10,
+            limit = 100,
             startDate,
             endDate,
             method,
@@ -154,6 +155,7 @@ export class LogManagementContextService {
             total,
             page,
             totalPages: Math.ceil(total / limit),
+            allFilteredLogs,
         };
     }
 

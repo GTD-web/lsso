@@ -3637,9 +3637,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.LogsResponseDto = void 0;
+exports.LogsResponseDto = exports.TimeStatisticsDto = void 0;
 const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
 const log_response_dto_1 = __webpack_require__(/*! ./log-response.dto */ "./src/modules/application/admin/log/dto/log-response.dto.ts");
+class TimeStatisticsDto {
+}
+exports.TimeStatisticsDto = TimeStatisticsDto;
 class LogsResponseDto {
 }
 exports.LogsResponseDto = LogsResponseDto;
@@ -3663,6 +3666,14 @@ __decorate([
     (0, swagger_1.ApiProperty)({ description: '전체 페이지 수' }),
     __metadata("design:type", Number)
 ], LogsResponseDto.prototype, "totalPages", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '시간별 응답 종류별 통계',
+        type: [TimeStatisticsDto],
+        example: [{ '2025-11-04 09:00:00': { success: 10, fail: 5 } }],
+    }),
+    __metadata("design:type", Array)
+], LogsResponseDto.prototype, "timeStatistics", void 0);
 
 
 /***/ }),
@@ -3713,12 +3724,18 @@ let LogApplicationService = class LogApplicationService {
     async 로그목록조회(page = 1, limit = 10) {
         try {
             const result = await this.로그관리컨텍스트서비스.모든_로그를_조회한다(page, limit);
+            const allLogs = await this.로그관리컨텍스트서비스.로그를_필터링하여_조회한다({
+                page: 1,
+                limit: 100000,
+            });
+            const timeStatistics = this.시간별_응답_통계_계산(allLogs.allFilteredLogs || []);
             return {
                 logs: result.logs.map((log) => this.로그_엔티티를_DTO로_변환(log)),
                 total: result.total,
                 page: result.page,
                 limit: limit,
                 totalPages: result.totalPages,
+                timeStatistics,
             };
         }
         catch (error) {
@@ -3758,12 +3775,14 @@ let LogApplicationService = class LogApplicationService {
                 sortDirection: filterDto.sortDirection,
             };
             const result = await this.로그관리컨텍스트서비스.로그를_필터링하여_조회한다(filterOptions);
+            const timeStatistics = this.시간별_응답_통계_계산(result.allFilteredLogs || []);
             return {
                 logs: result.logs.map((log) => this.로그_엔티티를_DTO로_변환(log)),
                 total: result.total,
                 page: result.page,
                 limit: filterDto.limit || 10,
                 totalPages: result.totalPages,
+                timeStatistics,
             };
         }
         catch (error) {
@@ -3835,6 +3854,71 @@ let LogApplicationService = class LogApplicationService {
             system: log.system,
             isError: log.isError,
         };
+    }
+    시간별_응답_통계_계산(logs) {
+        const timeMap = new Map();
+        const validLogs = logs.filter((log) => log.requestTimestamp);
+        if (validLogs.length === 0) {
+            return [];
+        }
+        const timestamps = validLogs.map((log) => log.requestTimestamp);
+        const minTime = new Date(Math.min(...timestamps.map((t) => t.getTime())));
+        const maxTime = new Date(Math.max(...timestamps.map((t) => t.getTime())));
+        const allTimeKeys = this.모든_시간대_생성(minTime, maxTime);
+        allTimeKeys.forEach((timeKey) => {
+            timeMap.set(timeKey, { success: 0, fail: 0 });
+        });
+        validLogs.forEach((log) => {
+            const timeKey = this.시간_키_생성(log.requestTimestamp);
+            const stats = timeMap.get(timeKey);
+            if (stats) {
+                if (this.응답_성공_여부(log)) {
+                    stats.success++;
+                }
+                else {
+                    stats.fail++;
+                }
+            }
+        });
+        return allTimeKeys.map((time) => {
+            const stats = timeMap.get(time);
+            return { [time]: stats };
+        });
+    }
+    모든_시간대_생성(minTime, maxTime) {
+        const timeKeys = [];
+        const current = new Date(minTime);
+        current.setSeconds(0, 0);
+        const max = new Date(maxTime);
+        max.setSeconds(0, 0);
+        while (current <= max) {
+            timeKeys.push(this.시간_키_생성(current));
+            current.setMinutes(current.getMinutes() + 1);
+        }
+        return timeKeys;
+    }
+    시간_키_생성(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hour = String(date.getHours()).padStart(2, '0');
+        const minute = String(date.getMinutes()).padStart(2, '0');
+        return `${year}-${month}-${day} ${hour}:${minute}:00`;
+    }
+    응답_성공_여부(log) {
+        if (log.isError) {
+            return false;
+        }
+        if (log.statusCode !== null && log.statusCode !== undefined) {
+            if (log.statusCode >= 200 && log.statusCode < 300) {
+                return true;
+            }
+            if (log.statusCode >= 300 && log.statusCode < 400) {
+                return true;
+            }
+            return false;
+        }
+        return true;
     }
 };
 exports.LogApplicationService = LogApplicationService;
@@ -11910,7 +11994,7 @@ let LogManagementContextService = LogManagementContextService_1 = class LogManag
         return this.로그서비스.findOne({ where: { id } });
     }
     async 로그를_필터링하여_조회한다(filterOptions) {
-        const { page = 1, limit = 10, startDate, endDate, method, url, statusCode, host, ip, system, errorsOnly, sortBy = 'requestTimestamp', sortDirection = SortDirection.DESC, } = filterOptions;
+        const { page = 1, limit = 100, startDate, endDate, method, url, statusCode, host, ip, system, errorsOnly, sortBy = 'requestTimestamp', sortDirection = SortDirection.DESC, } = filterOptions;
         const where = {};
         if (startDate && endDate) {
             where.requestTimestamp = (0, typeorm_1.Between)(startDate, endDate);
@@ -11958,6 +12042,7 @@ let LogManagementContextService = LogManagementContextService_1 = class LogManag
             total,
             page,
             totalPages: Math.ceil(total / limit),
+            allFilteredLogs,
         };
     }
     async 에러_로그를_조회한다() {
@@ -13628,7 +13713,35 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
                 throw new Error('상위 부서를 찾을 수 없습니다.');
             }
         }
-        return await this.부서서비스.updateDepartment(departmentId, 수정정보);
+        const oldParentDepartmentId = department.parentDepartmentId || null;
+        const newParentDepartmentId = 수정정보.parentDepartmentId !== undefined ? 수정정보.parentDepartmentId || null : oldParentDepartmentId;
+        let newOrder = undefined;
+        if (oldParentDepartmentId !== newParentDepartmentId) {
+            const currentOrder = department.order;
+            const nextOrder = await this.부서서비스.getNextOrderForParent(newParentDepartmentId);
+            await this.부서서비스.updateDepartment(departmentId, {
+                parentDepartmentId: newParentDepartmentId,
+                order: -999,
+            });
+            const oldSiblingDepartments = oldParentDepartmentId === null
+                ? await this.부서서비스.findRootDepartments()
+                : await this.부서서비스.findChildDepartments(oldParentDepartmentId);
+            const orderUpdates = [];
+            for (const sibling of oldSiblingDepartments) {
+                if (sibling.id !== departmentId && sibling.order > currentOrder) {
+                    orderUpdates.push({ id: sibling.id, order: sibling.order - 1 });
+                }
+            }
+            if (orderUpdates.length > 0) {
+                await this.부서서비스.bulkUpdateOrders(orderUpdates);
+            }
+            newOrder = nextOrder;
+        }
+        const updateData = {
+            ...수정정보,
+            ...(newOrder !== undefined && { order: newOrder }),
+        };
+        return await this.부서서비스.updateDepartment(departmentId, updateData);
     }
     async 부서를_삭제한다(departmentId) {
         await this.부서서비스.findById(departmentId);
@@ -14502,6 +14615,10 @@ let DomainDepartmentService = DomainDepartmentService_1 = class DomainDepartment
     }
     async bulkUpdateOrders(updates) {
         await this.departmentRepository.manager.transaction(async (transactionalEntityManager) => {
+            const tempOffset = -1000000;
+            for (let i = 0; i < updates.length; i++) {
+                await transactionalEntityManager.update(entities_1.Department, { id: updates[i].id }, { order: tempOffset - i });
+            }
             for (const update of updates) {
                 await transactionalEntityManager.update(entities_1.Department, { id: update.id }, { order: update.order });
             }
