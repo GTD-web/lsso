@@ -347,4 +347,39 @@ export class EmployeeFcmTokenApplicationService {
             updatedAt: fcmToken.updatedAt,
         };
     }
+
+    /**
+     * FCM 토큰 엔티티 삭제 (관계 먼저 삭제 후 엔티티 삭제)
+     */
+    async FCM_토큰_엔티티_삭제(fcmTokenId: string): Promise<{ message: string; deletedRelationsCount: number }> {
+        // FCM 토큰 존재 확인
+        const fcmToken = await this.domainFcmTokenService.findOne({
+            where: { id: fcmTokenId },
+        });
+
+        if (!fcmToken) {
+            throw new NotFoundException('FCM 토큰을 찾을 수 없습니다.');
+        }
+
+        // 해당 FCM 토큰과 연결된 모든 관계 조회
+        const relations = await this.employeeFcmTokenManagementContext.FCM_토큰별_직원_관계_조회(fcmTokenId);
+
+        // 모든 관계 삭제
+        let deletedRelationsCount = 0;
+        for (const relation of relations) {
+            await this.employeeFcmTokenManagementContext.직원과_FCM_토큰_관계_삭제(
+                relation.employeeId,
+                relation.fcmTokenId,
+            );
+            deletedRelationsCount++;
+        }
+
+        // FCM 토큰 엔티티 삭제
+        await this.domainFcmTokenService.delete(fcmTokenId);
+
+        return {
+            message: 'FCM 토큰 엔티티가 성공적으로 삭제되었습니다.',
+            deletedRelationsCount,
+        };
+    }
 }

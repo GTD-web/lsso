@@ -1353,7 +1353,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f;
+var _a, _b, _c, _d, _e, _f, _g;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.EmployeeFcmTokenController = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
@@ -1372,6 +1372,9 @@ let EmployeeFcmTokenController = class EmployeeFcmTokenController {
     }
     async findOne(id) {
         return await this.employeeFcmTokenApplicationService.직원_FCM_토큰_관계_상세_조회(id);
+    }
+    async removeFcmTokenEntity(fcmTokenId) {
+        return await this.employeeFcmTokenApplicationService.FCM_토큰_엔티티_삭제(fcmTokenId);
     }
     async remove(id) {
         return await this.employeeFcmTokenApplicationService.직원_FCM_토큰_관계_삭제(id);
@@ -1414,6 +1417,17 @@ __decorate([
     __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
 ], EmployeeFcmTokenController.prototype, "findOne", null);
 __decorate([
+    (0, common_1.Delete)('fcm-token/:fcmTokenId'),
+    (0, swagger_1.ApiOperation)({ summary: 'FCM 토큰 엔티티 삭제 (관계 먼저 삭제 후 엔티티 삭제)' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'FCM 토큰 엔티티 삭제 성공' }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: 'FCM 토큰을 찾을 수 없음' }),
+    (0, swagger_1.ApiParam)({ name: 'fcmTokenId', description: 'FCM 토큰 ID' }),
+    __param(0, (0, common_1.Param)('fcmTokenId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
+], EmployeeFcmTokenController.prototype, "removeFcmTokenEntity", null);
+__decorate([
     (0, common_1.Delete)(':id'),
     (0, swagger_1.ApiOperation)({ summary: '직원 FCM 토큰 관계 삭제' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: '관계 삭제 성공' }),
@@ -1422,7 +1436,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
+    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
 ], EmployeeFcmTokenController.prototype, "remove", null);
 __decorate([
     (0, common_1.Delete)('employee/:employeeId/all'),
@@ -1432,7 +1446,7 @@ __decorate([
     __param(0, (0, common_1.Param)('employeeId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
+    __metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
 ], EmployeeFcmTokenController.prototype, "removeAllByEmployee", null);
 exports.EmployeeFcmTokenController = EmployeeFcmTokenController = __decorate([
     (0, swagger_1.ApiTags)('Admin - 직원 FCM 토큰 관리'),
@@ -1545,7 +1559,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f;
+var _a, _b, _c, _d, _e, _f, _g;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.EmployeeTokenController = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
@@ -1564,6 +1578,9 @@ let EmployeeTokenController = class EmployeeTokenController {
     }
     async findOne(id) {
         return await this.employeeTokenApplicationService.직원_토큰_관계_상세_조회(id);
+    }
+    async removeTokenEntity(tokenId) {
+        return await this.employeeTokenApplicationService.토큰_엔티티_삭제(tokenId);
     }
     async remove(id) {
         return await this.employeeTokenApplicationService.직원_토큰_관계_삭제(id);
@@ -1606,6 +1623,17 @@ __decorate([
     __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
 ], EmployeeTokenController.prototype, "findOne", null);
 __decorate([
+    (0, common_1.Delete)('token/:tokenId'),
+    (0, swagger_1.ApiOperation)({ summary: '토큰 엔티티 삭제 (관계 먼저 삭제 후 엔티티 삭제)' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: '토큰 엔티티 삭제 성공' }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: '토큰을 찾을 수 없음' }),
+    (0, swagger_1.ApiParam)({ name: 'tokenId', description: '토큰 ID' }),
+    __param(0, (0, common_1.Param)('tokenId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
+], EmployeeTokenController.prototype, "removeTokenEntity", null);
+__decorate([
     (0, common_1.Delete)(':id'),
     (0, swagger_1.ApiOperation)({ summary: '직원 토큰 관계 삭제' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: '관계 삭제 성공' }),
@@ -1614,7 +1642,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
+    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
 ], EmployeeTokenController.prototype, "remove", null);
 __decorate([
     (0, common_1.Delete)('employee/:employeeId/all'),
@@ -1624,7 +1652,7 @@ __decorate([
     __param(0, (0, common_1.Param)('employeeId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
+    __metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
 ], EmployeeTokenController.prototype, "removeAllByEmployee", null);
 exports.EmployeeTokenController = EmployeeTokenController = __decorate([
     (0, swagger_1.ApiTags)('Admin - 직원 토큰 관리'),
@@ -2713,6 +2741,25 @@ let EmployeeFcmTokenApplicationService = class EmployeeFcmTokenApplicationServic
             updatedAt: fcmToken.updatedAt,
         };
     }
+    async FCM_토큰_엔티티_삭제(fcmTokenId) {
+        const fcmToken = await this.domainFcmTokenService.findOne({
+            where: { id: fcmTokenId },
+        });
+        if (!fcmToken) {
+            throw new common_1.NotFoundException('FCM 토큰을 찾을 수 없습니다.');
+        }
+        const relations = await this.employeeFcmTokenManagementContext.FCM_토큰별_직원_관계_조회(fcmTokenId);
+        let deletedRelationsCount = 0;
+        for (const relation of relations) {
+            await this.employeeFcmTokenManagementContext.직원과_FCM_토큰_관계_삭제(relation.employeeId, relation.fcmTokenId);
+            deletedRelationsCount++;
+        }
+        await this.domainFcmTokenService.delete(fcmTokenId);
+        return {
+            message: 'FCM 토큰 엔티티가 성공적으로 삭제되었습니다.',
+            deletedRelationsCount,
+        };
+    }
 };
 exports.EmployeeFcmTokenApplicationService = EmployeeFcmTokenApplicationService;
 exports.EmployeeFcmTokenApplicationService = EmployeeFcmTokenApplicationService = __decorate([
@@ -3182,6 +3229,25 @@ let EmployeeTokenApplicationService = class EmployeeTokenApplicationService {
             createdAt: token.createdAt,
             updatedAt: token.updatedAt,
             userId: token.userId,
+        };
+    }
+    async 토큰_엔티티_삭제(tokenId) {
+        const token = await this.domainTokenService.findOne({
+            where: { id: tokenId },
+        });
+        if (!token) {
+            throw new common_1.NotFoundException('토큰을 찾을 수 없습니다.');
+        }
+        const relations = await this.employeeTokenManagementContext.토큰별_직원_관계_조회(tokenId);
+        let deletedRelationsCount = 0;
+        for (const relation of relations) {
+            await this.employeeTokenManagementContext.직원_토큰_관계_삭제(relation.id);
+            deletedRelationsCount++;
+        }
+        await this.domainTokenService.delete(tokenId);
+        return {
+            message: '토큰 엔티티가 성공적으로 삭제되었습니다.',
+            deletedRelationsCount,
         };
     }
 };

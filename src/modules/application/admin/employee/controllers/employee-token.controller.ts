@@ -65,6 +65,17 @@ export class EmployeeTokenController {
     //     return await this.employeeTokenApplicationService.직원_토큰_관계_수정(id, updateDto);
     // }
 
+    @Delete('token/:tokenId')
+    @ApiOperation({ summary: '토큰 엔티티 삭제 (관계 먼저 삭제 후 엔티티 삭제)' })
+    @ApiResponse({ status: 200, description: '토큰 엔티티 삭제 성공' })
+    @ApiResponse({ status: 404, description: '토큰을 찾을 수 없음' })
+    @ApiParam({ name: 'tokenId', description: '토큰 ID' })
+    async removeTokenEntity(
+        @Param('tokenId') tokenId: string,
+    ): Promise<{ message: string; deletedRelationsCount: number }> {
+        return await this.employeeTokenApplicationService.토큰_엔티티_삭제(tokenId);
+    }
+
     @Delete(':id')
     @ApiOperation({ summary: '직원 토큰 관계 삭제' })
     @ApiResponse({ status: 200, description: '관계 삭제 성공' })

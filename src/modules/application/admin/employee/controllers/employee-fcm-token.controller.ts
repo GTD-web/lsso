@@ -73,6 +73,17 @@ export class EmployeeFcmTokenController {
     //     return await this.employeeFcmTokenApplicationService.직원_FCM_토큰_관계_수정(id, updateDto);
     // }
 
+    @Delete('fcm-token/:fcmTokenId')
+    @ApiOperation({ summary: 'FCM 토큰 엔티티 삭제 (관계 먼저 삭제 후 엔티티 삭제)' })
+    @ApiResponse({ status: 200, description: 'FCM 토큰 엔티티 삭제 성공' })
+    @ApiResponse({ status: 404, description: 'FCM 토큰을 찾을 수 없음' })
+    @ApiParam({ name: 'fcmTokenId', description: 'FCM 토큰 ID' })
+    async removeFcmTokenEntity(
+        @Param('fcmTokenId') fcmTokenId: string,
+    ): Promise<{ message: string; deletedRelationsCount: number }> {
+        return await this.employeeFcmTokenApplicationService.FCM_토큰_엔티티_삭제(fcmTokenId);
+    }
+
     @Delete(':id')
     @ApiOperation({ summary: '직원 FCM 토큰 관계 삭제' })
     @ApiResponse({ status: 200, description: '관계 삭제 성공' })
