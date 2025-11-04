@@ -7,6 +7,7 @@ import {
     EmployeeFcmTokenListResponseDto,
     EmployeeFcmTokenStatsDto,
     EmployeeFcmTokenGroupedListResponseDto,
+    FcmTokenResponseDto,
 } from '../dto';
 
 @ApiTags('Admin - 직원 FCM 토큰 관리')
@@ -31,6 +32,15 @@ export class EmployeeFcmTokenController {
     // async getStats(): Promise<EmployeeFcmTokenStatsDto> {
     //     return await this.employeeFcmTokenApplicationService.FCM_토큰_통계_조회();
     // }
+
+    @Get('fcm-token/:fcmTokenId')
+    @ApiOperation({ summary: 'FCM 토큰 ID로 FCM 토큰 엔티티 조회' })
+    @ApiResponse({ status: 200, type: FcmTokenResponseDto })
+    @ApiResponse({ status: 404, description: 'FCM 토큰을 찾을 수 없음' })
+    @ApiParam({ name: 'fcmTokenId', description: 'FCM 토큰 ID' })
+    async findByFcmTokenId(@Param('fcmTokenId') fcmTokenId: string): Promise<FcmTokenResponseDto> {
+        return await this.employeeFcmTokenApplicationService.FCM_토큰_조회(fcmTokenId);
+    }
 
     @Get(':id')
     @ApiOperation({ summary: '직원 FCM 토큰 관계 상세 조회' })

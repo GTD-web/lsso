@@ -1380,7 +1380,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e;
+var _a, _b, _c, _d, _e, _f;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.EmployeeFcmTokenController = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
@@ -1393,6 +1393,9 @@ let EmployeeFcmTokenController = class EmployeeFcmTokenController {
     }
     async findAllGroupedByEmployee(employeeId) {
         return await this.employeeFcmTokenApplicationService.직원별_그룹핑된_FCM_토큰_관계_조회(employeeId);
+    }
+    async findByFcmTokenId(fcmTokenId) {
+        return await this.employeeFcmTokenApplicationService.FCM_토큰_조회(fcmTokenId);
     }
     async findOne(id) {
         return await this.employeeFcmTokenApplicationService.직원_FCM_토큰_관계_상세_조회(id);
@@ -1416,6 +1419,17 @@ __decorate([
     __metadata("design:returntype", typeof (_b = typeof Promise !== "undefined" && Promise) === "function" ? _b : Object)
 ], EmployeeFcmTokenController.prototype, "findAllGroupedByEmployee", null);
 __decorate([
+    (0, common_1.Get)('fcm-token/:fcmTokenId'),
+    (0, swagger_1.ApiOperation)({ summary: 'FCM 토큰 ID로 FCM 토큰 엔티티 조회' }),
+    (0, swagger_1.ApiResponse)({ status: 200, type: dto_1.FcmTokenResponseDto }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: 'FCM 토큰을 찾을 수 없음' }),
+    (0, swagger_1.ApiParam)({ name: 'fcmTokenId', description: 'FCM 토큰 ID' }),
+    __param(0, (0, common_1.Param)('fcmTokenId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
+], EmployeeFcmTokenController.prototype, "findByFcmTokenId", null);
+__decorate([
     (0, common_1.Get)(':id'),
     (0, swagger_1.ApiOperation)({ summary: '직원 FCM 토큰 관계 상세 조회' }),
     (0, swagger_1.ApiResponse)({ status: 200, type: dto_1.EmployeeFcmTokenListResponseDto }),
@@ -1424,7 +1438,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
+    __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
 ], EmployeeFcmTokenController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Delete)(':id'),
@@ -1435,7 +1449,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
+    __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
 ], EmployeeFcmTokenController.prototype, "remove", null);
 __decorate([
     (0, common_1.Delete)('employee/:employeeId/all'),
@@ -1445,7 +1459,7 @@ __decorate([
     __param(0, (0, common_1.Param)('employeeId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
+    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
 ], EmployeeFcmTokenController.prototype, "removeAllByEmployee", null);
 exports.EmployeeFcmTokenController = EmployeeFcmTokenController = __decorate([
     (0, swagger_1.ApiTags)('Admin - 직원 FCM 토큰 관리'),
@@ -1558,7 +1572,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e;
+var _a, _b, _c, _d, _e, _f;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.EmployeeTokenController = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
@@ -1571,6 +1585,9 @@ let EmployeeTokenController = class EmployeeTokenController {
     }
     async findAllGroupedByEmployee(employeeId) {
         return await this.employeeTokenApplicationService.직원별_그룹핑된_토큰_관계_조회(employeeId);
+    }
+    async findByTokenId(tokenId) {
+        return await this.employeeTokenApplicationService.토큰_조회(tokenId);
     }
     async findOne(id) {
         return await this.employeeTokenApplicationService.직원_토큰_관계_상세_조회(id);
@@ -1594,6 +1611,17 @@ __decorate([
     __metadata("design:returntype", typeof (_b = typeof Promise !== "undefined" && Promise) === "function" ? _b : Object)
 ], EmployeeTokenController.prototype, "findAllGroupedByEmployee", null);
 __decorate([
+    (0, common_1.Get)('token/:tokenId'),
+    (0, swagger_1.ApiOperation)({ summary: '토큰 ID로 토큰 엔티티 조회' }),
+    (0, swagger_1.ApiResponse)({ status: 200, type: dto_1.TokenResponseDto }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: '토큰을 찾을 수 없음' }),
+    (0, swagger_1.ApiParam)({ name: 'tokenId', description: '토큰 ID' }),
+    __param(0, (0, common_1.Param)('tokenId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
+], EmployeeTokenController.prototype, "findByTokenId", null);
+__decorate([
     (0, common_1.Get)(':id'),
     (0, swagger_1.ApiOperation)({ summary: '직원 토큰 관계 상세 조회' }),
     (0, swagger_1.ApiResponse)({ status: 200, type: dto_1.EmployeeTokenListResponseDto }),
@@ -1602,7 +1630,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
+    __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
 ], EmployeeTokenController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Delete)(':id'),
@@ -1613,7 +1641,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
+    __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
 ], EmployeeTokenController.prototype, "remove", null);
 __decorate([
     (0, common_1.Delete)('employee/:employeeId/all'),
@@ -1623,7 +1651,7 @@ __decorate([
     __param(0, (0, common_1.Param)('employeeId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
+    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
 ], EmployeeTokenController.prototype, "removeAllByEmployee", null);
 exports.EmployeeTokenController = EmployeeTokenController = __decorate([
     (0, swagger_1.ApiTags)('Admin - 직원 토큰 관리'),
@@ -1650,9 +1678,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a, _b, _c, _d, _e, _f;
+var _a, _b, _c, _d, _e, _f, _g, _h;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.EmployeeFcmTokenStatsDto = exports.EmployeeFcmTokenGroupedListResponseDto = exports.EmployeeFcmTokenGroupedDto = exports.EmployeeFcmTokenListResponseDto = exports.EmployeeFcmTokenTokenDto = exports.FcmTokenDeviceInfoDto = exports.EmployeeFcmTokenEmployeeDto = exports.UpdateEmployeeFcmTokenDto = exports.CreateEmployeeFcmTokenDto = void 0;
+exports.FcmTokenResponseDto = exports.EmployeeFcmTokenStatsDto = exports.EmployeeFcmTokenGroupedListResponseDto = exports.EmployeeFcmTokenGroupedDto = exports.EmployeeFcmTokenListResponseDto = exports.EmployeeFcmTokenTokenDto = exports.FcmTokenDeviceInfoDto = exports.EmployeeFcmTokenEmployeeDto = exports.UpdateEmployeeFcmTokenDto = exports.CreateEmployeeFcmTokenDto = void 0;
 const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
 const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
 class CreateEmployeeFcmTokenDto {
@@ -1858,6 +1886,37 @@ __decorate([
     (0, swagger_1.ApiProperty)({ description: 'FCM 토큰 수' }),
     __metadata("design:type", Number)
 ], EmployeeFcmTokenStatsDto.prototype, "fcmTokenCount", void 0);
+class FcmTokenResponseDto {
+}
+exports.FcmTokenResponseDto = FcmTokenResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'FCM 토큰 ID' }),
+    __metadata("design:type", String)
+], FcmTokenResponseDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'FCM 토큰 값' }),
+    __metadata("design:type", String)
+], FcmTokenResponseDto.prototype, "fcmToken", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '디바이스 타입' }),
+    __metadata("design:type", String)
+], FcmTokenResponseDto.prototype, "deviceType", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '디바이스 정보', type: FcmTokenDeviceInfoDto }),
+    __metadata("design:type", FcmTokenDeviceInfoDto)
+], FcmTokenResponseDto.prototype, "deviceInfo", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '활성화 상태' }),
+    __metadata("design:type", Boolean)
+], FcmTokenResponseDto.prototype, "isActive", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '생성일' }),
+    __metadata("design:type", typeof (_g = typeof Date !== "undefined" && Date) === "function" ? _g : Object)
+], FcmTokenResponseDto.prototype, "createdAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '수정일' }),
+    __metadata("design:type", typeof (_h = typeof Date !== "undefined" && Date) === "function" ? _h : Object)
+], FcmTokenResponseDto.prototype, "updatedAt", void 0);
 
 
 /***/ }),
@@ -2107,9 +2166,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a, _b, _c, _d, _e, _f;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.EmployeeTokenGroupedListResponseDto = exports.EmployeeTokenGroupedDto = exports.EmployeeTokenDetailDto = exports.EmployeeTokenListResponseDto = exports.EmployeeTokenTokenDto = exports.EmployeeTokenEmployeeDto = exports.UpdateEmployeeTokenDto = exports.CreateEmployeeTokenDto = void 0;
+exports.TokenResponseDto = exports.EmployeeTokenGroupedListResponseDto = exports.EmployeeTokenGroupedDto = exports.EmployeeTokenDetailDto = exports.EmployeeTokenListResponseDto = exports.EmployeeTokenTokenDto = exports.EmployeeTokenEmployeeDto = exports.UpdateEmployeeTokenDto = exports.CreateEmployeeTokenDto = void 0;
 const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
 const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
 class CreateEmployeeTokenDto {
@@ -2284,6 +2343,57 @@ __decorate([
     (0, swagger_1.ApiProperty)({ description: '전체 관계 수' }),
     __metadata("design:type", Number)
 ], EmployeeTokenGroupedListResponseDto.prototype, "totalRelations", void 0);
+class TokenResponseDto {
+}
+exports.TokenResponseDto = TokenResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '토큰 ID' }),
+    __metadata("design:type", String)
+], TokenResponseDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '액세스 토큰' }),
+    __metadata("design:type", String)
+], TokenResponseDto.prototype, "accessToken", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '토큰 만료일시' }),
+    __metadata("design:type", typeof (_g = typeof Date !== "undefined" && Date) === "function" ? _g : Object)
+], TokenResponseDto.prototype, "tokenExpiresAt", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '리프레시 토큰' }),
+    __metadata("design:type", String)
+], TokenResponseDto.prototype, "refreshToken", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '리프레시 토큰 만료일시' }),
+    __metadata("design:type", typeof (_h = typeof Date !== "undefined" && Date) === "function" ? _h : Object)
+], TokenResponseDto.prototype, "refreshTokenExpiresAt", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '클라이언트 정보' }),
+    __metadata("design:type", String)
+], TokenResponseDto.prototype, "clientInfo", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: 'IP 주소' }),
+    __metadata("design:type", String)
+], TokenResponseDto.prototype, "ipAddress", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '마지막 접근일시' }),
+    __metadata("design:type", typeof (_j = typeof Date !== "undefined" && Date) === "function" ? _j : Object)
+], TokenResponseDto.prototype, "lastAccess", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '활성화 상태' }),
+    __metadata("design:type", Boolean)
+], TokenResponseDto.prototype, "isActive", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '생성일시' }),
+    __metadata("design:type", typeof (_k = typeof Date !== "undefined" && Date) === "function" ? _k : Object)
+], TokenResponseDto.prototype, "createdAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '수정일시' }),
+    __metadata("design:type", typeof (_l = typeof Date !== "undefined" && Date) === "function" ? _l : Object)
+], TokenResponseDto.prototype, "updatedAt", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '사용자 ID' }),
+    __metadata("design:type", String)
+], TokenResponseDto.prototype, "userId", void 0);
 
 
 /***/ }),
@@ -2340,6 +2450,8 @@ const employee_system_role_application_service_1 = __webpack_require__(/*! ./ser
 const employee_token_application_service_1 = __webpack_require__(/*! ./services/employee-token-application.service */ "./src/modules/application/admin/employee/services/employee-token-application.service.ts");
 const employee_fcm_token_application_service_1 = __webpack_require__(/*! ./services/employee-fcm-token-application.service */ "./src/modules/application/admin/employee/services/employee-fcm-token-application.service.ts");
 const employee_management_context_module_1 = __webpack_require__(/*! ../../../context/employee-management/employee-management-context.module */ "./src/modules/context/employee-management/employee-management-context.module.ts");
+const fcm_token_module_1 = __webpack_require__(/*! ../../../domain/fcm-token/fcm-token.module */ "./src/modules/domain/fcm-token/fcm-token.module.ts");
+const token_module_1 = __webpack_require__(/*! ../../../domain/token/token.module */ "./src/modules/domain/token/token.module.ts");
 let EmployeeModule = class EmployeeModule {
 };
 exports.EmployeeModule = EmployeeModule;
@@ -2347,6 +2459,8 @@ exports.EmployeeModule = EmployeeModule = __decorate([
     (0, common_1.Module)({
         imports: [
             employee_management_context_module_1.EmployeeManagementContextModule,
+            fcm_token_module_1.DomainFcmTokenModule,
+            token_module_1.DomainTokenModule,
         ],
         controllers: [employee_system_role_controller_1.EmployeeSystemRoleController, employee_token_controller_1.EmployeeTokenController, employee_fcm_token_controller_1.EmployeeFcmTokenController],
         providers: [
@@ -2381,14 +2495,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a;
+var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.EmployeeFcmTokenApplicationService = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const employee_fcm_token_management_context_service_1 = __webpack_require__(/*! ../../../../context/employee-management/employee-fcm-token-management-context.service */ "./src/modules/context/employee-management/employee-fcm-token-management-context.service.ts");
+const fcm_token_service_1 = __webpack_require__(/*! ../../../../domain/fcm-token/fcm-token.service */ "./src/modules/domain/fcm-token/fcm-token.service.ts");
 let EmployeeFcmTokenApplicationService = class EmployeeFcmTokenApplicationService {
-    constructor(employeeFcmTokenManagementContext) {
+    constructor(employeeFcmTokenManagementContext, domainFcmTokenService) {
         this.employeeFcmTokenManagementContext = employeeFcmTokenManagementContext;
+        this.domainFcmTokenService = domainFcmTokenService;
     }
     async 모든_직원_FCM_토큰_관계_조회() {
         const relations = await this.employeeFcmTokenManagementContext.모든_직원_FCM_토큰_관계_조회();
@@ -2607,11 +2723,28 @@ let EmployeeFcmTokenApplicationService = class EmployeeFcmTokenApplicationServic
             totalRelations: relations.length,
         };
     }
+    async FCM_토큰_조회(fcmTokenId) {
+        const fcmToken = await this.domainFcmTokenService.findOne({
+            where: { id: fcmTokenId },
+        });
+        if (!fcmToken) {
+            throw new common_1.NotFoundException('FCM 토큰을 찾을 수 없습니다.');
+        }
+        return {
+            id: fcmToken.id,
+            fcmToken: fcmToken.fcmToken,
+            deviceType: fcmToken.deviceType,
+            deviceInfo: fcmToken.deviceInfo,
+            isActive: fcmToken.isActive,
+            createdAt: fcmToken.createdAt,
+            updatedAt: fcmToken.updatedAt,
+        };
+    }
 };
 exports.EmployeeFcmTokenApplicationService = EmployeeFcmTokenApplicationService;
 exports.EmployeeFcmTokenApplicationService = EmployeeFcmTokenApplicationService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof employee_fcm_token_management_context_service_1.EmployeeFcmTokenManagementContextService !== "undefined" && employee_fcm_token_management_context_service_1.EmployeeFcmTokenManagementContextService) === "function" ? _a : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof employee_fcm_token_management_context_service_1.EmployeeFcmTokenManagementContextService !== "undefined" && employee_fcm_token_management_context_service_1.EmployeeFcmTokenManagementContextService) === "function" ? _a : Object, typeof (_b = typeof fcm_token_service_1.DomainFcmTokenService !== "undefined" && fcm_token_service_1.DomainFcmTokenService) === "function" ? _b : Object])
 ], EmployeeFcmTokenApplicationService);
 
 
@@ -2863,14 +2996,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a;
+var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.EmployeeTokenApplicationService = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const employee_token_management_context_service_1 = __webpack_require__(/*! ../../../../context/employee-management/employee-token-management-context.service */ "./src/modules/context/employee-management/employee-token-management-context.service.ts");
+const token_service_1 = __webpack_require__(/*! ../../../../domain/token/token.service */ "./src/modules/domain/token/token.service.ts");
 let EmployeeTokenApplicationService = class EmployeeTokenApplicationService {
-    constructor(employeeTokenManagementContext) {
+    constructor(employeeTokenManagementContext, domainTokenService) {
         this.employeeTokenManagementContext = employeeTokenManagementContext;
+        this.domainTokenService = domainTokenService;
     }
     async 모든_직원_토큰_관계_조회() {
         const relations = await this.employeeTokenManagementContext.모든_직원_토큰_관계_조회();
@@ -3054,11 +3189,33 @@ let EmployeeTokenApplicationService = class EmployeeTokenApplicationService {
             totalRelations: relations.length,
         };
     }
+    async 토큰_조회(tokenId) {
+        const token = await this.domainTokenService.findOne({
+            where: { id: tokenId },
+        });
+        if (!token) {
+            throw new common_1.NotFoundException('토큰을 찾을 수 없습니다.');
+        }
+        return {
+            id: token.id,
+            accessToken: token.accessToken,
+            tokenExpiresAt: token.tokenExpiresAt,
+            refreshToken: token.refreshToken,
+            refreshTokenExpiresAt: token.refreshTokenExpiresAt,
+            clientInfo: token.clientInfo,
+            ipAddress: token.ipAddress,
+            lastAccess: token.lastAccess,
+            isActive: token.isActive,
+            createdAt: token.createdAt,
+            updatedAt: token.updatedAt,
+            userId: token.userId,
+        };
+    }
 };
 exports.EmployeeTokenApplicationService = EmployeeTokenApplicationService;
 exports.EmployeeTokenApplicationService = EmployeeTokenApplicationService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof employee_token_management_context_service_1.EmployeeTokenManagementContextService !== "undefined" && employee_token_management_context_service_1.EmployeeTokenManagementContextService) === "function" ? _a : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof employee_token_management_context_service_1.EmployeeTokenManagementContextService !== "undefined" && employee_token_management_context_service_1.EmployeeTokenManagementContextService) === "function" ? _a : Object, typeof (_b = typeof token_service_1.DomainTokenService !== "undefined" && token_service_1.DomainTokenService) === "function" ? _b : Object])
 ], EmployeeTokenApplicationService);
 
 
@@ -7060,7 +7217,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.FcmTokenManagementApplicationController = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
@@ -7096,6 +7253,9 @@ let FcmTokenManagementApplicationController = class FcmTokenManagementApplicatio
             return this.fcmTokenManagementApplicationService.여러_직원의_FCM토큰을_조회한다(employeeNumbersArray);
         }
         throw new common_1.BadRequestException('employeeIds 또는 employeeNumbers 중 하나는 반드시 제공되어야 합니다.');
+    }
+    async removeFcmTokens(body) {
+        return this.fcmTokenManagementApplicationService.여러_직원의_여러_토큰을_일괄제거한다(body);
     }
 };
 exports.FcmTokenManagementApplicationController = FcmTokenManagementApplicationController;
@@ -7206,6 +7366,27 @@ __decorate([
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
 ], FcmTokenManagementApplicationController.prototype, "getFcmTokens", null);
+__decorate([
+    (0, common_1.Delete)('tokens'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, swagger_1.ApiOperation)({
+        summary: '여러 직원의 여러 FCM 토큰 일괄 제거',
+        description: '직원별 토큰 정보 배열을 받아서 각 직원의 토큰들을 일괄 제거합니다. ' +
+            '각 직원 정보와 토큰 정보가 모두 존재하고 연결되어 있어야 합니다. ' +
+            '연결 관계를 삭제한 후, 다른 직원이 사용하지 않는 경우 토큰도 함께 삭제합니다. ' +
+            '일부 삭제가 실패해도 나머지는 계속 처리되며, 각 결과를 반환합니다.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: 'FCM 토큰 일괄 제거 완료 (성공/실패 결과 포함)',
+        type: dto_1.FcmRemoveTokenResponseDto,
+    }),
+    (0, swagger_1.ApiResponse)({ status: 400, description: '잘못된 요청 형식' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_j = typeof dto_1.FcmRemoveTokenRequestDto !== "undefined" && dto_1.FcmRemoveTokenRequestDto) === "function" ? _j : Object]),
+    __metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
+], FcmTokenManagementApplicationController.prototype, "removeFcmTokens", null);
 exports.FcmTokenManagementApplicationController = FcmTokenManagementApplicationController = __decorate([
     (0, swagger_1.ApiTags)('Client - FCM 토큰 관리 API'),
     (0, common_1.Controller)('fcm'),
@@ -7258,6 +7439,143 @@ __decorate([
     (0, class_validator_1.ValidateIf)((obj) => !obj.employeeId || obj.employeeNumber),
     __metadata("design:type", String)
 ], BaseEmployeeIdentifierDto.prototype, "employeeNumber", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/fcm-token-management/dto/fcm-remove-token-request.dto.ts":
+/*!******************************************************************************************!*\
+  !*** ./src/modules/application/fcm-token-management/dto/fcm-remove-token-request.dto.ts ***!
+  \******************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.FcmRemoveTokenRequestDto = exports.EmployeeFcmTokensDto = void 0;
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const class_transformer_1 = __webpack_require__(/*! class-transformer */ "class-transformer");
+class EmployeeFcmTokensDto {
+}
+exports.EmployeeFcmTokensDto = EmployeeFcmTokensDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '직원 번호',
+        example: '25001',
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], EmployeeFcmTokensDto.prototype, "employeeNumber", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '해당 직원의 FCM 토큰 값 배열',
+        example: ['fcm_token_example_12345...', 'fcm_token_example_67890...'],
+        type: [String],
+    }),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.ArrayMinSize)(1, { message: '최소 하나 이상의 FCM 토큰이 필요합니다.' }),
+    (0, class_validator_1.IsString)({ each: true }),
+    (0, class_validator_1.IsNotEmpty)({ each: true }),
+    __metadata("design:type", Array)
+], EmployeeFcmTokensDto.prototype, "fcmTokens", void 0);
+class FcmRemoveTokenRequestDto {
+}
+exports.FcmRemoveTokenRequestDto = FcmRemoveTokenRequestDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '직원별 토큰 정보 배열',
+        example: [
+            {
+                employeeNumber: '25001',
+                fcmTokens: ['fcm_token_example_12345...', 'fcm_token_example_67890...'],
+            },
+            {
+                employeeNumber: '25002',
+                fcmTokens: ['fcm_token_example_11111...'],
+            },
+        ],
+        type: [EmployeeFcmTokensDto],
+    }),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.ArrayMinSize)(1, { message: '최소 하나 이상의 직원 정보가 필요합니다.' }),
+    (0, class_validator_1.ValidateNested)({ each: true }),
+    (0, class_transformer_1.Type)(() => EmployeeFcmTokensDto),
+    __metadata("design:type", Array)
+], FcmRemoveTokenRequestDto.prototype, "employees", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/fcm-token-management/dto/fcm-remove-token-response.dto.ts":
+/*!*******************************************************************************************!*\
+  !*** ./src/modules/application/fcm-token-management/dto/fcm-remove-token-response.dto.ts ***!
+  \*******************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.FcmRemoveTokenResponseDto = exports.FcmTokenRemoveResultDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+class FcmTokenRemoveResultDto {
+}
+exports.FcmTokenRemoveResultDto = FcmTokenRemoveResultDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직원 번호' }),
+    __metadata("design:type", String)
+], FcmTokenRemoveResultDto.prototype, "employeeNumber", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'FCM 토큰 값' }),
+    __metadata("design:type", String)
+], FcmTokenRemoveResultDto.prototype, "fcmToken", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '삭제 성공 여부' }),
+    __metadata("design:type", Boolean)
+], FcmTokenRemoveResultDto.prototype, "success", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '에러 메시지 (실패한 경우)', required: false }),
+    __metadata("design:type", String)
+], FcmTokenRemoveResultDto.prototype, "error", void 0);
+class FcmRemoveTokenResponseDto {
+}
+exports.FcmRemoveTokenResponseDto = FcmRemoveTokenResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '각 직원-토큰 조합별 삭제 결과',
+        type: [FcmTokenRemoveResultDto],
+    }),
+    __metadata("design:type", Array)
+], FcmRemoveTokenResponseDto.prototype, "results", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '전체 삭제 시도 횟수' }),
+    __metadata("design:type", Number)
+], FcmRemoveTokenResponseDto.prototype, "totalAttempts", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '성공한 삭제 횟수' }),
+    __metadata("design:type", Number)
+], FcmRemoveTokenResponseDto.prototype, "successCount", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '실패한 삭제 횟수' }),
+    __metadata("design:type", Number)
+], FcmRemoveTokenResponseDto.prototype, "failCount", void 0);
 
 
 /***/ }),
@@ -7566,6 +7884,8 @@ __exportStar(__webpack_require__(/*! ./fcm-tokens-response.dto */ "./src/modules
 __exportStar(__webpack_require__(/*! ./multiple-fcm-tokens-response.dto */ "./src/modules/application/fcm-token-management/dto/multiple-fcm-tokens-response.dto.ts"), exports);
 __exportStar(__webpack_require__(/*! ./fcm-unsubscribe-request.dto */ "./src/modules/application/fcm-token-management/dto/fcm-unsubscribe-request.dto.ts"), exports);
 __exportStar(__webpack_require__(/*! ./fcm-unsubscribe-response.dto */ "./src/modules/application/fcm-token-management/dto/fcm-unsubscribe-response.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./fcm-remove-token-request.dto */ "./src/modules/application/fcm-token-management/dto/fcm-remove-token-request.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./fcm-remove-token-response.dto */ "./src/modules/application/fcm-token-management/dto/fcm-remove-token-response.dto.ts"), exports);
 
 
 /***/ }),
@@ -7810,6 +8130,23 @@ let FcmTokenManagementApplicationService = class FcmTokenManagementApplicationSe
             allTokens: allTokens,
             totalEmployees: byEmployee.length,
             totalTokens: allTokens.length,
+        };
+    }
+    async 여러_직원의_여러_토큰을_일괄제거한다(requestDto) {
+        const { employees } = requestDto;
+        const results = await this.fcmTokenManagementContextService.여러_직원의_여러_토큰을_일괄제거한다(employees);
+        const successCount = results.filter((r) => r.success).length;
+        const failCount = results.filter((r) => !r.success).length;
+        return {
+            results: results.map((r) => ({
+                employeeNumber: r.employeeNumber,
+                fcmToken: r.fcmToken,
+                success: r.success,
+                error: r.error,
+            })),
+            totalAttempts: results.length,
+            successCount,
+            failCount,
         };
     }
 };
@@ -13676,6 +14013,50 @@ let FcmTokenManagementContextService = class FcmTokenManagementContextService {
         }
         await this.직원FCM토큰서비스.deleteAllByEmployeeId(employeeId);
     }
+    async 직원번호와_토큰으로_FCM토큰을_제거한다(employeeNumber, fcmToken) {
+        const employee = await this.직원서비스.findByEmployeeNumber(employeeNumber);
+        if (!employee) {
+            throw new common_1.NotFoundException('존재하지 않는 직원입니다.');
+        }
+        const fcmTokenEntity = await this.FCM토큰서비스.findByFcmToken(fcmToken);
+        if (!fcmTokenEntity) {
+            throw new common_1.NotFoundException('존재하지 않는 FCM 토큰입니다.');
+        }
+        const relation = await this.직원FCM토큰서비스.findRelation(employee.id, fcmTokenEntity.id);
+        if (!relation) {
+            throw new common_1.BadRequestException('해당 직원과 FCM 토큰이 연결되어 있지 않습니다.');
+        }
+        await this.직원FCM토큰서비스.deleteRelation(employee.id, fcmTokenEntity.id);
+        const otherRelations = await this.직원FCM토큰서비스.findByFcmTokenId(fcmTokenEntity.id);
+        if (otherRelations.length === 0) {
+            await this.FCM토큰서비스.delete(fcmTokenEntity.id);
+        }
+    }
+    async 여러_직원의_여러_토큰을_일괄제거한다(employees) {
+        const results = [];
+        for (const employee of employees) {
+            const { employeeNumber, fcmTokens } = employee;
+            for (const fcmToken of fcmTokens) {
+                try {
+                    await this.직원번호와_토큰으로_FCM토큰을_제거한다(employeeNumber, fcmToken);
+                    results.push({
+                        employeeNumber,
+                        fcmToken,
+                        success: true,
+                    });
+                }
+                catch (error) {
+                    results.push({
+                        employeeNumber,
+                        fcmToken,
+                        success: false,
+                        error: error.message || '알 수 없는 오류',
+                    });
+                }
+            }
+        }
+        return results;
+    }
 };
 exports.FcmTokenManagementContextService = FcmTokenManagementContextService;
 exports.FcmTokenManagementContextService = FcmTokenManagementContextService = __decorate([
@@ -16906,10 +17287,13 @@ let DomainEmployeeFcmTokenService = class DomainEmployeeFcmTokenService extends 
             fcmTokenId,
         });
     }
-    async deleteRelation(employeeId, fcmTokenId) {
-        const relation = await this.employeeFcmTokenRepository.findOne({
+    async findRelation(employeeId, fcmTokenId) {
+        return this.employeeFcmTokenRepository.findOne({
             where: { employeeId, fcmTokenId },
         });
+    }
+    async deleteRelation(employeeId, fcmTokenId) {
+        const relation = await this.findRelation(employeeId, fcmTokenId);
         if (relation) {
             await this.employeeFcmTokenRepository.delete(relation.id);
         }
@@ -17391,7 +17775,7 @@ let DomainEmployeeSystemRoleService = class DomainEmployeeSystemRoleService exte
     async findByEmployeeId(employeeId) {
         return this.employeeSystemRoleRepository.findAll({
             where: { employeeId },
-            relations: ['systemRole', 'systemRole.system'],
+            relations: ['systemRole', 'systemRole.system', 'employee'],
         });
     }
     async findByEmployeeIds(employeeIds) {
@@ -17399,7 +17783,7 @@ let DomainEmployeeSystemRoleService = class DomainEmployeeSystemRoleService exte
             return [];
         return this.employeeSystemRoleRepository.findAll({
             where: { employeeId: (0, typeorm_1.In)(employeeIds) },
-            relations: ['systemRole', 'systemRole.system'],
+            relations: ['systemRole', 'systemRole.system', 'employee'],
         });
     }
     async findBySystemRoleId(systemRoleId) {
@@ -18639,6 +19023,9 @@ let DomainFcmTokenService = class DomainFcmTokenService extends base_service_1.B
             deviceType,
             count,
         }));
+    }
+    async delete(id) {
+        await this.fcmTokenRepository.delete(id);
     }
 };
 exports.DomainFcmTokenService = DomainFcmTokenService;

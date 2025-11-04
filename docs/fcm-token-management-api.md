@@ -14,6 +14,7 @@ Firebase Cloud Messaging (FCM) 토큰 관리를 위한 API입니다. 이 API는 
     -   [2. FCM 토큰 조회](#2-fcm-토큰-조회)
     -   [3. FCM 토큰 구독 해지](#3-fcm-토큰-구독-해지)
     -   [4. 여러 직원의 FCM 토큰 조회](#4-여러-직원의-fcm-토큰-조회)
+    -   [5. 여러 직원의 여러 FCM 토큰 일괄 제거](#5-여러-직원의-여러-fcm-토큰-일괄-제거)
 -   [에러 처리](#에러-처리)
 -   [사용 예시](#사용-예시)
 -   [비즈니스 규칙](#비즈니스-규칙)
@@ -294,6 +295,103 @@ _\* `employeeIds` 또는 `employeeNumbers` 중 하나는 필수. `employeeIds`�
 
 ---
 
+### 5. 여러 직원의 여러 FCM 토큰 일괄 제거
+
+**DELETE** `/fcm/tokens`
+
+직원별 토큰 정보 배열을 받아서 각 직원의 토큰들을 일괄 제거합니다. 각 직원 정보와 토큰 정보가 모두 존재하고 연결되어 있어야 합니다. 연결 관계를 삭제한 후, 다른 직원이 사용하지 않는 경우 토큰도 함께 삭제합니다. 일부 삭제가 실패해도 나머지는 계속 처리되며, 각 결과를 반환합니다.
+
+#### 요청
+
+**Headers:**
+
+-   `Content-Type: application/json`
+-   `X-System-Name: {systemName}` (선택사항)
+
+**Body:**
+
+```json
+[
+    {
+        "employeeNumber": "25001",
+        "fcmTokens": [
+            "eGb1fxhAPTM6F-XYvVQFNu:APA91bEniVqcKgVLvVeS5Z5FZ5Z5Z5Z5Z5Z5Z5Z5Z5Z",
+            "aBcD5678efgh:APA91bEniVqcKgVLvVeS5Z5FZ5Z5Z5Z5Z5Z5Z5Z5Z5Z"
+        ]
+    },
+    {
+        "employeeNumber": "25002",
+        "fcmTokens": ["xYz9876abcd:APA91bEniVqcKgVLvVeS5Z5FZ5Z5Z5Z5Z5Z5Z5Z5Z5Z"]
+    }
+]
+```
+
+**Body Parameters:**
+
+요청 본문은 직원별 토큰 정보 객체의 배열입니다. 각 객체는 다음 필드를 포함합니다:
+
+| 필드             | 타입     | 필수 | 설명                      | 예시                         |
+| ---------------- | -------- | ---- | ------------------------- | ---------------------------- |
+| `employeeNumber` | string   | 필수 | 직원 번호                 | `25001`                      |
+| `fcmTokens`      | string[] | 필수 | 해당 직원의 FCM 토큰 배열 | `["token1...", "token2..."]` |
+
+#### 응답
+
+**성공 (200 OK):**
+
+```json
+{
+    "results": [
+        {
+            "employeeNumber": "25001",
+            "fcmToken": "eGb1fxhAPTM6F-XYvVQFNu:APA91bEniVqcKgVLvVeS5Z5FZ5Z5Z5Z5Z5Z5Z5Z5Z5Z",
+            "success": true
+        },
+        {
+            "employeeNumber": "25001",
+            "fcmToken": "aBcD5678efgh:APA91bEniVqcKgVLvVeS5Z5FZ5Z5Z5Z5Z5Z5Z5Z5Z5Z",
+            "success": true
+        },
+        {
+            "employeeNumber": "25002",
+            "fcmToken": "xYz9876abcd:APA91bEniVqcKgVLvVeS5Z5FZ5Z5Z5Z5Z5Z5Z5Z5Z5Z",
+            "success": false,
+            "error": "해당 직원과 FCM 토큰이 연결되어 있지 않습니다."
+        }
+    ],
+    "totalAttempts": 3,
+    "successCount": 2,
+    "failCount": 1
+}
+```
+
+**응답 필드 설명:**
+
+-   `results`: 각 직원-토큰 조합별 삭제 결과 배열
+    -   `employeeNumber`: 직원 번호
+    -   `fcmToken`: FCM 토큰 값
+    -   `success`: 삭제 성공 여부 (boolean)
+    -   `error`: 에러 메시지 (실패한 경우에만 존재)
+-   `totalAttempts`: 전체 삭제 시도 횟수
+-   `successCount`: 성공한 삭제 횟수
+-   `failCount`: 실패한 삭제 횟수
+
+**에러 응답:**
+
+-   `400 Bad Request`: 잘못된 요청 형식
+
+```json
+{
+    "statusCode": 400,
+    "message": ["employees must be an array"],
+    "error": "Bad Request"
+}
+```
+
+-   `404 Not Found`: 직원 정보 또는 FCM 토큰을 찾을 수 없음 (개별 결과에 반영됨)
+
+---
+
 ## 에러 처리
 
 모든 API는 표준 HTTP 상태 코드를 사용하며, 에러 발생 시 다음과 같은 형식으로 응답합니다:
@@ -375,6 +473,19 @@ const getMultipleFcmTokens = async (employeeNumbers, systemName) => {
     });
     return await response.json();
 };
+
+// 5. 여러 직원의 여러 FCM 토큰 일괄 제거
+const removeFcmTokens = async (employees, systemName) => {
+    const response = await fetch('/fcm/tokens', {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-System-Name': systemName,
+        },
+        body: JSON.stringify(employees),
+    });
+    return await response.json();
+};
 ```
 
 ### cURL
@@ -409,6 +520,26 @@ curl -X GET "http://localhost:3000/fcm/tokens?employeeIds=123e4567-e89b-12d3-a45
 # 4. 여러 직원의 FCM 토큰 조회 (employeeNumbers 사용)
 curl -X GET "http://localhost:3000/fcm/tokens?employeeNumbers=25001,25002,25003" \
   -H "X-System-Name: LRIM System"
+
+# 5. 여러 직원의 여러 FCM 토큰 일괄 제거
+curl -X DELETE http://localhost:3000/fcm/tokens \
+  -H "Content-Type: application/json" \
+  -H "X-System-Name: LRIM System" \
+  -d '[
+    {
+        "employeeNumber": "25001",
+        "fcmTokens": [
+            "eGb1fxhAPTM6F-XYvVQFNu:APA91bEniVqcKgVLvVeS5Z5FZ5Z5Z5Z5Z5Z5Z5Z5Z5Z",
+            "aBcD5678efgh:APA91bEniVqcKgVLvVeS5Z5FZ5Z5Z5Z5Z5Z5Z5Z5Z5Z"
+        ]
+    },
+    {
+        "employeeNumber": "25002",
+        "fcmTokens": [
+            "xYz9876abcd:APA91bEniVqcKgVLvVeS5Z5FZ5Z5Z5Z5Z5Z5Z5Z5Z5Z"
+        ]
+    }
+]'
 ```
 
 ### React Native / Mobile App 예시
@@ -466,12 +597,15 @@ const handleLogout = async (employeeNumber) => {
 4. **토큰 중복 방지**: 동일한 `fcmToken`과 `deviceType` 조합이 이미 존재하면 업데이트됩니다.
 5. **토큰 만료**: FCM 토큰은 만료되거나 갱신될 수 있으므로, 주기적으로 업데이트해야 합니다.
 6. **전체 구독 해지**: 구독 해지 시 해당 직원의 모든 디바이스의 FCM 토큰이 삭제됩니다.
+7. **일괄 토큰 제거**: 일괄 제거 API는 각 직원별 토큰 배열을 받아 처리하며, 일부 실패해도 나머지는 계속 처리됩니다.
+8. **토큰 자동 정리**: 토큰 제거 시 다른 직원이 사용하지 않는 경우 FCM 토큰 자체도 삭제됩니다.
 
 ### 알림 서버 통합
 
--   **여러 직원 조회**: 알림 서버는 `/fcm/tokens` 엔드포인트를 사용하여 여러 직원의 FCM 토큰을 일괄 조회할 수 있습니다.
--   **우선순위**: `employeeIds`가 제공되면 `employeeNumbers`보다 우선 사용됩니다.
--   **대량 조회**: 성능을 위해 한 번에 최대 100명까지 조회하는 것을 권장합니다.
+-   **여러 직원 조회**: 알림 서버는 `GET /fcm/tokens` 엔드포인트를 사용하여 여러 직원의 FCM 토큰을 일괄 조회할 수 있습니다.
+-   **여러 직원 토큰 제거**: 알림 서버는 `DELETE /fcm/tokens` 엔드포인트를 사용하여 여러 직원의 특정 토큰들을 일괄 제거할 수 있습니다.
+-   **우선순위**: 조회 API에서 `employeeIds`가 제공되면 `employeeNumbers`보다 우선 사용됩니다.
+-   **대량 처리**: 성능을 위해 한 번에 최대 100명까지 처리하는 것을 권장합니다.
 
 ---
 
@@ -513,6 +647,18 @@ const handleLogout = async (employeeNumber) => {
 4. 발송 결과 로깅
 ```
 
+### 토큰 정리 플로우
+
+```
+1. 만료되거나 무효한 토큰 목록 수집
+   ↓
+2. DELETE /fcm/tokens로 해당 토큰들 일괄 제거
+   ↓
+3. 제거 결과 확인 및 로깅
+   ↓
+4. 재시도가 필요한 경우 개별 처리
+```
+
 ---
 
 ## 보안 고려사항
@@ -520,11 +666,17 @@ const handleLogout = async (employeeNumber) => {
 1. **토큰 보안**: FCM 토큰은 민감한 정보이므로 HTTPS를 통해서만 전송해야 합니다.
 2. **직원 정보 검증**: FCM 토큰 등록 시 해당 직원의 존재 여부를 확인합니다.
 3. **정합성 체크**: `employeeId`와 `employeeNumber`가 모두 제공된 경우 동일한 직원인지 검증합니다.
-4. **알림 서버 인증**: 여러 직원의 토큰을 조회하는 `/fcm/tokens` 엔드포인트는 알림 서버만 접근할 수 있도록 제한해야 합니다.
+4. **알림 서버 인증**: 여러 직원의 토큰을 조회/제거하는 `/fcm/tokens` 엔드포인트는 알림 서버만 접근할 수 있도록 제한해야 합니다.
 
 ---
 
 ## 변경 이력
+
+### v1.1 (2024)
+
+-   여러 직원의 여러 FCM 토큰 일괄 제거 API 추가
+-   직원별 토큰 배열 구조 지원
+-   일괄 처리 결과 상세 응답 제공
 
 ### v1.0 (2024)
 
@@ -535,6 +687,6 @@ const handleLogout = async (employeeNumber) => {
 
 ---
 
-**문서 버전**: 1.0  
+**문서 버전**: 1.1  
 **최종 업데이트**: 2024년  
 **담당자**: 알림 시스템 개발팀

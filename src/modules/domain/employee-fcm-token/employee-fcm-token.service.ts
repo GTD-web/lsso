@@ -55,11 +55,16 @@ export class DomainEmployeeFcmTokenService extends BaseService<EmployeeFcmToken>
         });
     }
 
-    // 직원과 FCM 토큰 관계 삭제
-    async deleteRelation(employeeId: string, fcmTokenId: string): Promise<void> {
-        const relation = await this.employeeFcmTokenRepository.findOne({
+    // 직원과 FCM 토큰 관계 조회
+    async findRelation(employeeId: string, fcmTokenId: string): Promise<EmployeeFcmToken | null> {
+        return this.employeeFcmTokenRepository.findOne({
             where: { employeeId, fcmTokenId },
         });
+    }
+
+    // 직원과 FCM 토큰 관계 삭제
+    async deleteRelation(employeeId: string, fcmTokenId: string): Promise<void> {
+        const relation = await this.findRelation(employeeId, fcmTokenId);
 
         if (relation) {
             await this.employeeFcmTokenRepository.delete(relation.id);

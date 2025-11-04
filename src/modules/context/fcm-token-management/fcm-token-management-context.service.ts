@@ -74,4 +74,65 @@ export class FcmTokenManagementContextService {
         // 직원의 모든 FCM 토큰 관계 삭제
         await this.직원FCM토큰서비스.deleteAllByEmployeeId(employeeId);
     }
+
+    async 직원번호와_토큰으로_FCM토큰을_제거한다(employeeNumber: string, fcmToken: string): Promise<void> {
+        // 직원 조회 (사번으로)
+        const employee = await this.직원서비스.findByEmployeeNumber(employeeNumber);
+        if (!employee) {
+            throw new NotFoundException('존재하지 않는 직원입니다.');
+        }
+
+        // FCM 토큰 조회
+        const fcmTokenEntity = await this.FCM토큰서비스.findByFcmToken(fcmToken);
+        if (!fcmTokenEntity) {
+            throw new NotFoundException('존재하지 않는 FCM 토큰입니다.');
+        }
+
+        // 직원과 FCM 토큰 연결 확인
+        const relation = await this.직원FCM토큰서비스.findRelation(employee.id, fcmTokenEntity.id);
+        if (!relation) {
+            throw new BadRequestException('해당 직원과 FCM 토큰이 연결되어 있지 않습니다.');
+        }
+
+        // 연결 관계 삭제
+        await this.직원FCM토큰서비스.deleteRelation(employee.id, fcmTokenEntity.id);
+
+        // FCM 토큰 삭제 (다른 직원이 사용 중인지 확인 후)
+        const otherRelations = await this.직원FCM토큰서비스.findByFcmTokenId(fcmTokenEntity.id);
+        if (otherRelations.length === 0) {
+            // 다른 직원이 사용하지 않으면 토큰 삭제
+            await this.FCM토큰서비스.delete(fcmTokenEntity.id);
+        }
+    }
+
+    async 여러_직원의_여러_토큰을_일괄제거한다(
+        employees: Array<{ employeeNumber: string; fcmTokens: string[] }>,
+    ): Promise<Array<{ employeeNumber: string; fcmToken: string; success: boolean; error?: string }>> {
+        const results: Array<{ employeeNumber: string; fcmToken: string; success: boolean; error?: string }> = [];
+
+        // 각 직원별로 해당 직원의 토큰들 처리
+        for (const employee of employees) {
+            const { employeeNumber, fcmTokens } = employee;
+
+            for (const fcmToken of fcmTokens) {
+                try {
+                    await this.직원번호와_토큰으로_FCM토큰을_제거한다(employeeNumber, fcmToken);
+                    results.push({
+                        employeeNumber,
+                        fcmToken,
+                        success: true,
+                    });
+                } catch (error) {
+                    results.push({
+                        employeeNumber,
+                        fcmToken,
+                        success: false,
+                        error: error.message || '알 수 없는 오류',
+                    });
+                }
+            }
+        }
+
+        return results;
+    }
 }

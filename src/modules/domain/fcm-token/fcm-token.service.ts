@@ -188,4 +188,9 @@ export class DomainFcmTokenService extends BaseService<FcmToken> {
             count,
         }));
     }
+
+    // FCM 토큰 삭제 (ID로)
+    async delete(id: string): Promise<void> {
+        await this.fcmTokenRepository.delete(id);
+    }
 }

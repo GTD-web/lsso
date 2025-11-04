@@ -6,6 +6,7 @@ import {
     UpdateEmployeeTokenDto,
     EmployeeTokenListResponseDto,
     EmployeeTokenGroupedListResponseDto,
+    TokenResponseDto,
 } from '../dto';
 
 @ApiTags('Admin - 직원 토큰 관리')
@@ -22,6 +23,15 @@ export class EmployeeTokenController {
         @Query('employeeId') employeeId?: string,
     ): Promise<EmployeeTokenGroupedListResponseDto> {
         return await this.employeeTokenApplicationService.직원별_그룹핑된_토큰_관계_조회(employeeId);
+    }
+
+    @Get('token/:tokenId')
+    @ApiOperation({ summary: '토큰 ID로 토큰 엔티티 조회' })
+    @ApiResponse({ status: 200, type: TokenResponseDto })
+    @ApiResponse({ status: 404, description: '토큰을 찾을 수 없음' })
+    @ApiParam({ name: 'tokenId', description: '토큰 ID' })
+    async findByTokenId(@Param('tokenId') tokenId: string): Promise<TokenResponseDto> {
+        return await this.employeeTokenApplicationService.토큰_조회(tokenId);
     }
 
     @Get(':id')

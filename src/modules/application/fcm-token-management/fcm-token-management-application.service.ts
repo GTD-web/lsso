@@ -9,6 +9,9 @@ import {
     FlatFcmTokenDto,
     FcmUnsubscribeResponseDto,
     BaseEmployeeIdentifierDto,
+    FcmRemoveTokenRequestDto,
+    FcmRemoveTokenResponseDto,
+    FcmTokenRemoveResultDto,
 } from './dto';
 // DeviceType enum 제거 - 이제 문자열로 처리
 import { Employee } from '../../domain/employee/employee.entity';
@@ -201,6 +204,31 @@ export class FcmTokenManagementApplicationService {
             allTokens: allTokens,
             totalEmployees: byEmployee.length,
             totalTokens: allTokens.length,
+        };
+    }
+
+    async 여러_직원의_여러_토큰을_일괄제거한다(
+        requestDto: FcmRemoveTokenRequestDto,
+    ): Promise<FcmRemoveTokenResponseDto> {
+        const { employees } = requestDto;
+
+        // Context Service를 통해 일괄 토큰 제거
+        const results = await this.fcmTokenManagementContextService.여러_직원의_여러_토큰을_일괄제거한다(employees);
+
+        // 결과 집계
+        const successCount = results.filter((r) => r.success).length;
+        const failCount = results.filter((r) => !r.success).length;
+
+        return {
+            results: results.map((r) => ({
+                employeeNumber: r.employeeNumber,
+                fcmToken: r.fcmToken,
+                success: r.success,
+                error: r.error,
+            })),
+            totalAttempts: results.length,
+            successCount,
+            failCount,
         };
     }
 }
