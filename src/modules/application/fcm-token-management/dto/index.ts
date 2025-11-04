@@ -7,3 +7,5 @@ export * from './fcm-tokens-response.dto';
 export * from './multiple-fcm-tokens-response.dto';
 export * from './fcm-unsubscribe-request.dto';
 export * from './fcm-unsubscribe-response.dto';
+export * from './fcm-remove-token-request.dto';
+export * from './fcm-remove-token-response.dto';

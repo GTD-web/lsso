@@ -6,11 +6,16 @@ import { EmployeeSystemRoleApplicationService } from './services/employee-system
 import { EmployeeTokenApplicationService } from './services/employee-token-application.service';
 import { EmployeeFcmTokenApplicationService } from './services/employee-fcm-token-application.service';
 import { EmployeeManagementContextModule } from '../../../context/employee-management/employee-management-context.module';
+import { DomainFcmTokenModule } from '../../../domain/fcm-token/fcm-token.module';
+import { DomainTokenModule } from '../../../domain/token/token.module';
 
 @Module({
     imports: [
         // Context 레벨 모듈 임포트
         EmployeeManagementContextModule,
+        // Domain 레벨 모듈 임포트
+        DomainFcmTokenModule,
+        DomainTokenModule,
     ],
     controllers: [EmployeeSystemRoleController, EmployeeTokenController, EmployeeFcmTokenController],
     providers: [

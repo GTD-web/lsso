@@ -11,7 +11,7 @@ import {
     DepartmentEmployeeInfoDto,
     CreateEmployeeRequestDto,
     UpdateEmployeeRequestDto,
-    EmployeeResponseDto,
+    AdminEmployeeResponseDto,
     EmployeeListResponseDto,
     NextEmployeeNumberResponseDto,
     EmployeeDetailInfoDto,
@@ -30,9 +30,10 @@ import {
     EmployeeAssignmentDetailResponseDto,
     PromoteEmployeeRequestDto,
     EmployeeRankHistoryResponseDto,
+    EmployeeAssignmentDetailDto,
 } from './dto';
 import { OrganizationManagementContextService } from 'src/modules/context/organization-management/organization-management-context.service';
-import { Department } from 'src/modules/domain/department/department.entity';
+import { Department, DepartmentType } from 'src/modules/domain/department/department.entity';
 import { Employee } from 'src/modules/domain/employee/employee.entity';
 import { Position } from 'src/modules/domain/position/position.entity';
 import { Rank } from 'src/modules/domain/rank/rank.entity';
@@ -137,12 +138,93 @@ export class OrganizationApplicationService {
         return await this.organizationContextService.연도별_다음직원번호를_조회한다(year);
     }
 
-    async 직원상세조회(id: string): Promise<EmployeeResponseDto> {
+    async 직원상세조회(id: string): Promise<AdminEmployeeResponseDto> {
         const employee = await this.organizationContextService.직원을_조회한다(id);
-        return this.직원을_응답DTO로_변환한다(employee);
+        const baseDto = this.직원을_응답DTO로_변환한다(employee);
+
+        // 배치 정보 조회 및 매핑
+        const assignments = await this.organizationContextService.직원의_모든_배치정보를_조회한다(id);
+
+        if (assignments.length > 0) {
+            // 성능 최적화: 부서와 직책 정보를 배치로 조회
+            const departmentIds = [...new Set(assignments.map((a) => a.departmentId))];
+            const positionIds = [...new Set(assignments.map((a) => a.positionId))];
+
+            const [departments, positions] = await Promise.all([
+                Promise.all(
+                    departmentIds.map((deptId) => this.organizationContextService.부서_ID로_부서를_조회한다(deptId)),
+                ),
+                Promise.all(
+                    positionIds.map((posId) => this.organizationContextService.직책_ID로_직책을_조회한다(posId)),
+                ),
+            ]);
+
+            const departmentMap = new Map(departments.map((dept) => [dept.id, dept]));
+            const positionMap = new Map(positions.map((pos) => [pos.id, pos]));
+
+            // 배치 정보를 DEPARTMENT와 TEAM으로 분류
+            const departmentAssignment = assignments.find((assignment) => {
+                const dept = departmentMap.get(assignment.departmentId);
+                return dept?.type === DepartmentType.DEPARTMENT;
+            });
+
+            const teamAssignments = assignments.filter((assignment) => {
+                const dept = departmentMap.get(assignment.departmentId);
+                return dept?.type === DepartmentType.TEAM;
+            });
+
+            // DEPARTMENT 배치 정보 매핑
+            if (departmentAssignment) {
+                const dept = departmentMap.get(departmentAssignment.departmentId);
+                const pos = positionMap.get(departmentAssignment.positionId);
+                if (dept && pos) {
+                    baseDto.department = {
+                        id: departmentAssignment.id,
+                        departmentId: dept.id,
+                        departmentName: dept.departmentName,
+                        departmentCode: dept.departmentCode,
+                        departmentType: dept.type,
+                        positionId: pos.id,
+                        positionTitle: pos.positionTitle,
+                        positionCode: pos.positionCode,
+                        isManager: departmentAssignment.isManager,
+                        createdAt: departmentAssignment.createdAt,
+                        updatedAt: departmentAssignment.updatedAt,
+                    };
+                }
+            }
+
+            // TEAM 배치 정보 매핑
+            if (teamAssignments.length > 0) {
+                baseDto.teams = teamAssignments
+                    .map((assignment) => {
+                        const dept = departmentMap.get(assignment.departmentId);
+                        const pos = positionMap.get(assignment.positionId);
+                        if (dept && pos) {
+                            return {
+                                id: assignment.id,
+                                departmentId: dept.id,
+                                departmentName: dept.departmentName,
+                                departmentCode: dept.departmentCode,
+                                departmentType: dept.type,
+                                positionId: pos.id,
+                                positionTitle: pos.positionTitle,
+                                positionCode: pos.positionCode,
+                                isManager: assignment.isManager,
+                                createdAt: assignment.createdAt,
+                                updatedAt: assignment.updatedAt,
+                            };
+                        }
+                        return null;
+                    })
+                    .filter((team) => team !== null) as EmployeeAssignmentDetailDto[];
+            }
+        }
+
+        return baseDto;
     }
 
-    async 직원생성(createEmployeeDto: CreateEmployeeRequestDto): Promise<EmployeeResponseDto> {
+    async 직원생성(createEmployeeDto: CreateEmployeeRequestDto): Promise<AdminEmployeeResponseDto> {
         // 완전한 비즈니스 로직 사이클 실행 (전처리 → 검증 → 생성 → 반환)
         const result = await this.organizationContextService.직원을_생성한다({
             // employeeNumber: createEmployeeDto.employeeNumber,
@@ -161,7 +243,7 @@ export class OrganizationApplicationService {
         return this.직원을_응답DTO로_변환한다(result.employee);
     }
 
-    async 직원수정(id: string, updateEmployeeDto: UpdateEmployeeRequestDto): Promise<EmployeeResponseDto> {
+    async 직원수정(id: string, updateEmployeeDto: UpdateEmployeeRequestDto): Promise<AdminEmployeeResponseDto> {
         // 완전한 비즈니스 로직 사이클 실행 (존재 확인 → 검증 → 수정 → 반환)
         const updatedEmployee = await this.organizationContextService.직원정보를_수정한다(id, {
             name: updateEmployeeDto.name,
@@ -315,7 +397,7 @@ export class OrganizationApplicationService {
         updatedAt: department.updatedAt,
     });
 
-    private 직원을_응답DTO로_변환한다 = (employee: any): EmployeeResponseDto => ({
+    private 직원을_응답DTO로_변환한다 = (employee: any): AdminEmployeeResponseDto => ({
         id: employee.id,
         employeeNumber: employee.employeeNumber,
         name: employee.name,
@@ -492,6 +574,23 @@ export class OrganizationApplicationService {
         errors?: { employeeId: string; message: string }[];
     }> {
         const result = await this.organizationContextService.직원_부서_일괄수정(employeeIds, departmentId);
+        return result;
+    }
+
+    /**
+     * 직원 팀 일괄 배치
+     */
+    async 직원팀일괄배치(
+        employeeIds: string[],
+        teamId: string,
+    ): Promise<{
+        successCount: number;
+        failCount: number;
+        successIds: string[];
+        failIds: string[];
+        errors?: { employeeId: string; message: string }[];
+    }> {
+        const result = await this.organizationContextService.직원_팀_일괄배치(employeeIds, teamId);
         return result;
     }
 

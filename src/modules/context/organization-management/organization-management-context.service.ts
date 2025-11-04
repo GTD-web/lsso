@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { DomainEmployeeService } from '../../domain/employee/employee.service';
 import { DomainDepartmentService } from '../../domain/department/department.service';
 import { DomainPositionService } from '../../domain/position/position.service';
@@ -537,7 +537,12 @@ export class OrganizationManagementContextService {
         errors: { employeeId: string; message: string }[];
     }> {
         // 부서 존재 검증
-        await this.부서서비스.findById(departmentId);
+        const department = await this.부서서비스.findById(departmentId);
+
+        // DEPARTMENT 타입 검증
+        if (department.type !== DepartmentType.DEPARTMENT) {
+            throw new BadRequestException(`부서 타입이 DEPARTMENT가 아닙니다. 현재 타입: ${department.type}`);
+        }
 
         const successIds: string[] = [];
         const failIds: string[] = [];
@@ -573,6 +578,89 @@ export class OrganizationManagementContextService {
                 }
 
                 successIds.push(employeeId);
+            } catch (error) {
+                failIds.push(employeeId);
+                errors.push({
+                    employeeId,
+                    message: error.message || '알 수 없는 오류',
+                });
+            }
+        }
+
+        return {
+            successCount: successIds.length,
+            failCount: failIds.length,
+            successIds,
+            failIds,
+            errors,
+        };
+    }
+
+    /**
+     * 직원 팀 일괄 배치
+     * TEAM 타입의 부서에 직원을 일괄 배치
+     */
+    async 직원_팀_일괄배치(
+        employeeIds: string[],
+        teamId: string,
+    ): Promise<{
+        successCount: number;
+        failCount: number;
+        successIds: string[];
+        failIds: string[];
+        errors: { employeeId: string; message: string }[];
+    }> {
+        // 팀 존재 및 타입 검증
+        const team = await this.부서서비스.findById(teamId);
+
+        // TEAM 타입 검증
+        if (team.type !== DepartmentType.TEAM) {
+            throw new BadRequestException(`부서 타입이 TEAM이 아닙니다. 현재 타입: ${team.type}`);
+        }
+
+        // 성능 최적화: 기본 직책을 한 번만 조회
+        const allPositions = await this.직책서비스.findAllPositions();
+        if (allPositions.length === 0) {
+            throw new NotFoundException('시스템에 직책이 없습니다.');
+        }
+        const sortedPositions = [...allPositions].sort((a, b) => b.level - a.level);
+        const defaultPositionId = sortedPositions[0].id;
+
+        const successIds: string[] = [];
+        const failIds: string[] = [];
+        const errors: { employeeId: string; message: string }[] = [];
+
+        for (const employeeId of employeeIds) {
+            try {
+                // 직원 존재 확인
+                const employee = await this.직원을_조회한다(employeeId);
+
+                // 기존 TEAM 타입 배치 조회
+                const existingAssignments = await this.직원부서직책서비스.findAllByEmployeeId(employeeId);
+                let teamAssignment = null;
+
+                for (const assignment of existingAssignments) {
+                    const department = await this.부서서비스.findById(assignment.departmentId);
+                    if (department.type === DepartmentType.TEAM && department.id === teamId) {
+                        teamAssignment = assignment;
+                        break;
+                    }
+                }
+
+                if (teamAssignment) {
+                    // 동일한 TEAM에 이미 배치되어 있으면 스킵 (또는 업데이트)
+                    // 기존 배치 유지하거나 필요시 업데이트 가능
+                    successIds.push(employeeId);
+                } else {
+                    // 기본 직책을 사용하여 TEAM 배치 생성
+                    await this.직원부서직책서비스.createAssignment({
+                        employeeId: employee.id,
+                        departmentId: teamId,
+                        positionId: defaultPositionId,
+                        isManager: false, // TEAM 배치는 기본적으로 관리자가 아님
+                    });
+                    successIds.push(employeeId);
+                }
             } catch (error) {
                 failIds.push(employeeId);
                 errors.push({
@@ -1314,7 +1402,10 @@ export class OrganizationManagementContextService {
         },
     ): Promise<Department> {
         // 1. 부서 존재 확인
-        await this.부서서비스.findById(departmentId);
+        const department = await this.부서서비스.findById(departmentId);
+        if (!department) {
+            throw new NotFoundException('부서를 찾을 수 없습니다.');
+        }
 
         // 2. 부서 코드 중복 확인 (자신 제외)
         if (수정정보.departmentCode) {
@@ -1405,6 +1496,7 @@ export class OrganizationManagementContextService {
         const updates: { id: string; order: number }[] = [];
         if (currentOrder < newOrder) {
             // 아래로 이동: 현재 순서보다 크고 새로운 순서 이하인 부서들을 -1
+            console.log('affectedDepartments', affectedDepartments);
             for (const dept of affectedDepartments) {
                 if (dept.id !== departmentId && dept.order > currentOrder && dept.order <= newOrder) {
                     updates.push({ id: dept.id, order: dept.order - 1 });
@@ -1735,5 +1827,236 @@ export class OrganizationManagementContextService {
         }
 
         return count;
+    }
+
+    // ==================== 직원 관리자 라인 조회 ====================
+
+    /**
+     * 전체 직원의 부서 직속 라인 관리자 정보를 조회한다
+     * 각 직원의 소속 부서부터 최상위 부서까지 올라가면서 isManager=true인 직원들을 찾는다
+     *
+     * @param includeTerminated 퇴사한 직원 포함 여부 (기본값: false)
+     * @returns 직원별 관리자 라인 정보
+     */
+    async 전체_직원의_관리자_라인을_조회한다(includeTerminated = false): Promise<
+        {
+            employeeId: string;
+            name: string;
+            employeeNumber: string;
+            departments: Array<{
+                departmentId: string;
+                departmentName: string;
+                managerLine: Array<{
+                    departmentId: string;
+                    departmentName: string;
+                    departmentCode: string;
+                    type: any;
+                    parentDepartmentId?: string;
+                    depth: number;
+                    managers: Array<{
+                        employeeId: string;
+                        name: string;
+                        employeeNumber: string;
+                        email?: string;
+                        positionId: string;
+                        positionTitle: string;
+                    }>;
+                }>;
+            }>;
+        }[]
+    > {
+        // 1. 전체 직원 조회
+        const employees = await this.전체_직원정보를_조회한다(includeTerminated);
+
+        if (employees.length === 0) {
+            return [];
+        }
+
+        // 2. 성능 최적화: 필요한 모든 데이터를 배치로 조회
+        const employeeIds = employees.map((emp) => emp.id);
+
+        const [allAssignments, allDepartments, allPositions] = await Promise.all([
+            // 직원-부서-직책 매핑 정보 (가장 최근 배치 정보 찾기 위해)
+            this.직원부서직책서비스.findAllByEmployeeIds(employeeIds),
+            // 모든 부서 정보
+            this.부서서비스.findAllDepartments(),
+            // 모든 직책 정보
+            this.직책서비스.findAllPositions(),
+        ]);
+
+        // 3. 빠른 조회를 위한 Map 생성
+        const departmentMap = new Map(allDepartments.map((dept) => [dept.id, dept]));
+        const positionMap = new Map(allPositions.map((pos) => [pos.id, pos]));
+
+        // 직원별 모든 배치 정보 그룹화
+        const employeeAssignmentsMap = new Map<string, EmployeeDepartmentPosition[]>();
+        for (const assignment of allAssignments) {
+            const assignments = employeeAssignmentsMap.get(assignment.employeeId) || [];
+            assignments.push(assignment);
+            employeeAssignmentsMap.set(assignment.employeeId, assignments);
+        }
+
+        // 4. 부서별 관리자 조회 (isManager = true인 배치 정보)
+        const managersByDepartmentMap = new Map<string, EmployeeDepartmentPosition[]>();
+        for (const assignment of allAssignments) {
+            if (assignment.isManager) {
+                const managers = managersByDepartmentMap.get(assignment.departmentId) || [];
+                managers.push(assignment);
+                managersByDepartmentMap.set(assignment.departmentId, managers);
+            }
+        }
+
+        // 5. 각 직원에 대해 모든 부서의 관리자 라인 구성
+        const result: Array<{
+            employeeId: string;
+            name: string;
+            employeeNumber: string;
+            departments: Array<{
+                departmentId: string;
+                departmentName: string;
+                managerLine: Array<{
+                    departmentId: string;
+                    departmentName: string;
+                    departmentCode: string;
+                    type: any;
+                    parentDepartmentId?: string;
+                    depth: number;
+                    managers: Array<{
+                        employeeId: string;
+                        name: string;
+                        employeeNumber: string;
+                        email?: string;
+                        positionId: string;
+                        positionTitle: string;
+                    }>;
+                }>;
+            }>;
+        }> = [];
+
+        for (const employee of employees) {
+            const employeeAssignments = employeeAssignmentsMap.get(employee.id);
+
+            // 직원이 배치되어 있지 않은 경우 스킵
+            if (!employeeAssignments || employeeAssignments.length === 0) {
+                continue;
+            }
+
+            // 직원의 모든 부서에 대해 관리자 라인 구성
+            const departments: Array<{
+                departmentId: string;
+                departmentName: string;
+                managerLine: Array<{
+                    departmentId: string;
+                    departmentName: string;
+                    departmentCode: string;
+                    type: any;
+                    parentDepartmentId?: string;
+                    depth: number;
+                    managers: Array<{
+                        employeeId: string;
+                        name: string;
+                        employeeNumber: string;
+                        email?: string;
+                        positionId: string;
+                        positionTitle: string;
+                    }>;
+                }>;
+            }> = [];
+
+            // 각 배치된 부서에 대해 관리자 라인 구성
+            for (const assignment of employeeAssignments) {
+                const currentDepartmentId = assignment.departmentId;
+                const currentDepartment = departmentMap.get(currentDepartmentId);
+
+                // 부서 정보가 없는 경우 스킵
+                if (!currentDepartment) {
+                    continue;
+                }
+
+                // 부서 계층을 올라가면서 관리자 찾기
+                const managerLine: Array<{
+                    departmentId: string;
+                    departmentName: string;
+                    departmentCode: string;
+                    type: any;
+                    parentDepartmentId?: string;
+                    depth: number;
+                    managers: Array<{
+                        employeeId: string;
+                        name: string;
+                        employeeNumber: string;
+                        email?: string;
+                        positionId: string;
+                        positionTitle: string;
+                    }>;
+                }> = [];
+
+                let currentDeptId: string | undefined = currentDepartmentId;
+                let depth = 0;
+
+                // 최상위 부서까지 반복
+                while (currentDeptId) {
+                    const dept = departmentMap.get(currentDeptId);
+                    if (!dept) {
+                        break;
+                    }
+
+                    // 해당 부서의 관리자들 조회
+                    const managerAssignments = managersByDepartmentMap.get(currentDeptId) || [];
+                    const managers = managerAssignments
+                        .map((managerAssignment) => {
+                            const managerEmployee = employees.find((emp) => emp.id === managerAssignment.employeeId);
+                            if (!managerEmployee) {
+                                return null;
+                            }
+
+                            const position = positionMap.get(managerAssignment.positionId);
+                            if (!position) {
+                                return null;
+                            }
+
+                            return {
+                                employeeId: managerEmployee.id,
+                                name: managerEmployee.name,
+                                employeeNumber: managerEmployee.employeeNumber,
+                                email: managerEmployee.email,
+                                positionId: position.id,
+                                positionTitle: position.positionTitle,
+                            };
+                        })
+                        .filter((m): m is NonNullable<typeof m> => m !== null);
+
+                    // 관리자 라인에 추가
+                    managerLine.push({
+                        departmentId: dept.id,
+                        departmentName: dept.departmentName,
+                        departmentCode: dept.departmentCode,
+                        type: dept.type,
+                        parentDepartmentId: dept.parentDepartmentId,
+                        depth,
+                        managers,
+                    });
+
+                    // 상위 부서로 이동
+                    currentDeptId = dept.parentDepartmentId;
+                    depth++;
+                }
+
+                departments.push({
+                    departmentId: currentDepartment.id,
+                    departmentName: currentDepartment.departmentName,
+                    managerLine,
+                });
+            }
+
+            result.push({
+                employeeId: employee.id,
+                name: employee.name,
+                employeeNumber: employee.employeeNumber,
+                departments,
+            });
+        }
+
+        return result;
     }
 }

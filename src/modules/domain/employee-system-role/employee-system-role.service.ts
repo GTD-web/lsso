@@ -17,7 +17,7 @@ export class DomainEmployeeSystemRoleService extends BaseService<EmployeeSystemR
     async findByEmployeeId(employeeId: string): Promise<EmployeeSystemRole[]> {
         return this.employeeSystemRoleRepository.findAll({
             where: { employeeId },
-            relations: ['systemRole', 'systemRole.system'],
+            relations: ['systemRole', 'systemRole.system', 'employee'],
         });
     }
 
@@ -28,7 +28,7 @@ export class DomainEmployeeSystemRoleService extends BaseService<EmployeeSystemR
         if (employeeIds.length === 0) return [];
         return this.employeeSystemRoleRepository.findAll({
             where: { employeeId: In(employeeIds) },
-            relations: ['systemRole', 'systemRole.system'],
+            relations: ['systemRole', 'systemRole.system', 'employee'],
         });
     }
 

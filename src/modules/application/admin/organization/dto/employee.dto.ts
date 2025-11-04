@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsString, IsOptional, IsEnum, IsEmail, IsDateString, IsUUID, IsBoolean, IsArray } from 'class-validator';
 import { Gender, EmployeeStatus } from '../../../../../../libs/common/enums';
+import { DepartmentType } from '../../../../domain/department/department.entity';
 
 export class CreateEmployeeRequestDto {
     @ApiProperty({ description: '이름', example: '홍길동' })
@@ -125,7 +126,43 @@ export class UpdateEmployeeRequestDto {
     isManager?: boolean;
 }
 
-export class EmployeeResponseDto {
+// 배치 정보 DTO
+export class EmployeeAssignmentDetailDto {
+    @ApiProperty({ description: '배치 ID' })
+    id: string;
+
+    @ApiProperty({ description: '부서 ID' })
+    departmentId: string;
+
+    @ApiProperty({ description: '부서명' })
+    departmentName: string;
+
+    @ApiProperty({ description: '부서 코드' })
+    departmentCode: string;
+
+    @ApiProperty({ description: '부서 타입', enum: DepartmentType })
+    departmentType: DepartmentType;
+
+    @ApiProperty({ description: '직책 ID' })
+    positionId: string;
+
+    @ApiProperty({ description: '직책명' })
+    positionTitle: string;
+
+    @ApiProperty({ description: '직책 코드' })
+    positionCode: string;
+
+    @ApiProperty({ description: '관리자 권한 여부' })
+    isManager: boolean;
+
+    @ApiProperty({ description: '생성일' })
+    createdAt: Date;
+
+    @ApiProperty({ description: '수정일' })
+    updatedAt: Date;
+}
+
+export class AdminEmployeeResponseDto {
     @ApiProperty({ description: '직원 ID' })
     id: string;
 
@@ -167,11 +204,23 @@ export class EmployeeResponseDto {
 
     @ApiProperty({ description: '수정일' })
     updatedAt: Date;
+
+    @ApiPropertyOptional({
+        description: 'DEPARTMENT 타입 배치 정보 (하나)',
+        type: EmployeeAssignmentDetailDto,
+    })
+    department?: EmployeeAssignmentDetailDto;
+
+    @ApiPropertyOptional({
+        description: 'TEAM 타입 배치 정보 목록 (여러 개)',
+        type: [EmployeeAssignmentDetailDto],
+    })
+    teams?: EmployeeAssignmentDetailDto[];
 }
 
 export class EmployeeListResponseDto {
-    @ApiProperty({ description: '직원 목록', type: [EmployeeResponseDto] })
-    employees: EmployeeResponseDto[];
+    @ApiProperty({ description: '직원 목록', type: [AdminEmployeeResponseDto] })
+    employees: AdminEmployeeResponseDto[];
 }
 
 export class NextEmployeeNumberResponseDto {
@@ -293,9 +342,20 @@ export class BulkUpdateDepartmentRequestDto {
     @IsUUID('4', { each: true })
     employeeIds: string[];
 
-    @ApiProperty({ description: '변경할 부서 ID' })
+    @ApiProperty({ description: '변경할 부서 ID (DEPARTMENT 타입만 허용)' })
     @IsUUID()
     departmentId: string;
+}
+
+export class BulkUpdateTeamRequestDto {
+    @ApiProperty({ description: '직원 ID 목록', type: [String] })
+    @IsArray()
+    @IsUUID('4', { each: true })
+    employeeIds: string[];
+
+    @ApiProperty({ description: '배치할 팀 ID (TEAM 타입만 허용)' })
+    @IsUUID()
+    teamId: string;
 }
 
 export class BulkUpdatePositionRequestDto {

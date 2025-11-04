@@ -128,3 +128,41 @@ export class EmployeeTokenGroupedListResponseDto {
     @ApiProperty({ description: '전체 관계 수' })
     totalRelations: number;
 }
+
+export class TokenResponseDto {
+    @ApiProperty({ description: '토큰 ID' })
+    id: string;
+
+    @ApiProperty({ description: '액세스 토큰' })
+    accessToken: string;
+
+    @ApiProperty({ description: '토큰 만료일시' })
+    tokenExpiresAt: Date;
+
+    @ApiPropertyOptional({ description: '리프레시 토큰' })
+    refreshToken?: string;
+
+    @ApiPropertyOptional({ description: '리프레시 토큰 만료일시' })
+    refreshTokenExpiresAt?: Date;
+
+    @ApiPropertyOptional({ description: '클라이언트 정보' })
+    clientInfo?: string;
+
+    @ApiPropertyOptional({ description: 'IP 주소' })
+    ipAddress?: string;
+
+    @ApiPropertyOptional({ description: '마지막 접근일시' })
+    lastAccess?: Date;
+
+    @ApiProperty({ description: '활성화 상태' })
+    isActive: boolean;
+
+    @ApiProperty({ description: '생성일시' })
+    createdAt: Date;
+
+    @ApiProperty({ description: '수정일시' })
+    updatedAt: Date;
+
+    @ApiPropertyOptional({ description: '사용자 ID' })
+    userId?: string;
+}

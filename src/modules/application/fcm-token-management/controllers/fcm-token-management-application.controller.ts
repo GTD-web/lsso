@@ -22,6 +22,8 @@ import {
     FcmUnsubscribeRequestDto,
     FcmUnsubscribeResponseDto,
     BaseEmployeeIdentifierDto,
+    FcmRemoveTokenRequestDto,
+    FcmRemoveTokenResponseDto,
 } from '../dto';
 
 @ApiTags('Client - FCM 토큰 관리 API')
@@ -150,5 +152,25 @@ export class FcmTokenManagementApplicationController {
         }
 
         throw new BadRequestException('employeeIds 또는 employeeNumbers 중 하나는 반드시 제공되어야 합니다.');
+    }
+
+    @Delete('tokens')
+    @HttpCode(HttpStatus.OK)
+    @ApiOperation({
+        summary: '여러 직원의 여러 FCM 토큰 일괄 제거',
+        description:
+            '직원별 토큰 정보 배열을 받아서 각 직원의 토큰들을 일괄 제거합니다. ' +
+            '각 직원 정보와 토큰 정보가 모두 존재하고 연결되어 있어야 합니다. ' +
+            '연결 관계를 삭제한 후, 다른 직원이 사용하지 않는 경우 토큰도 함께 삭제합니다. ' +
+            '일부 삭제가 실패해도 나머지는 계속 처리되며, 각 결과를 반환합니다.',
+    })
+    @ApiResponse({
+        status: 200,
+        description: 'FCM 토큰 일괄 제거 완료 (성공/실패 결과 포함)',
+        type: FcmRemoveTokenResponseDto,
+    })
+    @ApiResponse({ status: 400, description: '잘못된 요청 형식' })
+    async removeFcmTokens(@Body() body: FcmRemoveTokenRequestDto): Promise<FcmRemoveTokenResponseDto> {
+        return this.fcmTokenManagementApplicationService.여러_직원의_여러_토큰을_일괄제거한다(body);
     }
 }

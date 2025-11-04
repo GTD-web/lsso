@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { EmployeeFcmTokenManagementContextService } from '../../../../context/employee-management/employee-fcm-token-management-context.service';
 import { EmployeeFcmToken } from '../../../../domain/employee-fcm-token/employee-fcm-token.entity';
+import { DomainFcmTokenService } from '../../../../domain/fcm-token/fcm-token.service';
 import {
     CreateEmployeeFcmTokenDto,
     UpdateEmployeeFcmTokenDto,
@@ -8,11 +9,15 @@ import {
     EmployeeFcmTokenStatsDto,
     EmployeeFcmTokenGroupedListResponseDto,
     EmployeeFcmTokenGroupedDto,
+    AdminFcmTokenResponseDto,
 } from '../dto';
 
 @Injectable()
 export class EmployeeFcmTokenApplicationService {
-    constructor(private readonly employeeFcmTokenManagementContext: EmployeeFcmTokenManagementContextService) {}
+    constructor(
+        private readonly employeeFcmTokenManagementContext: EmployeeFcmTokenManagementContextService,
+        private readonly domainFcmTokenService: DomainFcmTokenService,
+    ) {}
 
     /**
      * 모든 직원 FCM 토큰 관계 조회
@@ -317,6 +322,29 @@ export class EmployeeFcmTokenApplicationService {
             employees,
             totalEmployees: employees.length,
             totalRelations: relations.length,
+        };
+    }
+
+    /**
+     * FCM 토큰 ID로 FCM 토큰 엔티티 조회
+     */
+    async FCM_토큰_조회(fcmTokenId: string): Promise<AdminFcmTokenResponseDto> {
+        const fcmToken = await this.domainFcmTokenService.findOne({
+            where: { id: fcmTokenId },
+        });
+
+        if (!fcmToken) {
+            throw new NotFoundException('FCM 토큰을 찾을 수 없습니다.');
+        }
+
+        return {
+            id: fcmToken.id,
+            fcmToken: fcmToken.fcmToken,
+            deviceType: fcmToken.deviceType,
+            deviceInfo: fcmToken.deviceInfo,
+            isActive: fcmToken.isActive,
+            createdAt: fcmToken.createdAt,
+            updatedAt: fcmToken.updatedAt,
         };
     }
 }

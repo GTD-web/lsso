@@ -1,17 +1,22 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { EmployeeTokenManagementContextService } from '../../../../context/employee-management/employee-token-management-context.service';
 import { EmployeeToken } from '../../../../../../libs/database/entities';
+import { DomainTokenService } from '../../../../domain/token/token.service';
 import {
     CreateEmployeeTokenDto,
     UpdateEmployeeTokenDto,
     EmployeeTokenListResponseDto,
     EmployeeTokenGroupedListResponseDto,
     EmployeeTokenGroupedDto,
+    TokenResponseDto,
 } from '../dto';
 
 @Injectable()
 export class EmployeeTokenApplicationService {
-    constructor(private readonly employeeTokenManagementContext: EmployeeTokenManagementContextService) {}
+    constructor(
+        private readonly employeeTokenManagementContext: EmployeeTokenManagementContextService,
+        private readonly domainTokenService: DomainTokenService,
+    ) {}
 
     /**
      * 모든 직원 토큰 관계 조회
@@ -275,6 +280,34 @@ export class EmployeeTokenApplicationService {
             employees,
             totalEmployees: employees.length,
             totalRelations: relations.length,
+        };
+    }
+
+    /**
+     * 토큰 ID로 토큰 엔티티 조회
+     */
+    async 토큰_조회(tokenId: string): Promise<TokenResponseDto> {
+        const token = await this.domainTokenService.findOne({
+            where: { id: tokenId },
+        });
+
+        if (!token) {
+            throw new NotFoundException('토큰을 찾을 수 없습니다.');
+        }
+
+        return {
+            id: token.id,
+            accessToken: token.accessToken,
+            tokenExpiresAt: token.tokenExpiresAt,
+            refreshToken: token.refreshToken,
+            refreshTokenExpiresAt: token.refreshTokenExpiresAt,
+            clientInfo: token.clientInfo,
+            ipAddress: token.ipAddress,
+            lastAccess: token.lastAccess,
+            isActive: token.isActive,
+            createdAt: token.createdAt,
+            updatedAt: token.updatedAt,
+            userId: token.userId,
         };
     }
 }

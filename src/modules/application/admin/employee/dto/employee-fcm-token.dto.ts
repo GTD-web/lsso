@@ -151,3 +151,26 @@ export class EmployeeFcmTokenStatsDto {
     @ApiProperty({ description: 'FCM 토큰 수' })
     fcmTokenCount: number;
 }
+
+export class AdminFcmTokenResponseDto {
+    @ApiProperty({ description: 'FCM 토큰 ID' })
+    id: string;
+
+    @ApiProperty({ description: 'FCM 토큰 값' })
+    fcmToken: string;
+
+    @ApiProperty({ description: '디바이스 타입' })
+    deviceType: string;
+
+    @ApiPropertyOptional({ description: '디바이스 정보', type: FcmTokenDeviceInfoDto })
+    deviceInfo?: FcmTokenDeviceInfoDto;
+
+    @ApiProperty({ description: '활성화 상태' })
+    isActive: boolean;
+
+    @ApiProperty({ description: '생성일' })
+    createdAt: Date;
+
+    @ApiProperty({ description: '수정일' })
+    updatedAt: Date;
+}

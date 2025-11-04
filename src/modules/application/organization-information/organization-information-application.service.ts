@@ -16,6 +16,11 @@ import {
     TerminateEmployeeRequestDto,
     TerminateEmployeeResponseDto,
     ExportAllDataResponseDto,
+    EmployeesManagersResponseDto,
+    EmployeeManagersDto,
+    EmployeeDepartmentManagersDto,
+    DepartmentManagerDto,
+    ManagerInfoDto,
 } from './dto';
 import { Employee, Department, Position, Rank } from '../../../../libs/database/entities';
 
@@ -545,5 +550,56 @@ export class OrganizationInformationApplicationService {
 
         // 예상하지 못한 에러
         throw new BadRequestException('직원 생성 중 오류가 발생했습니다.');
+    }
+
+    // ==================== 직원 관리자 라인 조회 ====================
+
+    /**
+     * 전체 직원의 부서 직속 라인 관리자 정보를 조회한다
+     * 각 직원의 소속 부서부터 최상위 부서까지 올라가면서 isManager=true인 직원들을 찾는다
+     *
+     * @param includeTerminated 퇴사한 직원 포함 여부 (기본값: false)
+     * @returns 직원별 관리자 라인 정보
+     */
+    async 전체_직원의_관리자_라인을_조회한다(includeTerminated = false): Promise<EmployeesManagersResponseDto> {
+        try {
+            // Context Service 호출
+            const result = await this.organizationContextService.전체_직원의_관리자_라인을_조회한다(includeTerminated);
+
+            // 응답 DTO로 변환
+            const employees: EmployeeManagersDto[] = result.map((item) => ({
+                employeeId: item.employeeId,
+                name: item.name,
+                employeeNumber: item.employeeNumber,
+                departments: item.departments.map((dept) => ({
+                    departmentId: dept.departmentId,
+                    departmentName: dept.departmentName,
+                    managerLine: dept.managerLine.map((line) => ({
+                        departmentId: line.departmentId,
+                        departmentName: line.departmentName,
+                        departmentCode: line.departmentCode,
+                        type: line.type,
+                        parentDepartmentId: line.parentDepartmentId,
+                        depth: line.depth,
+                        managers: line.managers.map((manager) => ({
+                            employeeId: manager.employeeId,
+                            name: manager.name,
+                            employeeNumber: manager.employeeNumber,
+                            email: manager.email,
+                            positionId: manager.positionId,
+                            positionTitle: manager.positionTitle,
+                        })),
+                    })),
+                })),
+            }));
+
+            return {
+                employees,
+                total: employees.length,
+            };
+        } catch (error) {
+            console.error('전체 직원의 관리자 라인 조회 중 오류 발생:', error);
+            throw new NotFoundException('직원의 관리자 라인 정보를 조회할 수 없습니다.');
+        }
     }
 }

@@ -23,6 +23,7 @@ import {
     TerminateEmployeeRequestDto,
     TerminateEmployeeResponseDto,
     ExportAllDataResponseDto,
+    EmployeesManagersResponseDto,
 } from '../dto';
 import { JwtAuthGuard } from '../../../../../libs/common/guards/jwt-auth.guard';
 import { User, AuthenticatedUser } from '../../../../../libs/common/decorators/user.decorator';
@@ -436,5 +437,28 @@ export class OrganizationInformationApplicationController {
             employeeDepartmentPositions: result.totalCounts.employeeDepartmentPositions,
         });
         return result;
+    }
+
+    @Get('employees/managers')
+    @HttpCode(HttpStatus.OK)
+    @ApiOperation({
+        summary: '전체 직원의 부서 직속 라인 관리자 정보 조회',
+        description:
+            '전체 직원을 조회하여 각 직원의 소속 부서부터 최상위 부서까지 올라가면서 isManager=true인 관리자 정보를 조회합니다.',
+    })
+    @ApiResponse({
+        status: 200,
+        description: '직원별 관리자 라인 정보 조회 성공',
+        type: EmployeesManagersResponseDto,
+    })
+    @ApiResponse({ status: 401, description: '인증이 필요합니다' })
+    @ApiResponse({ status: 404, description: '관리자 라인 정보를 조회할 수 없음' })
+    async getEmployeesManagers(@User() user: AuthenticatedUser): Promise<EmployeesManagersResponseDto> {
+        // 인증된 사용자 정보 로깅 (개발용)
+        console.log('직원 관리자 라인 조회 - 인증된 사용자:', user);
+
+        const includeTerminatedFlag = false;
+
+        return this.organizationInformationApplicationService.전체_직원의_관리자_라인을_조회한다(includeTerminatedFlag);
     }
 }
