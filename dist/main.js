@@ -3388,6 +3388,7 @@ __exportStar(__webpack_require__(/*! ./create-log.dto */ "./src/modules/applicat
 __exportStar(__webpack_require__(/*! ./log-filter.dto */ "./src/modules/application/admin/log/dto/log-filter.dto.ts"), exports);
 __exportStar(__webpack_require__(/*! ./log-response.dto */ "./src/modules/application/admin/log/dto/log-response.dto.ts"), exports);
 __exportStar(__webpack_require__(/*! ./logs-response.dto */ "./src/modules/application/admin/log/dto/logs-response.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./time-statistics-response.dto */ "./src/modules/application/admin/log/dto/time-statistics-response.dto.ts"), exports);
 
 
 /***/ }),
@@ -3666,14 +3667,41 @@ __decorate([
     (0, swagger_1.ApiProperty)({ description: '전체 페이지 수' }),
     __metadata("design:type", Number)
 ], LogsResponseDto.prototype, "totalPages", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/admin/log/dto/time-statistics-response.dto.ts":
+/*!*******************************************************************************!*\
+  !*** ./src/modules/application/admin/log/dto/time-statistics-response.dto.ts ***!
+  \*******************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TimeStatisticsResponseDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const logs_response_dto_1 = __webpack_require__(/*! ./logs-response.dto */ "./src/modules/application/admin/log/dto/logs-response.dto.ts");
+class TimeStatisticsResponseDto {
+}
+exports.TimeStatisticsResponseDto = TimeStatisticsResponseDto;
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: '시간별 응답 종류별 통계',
-        type: [TimeStatisticsDto],
+        type: [logs_response_dto_1.TimeStatisticsDto],
         example: [{ '2025-11-04 09:00:00': { success: 10, fail: 5 } }],
     }),
     __metadata("design:type", Array)
-], LogsResponseDto.prototype, "timeStatistics", void 0);
+], TimeStatisticsResponseDto.prototype, "timeStatistics", void 0);
 
 
 /***/ }),
@@ -3724,18 +3752,12 @@ let LogApplicationService = class LogApplicationService {
     async 로그목록조회(page = 1, limit = 10) {
         try {
             const result = await this.로그관리컨텍스트서비스.모든_로그를_조회한다(page, limit);
-            const allLogs = await this.로그관리컨텍스트서비스.로그를_필터링하여_조회한다({
-                page: 1,
-                limit: 100000,
-            });
-            const timeStatistics = this.시간별_응답_통계_계산(allLogs.allFilteredLogs || []);
             return {
                 logs: result.logs.map((log) => this.로그_엔티티를_DTO로_변환(log)),
                 total: result.total,
                 page: result.page,
                 limit: limit,
                 totalPages: result.totalPages,
-                timeStatistics,
             };
         }
         catch (error) {
@@ -3775,18 +3797,43 @@ let LogApplicationService = class LogApplicationService {
                 sortDirection: filterDto.sortDirection,
             };
             const result = await this.로그관리컨텍스트서비스.로그를_필터링하여_조회한다(filterOptions);
-            const timeStatistics = this.시간별_응답_통계_계산(result.allFilteredLogs || []);
             return {
                 logs: result.logs.map((log) => this.로그_엔티티를_DTO로_변환(log)),
                 total: result.total,
                 page: result.page,
                 limit: filterDto.limit || 10,
                 totalPages: result.totalPages,
-                timeStatistics,
             };
         }
         catch (error) {
             throw new common_1.NotFoundException('로그 필터링 조회에 실패했습니다.');
+        }
+    }
+    async 시간별응답통계조회(filterDto) {
+        try {
+            const filterOptions = {
+                page: 1,
+                limit: 100000,
+                startDate: filterDto.startDate,
+                endDate: filterDto.endDate,
+                method: filterDto.method,
+                url: filterDto.url,
+                statusCode: filterDto.statusCode,
+                host: filterDto.host,
+                ip: filterDto.ip,
+                system: filterDto.system,
+                errorsOnly: filterDto.errorsOnly,
+                sortBy: filterDto.sortBy,
+                sortDirection: filterDto.sortDirection,
+            };
+            const result = await this.로그관리컨텍스트서비스.로그를_필터링하여_조회한다(filterOptions);
+            const timeStatistics = this.시간별_응답_통계_계산(result.allFilteredLogs || [], filterDto.startDate, filterDto.endDate);
+            return {
+                timeStatistics,
+            };
+        }
+        catch (error) {
+            throw new common_1.NotFoundException('시간별 응답 통계 조회에 실패했습니다.');
         }
     }
     async 에러로그조회() {
@@ -3855,15 +3902,23 @@ let LogApplicationService = class LogApplicationService {
             isError: log.isError,
         };
     }
-    시간별_응답_통계_계산(logs) {
+    시간별_응답_통계_계산(logs, startDate, endDate) {
         const timeMap = new Map();
         const validLogs = logs.filter((log) => log.requestTimestamp);
-        if (validLogs.length === 0) {
+        let minTime;
+        let maxTime;
+        if (startDate && endDate) {
+            minTime = new Date(startDate);
+            maxTime = new Date(endDate);
+        }
+        else if (validLogs.length === 0) {
             return [];
         }
-        const timestamps = validLogs.map((log) => log.requestTimestamp);
-        const minTime = new Date(Math.min(...timestamps.map((t) => t.getTime())));
-        const maxTime = new Date(Math.max(...timestamps.map((t) => t.getTime())));
+        else {
+            const timestamps = validLogs.map((log) => log.requestTimestamp);
+            minTime = new Date(Math.min(...timestamps.map((t) => t.getTime())));
+            maxTime = new Date(Math.max(...timestamps.map((t) => t.getTime())));
+        }
         const allTimeKeys = this.모든_시간대_생성(minTime, maxTime);
         allTimeKeys.forEach((timeKey) => {
             timeMap.set(timeKey, { success: 0, fail: 0 });
@@ -3949,7 +4004,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e;
+var _a, _b, _c, _d, _e, _f, _g;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LogController = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
@@ -3968,6 +4023,9 @@ let LogController = class LogController {
     }
     async filter(filterDto) {
         return await this.logApplicationService.로그필터링조회(filterDto);
+    }
+    async getTimeStatistics(filterDto) {
+        return await this.logApplicationService.시간별응답통계조회(filterDto);
     }
 };
 exports.LogController = LogController;
@@ -4004,6 +4062,16 @@ __decorate([
     __metadata("design:paramtypes", [typeof (_d = typeof dto_1.LogFilterDto !== "undefined" && dto_1.LogFilterDto) === "function" ? _d : Object]),
     __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
 ], LogController.prototype, "filter", null);
+__decorate([
+    (0, common_1.Post)('time-statistics'),
+    (0, swagger_1.ApiOperation)({ summary: '시간별 응답 통계 조회' }),
+    (0, swagger_1.ApiBody)({ type: dto_1.LogFilterDto }),
+    (0, swagger_1.ApiResponse)({ status: 200, type: dto_1.TimeStatisticsResponseDto }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_f = typeof dto_1.LogFilterDto !== "undefined" && dto_1.LogFilterDto) === "function" ? _f : Object]),
+    __metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
+], LogController.prototype, "getTimeStatistics", null);
 exports.LogController = LogController = __decorate([
     (0, swagger_1.ApiTags)('Admin - 로그 관리'),
     (0, common_1.Controller)('admin/logs'),
