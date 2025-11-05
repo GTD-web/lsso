@@ -3389,6 +3389,7 @@ __exportStar(__webpack_require__(/*! ./log-filter.dto */ "./src/modules/applicat
 __exportStar(__webpack_require__(/*! ./log-response.dto */ "./src/modules/application/admin/log/dto/log-response.dto.ts"), exports);
 __exportStar(__webpack_require__(/*! ./logs-response.dto */ "./src/modules/application/admin/log/dto/logs-response.dto.ts"), exports);
 __exportStar(__webpack_require__(/*! ./time-statistics-response.dto */ "./src/modules/application/admin/log/dto/time-statistics-response.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./time-statistics-filter.dto */ "./src/modules/application/admin/log/dto/time-statistics-filter.dto.ts"), exports);
 
 
 /***/ }),
@@ -3671,6 +3672,108 @@ __decorate([
 
 /***/ }),
 
+/***/ "./src/modules/application/admin/log/dto/time-statistics-filter.dto.ts":
+/*!*****************************************************************************!*\
+  !*** ./src/modules/application/admin/log/dto/time-statistics-filter.dto.ts ***!
+  \*****************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TimeStatisticsFilterDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const class_transformer_1 = __webpack_require__(/*! class-transformer */ "class-transformer");
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+class TimeStatisticsFilterDto {
+    constructor() {
+        this.timeUnit = '1m';
+        this.errorsOnly = false;
+    }
+}
+exports.TimeStatisticsFilterDto = TimeStatisticsFilterDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '시작 날짜', required: true }),
+    (0, class_transformer_1.Type)(() => Date),
+    (0, class_validator_1.IsDate)(),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], TimeStatisticsFilterDto.prototype, "startDate", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '종료 날짜', required: true }),
+    (0, class_transformer_1.Type)(() => Date),
+    (0, class_validator_1.IsDate)(),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], TimeStatisticsFilterDto.prototype, "endDate", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        description: '시간 통계 단위 (예: 10m, 2h, 1d)',
+        default: '1m',
+        example: '10m',
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Matches)(/^\d+[mhd]$/, {
+        message: 'timeUnit은 숫자와 단위(m/h/d)를 포함한 형식이어야 합니다. 예: 10m, 2h, 1d',
+    }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], TimeStatisticsFilterDto.prototype, "timeUnit", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: 'HTTP 메서드' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], TimeStatisticsFilterDto.prototype, "method", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: 'URL 경로' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], TimeStatisticsFilterDto.prototype, "url", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: 'HTTP 상태 코드' }),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], TimeStatisticsFilterDto.prototype, "statusCode", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '호스트' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], TimeStatisticsFilterDto.prototype, "host", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: 'IP 주소' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], TimeStatisticsFilterDto.prototype, "ip", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '시스템 구분자' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], TimeStatisticsFilterDto.prototype, "system", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '에러만 조회 (상태코드 >= 400)', default: false }),
+    (0, class_transformer_1.Type)(() => Boolean),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], TimeStatisticsFilterDto.prototype, "errorsOnly", void 0);
+
+
+/***/ }),
+
 /***/ "./src/modules/application/admin/log/dto/time-statistics-response.dto.ts":
 /*!*******************************************************************************!*\
   !*** ./src/modules/application/admin/log/dto/time-statistics-response.dto.ts ***!
@@ -3727,6 +3830,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LogApplicationService = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const log_management_context_service_1 = __webpack_require__(/*! ../../../context/log-management/log-management-context.service */ "./src/modules/context/log-management/log-management-context.service.ts");
+const dto_1 = __webpack_require__(/*! ./dto */ "./src/modules/application/admin/log/dto/index.ts");
 let LogApplicationService = class LogApplicationService {
     constructor(로그관리컨텍스트서비스) {
         this.로그관리컨텍스트서비스 = 로그관리컨텍스트서비스;
@@ -3823,11 +3927,12 @@ let LogApplicationService = class LogApplicationService {
                 ip: filterDto.ip,
                 system: filterDto.system,
                 errorsOnly: filterDto.errorsOnly,
-                sortBy: filterDto.sortBy,
-                sortDirection: filterDto.sortDirection,
+                sortBy: 'requestTimestamp',
+                sortDirection: dto_1.SortDirection.ASC,
             };
             const result = await this.로그관리컨텍스트서비스.로그를_필터링하여_조회한다(filterOptions);
-            const timeStatistics = this.시간별_응답_통계_계산(result.allFilteredLogs || [], filterDto.startDate, filterDto.endDate);
+            const timeUnit = filterDto.timeUnit || '1m';
+            const timeStatistics = this.시간별_응답_통계_계산(result.allFilteredLogs || [], filterDto.startDate, filterDto.endDate, timeUnit);
             return {
                 timeStatistics,
             };
@@ -3902,7 +4007,7 @@ let LogApplicationService = class LogApplicationService {
             isError: log.isError,
         };
     }
-    시간별_응답_통계_계산(logs, startDate, endDate) {
+    시간별_응답_통계_계산(logs, startDate, endDate, timeUnit = '1m') {
         const timeMap = new Map();
         const validLogs = logs.filter((log) => log.requestTimestamp);
         let minTime;
@@ -3919,12 +4024,14 @@ let LogApplicationService = class LogApplicationService {
             minTime = new Date(Math.min(...timestamps.map((t) => t.getTime())));
             maxTime = new Date(Math.max(...timestamps.map((t) => t.getTime())));
         }
-        const allTimeKeys = this.모든_시간대_생성(minTime, maxTime);
+        const parsedTimeUnit = this.시간_단위_파싱(timeUnit);
+        const allTimeKeys = this.모든_시간대_생성(minTime, maxTime, parsedTimeUnit);
         allTimeKeys.forEach((timeKey) => {
             timeMap.set(timeKey, { success: 0, fail: 0 });
         });
         validLogs.forEach((log) => {
-            const timeKey = this.시간_키_생성(log.requestTimestamp);
+            const normalizedDate = this.시간_정규화(log.requestTimestamp, parsedTimeUnit);
+            const timeKey = this.시간_키_생성(normalizedDate, parsedTimeUnit);
             const stats = timeMap.get(timeKey);
             if (stats) {
                 if (this.응답_성공_여부(log)) {
@@ -3940,25 +4047,89 @@ let LogApplicationService = class LogApplicationService {
             return { [time]: stats };
         });
     }
-    모든_시간대_생성(minTime, maxTime) {
+    시간_단위_파싱(timeUnit) {
+        const match = timeUnit.match(/^(\d+)([mhd])$/);
+        if (!match) {
+            throw new Error(`잘못된 시간 단위 형식입니다: ${timeUnit}`);
+        }
+        return {
+            value: parseInt(match[1], 10),
+            unit: match[2],
+        };
+    }
+    시간_정규화(date, parsedTimeUnit) {
+        const normalized = new Date(date);
+        if (parsedTimeUnit.unit === 'm') {
+            normalized.setSeconds(0, 0);
+            const normalizedMinutes = Math.floor(normalized.getMinutes() / parsedTimeUnit.value) * parsedTimeUnit.value;
+            normalized.setMinutes(normalizedMinutes, 0);
+        }
+        else if (parsedTimeUnit.unit === 'h') {
+            normalized.setMinutes(0, 0, 0);
+            const normalizedHours = Math.floor(normalized.getHours() / parsedTimeUnit.value) * parsedTimeUnit.value;
+            normalized.setHours(normalizedHours, 0, 0, 0);
+        }
+        else if (parsedTimeUnit.unit === 'd') {
+            normalized.setHours(0, 0, 0, 0);
+        }
+        return normalized;
+    }
+    모든_시간대_생성(minTime, maxTime, parsedTimeUnit) {
         const timeKeys = [];
         const current = new Date(minTime);
-        current.setSeconds(0, 0);
+        if (parsedTimeUnit.unit === 'm') {
+            current.setSeconds(0, 0);
+            const normalizedMinutes = Math.floor(current.getMinutes() / parsedTimeUnit.value) * parsedTimeUnit.value;
+            current.setMinutes(normalizedMinutes, 0);
+        }
+        else if (parsedTimeUnit.unit === 'h') {
+            current.setMinutes(0, 0, 0);
+            const normalizedHours = Math.floor(current.getHours() / parsedTimeUnit.value) * parsedTimeUnit.value;
+            current.setHours(normalizedHours, 0, 0, 0);
+        }
+        else if (parsedTimeUnit.unit === 'd') {
+            current.setHours(0, 0, 0, 0);
+        }
         const max = new Date(maxTime);
-        max.setSeconds(0, 0);
+        if (parsedTimeUnit.unit === 'm') {
+            max.setSeconds(0, 0);
+        }
+        else if (parsedTimeUnit.unit === 'h') {
+            max.setMinutes(0, 0, 0);
+        }
+        else if (parsedTimeUnit.unit === 'd') {
+            max.setHours(0, 0, 0, 0);
+        }
         while (current <= max) {
-            timeKeys.push(this.시간_키_생성(current));
-            current.setMinutes(current.getMinutes() + 1);
+            timeKeys.push(this.시간_키_생성(current, parsedTimeUnit));
+            if (parsedTimeUnit.unit === 'm') {
+                current.setMinutes(current.getMinutes() + parsedTimeUnit.value);
+            }
+            else if (parsedTimeUnit.unit === 'h') {
+                current.setHours(current.getHours() + parsedTimeUnit.value);
+            }
+            else if (parsedTimeUnit.unit === 'd') {
+                current.setDate(current.getDate() + parsedTimeUnit.value);
+            }
         }
         return timeKeys;
     }
-    시간_키_생성(date) {
+    시간_키_생성(date, parsedTimeUnit) {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
-        const hour = String(date.getHours()).padStart(2, '0');
-        const minute = String(date.getMinutes()).padStart(2, '0');
-        return `${year}-${month}-${day} ${hour}:${minute}:00`;
+        if (parsedTimeUnit.unit === 'd') {
+            return `${year}-${month}-${day}`;
+        }
+        else if (parsedTimeUnit.unit === 'h') {
+            const hour = String(date.getHours()).padStart(2, '0');
+            return `${year}-${month}-${day} ${hour}:00:00`;
+        }
+        else {
+            const hour = String(date.getHours()).padStart(2, '0');
+            const minute = String(date.getMinutes()).padStart(2, '0');
+            return `${year}-${month}-${day} ${hour}:${minute}:00`;
+        }
     }
     응답_성공_여부(log) {
         if (log.isError) {
@@ -4065,11 +4236,11 @@ __decorate([
 __decorate([
     (0, common_1.Post)('time-statistics'),
     (0, swagger_1.ApiOperation)({ summary: '시간별 응답 통계 조회' }),
-    (0, swagger_1.ApiBody)({ type: dto_1.LogFilterDto }),
+    (0, swagger_1.ApiBody)({ type: dto_1.TimeStatisticsFilterDto }),
     (0, swagger_1.ApiResponse)({ status: 200, type: dto_1.TimeStatisticsResponseDto }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_f = typeof dto_1.LogFilterDto !== "undefined" && dto_1.LogFilterDto) === "function" ? _f : Object]),
+    __metadata("design:paramtypes", [typeof (_f = typeof dto_1.TimeStatisticsFilterDto !== "undefined" && dto_1.TimeStatisticsFilterDto) === "function" ? _f : Object]),
     __metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
 ], LogController.prototype, "getTimeStatistics", null);
 exports.LogController = LogController = __decorate([

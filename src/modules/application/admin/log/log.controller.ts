@@ -2,7 +2,13 @@ import { Controller, Get, Post, Body, Param, Query, UseGuards } from '@nestjs/co
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam, ApiQuery, ApiBody } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../../../../libs/common/guards/jwt-auth.guard';
 import { LogApplicationService } from './log-application.service';
-import { LogFilterDto, LogResponseDto, LogsResponseDto, TimeStatisticsResponseDto } from './dto';
+import {
+    LogFilterDto,
+    LogResponseDto,
+    LogsResponseDto,
+    TimeStatisticsResponseDto,
+    TimeStatisticsFilterDto,
+} from './dto';
 
 @ApiTags('Admin - 로그 관리')
 // @ApiBearerAuth()
@@ -38,9 +44,9 @@ export class LogController {
 
     @Post('time-statistics')
     @ApiOperation({ summary: '시간별 응답 통계 조회' })
-    @ApiBody({ type: LogFilterDto })
+    @ApiBody({ type: TimeStatisticsFilterDto })
     @ApiResponse({ status: 200, type: TimeStatisticsResponseDto })
-    async getTimeStatistics(@Body() filterDto: LogFilterDto): Promise<TimeStatisticsResponseDto> {
+    async getTimeStatistics(@Body() filterDto: TimeStatisticsFilterDto): Promise<TimeStatisticsResponseDto> {
         return await this.logApplicationService.시간별응답통계조회(filterDto);
     }
 }
