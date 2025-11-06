@@ -170,10 +170,17 @@ export class DomainDepartmentService extends BaseService<Department> {
     }
 
     /**
-     * 여러 부서의 순서를 일괄 업데이트
+     * 여러 부서의 순서를 일괄 업데이트 (unique constraint 충돌 방지)
      */
     async bulkUpdateOrders(updates: { id: string; order: number }[]): Promise<void> {
         await this.departmentRepository.manager.transaction(async (transactionalEntityManager) => {
+            // Step 1: 모든 부서를 임시 음수 값으로 변경 (unique constraint 충돌 회피)
+            const tempOffset = -1000000;
+            for (let i = 0; i < updates.length; i++) {
+                await transactionalEntityManager.update(Department, { id: updates[i].id }, { order: tempOffset - i });
+            }
+
+            // Step 2: 최종 순서로 업데이트
             for (const update of updates) {
                 await transactionalEntityManager.update(Department, { id: update.id }, { order: update.order });
             }

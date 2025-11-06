@@ -85,6 +85,90 @@ export class DomainPositionService extends BaseService<Position> {
         return this.update(positionId, data);
     }
 
+    // level로 직책 조회 (단일)
+    async findOneByLevel(level: number): Promise<Position | null> {
+        return this.positionRepository.findOne({
+            where: { level },
+        });
+    }
+
+    // level 범위의 직책들 조회
+    async findByLevelRange(minLevel: number, maxLevel: number): Promise<Position[]> {
+        const queryBuilder = this.positionRepository.createQueryBuilder('position');
+        return queryBuilder
+            .where('position.level >= :minLevel', { minLevel })
+            .andWhere('position.level <= :maxLevel', { maxLevel })
+            .orderBy('position.level', 'ASC')
+            .getMany();
+    }
+
+    // level 변경 (순서 재조정 포함)
+    async changeLevel(positionId: string, newLevel: number): Promise<Position> {
+        const currentPosition = await this.findById(positionId);
+        const currentLevel = currentPosition.level;
+
+        // level이 변경되지 않으면 그대로 반환
+        if (currentLevel === newLevel) {
+            return currentPosition;
+        }
+
+        // level은 1 이상이어야 함
+        if (newLevel < 1) {
+            newLevel = 1;
+            // 조정된 level이 현재 level과 같으면 그대로 반환
+            if (currentLevel === newLevel) {
+                return currentPosition;
+            }
+        }
+
+        // 최대 level 조회
+        const queryBuilder = this.positionRepository.createQueryBuilder('position');
+        const maxLevelResult = await queryBuilder.select('MAX(position.level)', 'maxLevel').getRawOne();
+        const maxLevel = maxLevelResult?.maxLevel ?? 0;
+
+        // 목표 level이 최대 level을 넘어가면 최대 level로 조정
+        if (newLevel > maxLevel) {
+            newLevel = maxLevel;
+            // 조정된 level이 현재 level과 같으면 그대로 반환
+            if (currentLevel === newLevel) {
+                return currentPosition;
+            }
+        }
+
+        // 새로운 level이 이미 존재하는지 확인
+        const existingPosition = await this.findOneByLevel(newLevel);
+
+        if (existingPosition) {
+            // 임시값으로 사용할 level (기존 최대값보다 큰 값)
+            const tempLevel = maxLevel + 1000;
+
+            // 1. 현재 직책을 임시 level로 변경
+            await this.update(positionId, { level: tempLevel });
+
+            // 2. 기존 level과 목표 level 사이의 직책들을 이동
+            if (currentLevel < newLevel) {
+                // 아래로 이동: currentLevel + 1 ~ newLevel 범위의 직책들을 -1씩 이동
+                const positionsToShift = await this.findByLevelRange(currentLevel + 1, newLevel);
+                for (const position of positionsToShift) {
+                    await this.update(position.id, { level: position.level - 1 });
+                }
+            } else {
+                // 위로 이동: newLevel ~ currentLevel - 1 범위의 직책들을 +1씩 이동
+                const positionsToShift = await this.findByLevelRange(newLevel, currentLevel - 1);
+                // 역순으로 처리하여 충돌 방지
+                for (let i = positionsToShift.length - 1; i >= 0; i--) {
+                    await this.update(positionsToShift[i].id, { level: positionsToShift[i].level + 1 });
+                }
+            }
+
+            // 3. 현재 직책을 목표 level로 변경
+            return await this.update(positionId, { level: newLevel });
+        } else {
+            // 새로운 level이 비어있으면 그냥 변경
+            return await this.update(positionId, { level: newLevel });
+        }
+    }
+
     // 직책 삭제
     async deletePosition(positionId: string): Promise<void> {
         return this.delete(positionId);

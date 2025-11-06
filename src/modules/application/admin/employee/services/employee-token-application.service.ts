@@ -310,4 +310,36 @@ export class EmployeeTokenApplicationService {
             userId: token.userId,
         };
     }
+
+    /**
+     * 토큰 엔티티 삭제 (관계 먼저 삭제 후 엔티티 삭제)
+     */
+    async 토큰_엔티티_삭제(tokenId: string): Promise<{ message: string; deletedRelationsCount: number }> {
+        // 토큰 존재 확인
+        const token = await this.domainTokenService.findOne({
+            where: { id: tokenId },
+        });
+
+        if (!token) {
+            throw new NotFoundException('토큰을 찾을 수 없습니다.');
+        }
+
+        // 해당 토큰과 연결된 모든 관계 조회
+        const relations = await this.employeeTokenManagementContext.토큰별_직원_관계_조회(tokenId);
+
+        // 모든 관계 삭제
+        let deletedRelationsCount = 0;
+        for (const relation of relations) {
+            await this.employeeTokenManagementContext.직원_토큰_관계_삭제(relation.id);
+            deletedRelationsCount++;
+        }
+
+        // 토큰 엔티티 삭제
+        await this.domainTokenService.delete(tokenId);
+
+        return {
+            message: '토큰 엔티티가 성공적으로 삭제되었습니다.',
+            deletedRelationsCount,
+        };
+    }
 }

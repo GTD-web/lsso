@@ -3,6 +3,7 @@ import { DomainEmployeeDepartmentPositionRepository } from './employee-departmen
 import { BaseService } from '../../../../libs/common/services/base.service';
 import { EmployeeDepartmentPosition } from './employee-department-position.entity';
 import { In } from 'typeorm';
+import { DepartmentType } from 'libs/database/entities';
 
 @Injectable()
 export class DomainEmployeeDepartmentPositionService extends BaseService<EmployeeDepartmentPosition> {
@@ -11,9 +12,10 @@ export class DomainEmployeeDepartmentPositionService extends BaseService<Employe
     }
 
     // 직원의 부서-직책 정보 조회
+    // 부서 이외의 정보(ex. 팀 등)는 제외
     async findByEmployeeId(employeeId: string): Promise<EmployeeDepartmentPosition> {
         return this.employeeDepartmentPositionRepository.findOne({
-            where: { employeeId },
+            where: { employeeId, department: { type: DepartmentType.DEPARTMENT } },
         });
     }
 

@@ -1,6 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { LogResponseDto } from './log-response.dto';
 
+export class TimeStatisticsDto {
+    [time: string]: {
+        success: number;
+        fail: number;
+    };
+}
+
 export class LogsResponseDto {
     @ApiProperty({ description: '로그 목록', type: [LogResponseDto] })
     logs: LogResponseDto[];

@@ -71,4 +71,13 @@ export class DomainEmployeeTokenService extends BaseService<EmployeeToken> {
 
         return { deletedCount };
     }
+
+    // 직원의 모든 토큰 관계 삭제
+    async deleteAllByEmployeeId(employeeId: string): Promise<void> {
+        const relations = await this.findByEmployeeId(employeeId);
+
+        for (const relation of relations) {
+            await this.employeeTokenRepository.delete(relation.id);
+        }
+    }
 }

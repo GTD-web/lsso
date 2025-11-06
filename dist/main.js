@@ -1353,7 +1353,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f;
+var _a, _b, _c, _d, _e, _f, _g;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.EmployeeFcmTokenController = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
@@ -1372,6 +1372,9 @@ let EmployeeFcmTokenController = class EmployeeFcmTokenController {
     }
     async findOne(id) {
         return await this.employeeFcmTokenApplicationService.직원_FCM_토큰_관계_상세_조회(id);
+    }
+    async removeFcmTokenEntity(fcmTokenId) {
+        return await this.employeeFcmTokenApplicationService.FCM_토큰_엔티티_삭제(fcmTokenId);
     }
     async remove(id) {
         return await this.employeeFcmTokenApplicationService.직원_FCM_토큰_관계_삭제(id);
@@ -1414,6 +1417,17 @@ __decorate([
     __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
 ], EmployeeFcmTokenController.prototype, "findOne", null);
 __decorate([
+    (0, common_1.Delete)('fcm-token/:fcmTokenId'),
+    (0, swagger_1.ApiOperation)({ summary: 'FCM 토큰 엔티티 삭제 (관계 먼저 삭제 후 엔티티 삭제)' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'FCM 토큰 엔티티 삭제 성공' }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: 'FCM 토큰을 찾을 수 없음' }),
+    (0, swagger_1.ApiParam)({ name: 'fcmTokenId', description: 'FCM 토큰 ID' }),
+    __param(0, (0, common_1.Param)('fcmTokenId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
+], EmployeeFcmTokenController.prototype, "removeFcmTokenEntity", null);
+__decorate([
     (0, common_1.Delete)(':id'),
     (0, swagger_1.ApiOperation)({ summary: '직원 FCM 토큰 관계 삭제' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: '관계 삭제 성공' }),
@@ -1422,7 +1436,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
+    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
 ], EmployeeFcmTokenController.prototype, "remove", null);
 __decorate([
     (0, common_1.Delete)('employee/:employeeId/all'),
@@ -1432,7 +1446,7 @@ __decorate([
     __param(0, (0, common_1.Param)('employeeId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
+    __metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
 ], EmployeeFcmTokenController.prototype, "removeAllByEmployee", null);
 exports.EmployeeFcmTokenController = EmployeeFcmTokenController = __decorate([
     (0, swagger_1.ApiTags)('Admin - 직원 FCM 토큰 관리'),
@@ -1545,7 +1559,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f;
+var _a, _b, _c, _d, _e, _f, _g;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.EmployeeTokenController = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
@@ -1564,6 +1578,9 @@ let EmployeeTokenController = class EmployeeTokenController {
     }
     async findOne(id) {
         return await this.employeeTokenApplicationService.직원_토큰_관계_상세_조회(id);
+    }
+    async removeTokenEntity(tokenId) {
+        return await this.employeeTokenApplicationService.토큰_엔티티_삭제(tokenId);
     }
     async remove(id) {
         return await this.employeeTokenApplicationService.직원_토큰_관계_삭제(id);
@@ -1606,6 +1623,17 @@ __decorate([
     __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
 ], EmployeeTokenController.prototype, "findOne", null);
 __decorate([
+    (0, common_1.Delete)('token/:tokenId'),
+    (0, swagger_1.ApiOperation)({ summary: '토큰 엔티티 삭제 (관계 먼저 삭제 후 엔티티 삭제)' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: '토큰 엔티티 삭제 성공' }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: '토큰을 찾을 수 없음' }),
+    (0, swagger_1.ApiParam)({ name: 'tokenId', description: '토큰 ID' }),
+    __param(0, (0, common_1.Param)('tokenId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
+], EmployeeTokenController.prototype, "removeTokenEntity", null);
+__decorate([
     (0, common_1.Delete)(':id'),
     (0, swagger_1.ApiOperation)({ summary: '직원 토큰 관계 삭제' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: '관계 삭제 성공' }),
@@ -1614,7 +1642,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
+    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
 ], EmployeeTokenController.prototype, "remove", null);
 __decorate([
     (0, common_1.Delete)('employee/:employeeId/all'),
@@ -1624,7 +1652,7 @@ __decorate([
     __param(0, (0, common_1.Param)('employeeId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
+    __metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
 ], EmployeeTokenController.prototype, "removeAllByEmployee", null);
 exports.EmployeeTokenController = EmployeeTokenController = __decorate([
     (0, swagger_1.ApiTags)('Admin - 직원 토큰 관리'),
@@ -2713,6 +2741,25 @@ let EmployeeFcmTokenApplicationService = class EmployeeFcmTokenApplicationServic
             updatedAt: fcmToken.updatedAt,
         };
     }
+    async FCM_토큰_엔티티_삭제(fcmTokenId) {
+        const fcmToken = await this.domainFcmTokenService.findOne({
+            where: { id: fcmTokenId },
+        });
+        if (!fcmToken) {
+            throw new common_1.NotFoundException('FCM 토큰을 찾을 수 없습니다.');
+        }
+        const relations = await this.employeeFcmTokenManagementContext.FCM_토큰별_직원_관계_조회(fcmTokenId);
+        let deletedRelationsCount = 0;
+        for (const relation of relations) {
+            await this.employeeFcmTokenManagementContext.직원과_FCM_토큰_관계_삭제(relation.employeeId, relation.fcmTokenId);
+            deletedRelationsCount++;
+        }
+        await this.domainFcmTokenService.delete(fcmTokenId);
+        return {
+            message: 'FCM 토큰 엔티티가 성공적으로 삭제되었습니다.',
+            deletedRelationsCount,
+        };
+    }
 };
 exports.EmployeeFcmTokenApplicationService = EmployeeFcmTokenApplicationService;
 exports.EmployeeFcmTokenApplicationService = EmployeeFcmTokenApplicationService = __decorate([
@@ -3184,6 +3231,25 @@ let EmployeeTokenApplicationService = class EmployeeTokenApplicationService {
             userId: token.userId,
         };
     }
+    async 토큰_엔티티_삭제(tokenId) {
+        const token = await this.domainTokenService.findOne({
+            where: { id: tokenId },
+        });
+        if (!token) {
+            throw new common_1.NotFoundException('토큰을 찾을 수 없습니다.');
+        }
+        const relations = await this.employeeTokenManagementContext.토큰별_직원_관계_조회(tokenId);
+        let deletedRelationsCount = 0;
+        for (const relation of relations) {
+            await this.employeeTokenManagementContext.직원_토큰_관계_삭제(relation.id);
+            deletedRelationsCount++;
+        }
+        await this.domainTokenService.delete(tokenId);
+        return {
+            message: '토큰 엔티티가 성공적으로 삭제되었습니다.',
+            deletedRelationsCount,
+        };
+    }
 };
 exports.EmployeeTokenApplicationService = EmployeeTokenApplicationService;
 exports.EmployeeTokenApplicationService = EmployeeTokenApplicationService = __decorate([
@@ -3322,6 +3388,8 @@ __exportStar(__webpack_require__(/*! ./create-log.dto */ "./src/modules/applicat
 __exportStar(__webpack_require__(/*! ./log-filter.dto */ "./src/modules/application/admin/log/dto/log-filter.dto.ts"), exports);
 __exportStar(__webpack_require__(/*! ./log-response.dto */ "./src/modules/application/admin/log/dto/log-response.dto.ts"), exports);
 __exportStar(__webpack_require__(/*! ./logs-response.dto */ "./src/modules/application/admin/log/dto/logs-response.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./time-statistics-response.dto */ "./src/modules/application/admin/log/dto/time-statistics-response.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./time-statistics-filter.dto */ "./src/modules/application/admin/log/dto/time-statistics-filter.dto.ts"), exports);
 
 
 /***/ }),
@@ -3571,9 +3639,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.LogsResponseDto = void 0;
+exports.LogsResponseDto = exports.TimeStatisticsDto = void 0;
 const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
 const log_response_dto_1 = __webpack_require__(/*! ./log-response.dto */ "./src/modules/application/admin/log/dto/log-response.dto.ts");
+class TimeStatisticsDto {
+}
+exports.TimeStatisticsDto = TimeStatisticsDto;
 class LogsResponseDto {
 }
 exports.LogsResponseDto = LogsResponseDto;
@@ -3601,6 +3672,143 @@ __decorate([
 
 /***/ }),
 
+/***/ "./src/modules/application/admin/log/dto/time-statistics-filter.dto.ts":
+/*!*****************************************************************************!*\
+  !*** ./src/modules/application/admin/log/dto/time-statistics-filter.dto.ts ***!
+  \*****************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TimeStatisticsFilterDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const class_transformer_1 = __webpack_require__(/*! class-transformer */ "class-transformer");
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+class TimeStatisticsFilterDto {
+    constructor() {
+        this.timeUnit = '1m';
+        this.errorsOnly = false;
+    }
+}
+exports.TimeStatisticsFilterDto = TimeStatisticsFilterDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '시작 날짜', required: true }),
+    (0, class_transformer_1.Type)(() => Date),
+    (0, class_validator_1.IsDate)(),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], TimeStatisticsFilterDto.prototype, "startDate", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '종료 날짜', required: true }),
+    (0, class_transformer_1.Type)(() => Date),
+    (0, class_validator_1.IsDate)(),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], TimeStatisticsFilterDto.prototype, "endDate", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        description: '시간 통계 단위 (예: 10m, 2h, 1d)',
+        default: '1m',
+        example: '10m',
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Matches)(/^\d+[mhd]$/, {
+        message: 'timeUnit은 숫자와 단위(m/h/d)를 포함한 형식이어야 합니다. 예: 10m, 2h, 1d',
+    }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], TimeStatisticsFilterDto.prototype, "timeUnit", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: 'HTTP 메서드' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], TimeStatisticsFilterDto.prototype, "method", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: 'URL 경로' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], TimeStatisticsFilterDto.prototype, "url", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: 'HTTP 상태 코드' }),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], TimeStatisticsFilterDto.prototype, "statusCode", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '호스트' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], TimeStatisticsFilterDto.prototype, "host", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: 'IP 주소' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], TimeStatisticsFilterDto.prototype, "ip", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '시스템 구분자' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], TimeStatisticsFilterDto.prototype, "system", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '에러만 조회 (상태코드 >= 400)', default: false }),
+    (0, class_transformer_1.Type)(() => Boolean),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], TimeStatisticsFilterDto.prototype, "errorsOnly", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/admin/log/dto/time-statistics-response.dto.ts":
+/*!*******************************************************************************!*\
+  !*** ./src/modules/application/admin/log/dto/time-statistics-response.dto.ts ***!
+  \*******************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TimeStatisticsResponseDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const logs_response_dto_1 = __webpack_require__(/*! ./logs-response.dto */ "./src/modules/application/admin/log/dto/logs-response.dto.ts");
+class TimeStatisticsResponseDto {
+}
+exports.TimeStatisticsResponseDto = TimeStatisticsResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '시간별 응답 종류별 통계',
+        type: [logs_response_dto_1.TimeStatisticsDto],
+        example: [{ '2025-11-04 09:00:00': { success: 10, fail: 5 } }],
+    }),
+    __metadata("design:type", Array)
+], TimeStatisticsResponseDto.prototype, "timeStatistics", void 0);
+
+
+/***/ }),
+
 /***/ "./src/modules/application/admin/log/log-application.service.ts":
 /*!**********************************************************************!*\
   !*** ./src/modules/application/admin/log/log-application.service.ts ***!
@@ -3622,6 +3830,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LogApplicationService = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const log_management_context_service_1 = __webpack_require__(/*! ../../../context/log-management/log-management-context.service */ "./src/modules/context/log-management/log-management-context.service.ts");
+const dto_1 = __webpack_require__(/*! ./dto */ "./src/modules/application/admin/log/dto/index.ts");
 let LogApplicationService = class LogApplicationService {
     constructor(로그관리컨텍스트서비스) {
         this.로그관리컨텍스트서비스 = 로그관리컨텍스트서비스;
@@ -3704,6 +3913,34 @@ let LogApplicationService = class LogApplicationService {
             throw new common_1.NotFoundException('로그 필터링 조회에 실패했습니다.');
         }
     }
+    async 시간별응답통계조회(filterDto) {
+        try {
+            const filterOptions = {
+                page: 1,
+                limit: 100000,
+                startDate: filterDto.startDate,
+                endDate: filterDto.endDate,
+                method: filterDto.method,
+                url: filterDto.url,
+                statusCode: filterDto.statusCode,
+                host: filterDto.host,
+                ip: filterDto.ip,
+                system: filterDto.system,
+                errorsOnly: filterDto.errorsOnly,
+                sortBy: 'requestTimestamp',
+                sortDirection: dto_1.SortDirection.ASC,
+            };
+            const result = await this.로그관리컨텍스트서비스.로그를_필터링하여_조회한다(filterOptions);
+            const timeUnit = filterDto.timeUnit || '1m';
+            const timeStatistics = this.시간별_응답_통계_계산(result.allFilteredLogs || [], filterDto.startDate, filterDto.endDate, timeUnit);
+            return {
+                timeStatistics,
+            };
+        }
+        catch (error) {
+            throw new common_1.NotFoundException('시간별 응답 통계 조회에 실패했습니다.');
+        }
+    }
     async 에러로그조회() {
         try {
             const errorLogs = await this.로그관리컨텍스트서비스.에러_로그를_조회한다();
@@ -3770,6 +4007,145 @@ let LogApplicationService = class LogApplicationService {
             isError: log.isError,
         };
     }
+    시간별_응답_통계_계산(logs, startDate, endDate, timeUnit = '1m') {
+        const timeMap = new Map();
+        const validLogs = logs.filter((log) => log.requestTimestamp);
+        let minTime;
+        let maxTime;
+        if (startDate && endDate) {
+            minTime = new Date(startDate);
+            maxTime = new Date(endDate);
+        }
+        else if (validLogs.length === 0) {
+            return [];
+        }
+        else {
+            const timestamps = validLogs.map((log) => log.requestTimestamp);
+            minTime = new Date(Math.min(...timestamps.map((t) => t.getTime())));
+            maxTime = new Date(Math.max(...timestamps.map((t) => t.getTime())));
+        }
+        const parsedTimeUnit = this.시간_단위_파싱(timeUnit);
+        const allTimeKeys = this.모든_시간대_생성(minTime, maxTime, parsedTimeUnit);
+        allTimeKeys.forEach((timeKey) => {
+            timeMap.set(timeKey, { success: 0, fail: 0 });
+        });
+        validLogs.forEach((log) => {
+            const normalizedDate = this.시간_정규화(log.requestTimestamp, parsedTimeUnit);
+            const timeKey = this.시간_키_생성(normalizedDate, parsedTimeUnit);
+            const stats = timeMap.get(timeKey);
+            if (stats) {
+                if (this.응답_성공_여부(log)) {
+                    stats.success++;
+                }
+                else {
+                    stats.fail++;
+                }
+            }
+        });
+        return allTimeKeys.map((time) => {
+            const stats = timeMap.get(time);
+            return { [time]: stats };
+        });
+    }
+    시간_단위_파싱(timeUnit) {
+        const match = timeUnit.match(/^(\d+)([mhd])$/);
+        if (!match) {
+            throw new Error(`잘못된 시간 단위 형식입니다: ${timeUnit}`);
+        }
+        return {
+            value: parseInt(match[1], 10),
+            unit: match[2],
+        };
+    }
+    시간_정규화(date, parsedTimeUnit) {
+        const normalized = new Date(date);
+        if (parsedTimeUnit.unit === 'm') {
+            normalized.setSeconds(0, 0);
+            const normalizedMinutes = Math.floor(normalized.getMinutes() / parsedTimeUnit.value) * parsedTimeUnit.value;
+            normalized.setMinutes(normalizedMinutes, 0);
+        }
+        else if (parsedTimeUnit.unit === 'h') {
+            normalized.setMinutes(0, 0, 0);
+            const normalizedHours = Math.floor(normalized.getHours() / parsedTimeUnit.value) * parsedTimeUnit.value;
+            normalized.setHours(normalizedHours, 0, 0, 0);
+        }
+        else if (parsedTimeUnit.unit === 'd') {
+            normalized.setHours(0, 0, 0, 0);
+        }
+        return normalized;
+    }
+    모든_시간대_생성(minTime, maxTime, parsedTimeUnit) {
+        const timeKeys = [];
+        const current = new Date(minTime);
+        if (parsedTimeUnit.unit === 'm') {
+            current.setSeconds(0, 0);
+            const normalizedMinutes = Math.floor(current.getMinutes() / parsedTimeUnit.value) * parsedTimeUnit.value;
+            current.setMinutes(normalizedMinutes, 0);
+        }
+        else if (parsedTimeUnit.unit === 'h') {
+            current.setMinutes(0, 0, 0);
+            const normalizedHours = Math.floor(current.getHours() / parsedTimeUnit.value) * parsedTimeUnit.value;
+            current.setHours(normalizedHours, 0, 0, 0);
+        }
+        else if (parsedTimeUnit.unit === 'd') {
+            current.setHours(0, 0, 0, 0);
+        }
+        const max = new Date(maxTime);
+        if (parsedTimeUnit.unit === 'm') {
+            max.setSeconds(0, 0);
+        }
+        else if (parsedTimeUnit.unit === 'h') {
+            max.setMinutes(0, 0, 0);
+        }
+        else if (parsedTimeUnit.unit === 'd') {
+            max.setHours(0, 0, 0, 0);
+        }
+        while (current <= max) {
+            timeKeys.push(this.시간_키_생성(current, parsedTimeUnit));
+            if (parsedTimeUnit.unit === 'm') {
+                current.setMinutes(current.getMinutes() + parsedTimeUnit.value);
+            }
+            else if (parsedTimeUnit.unit === 'h') {
+                current.setHours(current.getHours() + parsedTimeUnit.value);
+            }
+            else if (parsedTimeUnit.unit === 'd') {
+                current.setDate(current.getDate() + parsedTimeUnit.value);
+            }
+        }
+        return timeKeys;
+    }
+    시간_키_생성(date, parsedTimeUnit) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        if (parsedTimeUnit.unit === 'd') {
+            return `${year}-${month}-${day}`;
+        }
+        else if (parsedTimeUnit.unit === 'h') {
+            const hour = String(date.getHours()).padStart(2, '0');
+            return `${year}-${month}-${day} ${hour}:00:00`;
+        }
+        else {
+            const hour = String(date.getHours()).padStart(2, '0');
+            const minute = String(date.getMinutes()).padStart(2, '0');
+            return `${year}-${month}-${day} ${hour}:${minute}:00`;
+        }
+    }
+    응답_성공_여부(log) {
+        if (log.isError) {
+            return false;
+        }
+        if (log.statusCode !== null && log.statusCode !== undefined) {
+            if (log.statusCode >= 200 && log.statusCode < 300) {
+                return true;
+            }
+            if (log.statusCode >= 300 && log.statusCode < 400) {
+                return true;
+            }
+            return false;
+        }
+        return true;
+    }
 };
 exports.LogApplicationService = LogApplicationService;
 exports.LogApplicationService = LogApplicationService = __decorate([
@@ -3799,7 +4175,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e;
+var _a, _b, _c, _d, _e, _f, _g;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LogController = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
@@ -3818,6 +4194,9 @@ let LogController = class LogController {
     }
     async filter(filterDto) {
         return await this.logApplicationService.로그필터링조회(filterDto);
+    }
+    async getTimeStatistics(filterDto) {
+        return await this.logApplicationService.시간별응답통계조회(filterDto);
     }
 };
 exports.LogController = LogController;
@@ -3854,6 +4233,16 @@ __decorate([
     __metadata("design:paramtypes", [typeof (_d = typeof dto_1.LogFilterDto !== "undefined" && dto_1.LogFilterDto) === "function" ? _d : Object]),
     __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
 ], LogController.prototype, "filter", null);
+__decorate([
+    (0, common_1.Post)('time-statistics'),
+    (0, swagger_1.ApiOperation)({ summary: '시간별 응답 통계 조회' }),
+    (0, swagger_1.ApiBody)({ type: dto_1.TimeStatisticsFilterDto }),
+    (0, swagger_1.ApiResponse)({ status: 200, type: dto_1.TimeStatisticsResponseDto }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_f = typeof dto_1.TimeStatisticsFilterDto !== "undefined" && dto_1.TimeStatisticsFilterDto) === "function" ? _f : Object]),
+    __metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
+], LogController.prototype, "getTimeStatistics", null);
 exports.LogController = LogController = __decorate([
     (0, swagger_1.ApiTags)('Admin - 로그 관리'),
     (0, common_1.Controller)('admin/logs'),
@@ -4981,6 +5370,7 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '직책 레벨 (낮을수록 상위 직책)', example: 1 }),
     (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.Min)(1, { message: '직책 레벨은 1 이상이어야 합니다.' }),
     __metadata("design:type", Number)
 ], CreatePositionRequestDto.prototype, "level", void 0);
 __decorate([
@@ -5008,6 +5398,7 @@ __decorate([
     (0, swagger_1.ApiPropertyOptional)({ description: '직책 레벨 (낮을수록 상위 직책)', example: 1 }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.Min)(1, { message: '직책 레벨은 1 이상이어야 합니다.' }),
     __metadata("design:type", Number)
 ], UpdatePositionRequestDto.prototype, "level", void 0);
 __decorate([
@@ -9850,6 +10241,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OrganizationInformationApplicationService = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const organization_management_context_service_1 = __webpack_require__(/*! ../../context/organization-management/organization-management-context.service */ "./src/modules/context/organization-management/organization-management-context.service.ts");
+const entities_1 = __webpack_require__(/*! ../../../../libs/database/entities */ "./libs/database/entities/index.ts");
 let OrganizationInformationApplicationService = class OrganizationInformationApplicationService {
     constructor(organizationContextService) {
         this.organizationContextService = organizationContextService;
@@ -10043,10 +10435,18 @@ let OrganizationInformationApplicationService = class OrganizationInformationApp
         let totalDepartments = 0;
         let totalEmployees = 0;
         let maxDepthCalculated = 0;
+        const visitedDepartmentIds = new Set();
         const calculateStats = (depts) => {
             for (const dept of depts) {
+                if (visitedDepartmentIds.has(dept.id)) {
+                    continue;
+                }
+                visitedDepartmentIds.add(dept.id);
                 totalDepartments++;
-                totalEmployees += dept.employeeCount;
+                if (dept.type !== entities_1.DepartmentType.TEAM) {
+                    totalEmployees += dept.employeeCount;
+                }
+                console.log(dept.departmentName, dept.employeeCount, totalEmployees);
                 maxDepthCalculated = Math.max(maxDepthCalculated, dept.depth);
                 if (dept.childDepartments && dept.childDepartments.length > 0) {
                     calculateStats(dept.childDepartments);
@@ -11844,7 +12244,7 @@ let LogManagementContextService = LogManagementContextService_1 = class LogManag
         return this.로그서비스.findOne({ where: { id } });
     }
     async 로그를_필터링하여_조회한다(filterOptions) {
-        const { page = 1, limit = 10, startDate, endDate, method, url, statusCode, host, ip, system, errorsOnly, sortBy = 'requestTimestamp', sortDirection = SortDirection.DESC, } = filterOptions;
+        const { page = 1, limit = 100, startDate, endDate, method, url, statusCode, host, ip, system, errorsOnly, sortBy = 'requestTimestamp', sortDirection = SortDirection.DESC, } = filterOptions;
         const where = {};
         if (startDate && endDate) {
             where.requestTimestamp = (0, typeorm_1.Between)(startDate, endDate);
@@ -11892,6 +12292,7 @@ let LogManagementContextService = LogManagementContextService_1 = class LogManag
             total,
             page,
             totalPages: Math.ceil(total / limit),
+            allFilteredLogs,
         };
     }
     async 에러_로그를_조회한다() {
@@ -11917,6 +12318,9 @@ let LogManagementContextService = LogManagementContextService_1 = class LogManag
         return logs;
     }
     async 로그를_생성한다(logData) {
+        if (logData.url.includes('login') && logData.body.grant_type === 'password') {
+            logData.body.password = '********';
+        }
         return this.로그서비스.save(logData);
     }
     async 여러_로그를_생성한다(logsData) {
@@ -13218,6 +13622,11 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
                     status,
                     terminationDate: status === enums_1.EmployeeStatus.Terminated ? terminationDate : null,
                 });
+                if (status === enums_1.EmployeeStatus.Terminated) {
+                    await this.직원토큰서비스.deleteAllByEmployeeId(employeeId);
+                    await this.직원FCM토큰서비스.deleteAllByEmployeeId(employeeId);
+                    await this.직원시스템역할서비스.unassignAllRolesByEmployeeId(employeeId);
+                }
                 successIds.push(employeeId);
             }
             catch (error) {
@@ -13260,7 +13669,7 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
             this.직책서비스.findByIds(positionIds),
             this.직급서비스.findByIds(rankIds),
         ]);
-        const departmentMap = new Map(departments.map((dept) => [dept.id, dept]));
+        const departmentMap = new Map(departments.filter((dept) => dept.type === department_entity_1.DepartmentType.DEPARTMENT).map((dept) => [dept.id, dept]));
         const positionMap = new Map(positions.map((pos) => [pos.id, pos]));
         const rankMap = new Map(ranks.map((rank) => [rank.id, rank]));
         const 부서직책Map = new Map(부서직책정보들.map((info) => [info.employeeId, info]));
@@ -13562,7 +13971,35 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
                 throw new Error('상위 부서를 찾을 수 없습니다.');
             }
         }
-        return await this.부서서비스.updateDepartment(departmentId, 수정정보);
+        const oldParentDepartmentId = department.parentDepartmentId || null;
+        const newParentDepartmentId = 수정정보.parentDepartmentId !== undefined ? 수정정보.parentDepartmentId || null : oldParentDepartmentId;
+        let newOrder = undefined;
+        if (oldParentDepartmentId !== newParentDepartmentId) {
+            const currentOrder = department.order;
+            const nextOrder = await this.부서서비스.getNextOrderForParent(newParentDepartmentId);
+            await this.부서서비스.updateDepartment(departmentId, {
+                parentDepartmentId: newParentDepartmentId,
+                order: -999,
+            });
+            const oldSiblingDepartments = oldParentDepartmentId === null
+                ? await this.부서서비스.findRootDepartments()
+                : await this.부서서비스.findChildDepartments(oldParentDepartmentId);
+            const orderUpdates = [];
+            for (const sibling of oldSiblingDepartments) {
+                if (sibling.id !== departmentId && sibling.order > currentOrder) {
+                    orderUpdates.push({ id: sibling.id, order: sibling.order - 1 });
+                }
+            }
+            if (orderUpdates.length > 0) {
+                await this.부서서비스.bulkUpdateOrders(orderUpdates);
+            }
+            newOrder = nextOrder;
+        }
+        const updateData = {
+            ...수정정보,
+            ...(newOrder !== undefined && { order: newOrder }),
+        };
+        return await this.부서서비스.updateDepartment(departmentId, updateData);
     }
     async 부서를_삭제한다(departmentId) {
         await this.부서서비스.findById(departmentId);
@@ -13630,6 +14067,16 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
             const isDuplicate = await this.직책서비스.isCodeDuplicate(수정정보.positionCode, positionId);
             if (isDuplicate) {
                 throw new Error('이미 존재하는 직책 코드입니다.');
+            }
+        }
+        if (수정정보.level !== undefined) {
+            await this.직책서비스.changeLevel(positionId, 수정정보.level);
+            const { level, ...restData } = 수정정보;
+            if (Object.keys(restData).length > 0) {
+                return await this.직책서비스.updatePosition(positionId, restData);
+            }
+            else {
+                return await this.직책서비스.findById(positionId);
             }
         }
         return await this.직책서비스.updatePosition(positionId, 수정정보);
@@ -14286,6 +14733,21 @@ let DomainDepartmentRepository = class DomainDepartmentRepository extends base_r
     constructor(repository) {
         super(repository);
     }
+    async findAll(repositoryOptions) {
+        const repository = repositoryOptions?.queryRunner
+            ? repositoryOptions.queryRunner.manager.getRepository(this.repository.target)
+            : this.repository;
+        const result = await repository.find({
+            where: repositoryOptions?.where,
+            relations: repositoryOptions?.relations,
+            select: repositoryOptions?.select,
+            order: repositoryOptions?.order,
+            skip: repositoryOptions?.skip,
+            take: repositoryOptions?.take,
+            withDeleted: repositoryOptions?.withDeleted,
+        });
+        return result.filter((department) => department.departmentCode !== '관리자');
+    }
 };
 exports.DomainDepartmentRepository = DomainDepartmentRepository;
 exports.DomainDepartmentRepository = DomainDepartmentRepository = __decorate([
@@ -14436,6 +14898,10 @@ let DomainDepartmentService = DomainDepartmentService_1 = class DomainDepartment
     }
     async bulkUpdateOrders(updates) {
         await this.departmentRepository.manager.transaction(async (transactionalEntityManager) => {
+            const tempOffset = -1000000;
+            for (let i = 0; i < updates.length; i++) {
+                await transactionalEntityManager.update(entities_1.Department, { id: updates[i].id }, { order: tempOffset - i });
+            }
             for (const update of updates) {
                 await transactionalEntityManager.update(entities_1.Department, { id: update.id }, { order: update.order });
             }
@@ -14652,6 +15118,7 @@ const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const employee_department_position_repository_1 = __webpack_require__(/*! ./employee-department-position.repository */ "./src/modules/domain/employee-department-position/employee-department-position.repository.ts");
 const base_service_1 = __webpack_require__(/*! ../../../../libs/common/services/base.service */ "./libs/common/services/base.service.ts");
 const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
+const entities_1 = __webpack_require__(/*! libs/database/entities */ "./libs/database/entities/index.ts");
 let DomainEmployeeDepartmentPositionService = class DomainEmployeeDepartmentPositionService extends base_service_1.BaseService {
     constructor(employeeDepartmentPositionRepository) {
         super(employeeDepartmentPositionRepository);
@@ -14659,7 +15126,7 @@ let DomainEmployeeDepartmentPositionService = class DomainEmployeeDepartmentPosi
     }
     async findByEmployeeId(employeeId) {
         return this.employeeDepartmentPositionRepository.findOne({
-            where: { employeeId },
+            where: { employeeId, department: { type: entities_1.DepartmentType.DEPARTMENT } },
         });
     }
     async findAllByEmployeeIds(employeeIds) {
@@ -15753,6 +16220,12 @@ let DomainEmployeeTokenService = class DomainEmployeeTokenService extends base_s
         }
         return { deletedCount };
     }
+    async deleteAllByEmployeeId(employeeId) {
+        const relations = await this.findByEmployeeId(employeeId);
+        for (const relation of relations) {
+            await this.employeeTokenRepository.delete(relation.id);
+        }
+    }
 };
 exports.DomainEmployeeTokenService = DomainEmployeeTokenService;
 exports.DomainEmployeeTokenService = DomainEmployeeTokenService = __decorate([
@@ -16158,6 +16631,21 @@ const base_repository_1 = __webpack_require__(/*! ../../../../libs/common/reposi
 let DomainEmployeeRepository = class DomainEmployeeRepository extends base_repository_1.BaseRepository {
     constructor(repository) {
         super(repository);
+    }
+    async findAll(repositoryOptions) {
+        const repository = repositoryOptions?.queryRunner
+            ? repositoryOptions.queryRunner.manager.getRepository(this.repository.target)
+            : this.repository;
+        const result = await repository.find({
+            where: repositoryOptions?.where,
+            relations: repositoryOptions?.relations,
+            select: repositoryOptions?.select,
+            order: repositoryOptions?.order,
+            skip: repositoryOptions?.skip,
+            take: repositoryOptions?.take,
+            withDeleted: repositoryOptions?.withDeleted,
+        });
+        return result.filter((employee) => employee.employeeNumber !== '00000');
     }
 };
 exports.DomainEmployeeRepository = DomainEmployeeRepository;
@@ -17221,6 +17709,62 @@ let DomainPositionService = class DomainPositionService extends base_service_1.B
     }
     async updatePosition(positionId, data) {
         return this.update(positionId, data);
+    }
+    async findOneByLevel(level) {
+        return this.positionRepository.findOne({
+            where: { level },
+        });
+    }
+    async findByLevelRange(minLevel, maxLevel) {
+        const queryBuilder = this.positionRepository.createQueryBuilder('position');
+        return queryBuilder
+            .where('position.level >= :minLevel', { minLevel })
+            .andWhere('position.level <= :maxLevel', { maxLevel })
+            .orderBy('position.level', 'ASC')
+            .getMany();
+    }
+    async changeLevel(positionId, newLevel) {
+        const currentPosition = await this.findById(positionId);
+        const currentLevel = currentPosition.level;
+        if (currentLevel === newLevel) {
+            return currentPosition;
+        }
+        if (newLevel < 1) {
+            newLevel = 1;
+            if (currentLevel === newLevel) {
+                return currentPosition;
+            }
+        }
+        const queryBuilder = this.positionRepository.createQueryBuilder('position');
+        const maxLevelResult = await queryBuilder.select('MAX(position.level)', 'maxLevel').getRawOne();
+        const maxLevel = maxLevelResult?.maxLevel ?? 0;
+        if (newLevel > maxLevel) {
+            newLevel = maxLevel;
+            if (currentLevel === newLevel) {
+                return currentPosition;
+            }
+        }
+        const existingPosition = await this.findOneByLevel(newLevel);
+        if (existingPosition) {
+            const tempLevel = maxLevel + 1000;
+            await this.update(positionId, { level: tempLevel });
+            if (currentLevel < newLevel) {
+                const positionsToShift = await this.findByLevelRange(currentLevel + 1, newLevel);
+                for (const position of positionsToShift) {
+                    await this.update(position.id, { level: position.level - 1 });
+                }
+            }
+            else {
+                const positionsToShift = await this.findByLevelRange(newLevel, currentLevel - 1);
+                for (let i = positionsToShift.length - 1; i >= 0; i--) {
+                    await this.update(positionsToShift[i].id, { level: positionsToShift[i].level + 1 });
+                }
+            }
+            return await this.update(positionId, { level: newLevel });
+        }
+        else {
+            return await this.update(positionId, { level: newLevel });
+        }
     }
     async deletePosition(positionId) {
         return this.delete(positionId);

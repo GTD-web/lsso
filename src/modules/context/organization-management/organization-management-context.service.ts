@@ -824,6 +824,13 @@ export class OrganizationManagementContextService {
                     terminationDate: status === EmployeeStatus.Terminated ? terminationDate : null,
                 });
 
+                // 퇴사상태로 변경하는 경우 token, fcmToken, systemRole 삭제
+                if (status === EmployeeStatus.Terminated) {
+                    await this.직원토큰서비스.deleteAllByEmployeeId(employeeId);
+                    await this.직원FCM토큰서비스.deleteAllByEmployeeId(employeeId);
+                    await this.직원시스템역할서비스.unassignAllRolesByEmployeeId(employeeId);
+                }
+
                 successIds.push(employeeId);
             } catch (error) {
                 failIds.push(employeeId);
@@ -881,7 +888,9 @@ export class OrganizationManagementContextService {
         ]);
 
         // 4. 조회된 데이터를 Map으로 변환 (빠른 조회를 위해)
-        const departmentMap = new Map(departments.map((dept) => [dept.id, dept]));
+        const departmentMap = new Map(
+            departments.filter((dept) => dept.type === DepartmentType.DEPARTMENT).map((dept) => [dept.id, dept]),
+        );
         const positionMap = new Map(positions.map((pos) => [pos.id, pos]));
         const rankMap = new Map(ranks.map((rank) => [rank.id, rank]));
         const 부서직책Map = new Map(부서직책정보들.map((info) => [info.employeeId, info]));
@@ -1241,6 +1250,8 @@ export class OrganizationManagementContextService {
         assignment?: EmployeeDepartmentPosition;
         rankHistory?: EmployeeRankHistory;
     }> {
+        // TODO : 이메일 생성 관련 중복 처리 필요 및 요청 값 관련 확인 필요 (창욱프로님한테)
+
         // 1. 전처리 (사번/이름 자동 생성)
         const { employeeNumber, name } = await this.직원생성_전처리를_수행한다(data.name);
 
@@ -1423,14 +1434,53 @@ export class OrganizationManagementContextService {
             }
         }
 
-        // 순서 변경은 다른 API를 통해 수행한다.
-        // 수정정보.order = await this.부서서비스.getNextOrderForParent(수정정보.parentDepartmentId || null);
-        // if (수정정보.order === undefined) {
-        //     throw new Error('순서를 찾을 수 없습니다.');
-        // }
+        // 4. 상위 부서가 변경되는 경우 순서 재배치 처리
+        const oldParentDepartmentId = department.parentDepartmentId || null;
+        const newParentDepartmentId =
+            수정정보.parentDepartmentId !== undefined ? 수정정보.parentDepartmentId || null : oldParentDepartmentId;
 
-        // 4. 부서 수정
-        return await this.부서서비스.updateDepartment(departmentId, 수정정보);
+        let newOrder: number | undefined = undefined;
+
+        if (oldParentDepartmentId !== newParentDepartmentId) {
+            const currentOrder = department.order;
+
+            // 4-1. 먼저 이동하려는 부서를 새로운 상위 부서의 맨 뒤로 이동
+            const nextOrder = await this.부서서비스.getNextOrderForParent(newParentDepartmentId);
+
+            // 이동하려는 부서를 임시로 음수로 설정 (unique constraint 충돌 방지)
+            await this.부서서비스.updateDepartment(departmentId, {
+                parentDepartmentId: newParentDepartmentId,
+                order: -999,
+            });
+
+            // 4-2. 원래 상위 부서의 하위 부서들 순서 재배치 (빈 자리 메꾸기)
+            const oldSiblingDepartments =
+                oldParentDepartmentId === null
+                    ? await this.부서서비스.findRootDepartments()
+                    : await this.부서서비스.findChildDepartments(oldParentDepartmentId);
+
+            // 이동된 부서의 다음 순번부터 순서를 1씩 감소
+            const orderUpdates: { id: string; order: number }[] = [];
+            for (const sibling of oldSiblingDepartments) {
+                if (sibling.id !== departmentId && sibling.order > currentOrder) {
+                    orderUpdates.push({ id: sibling.id, order: sibling.order - 1 });
+                }
+            }
+
+            if (orderUpdates.length > 0) {
+                await this.부서서비스.bulkUpdateOrders(orderUpdates);
+            }
+
+            // 4-3. 이동한 부서를 최종 순번으로 설정
+            newOrder = nextOrder;
+        }
+
+        // 5. 부서 수정
+        const updateData = {
+            ...수정정보,
+            ...(newOrder !== undefined && { order: newOrder }),
+        };
+        return await this.부서서비스.updateDepartment(departmentId, updateData);
     }
 
     /**
@@ -1574,7 +1624,19 @@ export class OrganizationManagementContextService {
             }
         }
 
-        // 3. 직책 수정
+        // 3. level 변경이 있는 경우 순서 재조정 로직 실행
+        if (수정정보.level !== undefined) {
+            await this.직책서비스.changeLevel(positionId, 수정정보.level);
+            // level은 이미 변경되었으므로 제외
+            const { level, ...restData } = 수정정보;
+            if (Object.keys(restData).length > 0) {
+                return await this.직책서비스.updatePosition(positionId, restData);
+            } else {
+                return await this.직책서비스.findById(positionId);
+            }
+        }
+
+        // 4. level 변경이 없는 경우 일반 수정
         return await this.직책서비스.updatePosition(positionId, 수정정보);
     }
 
