@@ -5370,6 +5370,7 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '직책 레벨 (낮을수록 상위 직책)', example: 1 }),
     (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.Min)(1, { message: '직책 레벨은 1 이상이어야 합니다.' }),
     __metadata("design:type", Number)
 ], CreatePositionRequestDto.prototype, "level", void 0);
 __decorate([
@@ -5397,6 +5398,7 @@ __decorate([
     (0, swagger_1.ApiPropertyOptional)({ description: '직책 레벨 (낮을수록 상위 직책)', example: 1 }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.Min)(1, { message: '직책 레벨은 1 이상이어야 합니다.' }),
     __metadata("design:type", Number)
 ], UpdatePositionRequestDto.prototype, "level", void 0);
 __decorate([
@@ -10239,6 +10241,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OrganizationInformationApplicationService = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const organization_management_context_service_1 = __webpack_require__(/*! ../../context/organization-management/organization-management-context.service */ "./src/modules/context/organization-management/organization-management-context.service.ts");
+const entities_1 = __webpack_require__(/*! ../../../../libs/database/entities */ "./libs/database/entities/index.ts");
 let OrganizationInformationApplicationService = class OrganizationInformationApplicationService {
     constructor(organizationContextService) {
         this.organizationContextService = organizationContextService;
@@ -10432,10 +10435,18 @@ let OrganizationInformationApplicationService = class OrganizationInformationApp
         let totalDepartments = 0;
         let totalEmployees = 0;
         let maxDepthCalculated = 0;
+        const visitedDepartmentIds = new Set();
         const calculateStats = (depts) => {
             for (const dept of depts) {
+                if (visitedDepartmentIds.has(dept.id)) {
+                    continue;
+                }
+                visitedDepartmentIds.add(dept.id);
                 totalDepartments++;
-                totalEmployees += dept.employeeCount;
+                if (dept.type !== entities_1.DepartmentType.TEAM) {
+                    totalEmployees += dept.employeeCount;
+                }
+                console.log(dept.departmentName, dept.employeeCount, totalEmployees);
                 maxDepthCalculated = Math.max(maxDepthCalculated, dept.depth);
                 if (dept.childDepartments && dept.childDepartments.length > 0) {
                     calculateStats(dept.childDepartments);
@@ -12307,6 +12318,9 @@ let LogManagementContextService = LogManagementContextService_1 = class LogManag
         return logs;
     }
     async 로그를_생성한다(logData) {
+        if (logData.url.includes('login') && logData.body.grant_type === 'password') {
+            logData.body.password = '********';
+        }
         return this.로그서비스.save(logData);
     }
     async 여러_로그를_생성한다(logsData) {
@@ -13608,6 +13622,11 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
                     status,
                     terminationDate: status === enums_1.EmployeeStatus.Terminated ? terminationDate : null,
                 });
+                if (status === enums_1.EmployeeStatus.Terminated) {
+                    await this.직원토큰서비스.deleteAllByEmployeeId(employeeId);
+                    await this.직원FCM토큰서비스.deleteAllByEmployeeId(employeeId);
+                    await this.직원시스템역할서비스.unassignAllRolesByEmployeeId(employeeId);
+                }
                 successIds.push(employeeId);
             }
             catch (error) {
@@ -13650,7 +13669,7 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
             this.직책서비스.findByIds(positionIds),
             this.직급서비스.findByIds(rankIds),
         ]);
-        const departmentMap = new Map(departments.map((dept) => [dept.id, dept]));
+        const departmentMap = new Map(departments.filter((dept) => dept.type === department_entity_1.DepartmentType.DEPARTMENT).map((dept) => [dept.id, dept]));
         const positionMap = new Map(positions.map((pos) => [pos.id, pos]));
         const rankMap = new Map(ranks.map((rank) => [rank.id, rank]));
         const 부서직책Map = new Map(부서직책정보들.map((info) => [info.employeeId, info]));
@@ -14048,6 +14067,16 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
             const isDuplicate = await this.직책서비스.isCodeDuplicate(수정정보.positionCode, positionId);
             if (isDuplicate) {
                 throw new Error('이미 존재하는 직책 코드입니다.');
+            }
+        }
+        if (수정정보.level !== undefined) {
+            await this.직책서비스.changeLevel(positionId, 수정정보.level);
+            const { level, ...restData } = 수정정보;
+            if (Object.keys(restData).length > 0) {
+                return await this.직책서비스.updatePosition(positionId, restData);
+            }
+            else {
+                return await this.직책서비스.findById(positionId);
             }
         }
         return await this.직책서비스.updatePosition(positionId, 수정정보);
@@ -14704,6 +14733,21 @@ let DomainDepartmentRepository = class DomainDepartmentRepository extends base_r
     constructor(repository) {
         super(repository);
     }
+    async findAll(repositoryOptions) {
+        const repository = repositoryOptions?.queryRunner
+            ? repositoryOptions.queryRunner.manager.getRepository(this.repository.target)
+            : this.repository;
+        const result = await repository.find({
+            where: repositoryOptions?.where,
+            relations: repositoryOptions?.relations,
+            select: repositoryOptions?.select,
+            order: repositoryOptions?.order,
+            skip: repositoryOptions?.skip,
+            take: repositoryOptions?.take,
+            withDeleted: repositoryOptions?.withDeleted,
+        });
+        return result.filter((department) => department.departmentCode !== '관리자');
+    }
 };
 exports.DomainDepartmentRepository = DomainDepartmentRepository;
 exports.DomainDepartmentRepository = DomainDepartmentRepository = __decorate([
@@ -15074,6 +15118,7 @@ const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const employee_department_position_repository_1 = __webpack_require__(/*! ./employee-department-position.repository */ "./src/modules/domain/employee-department-position/employee-department-position.repository.ts");
 const base_service_1 = __webpack_require__(/*! ../../../../libs/common/services/base.service */ "./libs/common/services/base.service.ts");
 const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
+const entities_1 = __webpack_require__(/*! libs/database/entities */ "./libs/database/entities/index.ts");
 let DomainEmployeeDepartmentPositionService = class DomainEmployeeDepartmentPositionService extends base_service_1.BaseService {
     constructor(employeeDepartmentPositionRepository) {
         super(employeeDepartmentPositionRepository);
@@ -15081,7 +15126,7 @@ let DomainEmployeeDepartmentPositionService = class DomainEmployeeDepartmentPosi
     }
     async findByEmployeeId(employeeId) {
         return this.employeeDepartmentPositionRepository.findOne({
-            where: { employeeId },
+            where: { employeeId, department: { type: entities_1.DepartmentType.DEPARTMENT } },
         });
     }
     async findAllByEmployeeIds(employeeIds) {
@@ -16175,6 +16220,12 @@ let DomainEmployeeTokenService = class DomainEmployeeTokenService extends base_s
         }
         return { deletedCount };
     }
+    async deleteAllByEmployeeId(employeeId) {
+        const relations = await this.findByEmployeeId(employeeId);
+        for (const relation of relations) {
+            await this.employeeTokenRepository.delete(relation.id);
+        }
+    }
 };
 exports.DomainEmployeeTokenService = DomainEmployeeTokenService;
 exports.DomainEmployeeTokenService = DomainEmployeeTokenService = __decorate([
@@ -16580,6 +16631,21 @@ const base_repository_1 = __webpack_require__(/*! ../../../../libs/common/reposi
 let DomainEmployeeRepository = class DomainEmployeeRepository extends base_repository_1.BaseRepository {
     constructor(repository) {
         super(repository);
+    }
+    async findAll(repositoryOptions) {
+        const repository = repositoryOptions?.queryRunner
+            ? repositoryOptions.queryRunner.manager.getRepository(this.repository.target)
+            : this.repository;
+        const result = await repository.find({
+            where: repositoryOptions?.where,
+            relations: repositoryOptions?.relations,
+            select: repositoryOptions?.select,
+            order: repositoryOptions?.order,
+            skip: repositoryOptions?.skip,
+            take: repositoryOptions?.take,
+            withDeleted: repositoryOptions?.withDeleted,
+        });
+        return result.filter((employee) => employee.employeeNumber !== '00000');
     }
 };
 exports.DomainEmployeeRepository = DomainEmployeeRepository;
@@ -17643,6 +17709,62 @@ let DomainPositionService = class DomainPositionService extends base_service_1.B
     }
     async updatePosition(positionId, data) {
         return this.update(positionId, data);
+    }
+    async findOneByLevel(level) {
+        return this.positionRepository.findOne({
+            where: { level },
+        });
+    }
+    async findByLevelRange(minLevel, maxLevel) {
+        const queryBuilder = this.positionRepository.createQueryBuilder('position');
+        return queryBuilder
+            .where('position.level >= :minLevel', { minLevel })
+            .andWhere('position.level <= :maxLevel', { maxLevel })
+            .orderBy('position.level', 'ASC')
+            .getMany();
+    }
+    async changeLevel(positionId, newLevel) {
+        const currentPosition = await this.findById(positionId);
+        const currentLevel = currentPosition.level;
+        if (currentLevel === newLevel) {
+            return currentPosition;
+        }
+        if (newLevel < 1) {
+            newLevel = 1;
+            if (currentLevel === newLevel) {
+                return currentPosition;
+            }
+        }
+        const queryBuilder = this.positionRepository.createQueryBuilder('position');
+        const maxLevelResult = await queryBuilder.select('MAX(position.level)', 'maxLevel').getRawOne();
+        const maxLevel = maxLevelResult?.maxLevel ?? 0;
+        if (newLevel > maxLevel) {
+            newLevel = maxLevel;
+            if (currentLevel === newLevel) {
+                return currentPosition;
+            }
+        }
+        const existingPosition = await this.findOneByLevel(newLevel);
+        if (existingPosition) {
+            const tempLevel = maxLevel + 1000;
+            await this.update(positionId, { level: tempLevel });
+            if (currentLevel < newLevel) {
+                const positionsToShift = await this.findByLevelRange(currentLevel + 1, newLevel);
+                for (const position of positionsToShift) {
+                    await this.update(position.id, { level: position.level - 1 });
+                }
+            }
+            else {
+                const positionsToShift = await this.findByLevelRange(newLevel, currentLevel - 1);
+                for (let i = positionsToShift.length - 1; i >= 0; i--) {
+                    await this.update(positionsToShift[i].id, { level: positionsToShift[i].level + 1 });
+                }
+            }
+            return await this.update(positionId, { level: newLevel });
+        }
+        else {
+            return await this.update(positionId, { level: newLevel });
+        }
     }
     async deletePosition(positionId) {
         return this.delete(positionId);

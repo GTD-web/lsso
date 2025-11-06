@@ -22,7 +22,7 @@ import {
     DepartmentManagerDto,
     ManagerInfoDto,
 } from './dto';
-import { Employee, Department, Position, Rank } from '../../../../libs/database/entities';
+import { Employee, Department, Position, Rank, DepartmentType } from '../../../../libs/database/entities';
 
 @Injectable()
 export class OrganizationInformationApplicationService {
@@ -301,11 +301,24 @@ export class OrganizationInformationApplicationService {
         let totalDepartments = 0;
         let totalEmployees = 0;
         let maxDepthCalculated = 0;
+        const visitedDepartmentIds = new Set<string>();
 
         const calculateStats = (depts: DepartmentWithEmployeesDto[]) => {
             for (const dept of depts) {
+                // 이미 카운트한 부서는 건너뛰기 (중복 방지)
+                if (visitedDepartmentIds.has(dept.id)) {
+                    continue;
+                }
+
+                visitedDepartmentIds.add(dept.id);
                 totalDepartments++;
-                totalEmployees += dept.employeeCount;
+
+                // TEAM 타입 부서는 직원 수 집계에서 제외
+                if (dept.type !== DepartmentType.TEAM) {
+                    totalEmployees += dept.employeeCount;
+                }
+                console.log(dept.departmentName, dept.employeeCount, totalEmployees);
+
                 maxDepthCalculated = Math.max(maxDepthCalculated, dept.depth);
 
                 if (dept.childDepartments && dept.childDepartments.length > 0) {

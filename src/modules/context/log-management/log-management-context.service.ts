@@ -210,6 +210,9 @@ export class LogManagementContextService {
         error?: any;
         isError?: boolean;
     }): Promise<Log> {
+        if (logData.url.includes('login') && logData.body.grant_type === 'password') {
+            logData.body.password = '********';
+        }
         return this.로그서비스.save(logData);
     }
 

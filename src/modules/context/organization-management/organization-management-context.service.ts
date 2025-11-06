@@ -824,6 +824,13 @@ export class OrganizationManagementContextService {
                     terminationDate: status === EmployeeStatus.Terminated ? terminationDate : null,
                 });
 
+                // 퇴사상태로 변경하는 경우 token, fcmToken, systemRole 삭제
+                if (status === EmployeeStatus.Terminated) {
+                    await this.직원토큰서비스.deleteAllByEmployeeId(employeeId);
+                    await this.직원FCM토큰서비스.deleteAllByEmployeeId(employeeId);
+                    await this.직원시스템역할서비스.unassignAllRolesByEmployeeId(employeeId);
+                }
+
                 successIds.push(employeeId);
             } catch (error) {
                 failIds.push(employeeId);
@@ -881,7 +888,9 @@ export class OrganizationManagementContextService {
         ]);
 
         // 4. 조회된 데이터를 Map으로 변환 (빠른 조회를 위해)
-        const departmentMap = new Map(departments.map((dept) => [dept.id, dept]));
+        const departmentMap = new Map(
+            departments.filter((dept) => dept.type === DepartmentType.DEPARTMENT).map((dept) => [dept.id, dept]),
+        );
         const positionMap = new Map(positions.map((pos) => [pos.id, pos]));
         const rankMap = new Map(ranks.map((rank) => [rank.id, rank]));
         const 부서직책Map = new Map(부서직책정보들.map((info) => [info.employeeId, info]));
@@ -1241,6 +1250,8 @@ export class OrganizationManagementContextService {
         assignment?: EmployeeDepartmentPosition;
         rankHistory?: EmployeeRankHistory;
     }> {
+        // TODO : 이메일 생성 관련 중복 처리 필요 및 요청 값 관련 확인 필요 (창욱프로님한테)
+
         // 1. 전처리 (사번/이름 자동 생성)
         const { employeeNumber, name } = await this.직원생성_전처리를_수행한다(data.name);
 
@@ -1613,7 +1624,19 @@ export class OrganizationManagementContextService {
             }
         }
 
-        // 3. 직책 수정
+        // 3. level 변경이 있는 경우 순서 재조정 로직 실행
+        if (수정정보.level !== undefined) {
+            await this.직책서비스.changeLevel(positionId, 수정정보.level);
+            // level은 이미 변경되었으므로 제외
+            const { level, ...restData } = 수정정보;
+            if (Object.keys(restData).length > 0) {
+                return await this.직책서비스.updatePosition(positionId, restData);
+            } else {
+                return await this.직책서비스.findById(positionId);
+            }
+        }
+
+        // 4. level 변경이 없는 경우 일반 수정
         return await this.직책서비스.updatePosition(positionId, 수정정보);
     }
 
