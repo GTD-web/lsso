@@ -11,8 +11,9 @@ import {
     DepartmentHierarchyRequestDto,
     DepartmentHierarchyResponseDto,
     DepartmentWithEmployeesDto,
-    CreateEmployeeRequestDto,
-    CreateEmployeeResponseDto,
+    HireEmployeeRequestDto,
+    HireEmployeeResponseDto,
+    HiredEmployeeDto,
     TerminateEmployeeRequestDto,
     TerminateEmployeeResponseDto,
     ExportAllDataResponseDto,
@@ -23,6 +24,7 @@ import {
     ManagerInfoDto,
 } from './dto';
 import { Employee, Department, Position, Rank, DepartmentType } from '../../../../libs/database/entities';
+import { EmployeeStatus } from 'libs/common/enums';
 
 @Injectable()
 export class OrganizationInformationApplicationService {
@@ -343,28 +345,31 @@ export class OrganizationInformationApplicationService {
      * 검증 규칙 1단계: 입력/전송 검증 (DTO validation)
      * 전체 흐름 오케스트레이션
      */
-    async 직원을_채용한다(createDto: CreateEmployeeRequestDto): Promise<CreateEmployeeResponseDto> {
+    async 직원을_채용한다(hireEmployeeDto: HireEmployeeRequestDto): Promise<HireEmployeeResponseDto> {
         // 1단계 검증은 이미 DTO validation에서 완료됨 (@IsString, @IsEmail 등)
 
         try {
             // 날짜 문자열을 Date 객체로 변환
-            const hireDate = new Date(createDto.hireDate);
-            const dateOfBirth = createDto.dateOfBirth ? new Date(createDto.dateOfBirth) : undefined;
+            const hireDate = new Date(hireEmployeeDto.hireDate);
+            const dateOfBirth = hireEmployeeDto.dateOfBirth ? new Date(hireEmployeeDto.dateOfBirth) : undefined;
+            const lowestPosition = await this.organizationContextService.가장_낮은_직책을_조회한다();
+            const positionId = lowestPosition.id;
 
             // Context Layer 호출 (2-4단계 검증 포함)
+            // 이메일은 전처리에서 자동 생성됨
             const result = await this.organizationContextService.직원을_생성한다({
                 // employeeNumber: createDto.employeeNumber, // 선택사항 - 없으면 자동 생성
-                name: createDto.name,
-                email: createDto.email,
-                phoneNumber: createDto.phoneNumber,
+                name: hireEmployeeDto.koreanName,
+                englishLastName: hireEmployeeDto.englishLastName,
+                englishFirstName: hireEmployeeDto.englishFirstName,
+                phoneNumber: hireEmployeeDto.phoneNumber,
                 dateOfBirth,
-                gender: createDto.gender,
+                gender: hireEmployeeDto.gender,
                 hireDate,
-                status: createDto.status,
-                currentRankId: createDto.currentRankId,
-                departmentId: createDto.departmentId,
-                positionId: createDto.positionId,
-                isManager: createDto.isManager,
+                status: EmployeeStatus.Active,
+                currentRankId: hireEmployeeDto.rankId,
+                departmentId: hireEmployeeDto.departmentId,
+                positionId: positionId,
             });
 
             // Response DTO로 변환
@@ -379,44 +384,35 @@ export class OrganizationInformationApplicationService {
 
     private 직원생성결과를_응답DTO로_변환한다(result: {
         employee: any;
-        assignment?: any;
-        rankHistory?: any;
-    }): CreateEmployeeResponseDto {
-        const response: CreateEmployeeResponseDto = {
-            employee: {
-                id: result.employee.id,
-                employeeNumber: result.employee.employeeNumber,
-                name: result.employee.name,
-                email: result.employee.email,
-                phoneNumber: result.employee.phoneNumber,
-                dateOfBirth: result.employee.dateOfBirth?.toISOString().split('T')[0],
-                gender: result.employee.gender,
-                hireDate: result.employee.hireDate.toISOString().split('T')[0],
-                status: result.employee.status,
-                currentRankId: result.employee.currentRankId,
-                isInitialPasswordSet: result.employee.isInitialPasswordSet,
-                createdAt: result.employee.createdAt,
-                updatedAt: result.employee.updatedAt,
-            },
+        department?: any;
+        rank?: any;
+    }): HireEmployeeResponseDto {
+        const employee: HiredEmployeeDto = {
+            id: result.employee.id,
+            employeeNumber: result.employee.employeeNumber,
+            name: result.employee.name,
+            email: result.employee.email,
+            phoneNumber: result.employee.phoneNumber,
+            dateOfBirth: result.employee.dateOfBirth?.toISOString().split('T')[0],
+            gender: result.employee.gender,
+            hireDate: result.employee.hireDate.toISOString().split('T')[0],
+            status: result.employee.status,
+            currentRankId: result.employee.currentRankId,
+            isInitialPasswordSet: result.employee.isInitialPasswordSet,
+            createdAt: result.employee.createdAt,
+            updatedAt: result.employee.updatedAt,
         };
 
-        if (result.assignment) {
-            response.assignment = {
-                id: result.assignment.id,
-                departmentId: result.assignment.departmentId,
-                positionId: result.assignment.positionId,
-                isManager: result.assignment.isManager,
-                createdAt: result.assignment.createdAt,
-            };
+        const response: HireEmployeeResponseDto = {
+            employee,
+        };
+
+        if (result.department) {
+            response.department = this.부서_정보를_매핑한다(result.department);
         }
 
-        if (result.rankHistory) {
-            response.rankHistory = {
-                id: result.rankHistory.id,
-                employeeId: result.rankHistory.employeeId,
-                rankId: result.rankHistory.rankId,
-                createdAt: result.rankHistory.createdAt,
-            };
+        if (result.rank) {
+            response.rank = this.직급_정보를_매핑한다(result.rank);
         }
 
         return response;

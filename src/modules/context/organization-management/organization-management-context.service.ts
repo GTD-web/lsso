@@ -283,6 +283,14 @@ export class OrganizationManagementContextService {
         return this.직책서비스.findById(positionId);
     }
 
+    async 가장_낮은_직책을_조회한다(): Promise<Position> {
+        const position = await this.직책서비스.findLowestPosition();
+        if (!position) {
+            throw new NotFoundException('직책을 찾을 수 없습니다.');
+        }
+        return position;
+    }
+
     // ==================== 직급 조회 관련 ====================
 
     async 모든_직급을_조회한다(): Promise<Rank[]> {
@@ -1166,18 +1174,54 @@ export class OrganizationManagementContextService {
     // ==================== 직원 생성/수정/삭제 관련 ====================
 
     /**
-     * 직원 생성을 위한 전처리 (사번/이름 자동 생성)
+     * 직원 생성을 위한 전처리 (사번/이름/이메일 자동 생성)
      */
-    async 직원생성_전처리를_수행한다(name: string): Promise<{
+    async 직원생성_전처리를_수행한다(
+        name: string,
+        englishLastName?: string,
+        englishFirstName?: string,
+    ): Promise<{
         employeeNumber: string;
         name: string;
+        email?: string;
     }> {
         const employeeNumber = await this.직원서비스.generateNextEmployeeNumber();
         const uniqueName = await this.직원서비스.generateUniqueEmployeeName(name);
+
+        let email: string | undefined;
+        if (englishLastName && englishFirstName) {
+            email = await this.고유한_이메일을_생성한다(englishLastName, englishFirstName);
+        }
+
         return {
             employeeNumber,
             name: uniqueName,
+            email,
         };
+    }
+
+    /**
+     * 고유한 이메일 주소 생성 (중복 검사 포함)
+     */
+    async 고유한_이메일을_생성한다(englishLastName: string, englishFirstName: string): Promise<string> {
+        const baseEmail = `${englishLastName}.${englishFirstName}@lumir.space`;
+
+        // 기본 이메일이 중복되지 않으면 반환
+        const isDuplicate = await this.직원서비스.isEmailDuplicate(baseEmail);
+        if (!isDuplicate) {
+            return baseEmail;
+        }
+
+        // 중복이면 숫자를 붙여서 시도
+        let counter = 1;
+        let email = `${englishLastName}.${englishFirstName}${counter}@lumir.space`;
+
+        while (await this.직원서비스.isEmailDuplicate(email)) {
+            counter++;
+            email = `${englishLastName}.${englishFirstName}${counter}@lumir.space`;
+        }
+
+        return email;
     }
 
     /**
@@ -1236,6 +1280,8 @@ export class OrganizationManagementContextService {
         // employeeNumber?: string;
         name: string;
         email?: string;
+        englishLastName?: string;
+        englishFirstName?: string;
         phoneNumber?: string;
         dateOfBirth?: Date;
         gender?: Gender;
@@ -1247,18 +1293,23 @@ export class OrganizationManagementContextService {
         isManager?: boolean;
     }): Promise<{
         employee: Employee;
-        assignment?: EmployeeDepartmentPosition;
-        rankHistory?: EmployeeRankHistory;
+        department?: Department;
+        rank?: Rank;
     }> {
-        // TODO : 이메일 생성 관련 중복 처리 필요 및 요청 값 관련 확인 필요 (창욱프로님한테)
+        // 1. 전처리 (사번/이름/이메일 자동 생성)
+        const {
+            employeeNumber,
+            name,
+            email: generatedEmail,
+        } = await this.직원생성_전처리를_수행한다(data.name, data.englishLastName, data.englishFirstName);
 
-        // 1. 전처리 (사번/이름 자동 생성)
-        const { employeeNumber, name } = await this.직원생성_전처리를_수행한다(data.name);
+        // 전처리에서 생성된 이메일이 있으면 사용, 없으면 data.email 사용
+        const email = generatedEmail || data.email;
 
         // 2. 컨텍스트 검증 (중복, 존재 확인)
         await this.직원생성_컨텍스트_검증을_수행한다({
             employeeNumber,
-            email: data.email,
+            email: email,
             currentRankId: data.currentRankId,
             departmentId: data.departmentId,
             positionId: data.positionId,
@@ -1268,7 +1319,7 @@ export class OrganizationManagementContextService {
         const employee = await this.직원서비스.createEmployee({
             employeeNumber: employeeNumber,
             name: name,
-            email: data.email,
+            email: email,
             phoneNumber: data.phoneNumber,
             dateOfBirth: data.dateOfBirth,
             gender: data.gender,
@@ -1278,12 +1329,11 @@ export class OrganizationManagementContextService {
         });
 
         // 4. 배치 정보 완성도 확인 및 처리
-        let assignment: EmployeeDepartmentPosition | undefined;
         const shouldCreateAssignment = data.departmentId && data.positionId;
 
         if (shouldCreateAssignment) {
             // 부서에 배치
-            assignment = await this.직원을_부서에_배치한다({
+            await this.직원을_부서에_배치한다({
                 employeeId: employee.id,
                 departmentId: data.departmentId!,
                 positionId: data.positionId!,
@@ -1292,15 +1342,26 @@ export class OrganizationManagementContextService {
         }
 
         // 5. 직급 이력 생성 (직급 ID가 있는 경우)
-        let rankHistory: EmployeeRankHistory | undefined;
         if (data.currentRankId) {
-            rankHistory = await this.직원직급이력서비스.createHistory({
+            await this.직원직급이력서비스.createHistory({
                 employeeId: employee.id,
                 rankId: data.currentRankId,
             });
         }
 
-        return { employee, assignment, rankHistory };
+        // 6. 부서 및 직급 정보 조회
+        let department: Department | undefined;
+        let rank: Rank | undefined;
+
+        if (data.departmentId) {
+            department = await this.부서_ID로_부서를_조회한다(data.departmentId);
+        }
+
+        if (data.currentRankId) {
+            rank = await this.직급_ID로_직급을_조회한다(data.currentRankId);
+        }
+
+        return { employee, department, rank };
     }
 
     /**

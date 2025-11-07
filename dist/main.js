@@ -8619,8 +8619,8 @@ let OrganizationInformationApplicationController = class OrganizationInformation
             };
         }
     }
-    async 채용프로세스에_합격한_직원을_생성한다(createEmployeeDto) {
-        return await this.organizationInformationApplicationService.직원을_채용한다(createEmployeeDto);
+    async 채용프로세스에_합격한_직원을_생성한다(hireEmployeeDto) {
+        return await this.organizationInformationApplicationService.직원을_채용한다(hireEmployeeDto);
     }
     async 수습기간_평가_불합격으로_직원을_퇴사처리한다(terminateEmployeeDto) {
         return await this.organizationInformationApplicationService.직원을_퇴사처리한다(terminateEmployeeDto);
@@ -8829,20 +8829,20 @@ __decorate([
     __metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
 ], OrganizationInformationApplicationController.prototype, "executeMigrationCron", null);
 __decorate([
-    (0, common_1.Post)('employee'),
+    (0, common_1.Post)('employee/hire'),
     (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),
     (0, swagger_1.ApiOperation)({
-        summary: '채용 프로세스 완료 후 - 직원 생성',
+        summary: '채용 프로세스 완료 후 - 직원 채용',
         description: '새로운 직원을 생성합니다. 검증 규칙 4단계에 따라 완전한 검증을 수행합니다.',
     }),
     (0, swagger_1.ApiBody)({
-        type: dto_1.CreateEmployeeRequestDto,
+        type: dto_1.HireEmployeeRequestDto,
         description: '생성할 직원 정보',
     }),
     (0, swagger_1.ApiResponse)({
         status: common_1.HttpStatus.CREATED,
         description: '직원이 성공적으로 생성되었습니다.',
-        type: dto_1.CreateEmployeeResponseDto,
+        type: dto_1.HireEmployeeResponseDto,
     }),
     (0, swagger_1.ApiResponse)({
         status: common_1.HttpStatus.BAD_REQUEST,
@@ -8870,7 +8870,7 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_k = typeof dto_1.CreateEmployeeRequestDto !== "undefined" && dto_1.CreateEmployeeRequestDto) === "function" ? _k : Object]),
+    __metadata("design:paramtypes", [typeof (_k = typeof dto_1.HireEmployeeRequestDto !== "undefined" && dto_1.HireEmployeeRequestDto) === "function" ? _k : Object]),
     __metadata("design:returntype", typeof (_l = typeof Promise !== "undefined" && Promise) === "function" ? _l : Object)
 ], OrganizationInformationApplicationController.prototype, "\uCC44\uC6A9\uD504\uB85C\uC138\uC2A4\uC5D0_\uD569\uACA9\uD55C_\uC9C1\uC6D0\uC744_\uC0DD\uC131\uD55C\uB2E4", null);
 __decorate([
@@ -8983,178 +8983,6 @@ exports.OrganizationInformationApplicationController = OrganizationInformationAp
     (0, common_1.Controller)('organization'),
     __metadata("design:paramtypes", [typeof (_a = typeof organization_information_application_service_1.OrganizationInformationApplicationService !== "undefined" && organization_information_application_service_1.OrganizationInformationApplicationService) === "function" ? _a : Object, typeof (_b = typeof migration_service_1.MigrationService !== "undefined" && migration_service_1.MigrationService) === "function" ? _b : Object])
 ], OrganizationInformationApplicationController);
-
-
-/***/ }),
-
-/***/ "./src/modules/application/organization-information/dto/create-employee.dto.ts":
-/*!*************************************************************************************!*\
-  !*** ./src/modules/application/organization-information/dto/create-employee.dto.ts ***!
-  \*************************************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CreateEmployeeResponseDto = exports.CreateEmployeeRequestDto = void 0;
-const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const enums_1 = __webpack_require__(/*! ../../../../../libs/common/enums */ "./libs/common/enums/index.ts");
-class CreateEmployeeRequestDto {
-}
-exports.CreateEmployeeRequestDto = CreateEmployeeRequestDto;
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({
-        description: '사번 (미입력시 서버에서 자동 생성)',
-        example: '25001',
-        minLength: 5,
-        maxLength: 5,
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], CreateEmployeeRequestDto.prototype, "employeeNumber", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '이름',
-        example: '홍길동',
-        minLength: 1,
-        maxLength: 50,
-    }),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], CreateEmployeeRequestDto.prototype, "name", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({
-        description: '이메일 (선택사항, nullable)',
-        example: 'hong@company.com',
-        required: false,
-    }),
-    (0, class_validator_1.IsEmail)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], CreateEmployeeRequestDto.prototype, "email", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({
-        description: '전화번호',
-        example: '010-1234-5678',
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], CreateEmployeeRequestDto.prototype, "phoneNumber", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({
-        description: '생년월일 (YYYY-MM-DD)',
-        example: '1990-01-01',
-        type: 'string',
-        format: 'date',
-    }),
-    (0, class_validator_1.IsDateString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], CreateEmployeeRequestDto.prototype, "dateOfBirth", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({
-        description: '성별',
-        enum: enums_1.Gender,
-        example: enums_1.Gender.Male,
-    }),
-    (0, class_validator_1.IsEnum)(enums_1.Gender),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", typeof (_a = typeof enums_1.Gender !== "undefined" && enums_1.Gender) === "function" ? _a : Object)
-], CreateEmployeeRequestDto.prototype, "gender", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '입사일 (YYYY-MM-DD)',
-        example: '2025-01-01',
-        type: 'string',
-        format: 'date',
-    }),
-    (0, class_validator_1.IsDateString)(),
-    __metadata("design:type", String)
-], CreateEmployeeRequestDto.prototype, "hireDate", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({
-        description: '직원 상태',
-        enum: enums_1.EmployeeStatus,
-        example: enums_1.EmployeeStatus.Active,
-        default: enums_1.EmployeeStatus.Active,
-    }),
-    (0, class_validator_1.IsEnum)(enums_1.EmployeeStatus),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", typeof (_b = typeof enums_1.EmployeeStatus !== "undefined" && enums_1.EmployeeStatus) === "function" ? _b : Object)
-], CreateEmployeeRequestDto.prototype, "status", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({
-        description: '직급 ID',
-        example: 'rank-uuid',
-        format: 'uuid',
-    }),
-    (0, class_validator_1.IsUUID)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], CreateEmployeeRequestDto.prototype, "currentRankId", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({
-        description: '부서 ID (배치용)',
-        example: 'dept-uuid',
-        format: 'uuid',
-    }),
-    (0, class_validator_1.IsUUID)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], CreateEmployeeRequestDto.prototype, "departmentId", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({
-        description: '직책 ID (배치용)',
-        example: 'position-uuid',
-        format: 'uuid',
-    }),
-    (0, class_validator_1.IsUUID)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], CreateEmployeeRequestDto.prototype, "positionId", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({
-        description: '관리자 여부',
-        example: false,
-        default: false,
-    }),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", Boolean)
-], CreateEmployeeRequestDto.prototype, "isManager", void 0);
-class CreateEmployeeResponseDto {
-}
-exports.CreateEmployeeResponseDto = CreateEmployeeResponseDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '생성된 직원 정보',
-    }),
-    __metadata("design:type", Object)
-], CreateEmployeeResponseDto.prototype, "employee", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({
-        description: '부서 배치 정보 (부서ID가 제공된 경우)',
-    }),
-    __metadata("design:type", Object)
-], CreateEmployeeResponseDto.prototype, "assignment", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({
-        description: '직급 이력 (직급ID가 제공된 경우)',
-    }),
-    __metadata("design:type", Object)
-], CreateEmployeeResponseDto.prototype, "rankHistory", void 0);
 
 
 /***/ }),
@@ -9353,6 +9181,52 @@ __decorate([
 
 /***/ }),
 
+/***/ "./src/modules/application/organization-information/dto/employee-assignment.dto.ts":
+/*!*****************************************************************************************!*\
+  !*** ./src/modules/application/organization-information/dto/employee-assignment.dto.ts ***!
+  \*****************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EmployeeAssignmentDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+class EmployeeAssignmentDto {
+}
+exports.EmployeeAssignmentDto = EmployeeAssignmentDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '배치 ID' }),
+    __metadata("design:type", String)
+], EmployeeAssignmentDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '부서 ID' }),
+    __metadata("design:type", String)
+], EmployeeAssignmentDto.prototype, "departmentId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직책 ID' }),
+    __metadata("design:type", String)
+], EmployeeAssignmentDto.prototype, "positionId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '관리자 여부' }),
+    __metadata("design:type", Boolean)
+], EmployeeAssignmentDto.prototype, "isManager", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '생성일' }),
+    __metadata("design:type", String)
+], EmployeeAssignmentDto.prototype, "createdAt", void 0);
+
+
+/***/ }),
+
 /***/ "./src/modules/application/organization-information/dto/employee-managers-response.dto.ts":
 /*!************************************************************************************************!*\
   !*** ./src/modules/application/organization-information/dto/employee-managers-response.dto.ts ***!
@@ -9483,6 +9357,48 @@ __decorate([
     (0, swagger_1.ApiProperty)({ description: '총 직원 수' }),
     __metadata("design:type", Number)
 ], EmployeesManagersResponseDto.prototype, "total", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/organization-information/dto/employee-rank-history.dto.ts":
+/*!*******************************************************************************************!*\
+  !*** ./src/modules/application/organization-information/dto/employee-rank-history.dto.ts ***!
+  \*******************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EmployeeRankHistoryDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+class EmployeeRankHistoryDto {
+}
+exports.EmployeeRankHistoryDto = EmployeeRankHistoryDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '이력 ID' }),
+    __metadata("design:type", String)
+], EmployeeRankHistoryDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직원 ID' }),
+    __metadata("design:type", String)
+], EmployeeRankHistoryDto.prototype, "employeeId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직급 ID' }),
+    __metadata("design:type", String)
+], EmployeeRankHistoryDto.prototype, "rankId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '생성일' }),
+    __metadata("design:type", String)
+], EmployeeRankHistoryDto.prototype, "createdAt", void 0);
 
 
 /***/ }),
@@ -10048,6 +9964,232 @@ __decorate([
 
 /***/ }),
 
+/***/ "./src/modules/application/organization-information/dto/hire-employee.dto.ts":
+/*!***********************************************************************************!*\
+  !*** ./src/modules/application/organization-information/dto/hire-employee.dto.ts ***!
+  \***********************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b, _c, _d;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.HireEmployeeResponseDto = exports.HireEmployeeRequestDto = void 0;
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const class_transformer_1 = __webpack_require__(/*! class-transformer */ "class-transformer");
+const enums_1 = __webpack_require__(/*! ../../../../../libs/common/enums */ "./libs/common/enums/index.ts");
+const hired_employee_dto_1 = __webpack_require__(/*! ./hired-employee.dto */ "./src/modules/application/organization-information/dto/hired-employee.dto.ts");
+const employee_response_dto_1 = __webpack_require__(/*! ./employee-response.dto */ "./src/modules/application/organization-information/dto/employee-response.dto.ts");
+class HireEmployeeRequestDto {
+}
+exports.HireEmployeeRequestDto = HireEmployeeRequestDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '한글이름',
+        example: '홍길동',
+        minLength: 1,
+        maxLength: 50,
+    }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], HireEmployeeRequestDto.prototype, "koreanName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '영어이름',
+        example: 'Gildong',
+        minLength: 1,
+        maxLength: 50,
+    }),
+    (0, class_transformer_1.Transform)(({ value }) => (typeof value === 'string' ? value.toLowerCase() : value)),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], HireEmployeeRequestDto.prototype, "englishFirstName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '영어성',
+        example: 'Hong',
+        minLength: 1,
+        maxLength: 50,
+    }),
+    (0, class_transformer_1.Transform)(({ value }) => (typeof value === 'string' ? value.toLowerCase() : value)),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], HireEmployeeRequestDto.prototype, "englishLastName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '입사일 (YYYY-MM-DD)',
+        example: '2025-01-01',
+        type: 'string',
+        format: 'date',
+    }),
+    (0, class_validator_1.IsDateString)(),
+    __metadata("design:type", String)
+], HireEmployeeRequestDto.prototype, "hireDate", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '부서 ID',
+        example: 'dept-uuid',
+        format: 'uuid',
+    }),
+    (0, class_validator_1.IsUUID)(),
+    __metadata("design:type", String)
+], HireEmployeeRequestDto.prototype, "departmentId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '직급 ID',
+        example: 'rank-uuid',
+        format: 'uuid',
+    }),
+    (0, class_validator_1.IsUUID)(),
+    __metadata("design:type", String)
+], HireEmployeeRequestDto.prototype, "rankId", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        description: '전화번호',
+        example: '010-1234-5678',
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], HireEmployeeRequestDto.prototype, "phoneNumber", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        description: '생년월일 (YYYY-MM-DD)',
+        example: '1990-01-01',
+        type: 'string',
+        format: 'date',
+    }),
+    (0, class_validator_1.IsDateString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], HireEmployeeRequestDto.prototype, "dateOfBirth", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        description: '성별',
+        enum: enums_1.Gender,
+        example: enums_1.Gender.Male,
+    }),
+    (0, class_validator_1.IsEnum)(enums_1.Gender),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", typeof (_a = typeof enums_1.Gender !== "undefined" && enums_1.Gender) === "function" ? _a : Object)
+], HireEmployeeRequestDto.prototype, "gender", void 0);
+class HireEmployeeResponseDto {
+}
+exports.HireEmployeeResponseDto = HireEmployeeResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '생성된 직원 정보',
+        type: hired_employee_dto_1.HiredEmployeeDto,
+    }),
+    __metadata("design:type", typeof (_b = typeof hired_employee_dto_1.HiredEmployeeDto !== "undefined" && hired_employee_dto_1.HiredEmployeeDto) === "function" ? _b : Object)
+], HireEmployeeResponseDto.prototype, "employee", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        description: '부서 정보 (부서ID가 제공된 경우)',
+        type: employee_response_dto_1.DepartmentDetailDto,
+    }),
+    __metadata("design:type", typeof (_c = typeof employee_response_dto_1.DepartmentDetailDto !== "undefined" && employee_response_dto_1.DepartmentDetailDto) === "function" ? _c : Object)
+], HireEmployeeResponseDto.prototype, "department", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        description: '직급 정보 (직급ID가 제공된 경우)',
+        type: employee_response_dto_1.RankDetailDto,
+    }),
+    __metadata("design:type", typeof (_d = typeof employee_response_dto_1.RankDetailDto !== "undefined" && employee_response_dto_1.RankDetailDto) === "function" ? _d : Object)
+], HireEmployeeResponseDto.prototype, "rank", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/application/organization-information/dto/hired-employee.dto.ts":
+/*!************************************************************************************!*\
+  !*** ./src/modules/application/organization-information/dto/hired-employee.dto.ts ***!
+  \************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.HiredEmployeeDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const enums_1 = __webpack_require__(/*! ../../../../../libs/common/enums */ "./libs/common/enums/index.ts");
+class HiredEmployeeDto {
+}
+exports.HiredEmployeeDto = HiredEmployeeDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직원 ID' }),
+    __metadata("design:type", String)
+], HiredEmployeeDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '사번' }),
+    __metadata("design:type", String)
+], HiredEmployeeDto.prototype, "employeeNumber", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '이름' }),
+    __metadata("design:type", String)
+], HiredEmployeeDto.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '이메일' }),
+    __metadata("design:type", String)
+], HiredEmployeeDto.prototype, "email", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '전화번호' }),
+    __metadata("design:type", String)
+], HiredEmployeeDto.prototype, "phoneNumber", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '생년월일' }),
+    __metadata("design:type", String)
+], HiredEmployeeDto.prototype, "dateOfBirth", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '성별', enum: enums_1.Gender }),
+    __metadata("design:type", typeof (_a = typeof enums_1.Gender !== "undefined" && enums_1.Gender) === "function" ? _a : Object)
+], HiredEmployeeDto.prototype, "gender", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '입사일' }),
+    __metadata("design:type", String)
+], HiredEmployeeDto.prototype, "hireDate", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '직원 상태', enum: enums_1.EmployeeStatus }),
+    __metadata("design:type", typeof (_b = typeof enums_1.EmployeeStatus !== "undefined" && enums_1.EmployeeStatus) === "function" ? _b : Object)
+], HiredEmployeeDto.prototype, "status", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '현재 직급 ID' }),
+    __metadata("design:type", String)
+], HiredEmployeeDto.prototype, "currentRankId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '초기 비밀번호 설정 여부' }),
+    __metadata("design:type", Boolean)
+], HiredEmployeeDto.prototype, "isInitialPasswordSet", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '생성일' }),
+    __metadata("design:type", String)
+], HiredEmployeeDto.prototype, "createdAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '수정일' }),
+    __metadata("design:type", String)
+], HiredEmployeeDto.prototype, "updatedAt", void 0);
+
+
+/***/ }),
+
 /***/ "./src/modules/application/organization-information/dto/index.ts":
 /*!***********************************************************************!*\
   !*** ./src/modules/application/organization-information/dto/index.ts ***!
@@ -10076,7 +10218,10 @@ __exportStar(__webpack_require__(/*! ./employees-request.dto */ "./src/modules/a
 __exportStar(__webpack_require__(/*! ./employees-response.dto */ "./src/modules/application/organization-information/dto/employees-response.dto.ts"), exports);
 __exportStar(__webpack_require__(/*! ./department-hierarchy-request.dto */ "./src/modules/application/organization-information/dto/department-hierarchy-request.dto.ts"), exports);
 __exportStar(__webpack_require__(/*! ./department-hierarchy-response.dto */ "./src/modules/application/organization-information/dto/department-hierarchy-response.dto.ts"), exports);
-__exportStar(__webpack_require__(/*! ./create-employee.dto */ "./src/modules/application/organization-information/dto/create-employee.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./hire-employee.dto */ "./src/modules/application/organization-information/dto/hire-employee.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./hired-employee.dto */ "./src/modules/application/organization-information/dto/hired-employee.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./employee-assignment.dto */ "./src/modules/application/organization-information/dto/employee-assignment.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./employee-rank-history.dto */ "./src/modules/application/organization-information/dto/employee-rank-history.dto.ts"), exports);
 __exportStar(__webpack_require__(/*! ./terminate-employee.dto */ "./src/modules/application/organization-information/dto/terminate-employee.dto.ts"), exports);
 __exportStar(__webpack_require__(/*! ./export-all-data.dto */ "./src/modules/application/organization-information/dto/export-all-data.dto.ts"), exports);
 __exportStar(__webpack_require__(/*! ./employee-managers-response.dto */ "./src/modules/application/organization-information/dto/employee-managers-response.dto.ts"), exports);
@@ -10242,6 +10387,7 @@ exports.OrganizationInformationApplicationService = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const organization_management_context_service_1 = __webpack_require__(/*! ../../context/organization-management/organization-management-context.service */ "./src/modules/context/organization-management/organization-management-context.service.ts");
 const entities_1 = __webpack_require__(/*! ../../../../libs/database/entities */ "./libs/database/entities/index.ts");
+const enums_1 = __webpack_require__(/*! libs/common/enums */ "./libs/common/enums/index.ts");
 let OrganizationInformationApplicationService = class OrganizationInformationApplicationService {
     constructor(organizationContextService) {
         this.organizationContextService = organizationContextService;
@@ -10460,22 +10606,24 @@ let OrganizationInformationApplicationService = class OrganizationInformationApp
             maxDepthCalculated,
         };
     }
-    async 직원을_채용한다(createDto) {
+    async 직원을_채용한다(hireEmployeeDto) {
         try {
-            const hireDate = new Date(createDto.hireDate);
-            const dateOfBirth = createDto.dateOfBirth ? new Date(createDto.dateOfBirth) : undefined;
+            const hireDate = new Date(hireEmployeeDto.hireDate);
+            const dateOfBirth = hireEmployeeDto.dateOfBirth ? new Date(hireEmployeeDto.dateOfBirth) : undefined;
+            const lowestPosition = await this.organizationContextService.가장_낮은_직책을_조회한다();
+            const positionId = lowestPosition.id;
             const result = await this.organizationContextService.직원을_생성한다({
-                name: createDto.name,
-                email: createDto.email,
-                phoneNumber: createDto.phoneNumber,
+                name: hireEmployeeDto.koreanName,
+                englishLastName: hireEmployeeDto.englishLastName,
+                englishFirstName: hireEmployeeDto.englishFirstName,
+                phoneNumber: hireEmployeeDto.phoneNumber,
                 dateOfBirth,
-                gender: createDto.gender,
+                gender: hireEmployeeDto.gender,
                 hireDate,
-                status: createDto.status,
-                currentRankId: createDto.currentRankId,
-                departmentId: createDto.departmentId,
-                positionId: createDto.positionId,
-                isManager: createDto.isManager,
+                status: enums_1.EmployeeStatus.Active,
+                currentRankId: hireEmployeeDto.rankId,
+                departmentId: hireEmployeeDto.departmentId,
+                positionId: positionId,
             });
             return this.직원생성결과를_응답DTO로_변환한다(result);
         }
@@ -10484,39 +10632,29 @@ let OrganizationInformationApplicationService = class OrganizationInformationApp
         }
     }
     직원생성결과를_응답DTO로_변환한다(result) {
-        const response = {
-            employee: {
-                id: result.employee.id,
-                employeeNumber: result.employee.employeeNumber,
-                name: result.employee.name,
-                email: result.employee.email,
-                phoneNumber: result.employee.phoneNumber,
-                dateOfBirth: result.employee.dateOfBirth?.toISOString().split('T')[0],
-                gender: result.employee.gender,
-                hireDate: result.employee.hireDate.toISOString().split('T')[0],
-                status: result.employee.status,
-                currentRankId: result.employee.currentRankId,
-                isInitialPasswordSet: result.employee.isInitialPasswordSet,
-                createdAt: result.employee.createdAt,
-                updatedAt: result.employee.updatedAt,
-            },
+        const employee = {
+            id: result.employee.id,
+            employeeNumber: result.employee.employeeNumber,
+            name: result.employee.name,
+            email: result.employee.email,
+            phoneNumber: result.employee.phoneNumber,
+            dateOfBirth: result.employee.dateOfBirth?.toISOString().split('T')[0],
+            gender: result.employee.gender,
+            hireDate: result.employee.hireDate.toISOString().split('T')[0],
+            status: result.employee.status,
+            currentRankId: result.employee.currentRankId,
+            isInitialPasswordSet: result.employee.isInitialPasswordSet,
+            createdAt: result.employee.createdAt,
+            updatedAt: result.employee.updatedAt,
         };
-        if (result.assignment) {
-            response.assignment = {
-                id: result.assignment.id,
-                departmentId: result.assignment.departmentId,
-                positionId: result.assignment.positionId,
-                isManager: result.assignment.isManager,
-                createdAt: result.assignment.createdAt,
-            };
+        const response = {
+            employee,
+        };
+        if (result.department) {
+            response.department = this.부서_정보를_매핑한다(result.department);
         }
-        if (result.rankHistory) {
-            response.rankHistory = {
-                id: result.rankHistory.id,
-                employeeId: result.rankHistory.employeeId,
-                rankId: result.rankHistory.rankId,
-                createdAt: result.rankHistory.createdAt,
-            };
+        if (result.rank) {
+            response.rank = this.직급_정보를_매핑한다(result.rank);
         }
         return response;
     }
@@ -13293,6 +13431,13 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
     async 직책_ID로_직책을_조회한다(positionId) {
         return this.직책서비스.findById(positionId);
     }
+    async 가장_낮은_직책을_조회한다() {
+        const position = await this.직책서비스.findLowestPosition();
+        if (!position) {
+            throw new common_1.NotFoundException('직책을 찾을 수 없습니다.');
+        }
+        return position;
+    }
     async 모든_직급을_조회한다() {
         return this.직급서비스.findAllRanks();
     }
@@ -13832,13 +13977,32 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
         collectIds(departments);
         return departmentIds;
     }
-    async 직원생성_전처리를_수행한다(name) {
+    async 직원생성_전처리를_수행한다(name, englishLastName, englishFirstName) {
         const employeeNumber = await this.직원서비스.generateNextEmployeeNumber();
         const uniqueName = await this.직원서비스.generateUniqueEmployeeName(name);
+        let email;
+        if (englishLastName && englishFirstName) {
+            email = await this.고유한_이메일을_생성한다(englishLastName, englishFirstName);
+        }
         return {
             employeeNumber,
             name: uniqueName,
+            email,
         };
+    }
+    async 고유한_이메일을_생성한다(englishLastName, englishFirstName) {
+        const baseEmail = `${englishLastName}.${englishFirstName}@lumir.space`;
+        const isDuplicate = await this.직원서비스.isEmailDuplicate(baseEmail);
+        if (!isDuplicate) {
+            return baseEmail;
+        }
+        let counter = 1;
+        let email = `${englishLastName}.${englishFirstName}${counter}@lumir.space`;
+        while (await this.직원서비스.isEmailDuplicate(email)) {
+            counter++;
+            email = `${englishLastName}.${englishFirstName}${counter}@lumir.space`;
+        }
+        return email;
     }
     async 직원생성_컨텍스트_검증을_수행한다(data) {
         this.직원검증서비스.validateEmployeeCreation({
@@ -13869,10 +14033,11 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
         }
     }
     async 직원을_생성한다(data) {
-        const { employeeNumber, name } = await this.직원생성_전처리를_수행한다(data.name);
+        const { employeeNumber, name, email: generatedEmail, } = await this.직원생성_전처리를_수행한다(data.name, data.englishLastName, data.englishFirstName);
+        const email = generatedEmail || data.email;
         await this.직원생성_컨텍스트_검증을_수행한다({
             employeeNumber,
-            email: data.email,
+            email: email,
             currentRankId: data.currentRankId,
             departmentId: data.departmentId,
             positionId: data.positionId,
@@ -13880,7 +14045,7 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
         const employee = await this.직원서비스.createEmployee({
             employeeNumber: employeeNumber,
             name: name,
-            email: data.email,
+            email: email,
             phoneNumber: data.phoneNumber,
             dateOfBirth: data.dateOfBirth,
             gender: data.gender,
@@ -13888,24 +14053,30 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
             status: data.status || enums_1.EmployeeStatus.Active,
             currentRankId: data.currentRankId,
         });
-        let assignment;
         const shouldCreateAssignment = data.departmentId && data.positionId;
         if (shouldCreateAssignment) {
-            assignment = await this.직원을_부서에_배치한다({
+            await this.직원을_부서에_배치한다({
                 employeeId: employee.id,
                 departmentId: data.departmentId,
                 positionId: data.positionId,
                 isManager: data.isManager,
             });
         }
-        let rankHistory;
         if (data.currentRankId) {
-            rankHistory = await this.직원직급이력서비스.createHistory({
+            await this.직원직급이력서비스.createHistory({
                 employeeId: employee.id,
                 rankId: data.currentRankId,
             });
         }
-        return { employee, assignment, rankHistory };
+        let department;
+        let rank;
+        if (data.departmentId) {
+            department = await this.부서_ID로_부서를_조회한다(data.departmentId);
+        }
+        if (data.currentRankId) {
+            rank = await this.직급_ID로_직급을_조회한다(data.currentRankId);
+        }
+        return { employee, department, rank };
     }
     async 직원을_퇴사처리한다(data) {
         const employee = await this.직원을_조회한다(data.employeeIdentifier);
@@ -17722,6 +17893,11 @@ let DomainPositionService = class DomainPositionService extends base_service_1.B
             .andWhere('position.level <= :maxLevel', { maxLevel })
             .orderBy('position.level', 'ASC')
             .getMany();
+    }
+    async findLowestPosition() {
+        const queryBuilder = this.positionRepository.createQueryBuilder('position');
+        const result = await queryBuilder.orderBy('position.level', 'DESC').limit(1).getOne();
+        return result;
     }
     async changeLevel(positionId, newLevel) {
         const currentPosition = await this.findById(positionId);
