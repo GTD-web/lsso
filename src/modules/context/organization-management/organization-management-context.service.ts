@@ -1652,7 +1652,24 @@ export class OrganizationManagementContextService {
             throw new Error('이미 존재하는 직책 코드입니다.');
         }
 
-        // 2. 직책 생성
+        // 2. level 검증
+        // 2-1. 동일한 level이 있는지 확인
+        const existingPosition = await this.직책서비스.findOneByLevel(직책정보.level);
+        if (existingPosition) {
+            throw new BadRequestException(`이미 존재하는 level입니다: ${직책정보.level}`);
+        }
+
+        // 2-2. 최대 level 값 조회
+        const allPositions = await this.직책서비스.findAllPositions();
+        const maxLevel = allPositions.length > 0 ? Math.max(...allPositions.map((p) => p.level)) : 0;
+
+        // 2-3. 새로운 level이 maxLevel + 1인지 확인
+        const expectedLevel = maxLevel + 1;
+        if (직책정보.level !== expectedLevel) {
+            throw new BadRequestException(`level은 ${expectedLevel}이어야 합니다. (현재 최대 level: ${maxLevel})`);
+        }
+
+        // 3. 직책 생성
         return await this.직책서비스.createPosition({
             positionTitle: 직책정보.positionTitle,
             positionCode: 직책정보.positionCode,
