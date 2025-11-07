@@ -13590,8 +13590,9 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
         const failIds = [];
         const errors = [];
         for (const employeeId of employeeIds) {
+            let employee = null;
             try {
-                await this.직원을_조회한다(employeeId);
+                employee = await this.직원을_조회한다(employeeId);
                 const existingAssignments = await this.직원부서직책서비스.findAllByEmployeeId(employeeId);
                 let departmentAssignment = null;
                 for (const assignment of existingAssignments) {
@@ -13617,6 +13618,7 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
                 failIds.push(employeeId);
                 errors.push({
                     employeeId,
+                    name: employee?.name,
                     message: error.message || '알 수 없는 오류',
                 });
             }
@@ -13644,8 +13646,9 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
         const failIds = [];
         const errors = [];
         for (const employeeId of employeeIds) {
+            let employee = null;
             try {
-                const employee = await this.직원을_조회한다(employeeId);
+                employee = await this.직원을_조회한다(employeeId);
                 const existingAssignments = await this.직원부서직책서비스.findAllByEmployeeId(employeeId);
                 let teamAssignment = null;
                 for (const assignment of existingAssignments) {
@@ -13672,6 +13675,7 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
                 failIds.push(employeeId);
                 errors.push({
                     employeeId,
+                    name: employee?.name,
                     message: error.message || '알 수 없는 오류',
                 });
             }
@@ -13690,8 +13694,9 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
         const failIds = [];
         const errors = [];
         for (const employeeId of employeeIds) {
+            let employee = null;
             try {
-                await this.직원을_조회한다(employeeId);
+                employee = await this.직원을_조회한다(employeeId);
                 const existingAssignments = await this.직원부서직책서비스.findAllByEmployeeId(employeeId);
                 let departmentAssignment = null;
                 for (const assignment of existingAssignments) {
@@ -13717,6 +13722,7 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
                 failIds.push(employeeId);
                 errors.push({
                     employeeId,
+                    name: employee?.name,
                     message: error.message || '알 수 없는 오류',
                 });
             }
@@ -13735,8 +13741,9 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
         const failIds = [];
         const errors = [];
         for (const employeeId of employeeIds) {
+            let employee = null;
             try {
-                await this.직원을_조회한다(employeeId);
+                employee = await this.직원을_조회한다(employeeId);
                 await this.직원의_직급을_변경한다(employeeId, rankId);
                 successIds.push(employeeId);
             }
@@ -13744,6 +13751,7 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
                 failIds.push(employeeId);
                 errors.push({
                     employeeId,
+                    name: employee?.name,
                     message: error.message || '알 수 없는 오류',
                 });
             }
@@ -13761,8 +13769,9 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
         const failIds = [];
         const errors = [];
         for (const employeeId of employeeIds) {
+            let employee = null;
             try {
-                await this.직원을_조회한다(employeeId);
+                employee = await this.직원을_조회한다(employeeId);
                 await this.직원서비스.updateEmployee(employeeId, {
                     status,
                     terminationDate: status === enums_1.EmployeeStatus.Terminated ? terminationDate : null,
@@ -13778,6 +13787,7 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
                 failIds.push(employeeId);
                 errors.push({
                     employeeId,
+                    name: employee?.name,
                     message: error.message || '알 수 없는 오류',
                 });
             }

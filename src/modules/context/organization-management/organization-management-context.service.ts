@@ -542,7 +542,7 @@ export class OrganizationManagementContextService {
         failCount: number;
         successIds: string[];
         failIds: string[];
-        errors: { employeeId: string; message: string }[];
+        errors: { employeeId: string; name?: string; message: string }[];
     }> {
         // 부서 존재 검증
         const department = await this.부서서비스.findById(departmentId);
@@ -554,12 +554,13 @@ export class OrganizationManagementContextService {
 
         const successIds: string[] = [];
         const failIds: string[] = [];
-        const errors: { employeeId: string; message: string }[] = [];
+        const errors: { employeeId: string; name?: string; message: string }[] = [];
 
         for (const employeeId of employeeIds) {
+            let employee: Employee | null = null;
             try {
                 // 직원 존재 확인
-                await this.직원을_조회한다(employeeId);
+                employee = await this.직원을_조회한다(employeeId);
 
                 // 기존 DEPARTMENT 타입 배치 조회
                 const existingAssignments = await this.직원부서직책서비스.findAllByEmployeeId(employeeId);
@@ -590,6 +591,7 @@ export class OrganizationManagementContextService {
                 failIds.push(employeeId);
                 errors.push({
                     employeeId,
+                    name: employee?.name,
                     message: error.message || '알 수 없는 오류',
                 });
             }
@@ -616,7 +618,7 @@ export class OrganizationManagementContextService {
         failCount: number;
         successIds: string[];
         failIds: string[];
-        errors: { employeeId: string; message: string }[];
+        errors: { employeeId: string; name?: string; message: string }[];
     }> {
         // 팀 존재 및 타입 검증
         const team = await this.부서서비스.findById(teamId);
@@ -636,12 +638,13 @@ export class OrganizationManagementContextService {
 
         const successIds: string[] = [];
         const failIds: string[] = [];
-        const errors: { employeeId: string; message: string }[] = [];
+        const errors: { employeeId: string; name?: string; message: string }[] = [];
 
         for (const employeeId of employeeIds) {
+            let employee: Employee | null = null;
             try {
                 // 직원 존재 확인
-                const employee = await this.직원을_조회한다(employeeId);
+                employee = await this.직원을_조회한다(employeeId);
 
                 // 기존 TEAM 타입 배치 조회
                 const existingAssignments = await this.직원부서직책서비스.findAllByEmployeeId(employeeId);
@@ -673,6 +676,7 @@ export class OrganizationManagementContextService {
                 failIds.push(employeeId);
                 errors.push({
                     employeeId,
+                    name: employee?.name,
                     message: error.message || '알 수 없는 오류',
                 });
             }
@@ -699,19 +703,20 @@ export class OrganizationManagementContextService {
         failCount: number;
         successIds: string[];
         failIds: string[];
-        errors: { employeeId: string; message: string }[];
+        errors: { employeeId: string; name?: string; message: string }[];
     }> {
         // 직책 존재 검증
         await this.직책서비스.findById(positionId);
 
         const successIds: string[] = [];
         const failIds: string[] = [];
-        const errors: { employeeId: string; message: string }[] = [];
+        const errors: { employeeId: string; name?: string; message: string }[] = [];
 
         for (const employeeId of employeeIds) {
+            let employee: Employee | null = null;
             try {
                 // 직원 존재 확인
-                await this.직원을_조회한다(employeeId);
+                employee = await this.직원을_조회한다(employeeId);
 
                 // 기존 DEPARTMENT 타입 배치 조회
                 const existingAssignments = await this.직원부서직책서비스.findAllByEmployeeId(employeeId);
@@ -742,6 +747,7 @@ export class OrganizationManagementContextService {
                 failIds.push(employeeId);
                 errors.push({
                     employeeId,
+                    name: employee?.name,
                     message: error.message || '알 수 없는 오류',
                 });
             }
@@ -767,19 +773,20 @@ export class OrganizationManagementContextService {
         failCount: number;
         successIds: string[];
         failIds: string[];
-        errors: { employeeId: string; message: string }[];
+        errors: { employeeId: string; name?: string; message: string }[];
     }> {
         // 직급 존재 검증
         await this.직급서비스.findById(rankId);
 
         const successIds: string[] = [];
         const failIds: string[] = [];
-        const errors: { employeeId: string; message: string }[] = [];
+        const errors: { employeeId: string; name?: string; message: string }[] = [];
 
         for (const employeeId of employeeIds) {
+            let employee: Employee | null = null;
             try {
                 // 직원 존재 확인
-                await this.직원을_조회한다(employeeId);
+                employee = await this.직원을_조회한다(employeeId);
 
                 // 직급 변경
                 await this.직원의_직급을_변경한다(employeeId, rankId);
@@ -789,6 +796,7 @@ export class OrganizationManagementContextService {
                 failIds.push(employeeId);
                 errors.push({
                     employeeId,
+                    name: employee?.name,
                     message: error.message || '알 수 없는 오류',
                 });
             }
@@ -815,16 +823,17 @@ export class OrganizationManagementContextService {
         failCount: number;
         successIds: string[];
         failIds: string[];
-        errors: { employeeId: string; message: string }[];
+        errors: { employeeId: string; name?: string; message: string }[];
     }> {
         const successIds: string[] = [];
         const failIds: string[] = [];
-        const errors: { employeeId: string; message: string }[] = [];
+        const errors: { employeeId: string; name?: string; message: string }[] = [];
 
         for (const employeeId of employeeIds) {
+            let employee: Employee | null = null;
             try {
                 // 직원 존재 확인
-                await this.직원을_조회한다(employeeId);
+                employee = await this.직원을_조회한다(employeeId);
 
                 // 재직상태 변경
                 await this.직원서비스.updateEmployee(employeeId, {
@@ -844,6 +853,7 @@ export class OrganizationManagementContextService {
                 failIds.push(employeeId);
                 errors.push({
                     employeeId,
+                    name: employee?.name,
                     message: error.message || '알 수 없는 오류',
                 });
             }
