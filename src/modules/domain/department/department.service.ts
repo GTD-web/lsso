@@ -199,7 +199,7 @@ export class DomainDepartmentService extends BaseService<Department> {
             queryBuilder.where('department.parentDepartmentId = :parentDepartmentId', { parentDepartmentId });
         }
 
-        return (await queryBuilder.getCount()) - 1;
+        return queryBuilder.getCount();
     }
 
     /**

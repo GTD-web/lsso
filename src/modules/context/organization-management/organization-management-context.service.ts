@@ -1600,7 +1600,7 @@ export class OrganizationManagementContextService {
         // 순서 범위 검증: 최소값은 0, 최대값은 개수
         // 예: 5개밖에 없는데 25번째로 설정하려고 하면 자동으로 5로 변경
         const minOrderValue = 0;
-        const maxOrderValue = departmentCount > 0 ? departmentCount : 0;
+        const maxOrderValue = departmentCount - 1 > 0 ? departmentCount - 1 : 0;
 
         // 순서 범위 조정
         if (newOrder < minOrderValue) {

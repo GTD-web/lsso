@@ -14206,7 +14206,7 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
         const parentDepartmentId = department.parentDepartmentId || null;
         const departmentCount = await this.부서서비스.countByParentDepartmentId(parentDepartmentId);
         const minOrderValue = 0;
-        const maxOrderValue = departmentCount > 0 ? departmentCount : 0;
+        const maxOrderValue = departmentCount - 1 > 0 ? departmentCount - 1 : 0;
         if (newOrder < minOrderValue) {
             newOrder = minOrderValue;
         }
@@ -15126,7 +15126,7 @@ let DomainDepartmentService = DomainDepartmentService_1 = class DomainDepartment
         else {
             queryBuilder.where('department.parentDepartmentId = :parentDepartmentId', { parentDepartmentId });
         }
-        return (await queryBuilder.getCount()) - 1;
+        return queryBuilder.getCount();
     }
     async getNextOrderForParent(parentDepartmentId) {
         const count = await this.countByParentDepartmentId(parentDepartmentId);
