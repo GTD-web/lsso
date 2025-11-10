@@ -61,6 +61,21 @@ export class OrganizationController {
         return this.organizationApplicationService.부서_계층구조별_직원정보를_조회한다();
     }
 
+    @Get('terminated-employees')
+    @ApiOperation({
+        summary: '퇴사자 부서와 퇴사자 목록 조회',
+        description: '퇴사자 부서와 그 아래 배치된 모든 퇴사자들의 목록을 조회합니다.',
+    })
+    @ApiResponse({
+        status: 200,
+        description: '퇴사자 부서와 퇴사자 목록 조회 성공',
+        type: DepartmentHierarchyResponseDto,
+    })
+    @ApiResponse({ status: 404, description: '퇴사자 부서를 찾을 수 없음' })
+    async getTerminatedEmployees(): Promise<DepartmentHierarchyResponseDto> {
+        return this.organizationApplicationService.퇴사자부서_직원목록을_조회한다();
+    }
+
     // 부서 관리 API
     @Get('departments')
     @ApiOperation({ summary: '부서 목록 조회', description: '전체 부서 목록을 계층구조로 조회합니다.' })

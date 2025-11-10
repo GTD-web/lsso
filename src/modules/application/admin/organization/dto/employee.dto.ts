@@ -196,6 +196,9 @@ export class AdminEmployeeResponseDto {
     @ApiProperty({ description: '퇴사일', required: false })
     terminationDate?: Date;
 
+    @ApiPropertyOptional({ description: '메타데이터', type: 'object', required: false })
+    metadata?: Record<string, any>;
+
     @ApiProperty({ description: '초기 비밀번호 설정 여부' })
     isInitialPasswordSet: boolean;
 
@@ -276,6 +279,9 @@ export class EmployeeDetailInfoDto {
 
     @ApiProperty({ description: '퇴사일', required: false })
     terminationDate?: Date;
+
+    @ApiPropertyOptional({ description: '메타데이터', type: 'object', required: false })
+    metadata?: Record<string, any>;
 
     @ApiProperty({ description: '초기 비밀번호 설정 여부' })
     isInitialPasswordSet: boolean;

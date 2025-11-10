@@ -62,6 +62,32 @@ export class OrganizationApplicationService {
         return { departments: departments.filter((department) => department.parentDepartmentId === null) };
     }
 
+    // 퇴사자 부서와 퇴사자 목록 조회
+    async 퇴사자부서_직원목록을_조회한다(): Promise<DepartmentHierarchyResponseDto> {
+        // 퇴사자 부서 찾기
+        const terminatedDepartment = await this.organizationContextService.부서_코드로_부서를_조회한다('퇴사자');
+        if (!terminatedDepartment) {
+            return { departments: [] };
+        }
+
+        // 퇴사자 부서를 기준으로 계층구조 조회 (퇴사자만 포함)
+        const result = await this.organizationContextService.부서_계층구조별_직원정보를_조회한다(
+            terminatedDepartment.id, // rootDepartmentId
+            undefined, // maxDepth
+            true, // withEmployeeDetail
+            true, // includeTerminated (퇴사자만 조회)
+            true, // includeEmptyDepartments
+        );
+
+        const departments = this.부서_계층구조를_직원정보와_함께_변환한다(
+            result.departments,
+            result.employeesByDepartment,
+            result.departmentDetails,
+        );
+
+        return { departments };
+    }
+
     // 부서 관리 함수들
     async 부서목록조회(): Promise<DepartmentListResponseDto> {
         const departments = await this.organizationContextService.부서_계층구조를_조회한다();
@@ -433,6 +459,7 @@ export class OrganizationApplicationService {
         status: employee.status,
         currentRankId: employee.currentRankId,
         terminationDate: employee.terminationDate,
+        metadata: employee.metadata,
         isInitialPasswordSet: employee.isInitialPasswordSet,
         createdAt: employee.createdAt,
         updatedAt: employee.updatedAt,
@@ -508,6 +535,7 @@ export class OrganizationApplicationService {
         status: employeeWithDetails.status,
         currentRankId: employeeWithDetails.currentRankId,
         terminationDate: employeeWithDetails.terminationDate,
+        metadata: employeeWithDetails.metadata,
         isInitialPasswordSet: employeeWithDetails.isInitialPasswordSet,
         createdAt: employeeWithDetails.createdAt,
         updatedAt: employeeWithDetails.updatedAt,
