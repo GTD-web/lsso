@@ -1593,25 +1593,39 @@ export class OrganizationManagementContextService {
 
         const currentOrder = department.order;
 
-        // 2. 순서가 같으면 변경할 필요 없음
+        // 2. 같은 부모를 가진 부서들의 개수 확인 및 순서 범위 검증
+        const parentDepartmentId = department.parentDepartmentId || null;
+        const departmentCount = await this.부서서비스.countByParentDepartmentId(parentDepartmentId);
+
+        // 순서 범위 검증: 최소값은 0, 최대값은 개수
+        // 예: 5개밖에 없는데 25번째로 설정하려고 하면 자동으로 5로 변경
+        const minOrderValue = 0;
+        const maxOrderValue = departmentCount > 0 ? departmentCount : 0;
+
+        // 순서 범위 조정
+        if (newOrder < minOrderValue) {
+            newOrder = minOrderValue;
+        } else if (newOrder > maxOrderValue) {
+            newOrder = maxOrderValue;
+        }
+
+        // 3. 순서가 같으면 변경할 필요 없음
         if (currentOrder === newOrder) {
             return department;
         }
 
-        // 3. 같은 부모를 가진 부서들의 순서 재배치
-        const parentDepartmentId = department.parentDepartmentId || null;
-
+        // 4. 같은 부모를 가진 부서들의 순서 재배치
         // 현재 순서와 새로운 순서 사이에 있는 부서들을 조회
-        const minOrder = Math.min(currentOrder, newOrder);
-        const maxOrder = Math.max(currentOrder, newOrder);
+        const minOrderRange = Math.min(currentOrder, newOrder);
+        const maxOrderRange = Math.max(currentOrder, newOrder);
 
         const affectedDepartments = await this.부서서비스.findDepartmentsInOrderRange(
             parentDepartmentId,
-            minOrder,
-            maxOrder,
+            minOrderRange,
+            maxOrderRange,
         );
 
-        // 4. 순서 업데이트 실행 (unique 제약 충돌 회피) - 트랜잭션으로 묶음
+        // 5. 순서 업데이트 실행 (unique 제약 충돌 회피) - 트랜잭션으로 묶음
         await this.부서레포지토리.manager.transaction(async (transactionalEntityManager) => {
             // Step 1: 이동할 부서를 임시 음수 값으로 변경 (unique 제약 회피)
             await transactionalEntityManager.update(Department, { id: departmentId }, { order: -999 });
@@ -1655,7 +1669,7 @@ export class OrganizationManagementContextService {
             await transactionalEntityManager.update(Department, { id: departmentId }, { order: newOrder });
         });
 
-        // 5. 업데이트된 부서 반환
+        // 7. 업데이트된 부서 반환
         return await this.부서서비스.findById(departmentId);
     }
 

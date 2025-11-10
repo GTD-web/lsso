@@ -14203,13 +14203,22 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
             throw new Error('부서를 찾을 수 없습니다.');
         }
         const currentOrder = department.order;
+        const parentDepartmentId = department.parentDepartmentId || null;
+        const departmentCount = await this.부서서비스.countByParentDepartmentId(parentDepartmentId);
+        const minOrderValue = 0;
+        const maxOrderValue = departmentCount > 0 ? departmentCount : 0;
+        if (newOrder < minOrderValue) {
+            newOrder = minOrderValue;
+        }
+        else if (newOrder > maxOrderValue) {
+            newOrder = maxOrderValue;
+        }
         if (currentOrder === newOrder) {
             return department;
         }
-        const parentDepartmentId = department.parentDepartmentId || null;
-        const minOrder = Math.min(currentOrder, newOrder);
-        const maxOrder = Math.max(currentOrder, newOrder);
-        const affectedDepartments = await this.부서서비스.findDepartmentsInOrderRange(parentDepartmentId, minOrder, maxOrder);
+        const minOrderRange = Math.min(currentOrder, newOrder);
+        const maxOrderRange = Math.max(currentOrder, newOrder);
+        const affectedDepartments = await this.부서서비스.findDepartmentsInOrderRange(parentDepartmentId, minOrderRange, maxOrderRange);
         await this.부서레포지토리.manager.transaction(async (transactionalEntityManager) => {
             await transactionalEntityManager.update(entities_1.Department, { id: departmentId }, { order: -999 });
             const updates = [];
@@ -15117,7 +15126,7 @@ let DomainDepartmentService = DomainDepartmentService_1 = class DomainDepartment
         else {
             queryBuilder.where('department.parentDepartmentId = :parentDepartmentId', { parentDepartmentId });
         }
-        return queryBuilder.getCount();
+        return (await queryBuilder.getCount()) - 1;
     }
     async getNextOrderForParent(parentDepartmentId) {
         const count = await this.countByParentDepartmentId(parentDepartmentId);
