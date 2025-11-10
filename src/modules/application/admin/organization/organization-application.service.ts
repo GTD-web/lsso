@@ -244,7 +244,49 @@ export class OrganizationApplicationService {
     }
 
     async 직원수정(id: string, updateEmployeeDto: UpdateEmployeeRequestDto): Promise<AdminEmployeeResponseDto> {
-        // 완전한 비즈니스 로직 사이클 실행 (존재 확인 → 검증 → 수정 → 반환)
+        // status가 변경되는 경우 재직상태 변경 함수 사용
+        if (updateEmployeeDto.status !== undefined) {
+            const updatedEmployee = await this.organizationContextService.직원재직상태를_변경한다(
+                id,
+                updateEmployeeDto.status,
+                updateEmployeeDto.terminationDate ? new Date(updateEmployeeDto.terminationDate) : undefined,
+            );
+
+            // status 외 다른 정보도 수정해야 하는 경우
+            const hasOtherUpdates =
+                updateEmployeeDto.name !== undefined ||
+                updateEmployeeDto.email !== undefined ||
+                updateEmployeeDto.phoneNumber !== undefined ||
+                updateEmployeeDto.dateOfBirth !== undefined ||
+                updateEmployeeDto.gender !== undefined ||
+                updateEmployeeDto.hireDate !== undefined ||
+                updateEmployeeDto.currentRankId !== undefined ||
+                updateEmployeeDto.departmentId !== undefined ||
+                updateEmployeeDto.positionId !== undefined ||
+                updateEmployeeDto.isManager !== undefined;
+
+            if (hasOtherUpdates) {
+                // status를 제외한 나머지 정보 수정
+                const finalUpdatedEmployee = await this.organizationContextService.직원정보를_수정한다(id, {
+                    name: updateEmployeeDto.name,
+                    email: updateEmployeeDto.email,
+                    phoneNumber: updateEmployeeDto.phoneNumber,
+                    dateOfBirth: updateEmployeeDto.dateOfBirth ? new Date(updateEmployeeDto.dateOfBirth) : undefined,
+                    gender: updateEmployeeDto.gender,
+                    hireDate: updateEmployeeDto.hireDate ? new Date(updateEmployeeDto.hireDate) : undefined,
+                    currentRankId: updateEmployeeDto.currentRankId,
+                    departmentId: updateEmployeeDto.departmentId,
+                    positionId: updateEmployeeDto.positionId,
+                    isManager: updateEmployeeDto.isManager,
+                });
+
+                return this.직원을_응답DTO로_변환한다(finalUpdatedEmployee);
+            }
+
+            return this.직원을_응답DTO로_변환한다(updatedEmployee);
+        }
+
+        // status가 변경되지 않는 경우 기존 로직 사용
         const updatedEmployee = await this.organizationContextService.직원정보를_수정한다(id, {
             name: updateEmployeeDto.name,
             email: updateEmployeeDto.email,
@@ -252,7 +294,6 @@ export class OrganizationApplicationService {
             dateOfBirth: updateEmployeeDto.dateOfBirth ? new Date(updateEmployeeDto.dateOfBirth) : undefined,
             gender: updateEmployeeDto.gender,
             hireDate: updateEmployeeDto.hireDate ? new Date(updateEmployeeDto.hireDate) : undefined,
-            status: updateEmployeeDto.status,
             currentRankId: updateEmployeeDto.currentRankId,
             terminationDate: updateEmployeeDto.terminationDate
                 ? new Date(updateEmployeeDto.terminationDate)

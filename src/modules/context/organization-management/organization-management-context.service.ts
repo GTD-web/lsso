@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { DomainEmployeeService } from '../../domain/employee/employee.service';
+import { DomainEmployeeRepository } from '../../domain/employee/employee.repository';
 import { DomainDepartmentService } from '../../domain/department/department.service';
 import { DomainDepartmentRepository } from '../../domain/department/department.repository';
 import { DomainPositionService } from '../../domain/position/position.service';
@@ -36,6 +37,7 @@ import { DepartmentType } from '../../domain/department/department.entity';
 export class OrganizationManagementContextService {
     constructor(
         private readonly 직원서비스: DomainEmployeeService,
+        private readonly 직원레포지토리: DomainEmployeeRepository,
         private readonly 부서서비스: DomainDepartmentService,
         private readonly 부서레포지토리: DomainDepartmentRepository,
         private readonly 직책서비스: DomainPositionService,
@@ -481,6 +483,130 @@ export class OrganizationManagementContextService {
         }
 
         return updatedEmployee;
+    }
+
+    /**
+     * 직원 재직상태를 변경한다 (트랜잭션 관리)
+     * 퇴사상태로 변경하는 경우 퇴사자 부서로 배치하고 관련 정보를 정리한다
+     */
+    async 직원재직상태를_변경한다(
+        employeeId: string,
+        status: EmployeeStatus,
+        terminationDate?: Date,
+        terminationReason?: string,
+    ): Promise<Employee> {
+        // 트랜잭션으로 묶어서 실행
+        return await this.직원레포지토리.manager.transaction(async (transactionalEntityManager) => {
+            // 1. 직원 존재 확인
+            const employee = await transactionalEntityManager.findOne(Employee, {
+                where: { id: employeeId },
+            });
+
+            if (!employee) {
+                throw new NotFoundException('직원을 찾을 수 없습니다.');
+            }
+
+            // 2. 퇴사상태로 변경하는 경우 특별 처리
+            if (status === EmployeeStatus.Terminated) {
+                // 2-1. 퇴사자 부서 검색
+                const terminatedDepartment = await this.부서서비스.findByCode('퇴사자');
+                if (!terminatedDepartment) {
+                    throw new NotFoundException('퇴사자 부서를 찾을 수 없습니다.');
+                }
+
+                // 2-2. 현재 부서 정보 조회 (DEPARTMENT 타입만)
+                const currentAssignments = await this.직원부서직책서비스.findAllByEmployeeId(employeeId);
+                let currentDepartmentInfo = '';
+
+                for (const assignment of currentAssignments) {
+                    const department = await this.부서서비스.findById(assignment.departmentId);
+                    if (department.type === DepartmentType.DEPARTMENT) {
+                        currentDepartmentInfo = `${department.departmentName} (${department.departmentCode})`;
+                        break;
+                    }
+                }
+
+                // 2-3. 퇴사 사유에 현재 부서 정보 추가
+                const finalTerminationReason = terminationReason
+                    ? `${terminationReason}\n이전 부서: ${currentDepartmentInfo || '없음'}`
+                    : `이전 부서: ${currentDepartmentInfo || '없음'}`;
+
+                // 2-4. 직원 정보 업데이트 (status, terminationDate, terminationReason)
+                await transactionalEntityManager.update(
+                    Employee,
+                    { id: employeeId },
+                    {
+                        status: EmployeeStatus.Terminated,
+                        terminationDate: terminationDate || new Date(),
+                        terminationReason: finalTerminationReason,
+                    },
+                );
+
+                // 2-5. 퇴사자 부서로 배치 (기존 DEPARTMENT 타입 배치가 있으면 업데이트, 없으면 생성)
+                let departmentAssignment: EmployeeDepartmentPosition | null = null;
+                for (const assignment of currentAssignments) {
+                    const department = await this.부서서비스.findById(assignment.departmentId);
+                    if (department.type === DepartmentType.DEPARTMENT) {
+                        departmentAssignment = assignment;
+                        break;
+                    }
+                }
+
+                // 기본 직책 조회 (퇴사자 부서에 배치할 때 사용)
+                const defaultPosition = await this.직책서비스.findAll();
+                const firstPosition = defaultPosition.length > 0 ? defaultPosition[0] : null;
+
+                if (!firstPosition) {
+                    throw new NotFoundException('기본 직책을 찾을 수 없습니다.');
+                }
+
+                if (departmentAssignment) {
+                    // 기존 DEPARTMENT 타입 배치 업데이트
+                    await transactionalEntityManager.update(
+                        EmployeeDepartmentPosition,
+                        { id: departmentAssignment.id },
+                        {
+                            departmentId: terminatedDepartment.id,
+                            positionId: firstPosition.id,
+                            isManager: false,
+                        },
+                    );
+                } else {
+                    // 새로운 배치 생성
+                    await transactionalEntityManager.save(EmployeeDepartmentPosition, {
+                        employeeId,
+                        departmentId: terminatedDepartment.id,
+                        positionId: firstPosition.id,
+                        isManager: false,
+                    });
+                }
+
+                // 2-6. token, fcmToken, systemRole 삭제
+                await this.직원토큰서비스.deleteAllByEmployeeId(employeeId);
+                await this.직원FCM토큰서비스.deleteAllByEmployeeId(employeeId);
+                await this.직원시스템역할서비스.unassignAllRolesByEmployeeId(employeeId);
+            } else {
+                // 3. 퇴사가 아닌 다른 상태로 변경하는 경우
+                const updateData: Partial<Employee> = {
+                    status,
+                    terminationDate: null,
+                    terminationReason: null,
+                };
+
+                await transactionalEntityManager.update(Employee, { id: employeeId }, updateData);
+            }
+
+            // 4. 업데이트된 직원 정보 반환
+            const updatedEmployee = await transactionalEntityManager.findOne(Employee, {
+                where: { id: employeeId },
+            });
+
+            if (!updatedEmployee) {
+                throw new NotFoundException('업데이트된 직원 정보를 찾을 수 없습니다.');
+            }
+
+            return updatedEmployee;
+        });
     }
 
     // ==================== 직원 번호 생성 관련 ====================
