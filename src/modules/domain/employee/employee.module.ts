@@ -8,6 +8,6 @@ import { DomainEmployeeValidationService } from './employee-validation.service';
 @Module({
     imports: [TypeOrmModule.forFeature([Employee])],
     providers: [DomainEmployeeService, DomainEmployeeRepository, DomainEmployeeValidationService],
-    exports: [DomainEmployeeService, DomainEmployeeValidationService],
+    exports: [DomainEmployeeService, DomainEmployeeValidationService, DomainEmployeeRepository],
 })
 export class DomainEmployeeModule {}

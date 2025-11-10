@@ -1,6 +1,8 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { DomainEmployeeService } from '../../domain/employee/employee.service';
+import { DomainEmployeeRepository } from '../../domain/employee/employee.repository';
 import { DomainDepartmentService } from '../../domain/department/department.service';
+import { DomainDepartmentRepository } from '../../domain/department/department.repository';
 import { DomainPositionService } from '../../domain/position/position.service';
 import { DomainRankService } from '../../domain/rank/rank.service';
 import { DomainEmployeeDepartmentPositionService } from '../../domain/employee-department-position/employee-department-position.service';
@@ -16,6 +18,9 @@ import {
     Rank,
     EmployeeDepartmentPosition,
     EmployeeRankHistory,
+    EmployeeToken,
+    EmployeeFcmToken,
+    EmployeeSystemRole,
 } from '../../../../libs/database/entities';
 import {
     DuplicateEmployeeNumberError,
@@ -35,7 +40,9 @@ import { DepartmentType } from '../../domain/department/department.entity';
 export class OrganizationManagementContextService {
     constructor(
         private readonly 직원서비스: DomainEmployeeService,
+        private readonly 직원레포지토리: DomainEmployeeRepository,
         private readonly 부서서비스: DomainDepartmentService,
+        private readonly 부서레포지토리: DomainDepartmentRepository,
         private readonly 직책서비스: DomainPositionService,
         private readonly 직급서비스: DomainRankService,
         private readonly 직원부서직책서비스: DomainEmployeeDepartmentPositionService,
@@ -283,6 +290,14 @@ export class OrganizationManagementContextService {
         return this.직책서비스.findById(positionId);
     }
 
+    async 가장_낮은_직책을_조회한다(): Promise<Position> {
+        const position = await this.직책서비스.findLowestPosition();
+        if (!position) {
+            throw new NotFoundException('직책을 찾을 수 없습니다.');
+        }
+        return position;
+    }
+
     // ==================== 직급 조회 관련 ====================
 
     async 모든_직급을_조회한다(): Promise<Rank[]> {
@@ -413,12 +428,12 @@ export class OrganizationManagementContextService {
         if (hasDepartmentId || hasPositionId) {
             // 기존 배치 정보 조회
             const existingAssignments = await this.직원부서직책서비스.findAllByEmployeeId(employeeId);
-
             if (existingAssignments.length > 0) {
                 // 각 배치의 부서 정보 조회하여 DEPARTMENT 타입 찾기
                 const departmentAssignments = [];
                 for (const assignment of existingAssignments) {
                     const department = await this.부서서비스.findById(assignment.departmentId);
+
                     if (department.type === DepartmentType.DEPARTMENT) {
                         departmentAssignments.push({ assignment, department });
                     }
@@ -471,6 +486,59 @@ export class OrganizationManagementContextService {
         }
 
         return updatedEmployee;
+    }
+
+    /**
+     * 직원 재직상태를 변경한다 (트랜잭션 관리)
+     * 퇴사상태로 변경하는 경우 퇴사자 부서로 배치하고 관련 정보를 정리한다
+     */
+    async 직원재직상태를_변경한다(
+        employeeId: string,
+        status: EmployeeStatus,
+        terminationDate?: Date,
+        terminationReason?: string,
+    ): Promise<Employee> {
+        // 퇴사상태로 변경하는 경우 퇴사처리 함수 호출
+        if (status === EmployeeStatus.Terminated) {
+            const result = await this.직원을_퇴사처리한다({
+                employeeIdentifier: employeeId,
+                terminationDate: terminationDate || new Date(),
+                terminationReason,
+            });
+            return result.employee;
+        }
+
+        // 퇴사가 아닌 다른 상태로 변경하는 경우
+        return await this.직원레포지토리.manager.transaction(async (transactionalEntityManager) => {
+            // 1. 직원 존재 확인
+            const employee = await transactionalEntityManager.findOne(Employee, {
+                where: { id: employeeId },
+            });
+
+            if (!employee) {
+                throw new NotFoundException('직원을 찾을 수 없습니다.');
+            }
+
+            // 2. 상태 변경 및 퇴사 관련 필드 초기화
+            const updateData: Partial<Employee> = {
+                status,
+                terminationDate: null,
+                terminationReason: null,
+            };
+
+            await transactionalEntityManager.update(Employee, { id: employeeId }, updateData);
+
+            // 3. 업데이트된 직원 정보 반환
+            const updatedEmployee = await transactionalEntityManager.findOne(Employee, {
+                where: { id: employeeId },
+            });
+
+            if (!updatedEmployee) {
+                throw new NotFoundException('업데이트된 직원 정보를 찾을 수 없습니다.');
+            }
+
+            return updatedEmployee;
+        });
     }
 
     // ==================== 직원 번호 생성 관련 ====================
@@ -534,7 +602,7 @@ export class OrganizationManagementContextService {
         failCount: number;
         successIds: string[];
         failIds: string[];
-        errors: { employeeId: string; message: string }[];
+        errors: { employeeId: string; name?: string; message: string }[];
     }> {
         // 부서 존재 검증
         const department = await this.부서서비스.findById(departmentId);
@@ -546,12 +614,13 @@ export class OrganizationManagementContextService {
 
         const successIds: string[] = [];
         const failIds: string[] = [];
-        const errors: { employeeId: string; message: string }[] = [];
+        const errors: { employeeId: string; name?: string; message: string }[] = [];
 
         for (const employeeId of employeeIds) {
+            let employee: Employee | null = null;
             try {
                 // 직원 존재 확인
-                await this.직원을_조회한다(employeeId);
+                employee = await this.직원을_조회한다(employeeId);
 
                 // 기존 DEPARTMENT 타입 배치 조회
                 const existingAssignments = await this.직원부서직책서비스.findAllByEmployeeId(employeeId);
@@ -582,6 +651,7 @@ export class OrganizationManagementContextService {
                 failIds.push(employeeId);
                 errors.push({
                     employeeId,
+                    name: employee?.name,
                     message: error.message || '알 수 없는 오류',
                 });
             }
@@ -608,7 +678,7 @@ export class OrganizationManagementContextService {
         failCount: number;
         successIds: string[];
         failIds: string[];
-        errors: { employeeId: string; message: string }[];
+        errors: { employeeId: string; name?: string; message: string }[];
     }> {
         // 팀 존재 및 타입 검증
         const team = await this.부서서비스.findById(teamId);
@@ -628,12 +698,13 @@ export class OrganizationManagementContextService {
 
         const successIds: string[] = [];
         const failIds: string[] = [];
-        const errors: { employeeId: string; message: string }[] = [];
+        const errors: { employeeId: string; name?: string; message: string }[] = [];
 
         for (const employeeId of employeeIds) {
+            let employee: Employee | null = null;
             try {
                 // 직원 존재 확인
-                const employee = await this.직원을_조회한다(employeeId);
+                employee = await this.직원을_조회한다(employeeId);
 
                 // 기존 TEAM 타입 배치 조회
                 const existingAssignments = await this.직원부서직책서비스.findAllByEmployeeId(employeeId);
@@ -665,6 +736,7 @@ export class OrganizationManagementContextService {
                 failIds.push(employeeId);
                 errors.push({
                     employeeId,
+                    name: employee?.name,
                     message: error.message || '알 수 없는 오류',
                 });
             }
@@ -691,19 +763,20 @@ export class OrganizationManagementContextService {
         failCount: number;
         successIds: string[];
         failIds: string[];
-        errors: { employeeId: string; message: string }[];
+        errors: { employeeId: string; name?: string; message: string }[];
     }> {
         // 직책 존재 검증
         await this.직책서비스.findById(positionId);
 
         const successIds: string[] = [];
         const failIds: string[] = [];
-        const errors: { employeeId: string; message: string }[] = [];
+        const errors: { employeeId: string; name?: string; message: string }[] = [];
 
         for (const employeeId of employeeIds) {
+            let employee: Employee | null = null;
             try {
                 // 직원 존재 확인
-                await this.직원을_조회한다(employeeId);
+                employee = await this.직원을_조회한다(employeeId);
 
                 // 기존 DEPARTMENT 타입 배치 조회
                 const existingAssignments = await this.직원부서직책서비스.findAllByEmployeeId(employeeId);
@@ -734,6 +807,7 @@ export class OrganizationManagementContextService {
                 failIds.push(employeeId);
                 errors.push({
                     employeeId,
+                    name: employee?.name,
                     message: error.message || '알 수 없는 오류',
                 });
             }
@@ -759,19 +833,20 @@ export class OrganizationManagementContextService {
         failCount: number;
         successIds: string[];
         failIds: string[];
-        errors: { employeeId: string; message: string }[];
+        errors: { employeeId: string; name?: string; message: string }[];
     }> {
         // 직급 존재 검증
         await this.직급서비스.findById(rankId);
 
         const successIds: string[] = [];
         const failIds: string[] = [];
-        const errors: { employeeId: string; message: string }[] = [];
+        const errors: { employeeId: string; name?: string; message: string }[] = [];
 
         for (const employeeId of employeeIds) {
+            let employee: Employee | null = null;
             try {
                 // 직원 존재 확인
-                await this.직원을_조회한다(employeeId);
+                employee = await this.직원을_조회한다(employeeId);
 
                 // 직급 변경
                 await this.직원의_직급을_변경한다(employeeId, rankId);
@@ -781,6 +856,7 @@ export class OrganizationManagementContextService {
                 failIds.push(employeeId);
                 errors.push({
                     employeeId,
+                    name: employee?.name,
                     message: error.message || '알 수 없는 오류',
                 });
             }
@@ -807,16 +883,17 @@ export class OrganizationManagementContextService {
         failCount: number;
         successIds: string[];
         failIds: string[];
-        errors: { employeeId: string; message: string }[];
+        errors: { employeeId: string; name?: string; message: string }[];
     }> {
         const successIds: string[] = [];
         const failIds: string[] = [];
-        const errors: { employeeId: string; message: string }[] = [];
+        const errors: { employeeId: string; name?: string; message: string }[] = [];
 
         for (const employeeId of employeeIds) {
+            let employee: Employee | null = null;
             try {
                 // 직원 존재 확인
-                await this.직원을_조회한다(employeeId);
+                employee = await this.직원을_조회한다(employeeId);
 
                 // 재직상태 변경
                 await this.직원서비스.updateEmployee(employeeId, {
@@ -836,6 +913,7 @@ export class OrganizationManagementContextService {
                 failIds.push(employeeId);
                 errors.push({
                     employeeId,
+                    name: employee?.name,
                     message: error.message || '알 수 없는 오류',
                 });
             }
@@ -1166,18 +1244,54 @@ export class OrganizationManagementContextService {
     // ==================== 직원 생성/수정/삭제 관련 ====================
 
     /**
-     * 직원 생성을 위한 전처리 (사번/이름 자동 생성)
+     * 직원 생성을 위한 전처리 (사번/이름/이메일 자동 생성)
      */
-    async 직원생성_전처리를_수행한다(name: string): Promise<{
+    async 직원생성_전처리를_수행한다(
+        name: string,
+        englishLastName?: string,
+        englishFirstName?: string,
+    ): Promise<{
         employeeNumber: string;
         name: string;
+        email?: string;
     }> {
         const employeeNumber = await this.직원서비스.generateNextEmployeeNumber();
         const uniqueName = await this.직원서비스.generateUniqueEmployeeName(name);
+
+        let email: string | undefined;
+        if (englishLastName && englishFirstName) {
+            email = await this.고유한_이메일을_생성한다(englishLastName, englishFirstName);
+        }
+
         return {
             employeeNumber,
             name: uniqueName,
+            email,
         };
+    }
+
+    /**
+     * 고유한 이메일 주소 생성 (중복 검사 포함)
+     */
+    async 고유한_이메일을_생성한다(englishLastName: string, englishFirstName: string): Promise<string> {
+        const baseEmail = `${englishLastName}.${englishFirstName}@lumir.space`;
+
+        // 기본 이메일이 중복되지 않으면 반환
+        const isDuplicate = await this.직원서비스.isEmailDuplicate(baseEmail);
+        if (!isDuplicate) {
+            return baseEmail;
+        }
+
+        // 중복이면 숫자를 붙여서 시도
+        let counter = 1;
+        let email = `${englishLastName}.${englishFirstName}${counter}@lumir.space`;
+
+        while (await this.직원서비스.isEmailDuplicate(email)) {
+            counter++;
+            email = `${englishLastName}.${englishFirstName}${counter}@lumir.space`;
+        }
+
+        return email;
     }
 
     /**
@@ -1236,6 +1350,8 @@ export class OrganizationManagementContextService {
         // employeeNumber?: string;
         name: string;
         email?: string;
+        englishLastName?: string;
+        englishFirstName?: string;
         phoneNumber?: string;
         dateOfBirth?: Date;
         gender?: Gender;
@@ -1247,18 +1363,23 @@ export class OrganizationManagementContextService {
         isManager?: boolean;
     }): Promise<{
         employee: Employee;
-        assignment?: EmployeeDepartmentPosition;
-        rankHistory?: EmployeeRankHistory;
+        department?: Department;
+        rank?: Rank;
     }> {
-        // TODO : 이메일 생성 관련 중복 처리 필요 및 요청 값 관련 확인 필요 (창욱프로님한테)
+        // 1. 전처리 (사번/이름/이메일 자동 생성)
+        const {
+            employeeNumber,
+            name,
+            email: generatedEmail,
+        } = await this.직원생성_전처리를_수행한다(data.name, data.englishLastName, data.englishFirstName);
 
-        // 1. 전처리 (사번/이름 자동 생성)
-        const { employeeNumber, name } = await this.직원생성_전처리를_수행한다(data.name);
+        // 전처리에서 생성된 이메일이 있으면 사용, 없으면 data.email 사용
+        const email = generatedEmail || data.email;
 
         // 2. 컨텍스트 검증 (중복, 존재 확인)
         await this.직원생성_컨텍스트_검증을_수행한다({
             employeeNumber,
-            email: data.email,
+            email: email,
             currentRankId: data.currentRankId,
             departmentId: data.departmentId,
             positionId: data.positionId,
@@ -1268,7 +1389,7 @@ export class OrganizationManagementContextService {
         const employee = await this.직원서비스.createEmployee({
             employeeNumber: employeeNumber,
             name: name,
-            email: data.email,
+            email: email,
             phoneNumber: data.phoneNumber,
             dateOfBirth: data.dateOfBirth,
             gender: data.gender,
@@ -1278,12 +1399,11 @@ export class OrganizationManagementContextService {
         });
 
         // 4. 배치 정보 완성도 확인 및 처리
-        let assignment: EmployeeDepartmentPosition | undefined;
         const shouldCreateAssignment = data.departmentId && data.positionId;
 
         if (shouldCreateAssignment) {
             // 부서에 배치
-            assignment = await this.직원을_부서에_배치한다({
+            await this.직원을_부서에_배치한다({
                 employeeId: employee.id,
                 departmentId: data.departmentId!,
                 positionId: data.positionId!,
@@ -1292,20 +1412,31 @@ export class OrganizationManagementContextService {
         }
 
         // 5. 직급 이력 생성 (직급 ID가 있는 경우)
-        let rankHistory: EmployeeRankHistory | undefined;
         if (data.currentRankId) {
-            rankHistory = await this.직원직급이력서비스.createHistory({
+            await this.직원직급이력서비스.createHistory({
                 employeeId: employee.id,
                 rankId: data.currentRankId,
             });
         }
 
-        return { employee, assignment, rankHistory };
+        // 6. 부서 및 직급 정보 조회
+        let department: Department | undefined;
+        let rank: Rank | undefined;
+
+        if (data.departmentId) {
+            department = await this.부서_ID로_부서를_조회한다(data.departmentId);
+        }
+
+        if (data.currentRankId) {
+            rank = await this.직급_ID로_직급을_조회한다(data.currentRankId);
+        }
+
+        return { employee, department, rank };
     }
 
     /**
-     * 직원 퇴사처리
-     * 목적: 직원 상태를 퇴사로 변경한다.
+     * 직원 퇴사처리 (트랜잭션 관리)
+     * 목적: 직원 상태를 퇴사로 변경하고 퇴사자 부서로 배치하며 관련 정보를 정리한다.
      */
     async 직원을_퇴사처리한다(data: {
         employeeIdentifier: string; // 직원 ID 또는 사번
@@ -1316,24 +1447,117 @@ export class OrganizationManagementContextService {
         employee: Employee;
         message: string;
     }> {
-        // 1. 직원 조회 (ID 또는 사번으로)
-        const employee = await this.직원을_조회한다(data.employeeIdentifier);
+        // 트랜잭션으로 묶어서 실행
+        return await this.직원레포지토리.manager.transaction(async (transactionalEntityManager) => {
+            // 1. 직원 조회 (ID 또는 사번으로)
+            const employee = await this.직원을_조회한다(data.employeeIdentifier);
 
-        // 2. 퇴사처리 검증
-        this.퇴사처리_검증을_수행한다(employee, data.terminationDate);
+            // 2. 퇴사처리 검증
+            this.퇴사처리_검증을_수행한다(employee, data.terminationDate);
 
-        // 3. 직원 상태를 퇴사로 변경
-        const updatedEmployee = await this.직원서비스.updateEmployee(employee.id, {
-            status: EmployeeStatus.Terminated,
-            terminationDate: data.terminationDate,
-            terminationReason: data.terminationReason,
-            updatedAt: new Date(),
+            const employeeId = employee.id;
+
+            // 3-1. 퇴사자 부서 검색
+            const terminatedDepartment = await this.부서서비스.findByCode('퇴사자');
+            if (!terminatedDepartment) {
+                throw new NotFoundException('퇴사자 부서를 찾을 수 없습니다.');
+            }
+
+            // 3-2. 현재 부서 정보 조회 (DEPARTMENT 타입만)
+            const currentAssignments = await this.직원부서직책서비스.findAllByEmployeeId(employeeId);
+            let currentDepartment: Department | null = null;
+
+            for (const assignment of currentAssignments) {
+                const department = await this.부서서비스.findById(assignment.departmentId);
+                if (department.type === DepartmentType.DEPARTMENT) {
+                    currentDepartment = department;
+                    break;
+                }
+            }
+
+            // 3-3. 메타데이터에 부서 정보 저장 (JSON 형식)
+            const metadata: Record<string, any> = {
+                termination: {
+                    previousDepartment: currentDepartment
+                        ? {
+                              id: currentDepartment.id,
+                              name: currentDepartment.departmentName,
+                              code: currentDepartment.departmentCode,
+                          }
+                        : null,
+                },
+            };
+
+            // 3-4. 직원 정보 업데이트 (status, terminationDate, terminationReason, metadata)
+            await transactionalEntityManager.update(
+                Employee,
+                { id: employeeId },
+                {
+                    status: EmployeeStatus.Terminated,
+                    terminationDate: data.terminationDate,
+                    terminationReason: data.terminationReason,
+                    metadata,
+                },
+            );
+
+            // 3-5. 퇴사자 부서로 배치 (기존 DEPARTMENT 타입 배치가 있으면 업데이트, 없으면 생성)
+            let departmentAssignment: EmployeeDepartmentPosition | null = null;
+            for (const assignment of currentAssignments) {
+                const department = await this.부서서비스.findById(assignment.departmentId);
+                if (department.type === DepartmentType.DEPARTMENT) {
+                    departmentAssignment = assignment;
+                    break;
+                }
+            }
+
+            // 기본 직책 조회 (퇴사자 부서에 배치할 때 사용)
+            const defaultPosition = await this.직책서비스.findAll();
+            const firstPosition = defaultPosition.length > 0 ? defaultPosition[0] : null;
+
+            if (!firstPosition) {
+                throw new NotFoundException('기본 직책을 찾을 수 없습니다.');
+            }
+
+            if (departmentAssignment) {
+                // 기존 DEPARTMENT 타입 배치 업데이트
+                await transactionalEntityManager.update(
+                    EmployeeDepartmentPosition,
+                    { id: departmentAssignment.id },
+                    {
+                        departmentId: terminatedDepartment.id,
+                        positionId: firstPosition.id,
+                        isManager: false,
+                    },
+                );
+            } else {
+                // 새로운 배치 생성
+                await transactionalEntityManager.save(EmployeeDepartmentPosition, {
+                    employeeId,
+                    departmentId: terminatedDepartment.id,
+                    positionId: firstPosition.id,
+                    isManager: false,
+                });
+            }
+
+            // 3-6. token, fcmToken, systemRole 삭제 (트랜잭션 내에서 직접 삭제)
+            await transactionalEntityManager.delete(EmployeeToken, { employeeId });
+            await transactionalEntityManager.delete(EmployeeFcmToken, { employeeId });
+            await transactionalEntityManager.delete(EmployeeSystemRole, { employeeId });
+
+            // 4. 업데이트된 직원 정보 반환
+            const updatedEmployee = await transactionalEntityManager.findOne(Employee, {
+                where: { id: employeeId },
+            });
+
+            if (!updatedEmployee) {
+                throw new NotFoundException('업데이트된 직원 정보를 찾을 수 없습니다.');
+            }
+
+            return {
+                employee: updatedEmployee,
+                message: `${employee.name}(${employee.employeeNumber}) 직원이 성공적으로 퇴사처리되었습니다.`,
+            };
         });
-
-        return {
-            employee: updatedEmployee,
-            message: `${employee.name}(${employee.employeeNumber}) 직원이 성공적으로 퇴사처리되었습니다.`,
-        };
     }
 
     /**
@@ -1485,11 +1709,14 @@ export class OrganizationManagementContextService {
 
     /**
      * 부서 삭제 (완전한 비즈니스 로직 사이클)
-     * 존재 확인 → 제약 조건 확인 → 삭제
+     * 존재 확인 → 제약 조건 확인 → 순서 조정 → 삭제
      */
     async 부서를_삭제한다(departmentId: string): Promise<void> {
-        // 1. 부서 존재 확인
-        await this.부서서비스.findById(departmentId);
+        // 1. 부서 존재 확인 및 정보 조회
+        const department = await this.부서서비스.findById(departmentId);
+        if (!department) {
+            throw new NotFoundException('부서를 찾을 수 없습니다.');
+        }
 
         // 2. 하위 부서가 있는지 확인
         const childDepartments = await this.부서서비스.findChildDepartments(departmentId);
@@ -1503,8 +1730,54 @@ export class OrganizationManagementContextService {
             throw new Error('해당 부서에 배치된 직원이 있어 삭제할 수 없습니다.');
         }
 
-        // 4. 부서 삭제
-        await this.부서서비스.deleteDepartment(departmentId);
+        // 4. 순서 조정 및 부서 삭제 (트랜잭션으로 묶음)
+        const parentDepartmentId = department.parentDepartmentId || null;
+        const deletedOrder = department.order;
+
+        await this.부서레포지토리.manager.transaction(async (transactionalEntityManager) => {
+            // 4-1. 삭제할 부서의 순서를 먼저 임시 음수 값으로 변경 (unique constraint 충돌 회피)
+            await transactionalEntityManager.update(Department, { id: departmentId }, { order: -999 });
+
+            // 4-2. 삭제할 부서보다 큰 순서를 가진 같은 부모의 부서들 조회
+            const queryBuilder = transactionalEntityManager
+                .createQueryBuilder(Department, 'department')
+                .where('department.id != :departmentId', { departmentId });
+
+            if (parentDepartmentId === null) {
+                queryBuilder.andWhere('department.parentDepartmentId IS NULL');
+            } else {
+                queryBuilder.andWhere('department.parentDepartmentId = :parentDepartmentId', {
+                    parentDepartmentId,
+                });
+            }
+
+            queryBuilder
+                .andWhere('department.order > :deletedOrder', { deletedOrder })
+                .orderBy('department.order', 'ASC');
+
+            const departmentsToUpdate = await queryBuilder.getMany();
+
+            // 4-3. 순서를 1씩 감소시켜 업데이트
+            if (departmentsToUpdate.length > 0) {
+                // unique constraint 충돌을 피하기 위해 임시 음수 값으로 먼저 변경
+                const tempOffset = -1000000;
+                for (let i = 0; i < departmentsToUpdate.length; i++) {
+                    await transactionalEntityManager.update(
+                        Department,
+                        { id: departmentsToUpdate[i].id },
+                        { order: tempOffset - i },
+                    );
+                }
+
+                // 최종 순서로 업데이트
+                for (const dept of departmentsToUpdate) {
+                    await transactionalEntityManager.update(Department, { id: dept.id }, { order: dept.order - 1 });
+                }
+            }
+
+            // 4-4. 부서 삭제
+            await transactionalEntityManager.delete(Department, { id: departmentId });
+        });
     }
 
     /**
@@ -1520,56 +1793,83 @@ export class OrganizationManagementContextService {
 
         const currentOrder = department.order;
 
-        // 2. 순서가 같으면 변경할 필요 없음
+        // 2. 같은 부모를 가진 부서들의 개수 확인 및 순서 범위 검증
+        const parentDepartmentId = department.parentDepartmentId || null;
+        const departmentCount = await this.부서서비스.countByParentDepartmentId(parentDepartmentId);
+
+        // 순서 범위 검증: 최소값은 0, 최대값은 개수
+        // 예: 5개밖에 없는데 25번째로 설정하려고 하면 자동으로 5로 변경
+        const minOrderValue = 0;
+        const maxOrderValue = departmentCount - 1 > 0 ? departmentCount - 1 : 0;
+
+        // 순서 범위 조정
+        if (newOrder < minOrderValue) {
+            newOrder = minOrderValue;
+        } else if (newOrder > maxOrderValue) {
+            newOrder = maxOrderValue;
+        }
+
+        // 3. 순서가 같으면 변경할 필요 없음
         if (currentOrder === newOrder) {
             return department;
         }
 
-        // 3. 같은 부모를 가진 부서들의 순서 재배치
-        const parentDepartmentId = department.parentDepartmentId || null;
-
+        // 4. 같은 부모를 가진 부서들의 순서 재배치
         // 현재 순서와 새로운 순서 사이에 있는 부서들을 조회
-        const minOrder = Math.min(currentOrder, newOrder);
-        const maxOrder = Math.max(currentOrder, newOrder);
+        const minOrderRange = Math.min(currentOrder, newOrder);
+        const maxOrderRange = Math.max(currentOrder, newOrder);
 
         const affectedDepartments = await this.부서서비스.findDepartmentsInOrderRange(
             parentDepartmentId,
-            minOrder,
-            maxOrder,
+            minOrderRange,
+            maxOrderRange,
         );
 
-        // 4. 순서 업데이트 실행 (unique 제약 충돌 회피)
-        // Step 1: 이동할 부서를 임시 음수 값으로 변경 (unique 제약 회피)
-        await this.부서서비스.updateDepartment(departmentId, { order: -999 });
+        // 5. 순서 업데이트 실행 (unique 제약 충돌 회피) - 트랜잭션으로 묶음
+        await this.부서레포지토리.manager.transaction(async (transactionalEntityManager) => {
+            // Step 1: 이동할 부서를 임시 음수 값으로 변경 (unique 제약 회피)
+            await transactionalEntityManager.update(Department, { id: departmentId }, { order: -999 });
 
-        // Step 2: 나머지 부서들의 순서 업데이트
-        const updates: { id: string; order: number }[] = [];
-        if (currentOrder < newOrder) {
-            // 아래로 이동: 현재 순서보다 크고 새로운 순서 이하인 부서들을 -1
-            console.log('affectedDepartments', affectedDepartments);
-            for (const dept of affectedDepartments) {
-                if (dept.id !== departmentId && dept.order > currentOrder && dept.order <= newOrder) {
-                    updates.push({ id: dept.id, order: dept.order - 1 });
+            // Step 2: 나머지 부서들의 순서 업데이트
+            const updates: { id: string; order: number }[] = [];
+            if (currentOrder < newOrder) {
+                // 아래로 이동: 현재 순서보다 크고 새로운 순서 이하인 부서들을 -1
+                console.log('affectedDepartments', affectedDepartments);
+                for (const dept of affectedDepartments) {
+                    if (dept.id !== departmentId && dept.order > currentOrder && dept.order <= newOrder) {
+                        updates.push({ id: dept.id, order: dept.order - 1 });
+                    }
+                }
+            } else {
+                // 위로 이동: 새로운 순서 이상이고 현재 순서보다 작은 부서들을 +1
+                for (const dept of affectedDepartments) {
+                    if (dept.id !== departmentId && dept.order >= newOrder && dept.order < currentOrder) {
+                        updates.push({ id: dept.id, order: dept.order + 1 });
+                    }
                 }
             }
-        } else {
-            // 위로 이동: 새로운 순서 이상이고 현재 순서보다 작은 부서들을 +1
-            for (const dept of affectedDepartments) {
-                if (dept.id !== departmentId && dept.order >= newOrder && dept.order < currentOrder) {
-                    updates.push({ id: dept.id, order: dept.order + 1 });
+
+            // Step 3: 나머지 부서들 일괄 업데이트
+            if (updates.length > 0) {
+                // bulkUpdateOrders 내부에서도 트랜잭션을 사용하므로, 여기서는 직접 업데이트
+                const tempOffset = -1000000;
+                for (let i = 0; i < updates.length; i++) {
+                    await transactionalEntityManager.update(
+                        Department,
+                        { id: updates[i].id },
+                        { order: tempOffset - i },
+                    );
+                }
+                for (const update of updates) {
+                    await transactionalEntityManager.update(Department, { id: update.id }, { order: update.order });
                 }
             }
-        }
 
-        // Step 3: 나머지 부서들 일괄 업데이트
-        if (updates.length > 0) {
-            await this.부서서비스.bulkUpdateOrders(updates);
-        }
+            // Step 4: 이동할 부서를 최종 순서로 변경
+            await transactionalEntityManager.update(Department, { id: departmentId }, { order: newOrder });
+        });
 
-        // Step 4: 이동할 부서를 최종 순서로 변경
-        await this.부서서비스.updateDepartment(departmentId, { order: newOrder });
-
-        // 5. 업데이트된 부서 반환
+        // 7. 업데이트된 부서 반환
         return await this.부서서비스.findById(departmentId);
     }
 
@@ -1591,7 +1891,24 @@ export class OrganizationManagementContextService {
             throw new Error('이미 존재하는 직책 코드입니다.');
         }
 
-        // 2. 직책 생성
+        // 2. level 검증
+        // 2-1. 동일한 level이 있는지 확인
+        const existingPosition = await this.직책서비스.findOneByLevel(직책정보.level);
+        if (existingPosition) {
+            throw new BadRequestException(`이미 존재하는 level입니다: ${직책정보.level}`);
+        }
+
+        // 2-2. 최대 level 값 조회
+        const allPositions = await this.직책서비스.findAllPositions();
+        const maxLevel = allPositions.length > 0 ? Math.max(...allPositions.map((p) => p.level)) : 0;
+
+        // 2-3. 새로운 level이 maxLevel + 1인지 확인
+        const expectedLevel = maxLevel + 1;
+        if (직책정보.level !== expectedLevel) {
+            throw new BadRequestException(`level은 ${expectedLevel}이어야 합니다. (현재 최대 level: ${maxLevel})`);
+        }
+
+        // 3. 직책 생성
         return await this.직책서비스.createPosition({
             positionTitle: 직책정보.positionTitle,
             positionCode: 직책정보.positionCode,

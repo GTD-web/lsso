@@ -18,8 +18,8 @@ import {
     EmployeesResponseDto,
     DepartmentHierarchyRequestDto,
     DepartmentHierarchyResponseDto,
-    CreateEmployeeRequestDto,
-    CreateEmployeeResponseDto,
+    HireEmployeeRequestDto,
+    HireEmployeeResponseDto,
     TerminateEmployeeRequestDto,
     TerminateEmployeeResponseDto,
     ExportAllDataResponseDto,
@@ -299,20 +299,20 @@ export class OrganizationInformationApplicationController {
         }
     }
 
-    @Post('employee')
+    @Post('employee/hire')
     @HttpCode(HttpStatus.CREATED)
     @ApiOperation({
-        summary: '채용 프로세스 완료 후 - 직원 생성',
+        summary: '채용 프로세스 완료 후 - 직원 채용',
         description: '새로운 직원을 생성합니다. 검증 규칙 4단계에 따라 완전한 검증을 수행합니다.',
     })
     @ApiBody({
-        type: CreateEmployeeRequestDto,
+        type: HireEmployeeRequestDto,
         description: '생성할 직원 정보',
     })
     @ApiResponse({
         status: HttpStatus.CREATED,
         description: '직원이 성공적으로 생성되었습니다.',
-        type: CreateEmployeeResponseDto,
+        type: HireEmployeeResponseDto,
     })
     @ApiResponse({
         status: HttpStatus.BAD_REQUEST,
@@ -339,9 +339,9 @@ export class OrganizationInformationApplicationController {
         },
     })
     async 채용프로세스에_합격한_직원을_생성한다(
-        @Body() createEmployeeDto: CreateEmployeeRequestDto,
-    ): Promise<CreateEmployeeResponseDto> {
-        return await this.organizationInformationApplicationService.직원을_채용한다(createEmployeeDto);
+        @Body() hireEmployeeDto: HireEmployeeRequestDto,
+    ): Promise<HireEmployeeResponseDto> {
+        return await this.organizationInformationApplicationService.직원을_채용한다(hireEmployeeDto);
     }
 
     @Post('employee/terminate')

@@ -102,6 +102,13 @@ export class DomainPositionService extends BaseService<Position> {
             .getMany();
     }
 
+    // 가장 낮은 직책 조회 (level이 가장 높은 직책)
+    async findLowestPosition(): Promise<Position | null> {
+        const queryBuilder = this.positionRepository.createQueryBuilder('position');
+        const result = await queryBuilder.orderBy('position.level', 'DESC').limit(1).getOne();
+        return result;
+    }
+
     // level 변경 (순서 재조정 포함)
     async changeLevel(positionId: string, newLevel: number): Promise<Position> {
         const currentPosition = await this.findById(positionId);

@@ -71,6 +71,9 @@ export class Employee {
     @Column({ comment: '퇴사 사유', type: 'text', nullable: true })
     terminationReason?: string;
 
+    @Column({ comment: '메타데이터', type: 'jsonb', nullable: true })
+    metadata?: Record<string, any>;
+
     @Column({ comment: '초기 비밀번호 설정 여부', default: false })
     isInitialPasswordSet: boolean;
 
