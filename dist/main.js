@@ -5778,51 +5778,38 @@ let OrganizationApplicationService = class OrganizationApplicationService {
         return this.직원을_응답DTO로_변환한다(result.employee);
     }
     async 직원수정(id, updateEmployeeDto) {
-        if (updateEmployeeDto.status !== undefined) {
-            const updatedEmployee = await this.organizationContextService.직원재직상태를_변경한다(id, updateEmployeeDto.status, updateEmployeeDto.terminationDate ? new Date(updateEmployeeDto.terminationDate) : undefined);
-            const hasOtherUpdates = updateEmployeeDto.name !== undefined ||
-                updateEmployeeDto.email !== undefined ||
-                updateEmployeeDto.phoneNumber !== undefined ||
-                updateEmployeeDto.dateOfBirth !== undefined ||
-                updateEmployeeDto.gender !== undefined ||
-                updateEmployeeDto.hireDate !== undefined ||
-                updateEmployeeDto.currentRankId !== undefined ||
-                updateEmployeeDto.departmentId !== undefined ||
-                updateEmployeeDto.positionId !== undefined ||
-                updateEmployeeDto.isManager !== undefined;
-            if (hasOtherUpdates) {
-                const finalUpdatedEmployee = await this.organizationContextService.직원정보를_수정한다(id, {
-                    name: updateEmployeeDto.name,
-                    email: updateEmployeeDto.email,
-                    phoneNumber: updateEmployeeDto.phoneNumber,
-                    dateOfBirth: updateEmployeeDto.dateOfBirth ? new Date(updateEmployeeDto.dateOfBirth) : undefined,
-                    gender: updateEmployeeDto.gender,
-                    hireDate: updateEmployeeDto.hireDate ? new Date(updateEmployeeDto.hireDate) : undefined,
-                    currentRankId: updateEmployeeDto.currentRankId,
-                    departmentId: updateEmployeeDto.departmentId,
-                    positionId: updateEmployeeDto.positionId,
-                    isManager: updateEmployeeDto.isManager,
-                });
-                return this.직원을_응답DTO로_변환한다(finalUpdatedEmployee);
-            }
-            return this.직원을_응답DTO로_변환한다(updatedEmployee);
+        let employee;
+        const hasOtherUpdates = updateEmployeeDto.name !== undefined ||
+            updateEmployeeDto.email !== undefined ||
+            updateEmployeeDto.phoneNumber !== undefined ||
+            updateEmployeeDto.dateOfBirth !== undefined ||
+            updateEmployeeDto.gender !== undefined ||
+            updateEmployeeDto.hireDate !== undefined ||
+            updateEmployeeDto.currentRankId !== undefined ||
+            updateEmployeeDto.departmentId !== undefined ||
+            updateEmployeeDto.positionId !== undefined ||
+            updateEmployeeDto.isManager !== undefined;
+        if (hasOtherUpdates) {
+            employee = await this.organizationContextService.직원정보를_수정한다(id, {
+                name: updateEmployeeDto.name,
+                email: updateEmployeeDto.email,
+                phoneNumber: updateEmployeeDto.phoneNumber,
+                dateOfBirth: updateEmployeeDto.dateOfBirth ? new Date(updateEmployeeDto.dateOfBirth) : undefined,
+                gender: updateEmployeeDto.gender,
+                hireDate: updateEmployeeDto.hireDate ? new Date(updateEmployeeDto.hireDate) : undefined,
+                currentRankId: updateEmployeeDto.currentRankId,
+                departmentId: updateEmployeeDto.departmentId,
+                positionId: updateEmployeeDto.positionId,
+                isManager: updateEmployeeDto.isManager,
+            });
         }
-        const updatedEmployee = await this.organizationContextService.직원정보를_수정한다(id, {
-            name: updateEmployeeDto.name,
-            email: updateEmployeeDto.email,
-            phoneNumber: updateEmployeeDto.phoneNumber,
-            dateOfBirth: updateEmployeeDto.dateOfBirth ? new Date(updateEmployeeDto.dateOfBirth) : undefined,
-            gender: updateEmployeeDto.gender,
-            hireDate: updateEmployeeDto.hireDate ? new Date(updateEmployeeDto.hireDate) : undefined,
-            currentRankId: updateEmployeeDto.currentRankId,
-            terminationDate: updateEmployeeDto.terminationDate
-                ? new Date(updateEmployeeDto.terminationDate)
-                : undefined,
-            departmentId: updateEmployeeDto.departmentId,
-            positionId: updateEmployeeDto.positionId,
-            isManager: updateEmployeeDto.isManager,
-        });
-        return this.직원을_응답DTO로_변환한다(updatedEmployee);
+        if (updateEmployeeDto.status !== undefined) {
+            employee = await this.organizationContextService.직원재직상태를_변경한다(id, updateEmployeeDto.status, updateEmployeeDto.terminationDate ? new Date(updateEmployeeDto.terminationDate) : undefined);
+        }
+        if (!employee) {
+            employee = await this.organizationContextService.직원을_조회한다(id);
+        }
+        return this.직원을_응답DTO로_변환한다(employee);
     }
     async 직원삭제(id) {
         await this.organizationContextService.직원을_삭제한다(id);
@@ -13587,6 +13574,14 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
         return updatedEmployee;
     }
     async 직원재직상태를_변경한다(employeeId, status, terminationDate, terminationReason) {
+        if (status === enums_1.EmployeeStatus.Terminated) {
+            const result = await this.직원을_퇴사처리한다({
+                employeeIdentifier: employeeId,
+                terminationDate: terminationDate || new Date(),
+                terminationReason,
+            });
+            return result.employee;
+        }
         return await this.직원레포지토리.manager.transaction(async (transactionalEntityManager) => {
             const employee = await transactionalEntityManager.findOne(entities_1.Employee, {
                 where: { id: employeeId },
@@ -13594,68 +13589,12 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
             if (!employee) {
                 throw new common_1.NotFoundException('직원을 찾을 수 없습니다.');
             }
-            if (status === enums_1.EmployeeStatus.Terminated) {
-                const terminatedDepartment = await this.부서서비스.findByCode('퇴사자');
-                if (!terminatedDepartment) {
-                    throw new common_1.NotFoundException('퇴사자 부서를 찾을 수 없습니다.');
-                }
-                const currentAssignments = await this.직원부서직책서비스.findAllByEmployeeId(employeeId);
-                let currentDepartmentInfo = '';
-                for (const assignment of currentAssignments) {
-                    const department = await this.부서서비스.findById(assignment.departmentId);
-                    if (department.type === department_entity_1.DepartmentType.DEPARTMENT) {
-                        currentDepartmentInfo = `${department.departmentName} (${department.departmentCode})`;
-                        break;
-                    }
-                }
-                const finalTerminationReason = terminationReason
-                    ? `${terminationReason}\n이전 부서: ${currentDepartmentInfo || '없음'}`
-                    : `이전 부서: ${currentDepartmentInfo || '없음'}`;
-                await transactionalEntityManager.update(entities_1.Employee, { id: employeeId }, {
-                    status: enums_1.EmployeeStatus.Terminated,
-                    terminationDate: terminationDate || new Date(),
-                    terminationReason: finalTerminationReason,
-                });
-                let departmentAssignment = null;
-                for (const assignment of currentAssignments) {
-                    const department = await this.부서서비스.findById(assignment.departmentId);
-                    if (department.type === department_entity_1.DepartmentType.DEPARTMENT) {
-                        departmentAssignment = assignment;
-                        break;
-                    }
-                }
-                const defaultPosition = await this.직책서비스.findAll();
-                const firstPosition = defaultPosition.length > 0 ? defaultPosition[0] : null;
-                if (!firstPosition) {
-                    throw new common_1.NotFoundException('기본 직책을 찾을 수 없습니다.');
-                }
-                if (departmentAssignment) {
-                    await transactionalEntityManager.update(entities_1.EmployeeDepartmentPosition, { id: departmentAssignment.id }, {
-                        departmentId: terminatedDepartment.id,
-                        positionId: firstPosition.id,
-                        isManager: false,
-                    });
-                }
-                else {
-                    await transactionalEntityManager.save(entities_1.EmployeeDepartmentPosition, {
-                        employeeId,
-                        departmentId: terminatedDepartment.id,
-                        positionId: firstPosition.id,
-                        isManager: false,
-                    });
-                }
-                await this.직원토큰서비스.deleteAllByEmployeeId(employeeId);
-                await this.직원FCM토큰서비스.deleteAllByEmployeeId(employeeId);
-                await this.직원시스템역할서비스.unassignAllRolesByEmployeeId(employeeId);
-            }
-            else {
-                const updateData = {
-                    status,
-                    terminationDate: null,
-                    terminationReason: null,
-                };
-                await transactionalEntityManager.update(entities_1.Employee, { id: employeeId }, updateData);
-            }
+            const updateData = {
+                status,
+                terminationDate: null,
+                terminationReason: null,
+            };
+            await transactionalEntityManager.update(entities_1.Employee, { id: employeeId }, updateData);
             const updatedEmployee = await transactionalEntityManager.findOne(entities_1.Employee, {
                 where: { id: employeeId },
             });
@@ -14201,18 +14140,82 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
         return { employee, department, rank };
     }
     async 직원을_퇴사처리한다(data) {
-        const employee = await this.직원을_조회한다(data.employeeIdentifier);
-        this.퇴사처리_검증을_수행한다(employee, data.terminationDate);
-        const updatedEmployee = await this.직원서비스.updateEmployee(employee.id, {
-            status: enums_1.EmployeeStatus.Terminated,
-            terminationDate: data.terminationDate,
-            terminationReason: data.terminationReason,
-            updatedAt: new Date(),
+        return await this.직원레포지토리.manager.transaction(async (transactionalEntityManager) => {
+            const employee = await this.직원을_조회한다(data.employeeIdentifier);
+            this.퇴사처리_검증을_수행한다(employee, data.terminationDate);
+            const employeeId = employee.id;
+            const terminatedDepartment = await this.부서서비스.findByCode('퇴사자');
+            if (!terminatedDepartment) {
+                throw new common_1.NotFoundException('퇴사자 부서를 찾을 수 없습니다.');
+            }
+            const currentAssignments = await this.직원부서직책서비스.findAllByEmployeeId(employeeId);
+            let currentDepartment = null;
+            for (const assignment of currentAssignments) {
+                const department = await this.부서서비스.findById(assignment.departmentId);
+                if (department.type === department_entity_1.DepartmentType.DEPARTMENT) {
+                    currentDepartment = department;
+                    break;
+                }
+            }
+            const metadata = {
+                termination: {
+                    previousDepartment: currentDepartment
+                        ? {
+                            id: currentDepartment.id,
+                            name: currentDepartment.departmentName,
+                            code: currentDepartment.departmentCode,
+                        }
+                        : null,
+                },
+            };
+            await transactionalEntityManager.update(entities_1.Employee, { id: employeeId }, {
+                status: enums_1.EmployeeStatus.Terminated,
+                terminationDate: data.terminationDate,
+                terminationReason: data.terminationReason,
+                metadata,
+            });
+            let departmentAssignment = null;
+            for (const assignment of currentAssignments) {
+                const department = await this.부서서비스.findById(assignment.departmentId);
+                if (department.type === department_entity_1.DepartmentType.DEPARTMENT) {
+                    departmentAssignment = assignment;
+                    break;
+                }
+            }
+            const defaultPosition = await this.직책서비스.findAll();
+            const firstPosition = defaultPosition.length > 0 ? defaultPosition[0] : null;
+            if (!firstPosition) {
+                throw new common_1.NotFoundException('기본 직책을 찾을 수 없습니다.');
+            }
+            if (departmentAssignment) {
+                await transactionalEntityManager.update(entities_1.EmployeeDepartmentPosition, { id: departmentAssignment.id }, {
+                    departmentId: terminatedDepartment.id,
+                    positionId: firstPosition.id,
+                    isManager: false,
+                });
+            }
+            else {
+                await transactionalEntityManager.save(entities_1.EmployeeDepartmentPosition, {
+                    employeeId,
+                    departmentId: terminatedDepartment.id,
+                    positionId: firstPosition.id,
+                    isManager: false,
+                });
+            }
+            await transactionalEntityManager.delete(entities_1.EmployeeToken, { employeeId });
+            await transactionalEntityManager.delete(entities_1.EmployeeFcmToken, { employeeId });
+            await transactionalEntityManager.delete(entities_1.EmployeeSystemRole, { employeeId });
+            const updatedEmployee = await transactionalEntityManager.findOne(entities_1.Employee, {
+                where: { id: employeeId },
+            });
+            if (!updatedEmployee) {
+                throw new common_1.NotFoundException('업데이트된 직원 정보를 찾을 수 없습니다.');
+            }
+            return {
+                employee: updatedEmployee,
+                message: `${employee.name}(${employee.employeeNumber}) 직원이 성공적으로 퇴사처리되었습니다.`,
+            };
         });
-        return {
-            employee: updatedEmployee,
-            message: `${employee.name}(${employee.employeeNumber}) 직원이 성공적으로 퇴사처리되었습니다.`,
-        };
     }
     퇴사처리_검증을_수행한다(employee, terminationDate) {
         if (employee.status === enums_1.EmployeeStatus.Terminated) {
@@ -16674,7 +16677,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a, _b, _c, _d, _e, _f, _g, _h;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Employee = void 0;
 const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
@@ -16753,6 +16756,10 @@ __decorate([
     __metadata("design:type", String)
 ], Employee.prototype, "terminationReason", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ comment: '메타데이터', type: 'jsonb', nullable: true }),
+    __metadata("design:type", typeof (_g = typeof Record !== "undefined" && Record) === "function" ? _g : Object)
+], Employee.prototype, "metadata", void 0);
+__decorate([
     (0, typeorm_1.Column)({ comment: '초기 비밀번호 설정 여부', default: false }),
     __metadata("design:type", Boolean)
 ], Employee.prototype, "isInitialPasswordSet", void 0);
@@ -16766,11 +16773,11 @@ __decorate([
 ], Employee.prototype, "fcmTokens", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)({ comment: '생성일' }),
-    __metadata("design:type", typeof (_g = typeof Date !== "undefined" && Date) === "function" ? _g : Object)
+    __metadata("design:type", typeof (_h = typeof Date !== "undefined" && Date) === "function" ? _h : Object)
 ], Employee.prototype, "createdAt", void 0);
 __decorate([
     (0, typeorm_1.UpdateDateColumn)({ comment: '수정일' }),
-    __metadata("design:type", typeof (_h = typeof Date !== "undefined" && Date) === "function" ? _h : Object)
+    __metadata("design:type", typeof (_j = typeof Date !== "undefined" && Date) === "function" ? _j : Object)
 ], Employee.prototype, "updatedAt", void 0);
 exports.Employee = Employee = __decorate([
     (0, typeorm_1.Entity)('employees')
