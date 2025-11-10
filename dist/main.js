@@ -14295,7 +14295,10 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
         return await this.부서서비스.updateDepartment(departmentId, updateData);
     }
     async 부서를_삭제한다(departmentId) {
-        await this.부서서비스.findById(departmentId);
+        const department = await this.부서서비스.findById(departmentId);
+        if (!department) {
+            throw new common_1.NotFoundException('부서를 찾을 수 없습니다.');
+        }
         const childDepartments = await this.부서서비스.findChildDepartments(departmentId);
         if (childDepartments.length > 0) {
             throw new Error('하위 부서가 존재하여 삭제할 수 없습니다.');
@@ -14304,7 +14307,36 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
         if (assignedEmployees.length > 0) {
             throw new Error('해당 부서에 배치된 직원이 있어 삭제할 수 없습니다.');
         }
-        await this.부서서비스.deleteDepartment(departmentId);
+        const parentDepartmentId = department.parentDepartmentId || null;
+        const deletedOrder = department.order;
+        await this.부서레포지토리.manager.transaction(async (transactionalEntityManager) => {
+            await transactionalEntityManager.update(entities_1.Department, { id: departmentId }, { order: -999 });
+            const queryBuilder = transactionalEntityManager
+                .createQueryBuilder(entities_1.Department, 'department')
+                .where('department.id != :departmentId', { departmentId });
+            if (parentDepartmentId === null) {
+                queryBuilder.andWhere('department.parentDepartmentId IS NULL');
+            }
+            else {
+                queryBuilder.andWhere('department.parentDepartmentId = :parentDepartmentId', {
+                    parentDepartmentId,
+                });
+            }
+            queryBuilder
+                .andWhere('department.order > :deletedOrder', { deletedOrder })
+                .orderBy('department.order', 'ASC');
+            const departmentsToUpdate = await queryBuilder.getMany();
+            if (departmentsToUpdate.length > 0) {
+                const tempOffset = -1000000;
+                for (let i = 0; i < departmentsToUpdate.length; i++) {
+                    await transactionalEntityManager.update(entities_1.Department, { id: departmentsToUpdate[i].id }, { order: tempOffset - i });
+                }
+                for (const dept of departmentsToUpdate) {
+                    await transactionalEntityManager.update(entities_1.Department, { id: dept.id }, { order: dept.order - 1 });
+                }
+            }
+            await transactionalEntityManager.delete(entities_1.Department, { id: departmentId });
+        });
     }
     async 부서순서를_변경한다(departmentId, newOrder) {
         const department = await this.부서서비스.findById(departmentId);

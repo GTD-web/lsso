@@ -1684,11 +1684,14 @@ export class OrganizationManagementContextService {
 
     /**
      * 부서 삭제 (완전한 비즈니스 로직 사이클)
-     * 존재 확인 → 제약 조건 확인 → 삭제
+     * 존재 확인 → 제약 조건 확인 → 순서 조정 → 삭제
      */
     async 부서를_삭제한다(departmentId: string): Promise<void> {
-        // 1. 부서 존재 확인
-        await this.부서서비스.findById(departmentId);
+        // 1. 부서 존재 확인 및 정보 조회
+        const department = await this.부서서비스.findById(departmentId);
+        if (!department) {
+            throw new NotFoundException('부서를 찾을 수 없습니다.');
+        }
 
         // 2. 하위 부서가 있는지 확인
         const childDepartments = await this.부서서비스.findChildDepartments(departmentId);
@@ -1702,8 +1705,54 @@ export class OrganizationManagementContextService {
             throw new Error('해당 부서에 배치된 직원이 있어 삭제할 수 없습니다.');
         }
 
-        // 4. 부서 삭제
-        await this.부서서비스.deleteDepartment(departmentId);
+        // 4. 순서 조정 및 부서 삭제 (트랜잭션으로 묶음)
+        const parentDepartmentId = department.parentDepartmentId || null;
+        const deletedOrder = department.order;
+
+        await this.부서레포지토리.manager.transaction(async (transactionalEntityManager) => {
+            // 4-1. 삭제할 부서의 순서를 먼저 임시 음수 값으로 변경 (unique constraint 충돌 회피)
+            await transactionalEntityManager.update(Department, { id: departmentId }, { order: -999 });
+
+            // 4-2. 삭제할 부서보다 큰 순서를 가진 같은 부모의 부서들 조회
+            const queryBuilder = transactionalEntityManager
+                .createQueryBuilder(Department, 'department')
+                .where('department.id != :departmentId', { departmentId });
+
+            if (parentDepartmentId === null) {
+                queryBuilder.andWhere('department.parentDepartmentId IS NULL');
+            } else {
+                queryBuilder.andWhere('department.parentDepartmentId = :parentDepartmentId', {
+                    parentDepartmentId,
+                });
+            }
+
+            queryBuilder
+                .andWhere('department.order > :deletedOrder', { deletedOrder })
+                .orderBy('department.order', 'ASC');
+
+            const departmentsToUpdate = await queryBuilder.getMany();
+
+            // 4-3. 순서를 1씩 감소시켜 업데이트
+            if (departmentsToUpdate.length > 0) {
+                // unique constraint 충돌을 피하기 위해 임시 음수 값으로 먼저 변경
+                const tempOffset = -1000000;
+                for (let i = 0; i < departmentsToUpdate.length; i++) {
+                    await transactionalEntityManager.update(
+                        Department,
+                        { id: departmentsToUpdate[i].id },
+                        { order: tempOffset - i },
+                    );
+                }
+
+                // 최종 순서로 업데이트
+                for (const dept of departmentsToUpdate) {
+                    await transactionalEntityManager.update(Department, { id: dept.id }, { order: dept.order - 1 });
+                }
+            }
+
+            // 4-4. 부서 삭제
+            await transactionalEntityManager.delete(Department, { id: departmentId });
+        });
     }
 
     /**
