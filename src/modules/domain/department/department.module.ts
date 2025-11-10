@@ -7,6 +7,6 @@ import { Department } from './department.entity';
 @Module({
     imports: [TypeOrmModule.forFeature([Department])],
     providers: [DomainDepartmentService, DomainDepartmentRepository],
-    exports: [DomainDepartmentService],
+    exports: [DomainDepartmentService, DomainDepartmentRepository],
 })
 export class DomainDepartmentModule {}

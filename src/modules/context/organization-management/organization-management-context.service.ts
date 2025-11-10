@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { DomainEmployeeService } from '../../domain/employee/employee.service';
 import { DomainDepartmentService } from '../../domain/department/department.service';
+import { DomainDepartmentRepository } from '../../domain/department/department.repository';
 import { DomainPositionService } from '../../domain/position/position.service';
 import { DomainRankService } from '../../domain/rank/rank.service';
 import { DomainEmployeeDepartmentPositionService } from '../../domain/employee-department-position/employee-department-position.service';
@@ -36,6 +37,7 @@ export class OrganizationManagementContextService {
     constructor(
         private readonly 직원서비스: DomainEmployeeService,
         private readonly 부서서비스: DomainDepartmentService,
+        private readonly 부서레포지토리: DomainDepartmentRepository,
         private readonly 직책서비스: DomainPositionService,
         private readonly 직급서비스: DomainRankService,
         private readonly 직원부서직책서비스: DomainEmployeeDepartmentPositionService,
@@ -421,12 +423,12 @@ export class OrganizationManagementContextService {
         if (hasDepartmentId || hasPositionId) {
             // 기존 배치 정보 조회
             const existingAssignments = await this.직원부서직책서비스.findAllByEmployeeId(employeeId);
-
             if (existingAssignments.length > 0) {
                 // 각 배치의 부서 정보 조회하여 DEPARTMENT 타입 찾기
                 const departmentAssignments = [];
                 for (const assignment of existingAssignments) {
                     const department = await this.부서서비스.findById(assignment.departmentId);
+
                     if (department.type === DepartmentType.DEPARTMENT) {
                         departmentAssignments.push({ assignment, department });
                     }
@@ -1609,36 +1611,49 @@ export class OrganizationManagementContextService {
             maxOrder,
         );
 
-        // 4. 순서 업데이트 실행 (unique 제약 충돌 회피)
-        // Step 1: 이동할 부서를 임시 음수 값으로 변경 (unique 제약 회피)
-        await this.부서서비스.updateDepartment(departmentId, { order: -999 });
+        // 4. 순서 업데이트 실행 (unique 제약 충돌 회피) - 트랜잭션으로 묶음
+        await this.부서레포지토리.manager.transaction(async (transactionalEntityManager) => {
+            // Step 1: 이동할 부서를 임시 음수 값으로 변경 (unique 제약 회피)
+            await transactionalEntityManager.update(Department, { id: departmentId }, { order: -999 });
 
-        // Step 2: 나머지 부서들의 순서 업데이트
-        const updates: { id: string; order: number }[] = [];
-        if (currentOrder < newOrder) {
-            // 아래로 이동: 현재 순서보다 크고 새로운 순서 이하인 부서들을 -1
-            console.log('affectedDepartments', affectedDepartments);
-            for (const dept of affectedDepartments) {
-                if (dept.id !== departmentId && dept.order > currentOrder && dept.order <= newOrder) {
-                    updates.push({ id: dept.id, order: dept.order - 1 });
+            // Step 2: 나머지 부서들의 순서 업데이트
+            const updates: { id: string; order: number }[] = [];
+            if (currentOrder < newOrder) {
+                // 아래로 이동: 현재 순서보다 크고 새로운 순서 이하인 부서들을 -1
+                console.log('affectedDepartments', affectedDepartments);
+                for (const dept of affectedDepartments) {
+                    if (dept.id !== departmentId && dept.order > currentOrder && dept.order <= newOrder) {
+                        updates.push({ id: dept.id, order: dept.order - 1 });
+                    }
+                }
+            } else {
+                // 위로 이동: 새로운 순서 이상이고 현재 순서보다 작은 부서들을 +1
+                for (const dept of affectedDepartments) {
+                    if (dept.id !== departmentId && dept.order >= newOrder && dept.order < currentOrder) {
+                        updates.push({ id: dept.id, order: dept.order + 1 });
+                    }
                 }
             }
-        } else {
-            // 위로 이동: 새로운 순서 이상이고 현재 순서보다 작은 부서들을 +1
-            for (const dept of affectedDepartments) {
-                if (dept.id !== departmentId && dept.order >= newOrder && dept.order < currentOrder) {
-                    updates.push({ id: dept.id, order: dept.order + 1 });
+
+            // Step 3: 나머지 부서들 일괄 업데이트
+            if (updates.length > 0) {
+                // bulkUpdateOrders 내부에서도 트랜잭션을 사용하므로, 여기서는 직접 업데이트
+                const tempOffset = -1000000;
+                for (let i = 0; i < updates.length; i++) {
+                    await transactionalEntityManager.update(
+                        Department,
+                        { id: updates[i].id },
+                        { order: tempOffset - i },
+                    );
+                }
+                for (const update of updates) {
+                    await transactionalEntityManager.update(Department, { id: update.id }, { order: update.order });
                 }
             }
-        }
 
-        // Step 3: 나머지 부서들 일괄 업데이트
-        if (updates.length > 0) {
-            await this.부서서비스.bulkUpdateOrders(updates);
-        }
-
-        // Step 4: 이동할 부서를 최종 순서로 변경
-        await this.부서서비스.updateDepartment(departmentId, { order: newOrder });
+            // Step 4: 이동할 부서를 최종 순서로 변경
+            await transactionalEntityManager.update(Department, { id: departmentId }, { order: newOrder });
+        });
 
         // 5. 업데이트된 부서 반환
         return await this.부서서비스.findById(departmentId);
