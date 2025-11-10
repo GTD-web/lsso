@@ -27,8 +27,6 @@ export class DomainDepartmentRepository extends BaseRepository<Department> {
             take: repositoryOptions?.take,
             withDeleted: repositoryOptions?.withDeleted,
         });
-        return result.filter(
-            (department) => department.departmentCode !== '관리자' && department.departmentCode !== '퇴사자',
-        );
+        return result.filter((department) => department.departmentCode !== '관리자');
     }
 }

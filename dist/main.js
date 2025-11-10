@@ -15101,7 +15101,7 @@ let DomainDepartmentRepository = class DomainDepartmentRepository extends base_r
             take: repositoryOptions?.take,
             withDeleted: repositoryOptions?.withDeleted,
         });
-        return result.filter((department) => department.departmentCode !== '관리자' && department.departmentCode !== '퇴사자');
+        return result.filter((department) => department.departmentCode !== '관리자');
     }
 };
 exports.DomainDepartmentRepository = DomainDepartmentRepository;
