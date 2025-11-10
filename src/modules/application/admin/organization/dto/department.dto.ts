@@ -138,6 +138,9 @@ export class DepartmentEmployeeInfoDto {
 
     @ApiProperty({ description: '매니저 여부' })
     isManager: boolean;
+
+    @ApiPropertyOptional({ description: '메타데이터', type: 'object', required: false })
+    metadata?: Record<string, any>;
 }
 
 export class DepartmentWithEmployeesDto {

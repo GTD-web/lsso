@@ -4302,7 +4302,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a, _b, _c, _d, _e, _f;
+var _a, _b, _c, _d, _e, _f, _g;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DepartmentHierarchyResponseDto = exports.DepartmentWithEmployeesDto = exports.DepartmentEmployeeInfoDto = exports.UpdateDepartmentParentRequestDto = exports.UpdateDepartmentOrderRequestDto = exports.DepartmentListResponseDto = exports.DepartmentResponseDto = exports.UpdateDepartmentRequestDto = exports.CreateDepartmentRequestDto = void 0;
 const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
@@ -4484,6 +4484,10 @@ __decorate([
     (0, swagger_1.ApiProperty)({ description: '매니저 여부' }),
     __metadata("design:type", Boolean)
 ], DepartmentEmployeeInfoDto.prototype, "isManager", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '메타데이터', type: 'object', required: false }),
+    __metadata("design:type", typeof (_f = typeof Record !== "undefined" && Record) === "function" ? _f : Object)
+], DepartmentEmployeeInfoDto.prototype, "metadata", void 0);
 class DepartmentWithEmployeesDto {
 }
 exports.DepartmentWithEmployeesDto = DepartmentWithEmployeesDto;
@@ -4501,7 +4505,7 @@ __decorate([
 ], DepartmentWithEmployeesDto.prototype, "departmentCode", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '부서 유형', enum: department_entity_1.DepartmentType }),
-    __metadata("design:type", typeof (_f = typeof department_entity_1.DepartmentType !== "undefined" && department_entity_1.DepartmentType) === "function" ? _f : Object)
+    __metadata("design:type", typeof (_g = typeof department_entity_1.DepartmentType !== "undefined" && department_entity_1.DepartmentType) === "function" ? _g : Object)
 ], DepartmentWithEmployeesDto.prototype, "type", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '상위 부서 ID', required: false }),
@@ -5918,6 +5922,7 @@ let OrganizationApplicationService = class OrganizationApplicationService {
                     rankId: employee.currentRankId,
                     rankName: employeeDetail?.rank?.rankName,
                     isManager: departmentPosition?.isManager || false,
+                    metadata: employee.metadata,
                 });
             }
             const childDepartments = this.부서_계층구조를_직원정보와_함께_변환한다(department.childDepartments || [], employeesByDepartment, departmentDetails);
@@ -13382,7 +13387,6 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
         if (employees.length === 0) {
             return [];
         }
-        console.log('employees', employees);
         const employeeIds = employees.map((emp) => emp.id);
         const [allAssignments, allEmployeeTokens, allEmployeeFcmTokens, allEmployeeSystemRoles] = await Promise.all([
             this.직원부서직책서비스.findAllByEmployeeIds(employeeIds),
@@ -13922,15 +13926,7 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
             let employee = null;
             try {
                 employee = await this.직원을_조회한다(employeeId);
-                await this.직원서비스.updateEmployee(employeeId, {
-                    status,
-                    terminationDate: status === enums_1.EmployeeStatus.Terminated ? terminationDate : null,
-                });
-                if (status === enums_1.EmployeeStatus.Terminated) {
-                    await this.직원토큰서비스.deleteAllByEmployeeId(employeeId);
-                    await this.직원FCM토큰서비스.deleteAllByEmployeeId(employeeId);
-                    await this.직원시스템역할서비스.unassignAllRolesByEmployeeId(employeeId);
-                }
+                await this.직원재직상태를_변경한다(employeeId, status, terminationDate);
                 successIds.push(employeeId);
             }
             catch (error) {

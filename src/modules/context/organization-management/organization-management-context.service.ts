@@ -151,7 +151,7 @@ export class OrganizationManagementContextService {
         if (employees.length === 0) {
             return [];
         }
-        console.log('employees', employees);
+
         const employeeIds = employees.map((emp) => emp.id);
 
         // 2. 모든 관련 데이터를 배치로 조회 (병렬 처리)
@@ -978,18 +978,8 @@ export class OrganizationManagementContextService {
                 // 직원 존재 확인
                 employee = await this.직원을_조회한다(employeeId);
 
-                // 재직상태 변경
-                await this.직원서비스.updateEmployee(employeeId, {
-                    status,
-                    terminationDate: status === EmployeeStatus.Terminated ? terminationDate : null,
-                });
-
-                // 퇴사상태로 변경하는 경우 token, fcmToken, systemRole 삭제
-                if (status === EmployeeStatus.Terminated) {
-                    await this.직원토큰서비스.deleteAllByEmployeeId(employeeId);
-                    await this.직원FCM토큰서비스.deleteAllByEmployeeId(employeeId);
-                    await this.직원시스템역할서비스.unassignAllRolesByEmployeeId(employeeId);
-                }
+                // 재직상태 변경 (직원재직상태를_변경한다 함수 사용)
+                await this.직원재직상태를_변경한다(employeeId, status, terminationDate);
 
                 successIds.push(employeeId);
             } catch (error) {

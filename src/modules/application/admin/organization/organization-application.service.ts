@@ -582,6 +582,7 @@ export class OrganizationApplicationService {
                     rankId: employee.currentRankId,
                     rankName: employeeDetail?.rank?.rankName,
                     isManager: departmentPosition?.isManager || false,
+                    metadata: employee.metadata,
                 });
             }
 
