@@ -7,7 +7,7 @@ import {
     ManyToOne,
     JoinColumn,
 } from 'typeorm';
-import { User } from '../user/user.entity';
+import { Employee } from '../employee/employee.entity';
 
 @Entity('tokens')
 export class Token {
@@ -49,11 +49,4 @@ export class Token {
 
     @UpdateDateColumn()
     updatedAt: Date;
-
-    @Column({ nullable: true })
-    userId: string;
-
-    @ManyToOne(() => User, (user) => user.tokens, { onDelete: 'CASCADE' })
-    @JoinColumn({ name: 'userId' })
-    user: User;
 }

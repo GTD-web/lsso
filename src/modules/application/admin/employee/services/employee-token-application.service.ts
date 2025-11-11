@@ -307,7 +307,6 @@ export class EmployeeTokenApplicationService {
             isActive: token.isActive,
             createdAt: token.createdAt,
             updatedAt: token.updatedAt,
-            userId: token.userId,
         };
     }
 

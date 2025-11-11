@@ -2388,10 +2388,6 @@ __decorate([
     (0, swagger_1.ApiProperty)({ description: '수정일시' }),
     __metadata("design:type", typeof (_l = typeof Date !== "undefined" && Date) === "function" ? _l : Object)
 ], TokenResponseDto.prototype, "updatedAt", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: '사용자 ID' }),
-    __metadata("design:type", String)
-], TokenResponseDto.prototype, "userId", void 0);
 
 
 /***/ }),
@@ -3225,7 +3221,6 @@ let EmployeeTokenApplicationService = class EmployeeTokenApplicationService {
             isActive: token.isActive,
             createdAt: token.createdAt,
             updatedAt: token.updatedAt,
-            userId: token.userId,
         };
     }
     async 토큰_엔티티_삭제(tokenId) {
@@ -13067,7 +13062,6 @@ const position_module_1 = __webpack_require__(/*! ../../domain/position/position
 const rank_module_1 = __webpack_require__(/*! ../../domain/rank/rank.module */ "./src/modules/domain/rank/rank.module.ts");
 const employee_department_position_module_1 = __webpack_require__(/*! ../../domain/employee-department-position/employee-department-position.module */ "./src/modules/domain/employee-department-position/employee-department-position.module.ts");
 const employee_rank_history_module_1 = __webpack_require__(/*! ../../domain/employee-rank-history/employee-rank-history.module */ "./src/modules/domain/employee-rank-history/employee-rank-history.module.ts");
-const user_module_1 = __webpack_require__(Object(function webpackMissingModule() { var e = new Error("Cannot find module '../../domain/user/user.module'"); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
 let MigrationModule = class MigrationModule {
 };
 exports.MigrationModule = MigrationModule;
@@ -13080,7 +13074,6 @@ exports.MigrationModule = MigrationModule = __decorate([
             rank_module_1.DomainRankModule,
             employee_department_position_module_1.DomainEmployeeDepartmentPositionModule,
             employee_rank_history_module_1.DomainEmployeeRankHistoryModule,
-            user_module_1.DomainUserModule,
         ],
         providers: [migration_service_1.MigrationService],
         exports: [migration_service_1.MigrationService],
@@ -19360,11 +19353,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a, _b, _c, _d, _e, _f;
+var _a, _b, _c, _d, _e;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Token = void 0;
 const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
-const user_entity_1 = __webpack_require__(Object(function webpackMissingModule() { var e = new Error("Cannot find module '../user/user.entity'"); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
 let Token = class Token {
 };
 exports.Token = Token;
@@ -19418,15 +19410,6 @@ __decorate([
     (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", typeof (_e = typeof Date !== "undefined" && Date) === "function" ? _e : Object)
 ], Token.prototype, "updatedAt", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", String)
-], Token.prototype, "userId", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)(() => user_entity_1.User, (user) => user.tokens, { onDelete: 'CASCADE' }),
-    (0, typeorm_1.JoinColumn)({ name: 'userId' }),
-    __metadata("design:type", typeof (_f = typeof user_entity_1.User !== "undefined" && user_entity_1.User) === "function" ? _f : Object)
-], Token.prototype, "user", void 0);
 exports.Token = Token = __decorate([
     (0, typeorm_1.Entity)('tokens')
 ], Token);
