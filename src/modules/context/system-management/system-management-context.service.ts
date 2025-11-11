@@ -238,12 +238,50 @@ export class SystemManagementContextService {
         return this.시스템역할서비스.createSystemRole(data);
     }
 
-    async 모든_시스템역할을_조회한다(): Promise<SystemRole[]> {
-        return this.시스템역할서비스.findAllSystemRoles();
+    async 모든_시스템역할을_조회한다(): Promise<any[]> {
+        const systemRoles = await this.시스템역할서비스.findAllSystemRoles();
+
+        // 고유한 시스템 ID 수집
+        const uniqueSystemIds = new Set(systemRoles.map((role) => role.systemId));
+
+        // 모든 시스템을 한 번에 조회 후 필터링
+        const allSystems = await this.시스템서비스.findAllSystems();
+        const systems = allSystems.filter((system) => uniqueSystemIds.has(system.id));
+
+        // 시스템 Map 생성 (빠른 조회를 위해)
+        const systemMap = new Map<string, any>();
+        systems.forEach((system) => {
+            systemMap.set(system.id, system);
+        });
+
+        // 메모리에서 시스템 정보 맵핑
+        return systemRoles.map((role) => ({
+            ...role,
+            system: systemMap.get(role.systemId),
+        }));
     }
 
-    async 시스템의_역할목록을_조회한다(systemId: string): Promise<SystemRole[]> {
-        return this.시스템역할서비스.findBySystemId(systemId);
+    async 시스템의_역할목록을_조회한다(systemId: string): Promise<any[]> {
+        const systemRoles = await this.시스템역할서비스.findBySystemId(systemId);
+
+        // 고유한 시스템 ID 수집
+        const uniqueSystemIds = new Set(systemRoles.map((role) => role.systemId));
+
+        // 모든 시스템을 한 번에 조회 후 필터링
+        const allSystems = await this.시스템서비스.findAllSystems();
+        const systems = allSystems.filter((system) => uniqueSystemIds.has(system.id));
+
+        // 시스템 Map 생성 (빠른 조회를 위해)
+        const systemMap = new Map<string, any>();
+        systems.forEach((system) => {
+            systemMap.set(system.id, system);
+        });
+
+        // 메모리에서 시스템 정보 맵핑
+        return systemRoles.map((role) => ({
+            ...role,
+            system: systemMap.get(role.systemId),
+        }));
     }
 
     async 시스템역할을_ID로_조회한다(systemRoleId: string): Promise<SystemRole | null> {

@@ -6830,10 +6830,53 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a, _b;
+var _a, _b, _c, _d;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SystemRoleResponseDto = void 0;
+exports.SystemRoleResponseDto = exports.SystemInfoDto = void 0;
 const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+class SystemInfoDto {
+}
+exports.SystemInfoDto = SystemInfoDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '시스템 ID' }),
+    __metadata("design:type", String)
+], SystemInfoDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '클라이언트 ID' }),
+    __metadata("design:type", String)
+], SystemInfoDto.prototype, "clientId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '시스템 이름' }),
+    __metadata("design:type", String)
+], SystemInfoDto.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '시스템 설명' }),
+    __metadata("design:type", String)
+], SystemInfoDto.prototype, "description", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '도메인' }),
+    __metadata("design:type", String)
+], SystemInfoDto.prototype, "domain", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '허용된 오리진 목록', type: [String] }),
+    __metadata("design:type", Array)
+], SystemInfoDto.prototype, "allowedOrigin", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '헬스체크 URL' }),
+    __metadata("design:type", String)
+], SystemInfoDto.prototype, "healthCheckUrl", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '활성화 상태' }),
+    __metadata("design:type", Boolean)
+], SystemInfoDto.prototype, "isActive", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '생성일시' }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], SystemInfoDto.prototype, "createdAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '수정일시' }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], SystemInfoDto.prototype, "updatedAt", void 0);
 class SystemRoleResponseDto {
 }
 exports.SystemRoleResponseDto = SystemRoleResponseDto;
@@ -6871,12 +6914,16 @@ __decorate([
 ], SystemRoleResponseDto.prototype, "isActive", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '생성일시' }),
-    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
 ], SystemRoleResponseDto.prototype, "createdAt", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '수정일시' }),
-    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+    __metadata("design:type", typeof (_d = typeof Date !== "undefined" && Date) === "function" ? _d : Object)
 ], SystemRoleResponseDto.prototype, "updatedAt", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '시스템 정보', type: SystemInfoDto }),
+    __metadata("design:type", SystemInfoDto)
+], SystemRoleResponseDto.prototype, "system", void 0);
 
 
 /***/ }),
@@ -7280,7 +7327,7 @@ let SystemApplicationService = class SystemApplicationService {
         };
     }
     시스템롤_엔티티를_DTO로_변환(systemRole) {
-        return {
+        const dto = {
             id: systemRole.id,
             systemId: systemRole.systemId,
             roleName: systemRole.roleName,
@@ -7292,6 +7339,21 @@ let SystemApplicationService = class SystemApplicationService {
             createdAt: systemRole.createdAt,
             updatedAt: systemRole.updatedAt,
         };
+        if (systemRole.system) {
+            dto.system = {
+                id: systemRole.system.id,
+                clientId: systemRole.system.clientId,
+                name: systemRole.system.name,
+                description: systemRole.system.description,
+                domain: systemRole.system.domain,
+                allowedOrigin: systemRole.system.allowedOrigin,
+                healthCheckUrl: systemRole.system.healthCheckUrl,
+                isActive: systemRole.system.isActive,
+                createdAt: systemRole.system.createdAt,
+                updatedAt: systemRole.system.updatedAt,
+            };
+        }
+        return dto;
     }
 };
 exports.SystemApplicationService = SystemApplicationService;
@@ -14986,10 +15048,32 @@ let SystemManagementContextService = SystemManagementContextService_1 = class Sy
         return this.시스템역할서비스.createSystemRole(data);
     }
     async 모든_시스템역할을_조회한다() {
-        return this.시스템역할서비스.findAllSystemRoles();
+        const systemRoles = await this.시스템역할서비스.findAllSystemRoles();
+        const uniqueSystemIds = new Set(systemRoles.map((role) => role.systemId));
+        const allSystems = await this.시스템서비스.findAllSystems();
+        const systems = allSystems.filter((system) => uniqueSystemIds.has(system.id));
+        const systemMap = new Map();
+        systems.forEach((system) => {
+            systemMap.set(system.id, system);
+        });
+        return systemRoles.map((role) => ({
+            ...role,
+            system: systemMap.get(role.systemId),
+        }));
     }
     async 시스템의_역할목록을_조회한다(systemId) {
-        return this.시스템역할서비스.findBySystemId(systemId);
+        const systemRoles = await this.시스템역할서비스.findBySystemId(systemId);
+        const uniqueSystemIds = new Set(systemRoles.map((role) => role.systemId));
+        const allSystems = await this.시스템서비스.findAllSystems();
+        const systems = allSystems.filter((system) => uniqueSystemIds.has(system.id));
+        const systemMap = new Map();
+        systems.forEach((system) => {
+            systemMap.set(system.id, system);
+        });
+        return systemRoles.map((role) => ({
+            ...role,
+            system: systemMap.get(role.systemId),
+        }));
     }
     async 시스템역할을_ID로_조회한다(systemRoleId) {
         return this.시스템역할서비스.findById(systemRoleId);
