@@ -863,7 +863,7 @@ exports.typeOrmConfig = typeOrmConfig;
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Entities = exports.EmployeeSystemRole = exports.SystemRole = exports.EmployeeFcmToken = exports.FcmToken = exports.User = exports.Log = exports.SystemWebhook = exports.EmployeeToken = exports.Token = exports.System = exports.WebhookEventLog = exports.Webhook = exports.EmployeeRankHistory = exports.EmployeeDepartmentPosition = exports.Rank = exports.Position = exports.DepartmentType = exports.Department = exports.Employee = void 0;
+exports.Entities = exports.EmployeeSystemRole = exports.SystemRole = exports.EmployeeFcmToken = exports.FcmToken = exports.Log = exports.SystemWebhook = exports.EmployeeToken = exports.Token = exports.System = exports.WebhookEventLog = exports.Webhook = exports.EmployeeRankHistory = exports.EmployeeDepartmentPosition = exports.Rank = exports.Position = exports.DepartmentType = exports.Department = exports.Employee = void 0;
 const employee_entity_1 = __webpack_require__(/*! ../../../src/modules/domain/employee/employee.entity */ "./src/modules/domain/employee/employee.entity.ts");
 Object.defineProperty(exports, "Employee", ({ enumerable: true, get: function () { return employee_entity_1.Employee; } }));
 const department_entity_1 = __webpack_require__(/*! ../../../src/modules/domain/department/department.entity */ "./src/modules/domain/department/department.entity.ts");
@@ -891,8 +891,6 @@ const system_webhook_entity_1 = __webpack_require__(/*! ../../../src/modules/dom
 Object.defineProperty(exports, "SystemWebhook", ({ enumerable: true, get: function () { return system_webhook_entity_1.SystemWebhook; } }));
 const log_entity_1 = __webpack_require__(/*! ../../../src/modules/domain/log/log.entity */ "./src/modules/domain/log/log.entity.ts");
 Object.defineProperty(exports, "Log", ({ enumerable: true, get: function () { return log_entity_1.Log; } }));
-const user_entity_1 = __webpack_require__(/*! ../../../src/modules/domain/user/user.entity */ "./src/modules/domain/user/user.entity.ts");
-Object.defineProperty(exports, "User", ({ enumerable: true, get: function () { return user_entity_1.User; } }));
 const fcm_token_entity_1 = __webpack_require__(/*! ../../../src/modules/domain/fcm-token/fcm-token.entity */ "./src/modules/domain/fcm-token/fcm-token.entity.ts");
 Object.defineProperty(exports, "FcmToken", ({ enumerable: true, get: function () { return fcm_token_entity_1.FcmToken; } }));
 const employee_fcm_token_entity_1 = __webpack_require__(/*! ../../../src/modules/domain/employee-fcm-token/employee-fcm-token.entity */ "./src/modules/domain/employee-fcm-token/employee-fcm-token.entity.ts");
@@ -915,7 +913,6 @@ exports.Entities = [
     employee_token_entity_1.EmployeeToken,
     system_webhook_entity_1.SystemWebhook,
     log_entity_1.Log,
-    user_entity_1.User,
     fcm_token_entity_1.FcmToken,
     employee_fcm_token_entity_1.EmployeeFcmToken,
     system_role_entity_1.SystemRole,
@@ -13070,7 +13067,7 @@ const position_module_1 = __webpack_require__(/*! ../../domain/position/position
 const rank_module_1 = __webpack_require__(/*! ../../domain/rank/rank.module */ "./src/modules/domain/rank/rank.module.ts");
 const employee_department_position_module_1 = __webpack_require__(/*! ../../domain/employee-department-position/employee-department-position.module */ "./src/modules/domain/employee-department-position/employee-department-position.module.ts");
 const employee_rank_history_module_1 = __webpack_require__(/*! ../../domain/employee-rank-history/employee-rank-history.module */ "./src/modules/domain/employee-rank-history/employee-rank-history.module.ts");
-const user_module_1 = __webpack_require__(/*! ../../domain/user/user.module */ "./src/modules/domain/user/user.module.ts");
+const user_module_1 = __webpack_require__(Object(function webpackMissingModule() { var e = new Error("Cannot find module '../../domain/user/user.module'"); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
 let MigrationModule = class MigrationModule {
 };
 exports.MigrationModule = MigrationModule;
@@ -13109,7 +13106,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a, _b, _c, _d, _e, _f, _g;
+var _a, _b, _c, _d, _e, _f;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MigrationService = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
@@ -13124,19 +13121,16 @@ const axios_1 = __webpack_require__(/*! axios */ "axios");
 const department_response_dto_1 = __webpack_require__(/*! ./dto/department-response.dto */ "./src/modules/context/migration/dto/department-response.dto.ts");
 const position_response_dto_1 = __webpack_require__(/*! ./dto/position-response.dto */ "./src/modules/context/migration/dto/position-response.dto.ts");
 const rank_response_dto_1 = __webpack_require__(/*! ./dto/rank-response.dto */ "./src/modules/context/migration/dto/rank-response.dto.ts");
-const user_service_1 = __webpack_require__(/*! ../../domain/user/user.service */ "./src/modules/domain/user/user.service.ts");
 let MigrationService = class MigrationService {
-    constructor(employeeService, departmentService, positionService, rankService, employeeDepartmentPositionService, employeeRankHistoryService, userService) {
+    constructor(employeeService, departmentService, positionService, rankService, employeeDepartmentPositionService, employeeRankHistoryService) {
         this.employeeService = employeeService;
         this.departmentService = departmentService;
         this.positionService = positionService;
         this.rankService = rankService;
         this.employeeDepartmentPositionService = employeeDepartmentPositionService;
         this.employeeRankHistoryService = employeeRankHistoryService;
-        this.userService = userService;
     }
-    async onApplicationBootstrap() {
-    }
+    async onApplicationBootstrap() { }
     async getEmployees() {
         const response = await axios_1.default.get(`${process.env.METADATA_MANAGER_URL}/api/employees?detailed=true`);
         const employees = response.data.map((employee) => new employee_response_dto_1.EmployeeResponseDto(employee));
@@ -13287,7 +13281,7 @@ let MigrationService = class MigrationService {
 exports.MigrationService = MigrationService;
 exports.MigrationService = MigrationService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof employee_service_1.DomainEmployeeService !== "undefined" && employee_service_1.DomainEmployeeService) === "function" ? _a : Object, typeof (_b = typeof department_service_1.DomainDepartmentService !== "undefined" && department_service_1.DomainDepartmentService) === "function" ? _b : Object, typeof (_c = typeof position_service_1.DomainPositionService !== "undefined" && position_service_1.DomainPositionService) === "function" ? _c : Object, typeof (_d = typeof rank_service_1.DomainRankService !== "undefined" && rank_service_1.DomainRankService) === "function" ? _d : Object, typeof (_e = typeof employee_department_position_service_1.DomainEmployeeDepartmentPositionService !== "undefined" && employee_department_position_service_1.DomainEmployeeDepartmentPositionService) === "function" ? _e : Object, typeof (_f = typeof employee_rank_history_service_1.DomainEmployeeRankHistoryService !== "undefined" && employee_rank_history_service_1.DomainEmployeeRankHistoryService) === "function" ? _f : Object, typeof (_g = typeof user_service_1.DomainUserService !== "undefined" && user_service_1.DomainUserService) === "function" ? _g : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof employee_service_1.DomainEmployeeService !== "undefined" && employee_service_1.DomainEmployeeService) === "function" ? _a : Object, typeof (_b = typeof department_service_1.DomainDepartmentService !== "undefined" && department_service_1.DomainDepartmentService) === "function" ? _b : Object, typeof (_c = typeof position_service_1.DomainPositionService !== "undefined" && position_service_1.DomainPositionService) === "function" ? _c : Object, typeof (_d = typeof rank_service_1.DomainRankService !== "undefined" && rank_service_1.DomainRankService) === "function" ? _d : Object, typeof (_e = typeof employee_department_position_service_1.DomainEmployeeDepartmentPositionService !== "undefined" && employee_department_position_service_1.DomainEmployeeDepartmentPositionService) === "function" ? _e : Object, typeof (_f = typeof employee_rank_history_service_1.DomainEmployeeRankHistoryService !== "undefined" && employee_rank_history_service_1.DomainEmployeeRankHistoryService) === "function" ? _f : Object])
 ], MigrationService);
 
 
@@ -19370,7 +19364,7 @@ var _a, _b, _c, _d, _e, _f;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Token = void 0;
 const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
-const user_entity_1 = __webpack_require__(/*! ../user/user.entity */ "./src/modules/domain/user/user.entity.ts");
+const user_entity_1 = __webpack_require__(Object(function webpackMissingModule() { var e = new Error("Cannot find module '../user/user.entity'"); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
 let Token = class Token {
 };
 exports.Token = Token;
@@ -19614,301 +19608,6 @@ exports.DomainTokenService = DomainTokenService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [typeof (_a = typeof token_repository_1.DomainTokenRepository !== "undefined" && token_repository_1.DomainTokenRepository) === "function" ? _a : Object, typeof (_b = typeof jwt_1.JwtService !== "undefined" && jwt_1.JwtService) === "function" ? _b : Object, typeof (_c = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _c : Object])
 ], DomainTokenService);
-
-
-/***/ }),
-
-/***/ "./src/modules/domain/user/user.entity.ts":
-/*!************************************************!*\
-  !*** ./src/modules/domain/user/user.entity.ts ***!
-  \************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b, _c, _d;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.User = void 0;
-const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
-const token_entity_1 = __webpack_require__(/*! ../token/token.entity */ "./src/modules/domain/token/token.entity.ts");
-let User = class User {
-};
-exports.User = User;
-__decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
-    __metadata("design:type", String)
-], User.prototype, "id", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ unique: true, comment: '사번' }),
-    __metadata("design:type", String)
-], User.prototype, "employeeNumber", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '이름' }),
-    __metadata("design:type", String)
-], User.prototype, "name", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ unique: true, comment: '이메일' }),
-    __metadata("design:type", String)
-], User.prototype, "email", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '비밀번호' }),
-    __metadata("design:type", String)
-], User.prototype, "password", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '전화번호', nullable: true }),
-    __metadata("design:type", String)
-], User.prototype, "phoneNumber", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '생년월일', nullable: true }),
-    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
-], User.prototype, "dateOfBirth", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '성별', nullable: true }),
-    __metadata("design:type", String)
-], User.prototype, "gender", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '입사일', nullable: true }),
-    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
-], User.prototype, "hireDate", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '재직 상태', nullable: true }),
-    __metadata("design:type", String)
-], User.prototype, "status", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '부서', nullable: true }),
-    __metadata("design:type", String)
-], User.prototype, "department", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '직위', nullable: true }),
-    __metadata("design:type", String)
-], User.prototype, "position", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '직급', nullable: true }),
-    __metadata("design:type", String)
-], User.prototype, "rank", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '초기 비밀번호 설정 여부', default: false }),
-    __metadata("design:type", Boolean)
-], User.prototype, "isInitialPasswordSet", void 0);
-__decorate([
-    (0, typeorm_1.CreateDateColumn)(),
-    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
-], User.prototype, "createdAt", void 0);
-__decorate([
-    (0, typeorm_1.UpdateDateColumn)(),
-    __metadata("design:type", typeof (_d = typeof Date !== "undefined" && Date) === "function" ? _d : Object)
-], User.prototype, "updatedAt", void 0);
-__decorate([
-    (0, typeorm_1.OneToMany)(() => token_entity_1.Token, (token) => token.user),
-    __metadata("design:type", Array)
-], User.prototype, "tokens", void 0);
-exports.User = User = __decorate([
-    (0, typeorm_1.Entity)('users')
-], User);
-
-
-/***/ }),
-
-/***/ "./src/modules/domain/user/user.module.ts":
-/*!************************************************!*\
-  !*** ./src/modules/domain/user/user.module.ts ***!
-  \************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DomainUserModule = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const user_service_1 = __webpack_require__(/*! ./user.service */ "./src/modules/domain/user/user.service.ts");
-const user_repository_1 = __webpack_require__(/*! ./user.repository */ "./src/modules/domain/user/user.repository.ts");
-const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
-const user_entity_1 = __webpack_require__(/*! ./user.entity */ "./src/modules/domain/user/user.entity.ts");
-let DomainUserModule = class DomainUserModule {
-};
-exports.DomainUserModule = DomainUserModule;
-exports.DomainUserModule = DomainUserModule = __decorate([
-    (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([user_entity_1.User])],
-        providers: [user_service_1.DomainUserService, user_repository_1.DomainUserRepository],
-        exports: [user_service_1.DomainUserService, user_repository_1.DomainUserRepository],
-    })
-], DomainUserModule);
-
-
-/***/ }),
-
-/***/ "./src/modules/domain/user/user.repository.ts":
-/*!****************************************************!*\
-  !*** ./src/modules/domain/user/user.repository.ts ***!
-  \****************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DomainUserRepository = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
-const base_repository_1 = __webpack_require__(/*! ../../../../libs/common/repositories/base.repository */ "./libs/common/repositories/base.repository.ts");
-const user_entity_1 = __webpack_require__(/*! ./user.entity */ "./src/modules/domain/user/user.entity.ts");
-const typeorm_2 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
-let DomainUserRepository = class DomainUserRepository extends base_repository_1.BaseRepository {
-    constructor(repository) {
-        super(repository);
-    }
-};
-exports.DomainUserRepository = DomainUserRepository;
-exports.DomainUserRepository = DomainUserRepository = __decorate([
-    (0, common_1.Injectable)(),
-    __param(0, (0, typeorm_2.InjectRepository)(user_entity_1.User)),
-    __metadata("design:paramtypes", [typeof (_a = typeof typeorm_1.Repository !== "undefined" && typeorm_1.Repository) === "function" ? _a : Object])
-], DomainUserRepository);
-
-
-/***/ }),
-
-/***/ "./src/modules/domain/user/user.service.ts":
-/*!*************************************************!*\
-  !*** ./src/modules/domain/user/user.service.ts ***!
-  \*************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DomainUserService = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const user_repository_1 = __webpack_require__(/*! ./user.repository */ "./src/modules/domain/user/user.repository.ts");
-const base_service_1 = __webpack_require__(/*! ../../../../libs/common/services/base.service */ "./libs/common/services/base.service.ts");
-const bcrypt = __webpack_require__(/*! @node-rs/bcrypt */ "@node-rs/bcrypt");
-let DomainUserService = class DomainUserService extends base_service_1.BaseService {
-    constructor(userRepository) {
-        super(userRepository);
-        this.userRepository = userRepository;
-    }
-    async findByEmployeeNumber(employeeNumber) {
-        const user = await this.userRepository.findOne({ where: { employeeNumber } });
-        return user;
-    }
-    async findByEmail(email) {
-        const user = await this.userRepository.findOne({ where: { email } });
-        if (!user) {
-            throw new common_1.NotFoundException('사용자를 찾을 수 없습니다.');
-        }
-        return user;
-    }
-    async checkEmployeeNumberExists(employeeNumber) {
-        const user = await this.userRepository.findOne({ where: { employeeNumber } });
-        return !!user;
-    }
-    async checkEmailExists(email) {
-        const user = await this.userRepository.findOne({ where: { email } });
-        return !!user;
-    }
-    async createUser(userData) {
-        if (userData.employeeNumber && (await this.checkEmployeeNumberExists(userData.employeeNumber))) {
-            throw new common_1.ConflictException('이미 존재하는 사번입니다.');
-        }
-        if (userData.email && (await this.checkEmailExists(userData.email))) {
-            throw new common_1.ConflictException('이미 존재하는 이메일입니다.');
-        }
-        if (userData.password) {
-            userData.password = await bcrypt.hash(userData.password, 10);
-        }
-        return await this.userRepository.save(userData);
-    }
-    async changePassword(userId, newPassword) {
-        const user = await this.findOne({ where: { id: userId } });
-        if (!user) {
-            throw new common_1.NotFoundException('사용자를 찾을 수 없습니다.');
-        }
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
-        user.password = hashedPassword;
-        user.isInitialPasswordSet = true;
-        return await this.userRepository.save(user);
-    }
-    async validatePassword(email, password) {
-        const user = await this.userRepository.findOne({ where: { email } });
-        if (!user) {
-            return null;
-        }
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        return isPasswordValid ? user : null;
-    }
-    async isInitialPasswordSet(userId) {
-        const user = await this.findOne({ where: { id: userId } });
-        return user?.isInitialPasswordSet || false;
-    }
-    async updateUserStatus(userId, status) {
-        const user = await this.findOne({ where: { id: userId } });
-        if (!user) {
-            throw new common_1.NotFoundException('사용자를 찾을 수 없습니다.');
-        }
-        user.status = status;
-        return await this.userRepository.save(user);
-    }
-    async updateUserInfo(userId, updateData) {
-        const user = await this.findOne({ where: { id: userId } });
-        if (!user) {
-            throw new common_1.NotFoundException('사용자를 찾을 수 없습니다.');
-        }
-        const { password, isInitialPasswordSet, ...safeUpdateData } = updateData;
-        Object.assign(user, safeUpdateData);
-        return await this.userRepository.save(user);
-    }
-    async findActiveUsers() {
-        return await this.userRepository.findAll({
-            where: { status: '재직중' },
-            order: { name: 'ASC' },
-        });
-    }
-    async findUsersByDepartment(department) {
-        return await this.userRepository.findAll({
-            where: { department },
-            order: { name: 'ASC' },
-        });
-    }
-};
-exports.DomainUserService = DomainUserService;
-exports.DomainUserService = DomainUserService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof user_repository_1.DomainUserRepository !== "undefined" && user_repository_1.DomainUserRepository) === "function" ? _a : Object])
-], DomainUserService);
 
 
 /***/ }),

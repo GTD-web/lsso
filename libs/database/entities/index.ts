@@ -11,7 +11,6 @@ import { Token } from '../../../src/modules/domain/token/token.entity';
 import { EmployeeToken } from '../../../src/modules/domain/employee-token/employee-token.entity';
 import { SystemWebhook } from '../../../src/modules/domain/system-webhook/system-webhook.entity';
 import { Log } from '../../../src/modules/domain/log/log.entity';
-import { User } from '../../../src/modules/domain/user/user.entity';
 import { FcmToken } from '../../../src/modules/domain/fcm-token/fcm-token.entity';
 import { EmployeeFcmToken } from '../../../src/modules/domain/employee-fcm-token/employee-fcm-token.entity';
 import { SystemRole } from '../../../src/modules/domain/system-role/system-role.entity';
@@ -32,7 +31,6 @@ export {
     EmployeeToken,
     SystemWebhook,
     Log,
-    User,
     FcmToken,
     EmployeeFcmToken,
     SystemRole,
@@ -53,7 +51,6 @@ export const Entities = [
     EmployeeToken,
     SystemWebhook,
     Log,
-    User,
     FcmToken,
     EmployeeFcmToken,
     SystemRole,
