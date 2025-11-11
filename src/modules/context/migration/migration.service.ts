@@ -11,7 +11,6 @@ import axios from 'axios';
 import { DepartmentResponseDto } from './dto/department-response.dto';
 import { PositionResponseDto } from './dto/position-response.dto';
 import { RankResponseDto } from './dto/rank-response.dto';
-import { DomainUserService } from '../../domain/user/user.service';
 import { EmployeeStatus, Gender } from '../../../../libs/common/enums';
 
 @Injectable()
@@ -23,12 +22,9 @@ export class MigrationService {
         private readonly rankService: DomainRankService,
         private readonly employeeDepartmentPositionService: DomainEmployeeDepartmentPositionService,
         private readonly employeeRankHistoryService: DomainEmployeeRankHistoryService,
-        private readonly userService: DomainUserService,
     ) {}
 
-    async onApplicationBootstrap() {
-        // this.migrate();
-    }
+    async onApplicationBootstrap() {}
 
     async getEmployees(): Promise<EmployeeResponseDto[]> {
         const response = await axios.get(`${process.env.METADATA_MANAGER_URL}/api/employees?detailed=true`);
@@ -191,14 +187,6 @@ export class MigrationService {
             if (employee.department) {
                 department = await this.departmentService.findByCode(employee.department.department_code);
             }
-
-            // const user = await this.userService.findByEmployeeNumber(employee.employee_number);
-            // if (!user) {
-            //     console.log(`${employee.name} 직원은 유저 정보가 없습니다.`);
-            // } else {
-            //     existingEmployee.password = user.password;
-            //     existingEmployee.isInitialPasswordSet = user.isInitialPasswordSet;
-            // }
 
             const savedEmployee = await this.employeeService.save(existingEmployee);
 

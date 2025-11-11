@@ -138,7 +138,7 @@ export class SystemApplicationService {
 
     async 시스템롤목록조회(systemId?: string): Promise<SystemRoleResponseDto[]> {
         try {
-            let systemRoles: SystemRole[];
+            let systemRoles: any[];
 
             if (systemId) {
                 systemRoles = await this.시스템관리컨텍스트서비스.시스템의_역할목록을_조회한다(systemId);
@@ -238,8 +238,8 @@ export class SystemApplicationService {
         };
     }
 
-    private 시스템롤_엔티티를_DTO로_변환(systemRole: SystemRole): SystemRoleResponseDto {
-        return {
+    private 시스템롤_엔티티를_DTO로_변환(systemRole: any): SystemRoleResponseDto {
+        const dto: any = {
             id: systemRole.id,
             systemId: systemRole.systemId,
             roleName: systemRole.roleName,
@@ -251,5 +251,23 @@ export class SystemApplicationService {
             createdAt: systemRole.createdAt,
             updatedAt: systemRole.updatedAt,
         };
+
+        // 시스템 정보가 있으면 포함
+        if (systemRole.system) {
+            dto.system = {
+                id: systemRole.system.id,
+                clientId: systemRole.system.clientId,
+                name: systemRole.system.name,
+                description: systemRole.system.description,
+                domain: systemRole.system.domain,
+                allowedOrigin: systemRole.system.allowedOrigin,
+                healthCheckUrl: systemRole.system.healthCheckUrl,
+                isActive: systemRole.system.isActive,
+                createdAt: systemRole.system.createdAt,
+                updatedAt: systemRole.system.updatedAt,
+            };
+        }
+
+        return dto;
     }
 }

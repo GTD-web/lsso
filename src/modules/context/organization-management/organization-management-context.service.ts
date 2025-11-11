@@ -113,6 +113,10 @@ export class OrganizationManagementContextService {
         return this.부서서비스.findById(departmentId);
     }
 
+    async 부서_코드로_부서를_조회한다(departmentCode: string): Promise<Department> {
+        return this.부서서비스.findByCode(departmentCode);
+    }
+
     // ==================== 전체 데이터 조회 (마이그레이션용) ====================
 
     async 모든_부서를_조회한다(): Promise<Department[]> {
@@ -519,14 +523,93 @@ export class OrganizationManagementContextService {
                 throw new NotFoundException('직원을 찾을 수 없습니다.');
             }
 
-            // 2. 상태 변경 및 퇴사 관련 필드 초기화
-            const updateData: Partial<Employee> = {
-                status,
-                terminationDate: null,
-                terminationReason: null,
-            };
+            // 2. 메타데이터에서 이전 부서, 직책, 관리자 여부 정보 확인 및 원복
+            const metadata = employee.metadata || {};
+            const previousDepartment = metadata?.termination?.previousDepartment;
+            const previousPosition = metadata?.termination?.previousPosition;
+            const previousIsManager = metadata?.termination?.previousIsManager ?? false;
 
-            await transactionalEntityManager.update(Employee, { id: employeeId }, updateData);
+            if (previousDepartment && previousDepartment.id) {
+                // 이전 부서로 배치 원복
+                const currentAssignments = await this.직원부서직책서비스.findAllByEmployeeId(employeeId);
+                let departmentAssignment: EmployeeDepartmentPosition | null = null;
+
+                // 현재 DEPARTMENT 타입 배치 찾기
+                for (const assignment of currentAssignments) {
+                    const department = await this.부서서비스.findById(assignment.departmentId);
+                    if (department.type === DepartmentType.DEPARTMENT) {
+                        departmentAssignment = assignment;
+                        break;
+                    }
+                }
+
+                // 이전 부서 존재 확인
+                const previousDept = await this.부서서비스.findById(previousDepartment.id);
+                if (!previousDept) {
+                    throw new NotFoundException('이전 부서를 찾을 수 없습니다.');
+                }
+
+                // 이전 직책 확인 (없으면 기본 직책 사용)
+                let positionToUse: Position | null = null;
+                if (previousPosition && previousPosition.id) {
+                    positionToUse = await this.직책서비스.findById(previousPosition.id);
+                }
+
+                if (!positionToUse) {
+                    // 이전 직책이 없거나 찾을 수 없는 경우 기본 직책 조회
+                    const defaultPosition = await this.직책서비스.findAll();
+                    const firstPosition = defaultPosition.length > 0 ? defaultPosition[0] : null;
+
+                    if (!firstPosition) {
+                        throw new NotFoundException('기본 직책을 찾을 수 없습니다.');
+                    }
+                    positionToUse = firstPosition;
+                }
+
+                if (departmentAssignment) {
+                    // 기존 DEPARTMENT 타입 배치 업데이트 (부서, 직책, 관리자 여부 모두 원복)
+                    await transactionalEntityManager.update(
+                        EmployeeDepartmentPosition,
+                        { id: departmentAssignment.id },
+                        {
+                            departmentId: previousDepartment.id,
+                            positionId: positionToUse.id,
+                            isManager: previousIsManager,
+                        },
+                    );
+                } else {
+                    // 새로운 배치 생성 (부서, 직책, 관리자 여부 모두 원복)
+                    await transactionalEntityManager.save(EmployeeDepartmentPosition, {
+                        employeeId,
+                        departmentId: previousDepartment.id,
+                        positionId: positionToUse.id,
+                        isManager: previousIsManager,
+                    });
+                }
+
+                // 메타데이터에서 termination 정보 제거
+                const updatedMetadata = { ...metadata };
+                delete updatedMetadata.termination;
+
+                // 상태 변경 및 퇴사 관련 필드 초기화, 메타데이터 업데이트
+                const updateData: Partial<Employee> = {
+                    status,
+                    terminationDate: null,
+                    terminationReason: null,
+                    metadata: Object.keys(updatedMetadata).length > 0 ? updatedMetadata : null,
+                };
+
+                await transactionalEntityManager.update(Employee, { id: employeeId }, updateData);
+            } else {
+                // 메타데이터에 이전 부서 정보가 없는 경우
+                const updateData: Partial<Employee> = {
+                    status,
+                    terminationDate: null,
+                    terminationReason: null,
+                };
+
+                await transactionalEntityManager.update(Employee, { id: employeeId }, updateData);
+            }
 
             // 3. 업데이트된 직원 정보 반환
             const updatedEmployee = await transactionalEntityManager.findOne(Employee, {
@@ -895,18 +978,8 @@ export class OrganizationManagementContextService {
                 // 직원 존재 확인
                 employee = await this.직원을_조회한다(employeeId);
 
-                // 재직상태 변경
-                await this.직원서비스.updateEmployee(employeeId, {
-                    status,
-                    terminationDate: status === EmployeeStatus.Terminated ? terminationDate : null,
-                });
-
-                // 퇴사상태로 변경하는 경우 token, fcmToken, systemRole 삭제
-                if (status === EmployeeStatus.Terminated) {
-                    await this.직원토큰서비스.deleteAllByEmployeeId(employeeId);
-                    await this.직원FCM토큰서비스.deleteAllByEmployeeId(employeeId);
-                    await this.직원시스템역할서비스.unassignAllRolesByEmployeeId(employeeId);
-                }
+                // 재직상태 변경 (직원재직상태를_변경한다 함수 사용)
+                await this.직원재직상태를_변경한다(employeeId, status, terminationDate);
 
                 successIds.push(employeeId);
             } catch (error) {
@@ -1466,16 +1539,23 @@ export class OrganizationManagementContextService {
             // 3-2. 현재 부서 정보 조회 (DEPARTMENT 타입만)
             const currentAssignments = await this.직원부서직책서비스.findAllByEmployeeId(employeeId);
             let currentDepartment: Department | null = null;
+            let currentPosition: Position | null = null;
+            let currentIsManager: boolean = false;
+            let departmentAssignment: EmployeeDepartmentPosition | null = null;
 
             for (const assignment of currentAssignments) {
                 const department = await this.부서서비스.findById(assignment.departmentId);
                 if (department.type === DepartmentType.DEPARTMENT) {
                     currentDepartment = department;
+                    departmentAssignment = assignment;
+                    // 현재 직책 정보 조회
+                    currentPosition = await this.직책서비스.findById(assignment.positionId);
+                    currentIsManager = assignment.isManager;
                     break;
                 }
             }
 
-            // 3-3. 메타데이터에 부서 정보 저장 (JSON 형식)
+            // 3-3. 메타데이터에 부서, 직책, 관리자 여부 정보 저장 (JSON 형식)
             const metadata: Record<string, any> = {
                 termination: {
                     previousDepartment: currentDepartment
@@ -1485,6 +1565,14 @@ export class OrganizationManagementContextService {
                               code: currentDepartment.departmentCode,
                           }
                         : null,
+                    previousPosition: currentPosition
+                        ? {
+                              id: currentPosition.id,
+                              title: currentPosition.positionTitle,
+                              code: currentPosition.positionCode,
+                          }
+                        : null,
+                    previousIsManager: currentIsManager,
                 },
             };
 
@@ -1500,41 +1588,35 @@ export class OrganizationManagementContextService {
                 },
             );
 
-            // 3-5. 퇴사자 부서로 배치 (기존 DEPARTMENT 타입 배치가 있으면 업데이트, 없으면 생성)
-            let departmentAssignment: EmployeeDepartmentPosition | null = null;
-            for (const assignment of currentAssignments) {
-                const department = await this.부서서비스.findById(assignment.departmentId);
-                if (department.type === DepartmentType.DEPARTMENT) {
-                    departmentAssignment = assignment;
-                    break;
+            // 3-5. 퇴사자 부서로 배치 (기존 직책 유지, 관리자 여부는 false로 설정)
+            if (!currentPosition) {
+                // 현재 직책이 없는 경우 기본 직책 조회
+                const defaultPosition = await this.직책서비스.findAll();
+                const firstPosition = defaultPosition.length > 0 ? defaultPosition[0] : null;
+
+                if (!firstPosition) {
+                    throw new NotFoundException('기본 직책을 찾을 수 없습니다.');
                 }
-            }
-
-            // 기본 직책 조회 (퇴사자 부서에 배치할 때 사용)
-            const defaultPosition = await this.직책서비스.findAll();
-            const firstPosition = defaultPosition.length > 0 ? defaultPosition[0] : null;
-
-            if (!firstPosition) {
-                throw new NotFoundException('기본 직책을 찾을 수 없습니다.');
+                currentPosition = firstPosition;
             }
 
             if (departmentAssignment) {
-                // 기존 DEPARTMENT 타입 배치 업데이트
+                // 기존 DEPARTMENT 타입 배치 업데이트 (직책은 유지, 관리자 여부는 false)
                 await transactionalEntityManager.update(
                     EmployeeDepartmentPosition,
                     { id: departmentAssignment.id },
                     {
                         departmentId: terminatedDepartment.id,
-                        positionId: firstPosition.id,
+                        positionId: currentPosition.id,
                         isManager: false,
                     },
                 );
             } else {
-                // 새로운 배치 생성
+                // 새로운 배치 생성 (현재 직책 유지, 관리자 여부는 false)
                 await transactionalEntityManager.save(EmployeeDepartmentPosition, {
                     employeeId,
                     departmentId: terminatedDepartment.id,
-                    positionId: firstPosition.id,
+                    positionId: currentPosition.id,
                     isManager: false,
                 });
             }

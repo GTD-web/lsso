@@ -162,7 +162,4 @@ export class TokenResponseDto {
 
     @ApiProperty({ description: '수정일시' })
     updatedAt: Date;
-
-    @ApiPropertyOptional({ description: '사용자 ID' })
-    userId?: string;
 }

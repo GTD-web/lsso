@@ -863,7 +863,7 @@ exports.typeOrmConfig = typeOrmConfig;
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Entities = exports.EmployeeSystemRole = exports.SystemRole = exports.EmployeeFcmToken = exports.FcmToken = exports.User = exports.Log = exports.SystemWebhook = exports.EmployeeToken = exports.Token = exports.System = exports.WebhookEventLog = exports.Webhook = exports.EmployeeRankHistory = exports.EmployeeDepartmentPosition = exports.Rank = exports.Position = exports.DepartmentType = exports.Department = exports.Employee = void 0;
+exports.Entities = exports.EmployeeSystemRole = exports.SystemRole = exports.EmployeeFcmToken = exports.FcmToken = exports.Log = exports.SystemWebhook = exports.EmployeeToken = exports.Token = exports.System = exports.WebhookEventLog = exports.Webhook = exports.EmployeeRankHistory = exports.EmployeeDepartmentPosition = exports.Rank = exports.Position = exports.DepartmentType = exports.Department = exports.Employee = void 0;
 const employee_entity_1 = __webpack_require__(/*! ../../../src/modules/domain/employee/employee.entity */ "./src/modules/domain/employee/employee.entity.ts");
 Object.defineProperty(exports, "Employee", ({ enumerable: true, get: function () { return employee_entity_1.Employee; } }));
 const department_entity_1 = __webpack_require__(/*! ../../../src/modules/domain/department/department.entity */ "./src/modules/domain/department/department.entity.ts");
@@ -891,8 +891,6 @@ const system_webhook_entity_1 = __webpack_require__(/*! ../../../src/modules/dom
 Object.defineProperty(exports, "SystemWebhook", ({ enumerable: true, get: function () { return system_webhook_entity_1.SystemWebhook; } }));
 const log_entity_1 = __webpack_require__(/*! ../../../src/modules/domain/log/log.entity */ "./src/modules/domain/log/log.entity.ts");
 Object.defineProperty(exports, "Log", ({ enumerable: true, get: function () { return log_entity_1.Log; } }));
-const user_entity_1 = __webpack_require__(/*! ../../../src/modules/domain/user/user.entity */ "./src/modules/domain/user/user.entity.ts");
-Object.defineProperty(exports, "User", ({ enumerable: true, get: function () { return user_entity_1.User; } }));
 const fcm_token_entity_1 = __webpack_require__(/*! ../../../src/modules/domain/fcm-token/fcm-token.entity */ "./src/modules/domain/fcm-token/fcm-token.entity.ts");
 Object.defineProperty(exports, "FcmToken", ({ enumerable: true, get: function () { return fcm_token_entity_1.FcmToken; } }));
 const employee_fcm_token_entity_1 = __webpack_require__(/*! ../../../src/modules/domain/employee-fcm-token/employee-fcm-token.entity */ "./src/modules/domain/employee-fcm-token/employee-fcm-token.entity.ts");
@@ -915,7 +913,6 @@ exports.Entities = [
     employee_token_entity_1.EmployeeToken,
     system_webhook_entity_1.SystemWebhook,
     log_entity_1.Log,
-    user_entity_1.User,
     fcm_token_entity_1.FcmToken,
     employee_fcm_token_entity_1.EmployeeFcmToken,
     system_role_entity_1.SystemRole,
@@ -2391,10 +2388,6 @@ __decorate([
     (0, swagger_1.ApiProperty)({ description: '수정일시' }),
     __metadata("design:type", typeof (_l = typeof Date !== "undefined" && Date) === "function" ? _l : Object)
 ], TokenResponseDto.prototype, "updatedAt", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: '사용자 ID' }),
-    __metadata("design:type", String)
-], TokenResponseDto.prototype, "userId", void 0);
 
 
 /***/ }),
@@ -3228,7 +3221,6 @@ let EmployeeTokenApplicationService = class EmployeeTokenApplicationService {
             isActive: token.isActive,
             createdAt: token.createdAt,
             updatedAt: token.updatedAt,
-            userId: token.userId,
         };
     }
     async 토큰_엔티티_삭제(tokenId) {
@@ -4302,7 +4294,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a, _b, _c, _d, _e, _f;
+var _a, _b, _c, _d, _e, _f, _g;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DepartmentHierarchyResponseDto = exports.DepartmentWithEmployeesDto = exports.DepartmentEmployeeInfoDto = exports.UpdateDepartmentParentRequestDto = exports.UpdateDepartmentOrderRequestDto = exports.DepartmentListResponseDto = exports.DepartmentResponseDto = exports.UpdateDepartmentRequestDto = exports.CreateDepartmentRequestDto = void 0;
 const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
@@ -4484,6 +4476,10 @@ __decorate([
     (0, swagger_1.ApiProperty)({ description: '매니저 여부' }),
     __metadata("design:type", Boolean)
 ], DepartmentEmployeeInfoDto.prototype, "isManager", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '메타데이터', type: 'object', required: false }),
+    __metadata("design:type", typeof (_f = typeof Record !== "undefined" && Record) === "function" ? _f : Object)
+], DepartmentEmployeeInfoDto.prototype, "metadata", void 0);
 class DepartmentWithEmployeesDto {
 }
 exports.DepartmentWithEmployeesDto = DepartmentWithEmployeesDto;
@@ -4501,7 +4497,7 @@ __decorate([
 ], DepartmentWithEmployeesDto.prototype, "departmentCode", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '부서 유형', enum: department_entity_1.DepartmentType }),
-    __metadata("design:type", typeof (_f = typeof department_entity_1.DepartmentType !== "undefined" && department_entity_1.DepartmentType) === "function" ? _f : Object)
+    __metadata("design:type", typeof (_g = typeof department_entity_1.DepartmentType !== "undefined" && department_entity_1.DepartmentType) === "function" ? _g : Object)
 ], DepartmentWithEmployeesDto.prototype, "type", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '상위 부서 ID', required: false }),
@@ -4785,7 +4781,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.BulkUpdateResultDto = exports.BulkUpdateStatusRequestDto = exports.BulkUpdateRankRequestDto = exports.BulkUpdatePositionRequestDto = exports.BulkUpdateTeamRequestDto = exports.BulkUpdateDepartmentRequestDto = exports.EmployeeDetailListResponseDto = exports.EmployeeDetailInfoDto = exports.NextEmployeeNumberResponseDto = exports.EmployeeListResponseDto = exports.AdminEmployeeResponseDto = exports.EmployeeAssignmentDetailDto = exports.UpdateEmployeeRequestDto = exports.CreateEmployeeRequestDto = void 0;
 const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
@@ -5034,16 +5030,20 @@ __decorate([
     __metadata("design:type", typeof (_l = typeof Date !== "undefined" && Date) === "function" ? _l : Object)
 ], AdminEmployeeResponseDto.prototype, "terminationDate", void 0);
 __decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '메타데이터', type: 'object', required: false }),
+    __metadata("design:type", typeof (_m = typeof Record !== "undefined" && Record) === "function" ? _m : Object)
+], AdminEmployeeResponseDto.prototype, "metadata", void 0);
+__decorate([
     (0, swagger_1.ApiProperty)({ description: '초기 비밀번호 설정 여부' }),
     __metadata("design:type", Boolean)
 ], AdminEmployeeResponseDto.prototype, "isInitialPasswordSet", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '생성일' }),
-    __metadata("design:type", typeof (_m = typeof Date !== "undefined" && Date) === "function" ? _m : Object)
+    __metadata("design:type", typeof (_o = typeof Date !== "undefined" && Date) === "function" ? _o : Object)
 ], AdminEmployeeResponseDto.prototype, "createdAt", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '수정일' }),
-    __metadata("design:type", typeof (_o = typeof Date !== "undefined" && Date) === "function" ? _o : Object)
+    __metadata("design:type", typeof (_p = typeof Date !== "undefined" && Date) === "function" ? _p : Object)
 ], AdminEmployeeResponseDto.prototype, "updatedAt", void 0);
 __decorate([
     (0, swagger_1.ApiPropertyOptional)({
@@ -5114,19 +5114,19 @@ __decorate([
 ], EmployeeDetailInfoDto.prototype, "phoneNumber", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '생년월일', required: false }),
-    __metadata("design:type", typeof (_p = typeof Date !== "undefined" && Date) === "function" ? _p : Object)
+    __metadata("design:type", typeof (_q = typeof Date !== "undefined" && Date) === "function" ? _q : Object)
 ], EmployeeDetailInfoDto.prototype, "dateOfBirth", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '성별', enum: enums_1.Gender, required: false }),
-    __metadata("design:type", typeof (_q = typeof enums_1.Gender !== "undefined" && enums_1.Gender) === "function" ? _q : Object)
+    __metadata("design:type", typeof (_r = typeof enums_1.Gender !== "undefined" && enums_1.Gender) === "function" ? _r : Object)
 ], EmployeeDetailInfoDto.prototype, "gender", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '입사일' }),
-    __metadata("design:type", typeof (_r = typeof Date !== "undefined" && Date) === "function" ? _r : Object)
+    __metadata("design:type", typeof (_s = typeof Date !== "undefined" && Date) === "function" ? _s : Object)
 ], EmployeeDetailInfoDto.prototype, "hireDate", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '재직 상태', enum: enums_1.EmployeeStatus }),
-    __metadata("design:type", typeof (_s = typeof enums_1.EmployeeStatus !== "undefined" && enums_1.EmployeeStatus) === "function" ? _s : Object)
+    __metadata("design:type", typeof (_t = typeof enums_1.EmployeeStatus !== "undefined" && enums_1.EmployeeStatus) === "function" ? _t : Object)
 ], EmployeeDetailInfoDto.prototype, "status", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '현재 직급 ID', required: false }),
@@ -5134,19 +5134,23 @@ __decorate([
 ], EmployeeDetailInfoDto.prototype, "currentRankId", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '퇴사일', required: false }),
-    __metadata("design:type", typeof (_t = typeof Date !== "undefined" && Date) === "function" ? _t : Object)
+    __metadata("design:type", typeof (_u = typeof Date !== "undefined" && Date) === "function" ? _u : Object)
 ], EmployeeDetailInfoDto.prototype, "terminationDate", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '메타데이터', type: 'object', required: false }),
+    __metadata("design:type", typeof (_v = typeof Record !== "undefined" && Record) === "function" ? _v : Object)
+], EmployeeDetailInfoDto.prototype, "metadata", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '초기 비밀번호 설정 여부' }),
     __metadata("design:type", Boolean)
 ], EmployeeDetailInfoDto.prototype, "isInitialPasswordSet", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '생성일' }),
-    __metadata("design:type", typeof (_u = typeof Date !== "undefined" && Date) === "function" ? _u : Object)
+    __metadata("design:type", typeof (_w = typeof Date !== "undefined" && Date) === "function" ? _w : Object)
 ], EmployeeDetailInfoDto.prototype, "createdAt", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '수정일' }),
-    __metadata("design:type", typeof (_v = typeof Date !== "undefined" && Date) === "function" ? _v : Object)
+    __metadata("design:type", typeof (_x = typeof Date !== "undefined" && Date) === "function" ? _x : Object)
 ], EmployeeDetailInfoDto.prototype, "updatedAt", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '부서 정보 목록', type: 'array', items: { type: 'object' }, required: false }),
@@ -5243,7 +5247,7 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '변경할 재직상태', enum: enums_1.EmployeeStatus }),
     (0, class_validator_1.IsEnum)(enums_1.EmployeeStatus),
-    __metadata("design:type", typeof (_w = typeof enums_1.EmployeeStatus !== "undefined" && enums_1.EmployeeStatus) === "function" ? _w : Object)
+    __metadata("design:type", typeof (_y = typeof enums_1.EmployeeStatus !== "undefined" && enums_1.EmployeeStatus) === "function" ? _y : Object)
 ], BulkUpdateStatusRequestDto.prototype, "status", void 0);
 __decorate([
     (0, swagger_1.ApiPropertyOptional)({ description: '퇴사일 (재직상태가 퇴사인 경우)', example: '2024-12-31' }),
@@ -5564,6 +5568,7 @@ let OrganizationApplicationService = class OrganizationApplicationService {
             status: employee.status,
             currentRankId: employee.currentRankId,
             terminationDate: employee.terminationDate,
+            metadata: employee.metadata,
             isInitialPasswordSet: employee.isInitialPasswordSet,
             createdAt: employee.createdAt,
             updatedAt: employee.updatedAt,
@@ -5627,6 +5632,7 @@ let OrganizationApplicationService = class OrganizationApplicationService {
             status: employeeWithDetails.status,
             currentRankId: employeeWithDetails.currentRankId,
             terminationDate: employeeWithDetails.terminationDate,
+            metadata: employeeWithDetails.metadata,
             isInitialPasswordSet: employeeWithDetails.isInitialPasswordSet,
             createdAt: employeeWithDetails.createdAt,
             updatedAt: employeeWithDetails.updatedAt,
@@ -5642,6 +5648,15 @@ let OrganizationApplicationService = class OrganizationApplicationService {
         console.log(result);
         const departments = this.부서_계층구조를_직원정보와_함께_변환한다(result.departments, result.employeesByDepartment, result.departmentDetails);
         return { departments: departments.filter((department) => department.parentDepartmentId === null) };
+    }
+    async 퇴사자부서_직원목록을_조회한다() {
+        const terminatedDepartment = await this.organizationContextService.부서_코드로_부서를_조회한다('퇴사자');
+        if (!terminatedDepartment) {
+            return { departments: [] };
+        }
+        const result = await this.organizationContextService.부서_계층구조별_직원정보를_조회한다(terminatedDepartment.id, undefined, true, true, true);
+        const departments = this.부서_계층구조를_직원정보와_함께_변환한다(result.departments, result.employeesByDepartment, result.departmentDetails);
+        return { departments };
     }
     async 부서목록조회() {
         const departments = await this.organizationContextService.부서_계층구조를_조회한다();
@@ -5899,6 +5914,7 @@ let OrganizationApplicationService = class OrganizationApplicationService {
                     rankId: employee.currentRankId,
                     rankName: employeeDetail?.rank?.rankName,
                     isManager: departmentPosition?.isManager || false,
+                    metadata: employee.metadata,
                 });
             }
             const childDepartments = this.부서_계층구조를_직원정보와_함께_변환한다(department.childDepartments || [], employeesByDepartment, departmentDetails);
@@ -5965,7 +5981,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OrganizationController = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
@@ -5979,6 +5995,9 @@ let OrganizationController = class OrganizationController {
     }
     async getDepartmentHierarchy() {
         return this.organizationApplicationService.부서_계층구조별_직원정보를_조회한다();
+    }
+    async getTerminatedEmployees() {
+        return this.organizationApplicationService.퇴사자부서_직원목록을_조회한다();
     }
     async getDepartments() {
         return await this.organizationApplicationService.부서목록조회();
@@ -6104,12 +6123,28 @@ __decorate([
     __metadata("design:returntype", typeof (_b = typeof Promise !== "undefined" && Promise) === "function" ? _b : Object)
 ], OrganizationController.prototype, "getDepartmentHierarchy", null);
 __decorate([
+    (0, common_1.Get)('terminated-employees'),
+    (0, swagger_1.ApiOperation)({
+        summary: '퇴사자 부서와 퇴사자 목록 조회',
+        description: '퇴사자 부서와 그 아래 배치된 모든 퇴사자들의 목록을 조회합니다.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: '퇴사자 부서와 퇴사자 목록 조회 성공',
+        type: dto_1.DepartmentHierarchyResponseDto,
+    }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: '퇴사자 부서를 찾을 수 없음' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
+], OrganizationController.prototype, "getTerminatedEmployees", null);
+__decorate([
     (0, common_1.Get)('departments'),
     (0, swagger_1.ApiOperation)({ summary: '부서 목록 조회', description: '전체 부서 목록을 계층구조로 조회합니다.' }),
     (0, swagger_1.ApiResponse)({ status: 200, type: dto_1.DepartmentListResponseDto }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
+    __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
 ], OrganizationController.prototype, "getDepartments", null);
 __decorate([
     (0, common_1.Get)('departments/:id'),
@@ -6119,7 +6154,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
+    __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
 ], OrganizationController.prototype, "getDepartment", null);
 __decorate([
     (0, common_1.Post)('departments'),
@@ -6128,8 +6163,8 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 201, type: dto_1.DepartmentResponseDto }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_e = typeof dto_1.CreateDepartmentRequestDto !== "undefined" && dto_1.CreateDepartmentRequestDto) === "function" ? _e : Object]),
-    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
+    __metadata("design:paramtypes", [typeof (_f = typeof dto_1.CreateDepartmentRequestDto !== "undefined" && dto_1.CreateDepartmentRequestDto) === "function" ? _f : Object]),
+    __metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
 ], OrganizationController.prototype, "createDepartment", null);
 __decorate([
     (0, common_1.Put)('departments/:id'),
@@ -6140,8 +6175,8 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, typeof (_g = typeof dto_1.UpdateDepartmentRequestDto !== "undefined" && dto_1.UpdateDepartmentRequestDto) === "function" ? _g : Object]),
-    __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
+    __metadata("design:paramtypes", [String, typeof (_h = typeof dto_1.UpdateDepartmentRequestDto !== "undefined" && dto_1.UpdateDepartmentRequestDto) === "function" ? _h : Object]),
+    __metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
 ], OrganizationController.prototype, "updateDepartment", null);
 __decorate([
     (0, common_1.Delete)('departments/:id'),
@@ -6151,7 +6186,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
+    __metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
 ], OrganizationController.prototype, "deleteDepartment", null);
 __decorate([
     (0, common_1.Patch)('departments/:id/order'),
@@ -6162,8 +6197,8 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, typeof (_k = typeof dto_1.UpdateDepartmentOrderRequestDto !== "undefined" && dto_1.UpdateDepartmentOrderRequestDto) === "function" ? _k : Object]),
-    __metadata("design:returntype", typeof (_l = typeof Promise !== "undefined" && Promise) === "function" ? _l : Object)
+    __metadata("design:paramtypes", [String, typeof (_l = typeof dto_1.UpdateDepartmentOrderRequestDto !== "undefined" && dto_1.UpdateDepartmentOrderRequestDto) === "function" ? _l : Object]),
+    __metadata("design:returntype", typeof (_m = typeof Promise !== "undefined" && Promise) === "function" ? _m : Object)
 ], OrganizationController.prototype, "updateDepartmentOrder", null);
 __decorate([
     (0, common_1.Patch)('departments/:id/parent'),
@@ -6174,8 +6209,8 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, typeof (_m = typeof dto_1.UpdateDepartmentParentRequestDto !== "undefined" && dto_1.UpdateDepartmentParentRequestDto) === "function" ? _m : Object]),
-    __metadata("design:returntype", typeof (_o = typeof Promise !== "undefined" && Promise) === "function" ? _o : Object)
+    __metadata("design:paramtypes", [String, typeof (_o = typeof dto_1.UpdateDepartmentParentRequestDto !== "undefined" && dto_1.UpdateDepartmentParentRequestDto) === "function" ? _o : Object]),
+    __metadata("design:returntype", typeof (_p = typeof Promise !== "undefined" && Promise) === "function" ? _p : Object)
 ], OrganizationController.prototype, "updateDepartmentParent", null);
 __decorate([
     (0, common_1.Get)('employees'),
@@ -6192,8 +6227,8 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 200, type: dto_1.EmployeeDetailListResponseDto }),
     __param(0, (0, common_1.Query)('status')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_p = typeof enums_1.EmployeeStatus !== "undefined" && enums_1.EmployeeStatus) === "function" ? _p : Object]),
-    __metadata("design:returntype", typeof (_q = typeof Promise !== "undefined" && Promise) === "function" ? _q : Object)
+    __metadata("design:paramtypes", [typeof (_q = typeof enums_1.EmployeeStatus !== "undefined" && enums_1.EmployeeStatus) === "function" ? _q : Object]),
+    __metadata("design:returntype", typeof (_r = typeof Promise !== "undefined" && Promise) === "function" ? _r : Object)
 ], OrganizationController.prototype, "getEmployees", null);
 __decorate([
     (0, common_1.Get)('employees/next-employee-number'),
@@ -6210,7 +6245,7 @@ __decorate([
     __param(0, (0, common_1.Query)('year')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", typeof (_r = typeof Promise !== "undefined" && Promise) === "function" ? _r : Object)
+    __metadata("design:returntype", typeof (_s = typeof Promise !== "undefined" && Promise) === "function" ? _s : Object)
 ], OrganizationController.prototype, "getNextEmployeeNumber", null);
 __decorate([
     (0, common_1.Get)('employees/:id'),
@@ -6220,7 +6255,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_s = typeof Promise !== "undefined" && Promise) === "function" ? _s : Object)
+    __metadata("design:returntype", typeof (_t = typeof Promise !== "undefined" && Promise) === "function" ? _t : Object)
 ], OrganizationController.prototype, "getEmployee", null);
 __decorate([
     (0, common_1.Post)('employees'),
@@ -6229,8 +6264,8 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 201, type: dto_1.AdminEmployeeResponseDto }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_t = typeof dto_1.CreateEmployeeRequestDto !== "undefined" && dto_1.CreateEmployeeRequestDto) === "function" ? _t : Object]),
-    __metadata("design:returntype", typeof (_u = typeof Promise !== "undefined" && Promise) === "function" ? _u : Object)
+    __metadata("design:paramtypes", [typeof (_u = typeof dto_1.CreateEmployeeRequestDto !== "undefined" && dto_1.CreateEmployeeRequestDto) === "function" ? _u : Object]),
+    __metadata("design:returntype", typeof (_v = typeof Promise !== "undefined" && Promise) === "function" ? _v : Object)
 ], OrganizationController.prototype, "createEmployee", null);
 __decorate([
     (0, common_1.Put)('employees/:id'),
@@ -6241,8 +6276,8 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, typeof (_v = typeof dto_1.UpdateEmployeeRequestDto !== "undefined" && dto_1.UpdateEmployeeRequestDto) === "function" ? _v : Object]),
-    __metadata("design:returntype", typeof (_w = typeof Promise !== "undefined" && Promise) === "function" ? _w : Object)
+    __metadata("design:paramtypes", [String, typeof (_w = typeof dto_1.UpdateEmployeeRequestDto !== "undefined" && dto_1.UpdateEmployeeRequestDto) === "function" ? _w : Object]),
+    __metadata("design:returntype", typeof (_x = typeof Promise !== "undefined" && Promise) === "function" ? _x : Object)
 ], OrganizationController.prototype, "updateEmployee", null);
 __decorate([
     (0, common_1.Patch)('employees/bulk/department'),
@@ -6255,8 +6290,8 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 404, description: '부서를 찾을 수 없음' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_x = typeof dto_1.BulkUpdateDepartmentRequestDto !== "undefined" && dto_1.BulkUpdateDepartmentRequestDto) === "function" ? _x : Object]),
-    __metadata("design:returntype", typeof (_y = typeof Promise !== "undefined" && Promise) === "function" ? _y : Object)
+    __metadata("design:paramtypes", [typeof (_y = typeof dto_1.BulkUpdateDepartmentRequestDto !== "undefined" && dto_1.BulkUpdateDepartmentRequestDto) === "function" ? _y : Object]),
+    __metadata("design:returntype", typeof (_z = typeof Promise !== "undefined" && Promise) === "function" ? _z : Object)
 ], OrganizationController.prototype, "bulkUpdateEmployeeDepartment", null);
 __decorate([
     (0, common_1.Patch)('employees/bulk/team'),
@@ -6270,8 +6305,8 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 404, description: '팀을 찾을 수 없음' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_z = typeof dto_1.BulkUpdateTeamRequestDto !== "undefined" && dto_1.BulkUpdateTeamRequestDto) === "function" ? _z : Object]),
-    __metadata("design:returntype", typeof (_0 = typeof Promise !== "undefined" && Promise) === "function" ? _0 : Object)
+    __metadata("design:paramtypes", [typeof (_0 = typeof dto_1.BulkUpdateTeamRequestDto !== "undefined" && dto_1.BulkUpdateTeamRequestDto) === "function" ? _0 : Object]),
+    __metadata("design:returntype", typeof (_1 = typeof Promise !== "undefined" && Promise) === "function" ? _1 : Object)
 ], OrganizationController.prototype, "bulkUpdateEmployeeTeam", null);
 __decorate([
     (0, common_1.Patch)('employees/bulk/position'),
@@ -6281,8 +6316,8 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 404, description: '직책을 찾을 수 없음' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_1 = typeof dto_1.BulkUpdatePositionRequestDto !== "undefined" && dto_1.BulkUpdatePositionRequestDto) === "function" ? _1 : Object]),
-    __metadata("design:returntype", typeof (_2 = typeof Promise !== "undefined" && Promise) === "function" ? _2 : Object)
+    __metadata("design:paramtypes", [typeof (_2 = typeof dto_1.BulkUpdatePositionRequestDto !== "undefined" && dto_1.BulkUpdatePositionRequestDto) === "function" ? _2 : Object]),
+    __metadata("design:returntype", typeof (_3 = typeof Promise !== "undefined" && Promise) === "function" ? _3 : Object)
 ], OrganizationController.prototype, "bulkUpdateEmployeePosition", null);
 __decorate([
     (0, common_1.Patch)('employees/bulk/rank'),
@@ -6292,8 +6327,8 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 404, description: '직급을 찾을 수 없음' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_3 = typeof dto_1.BulkUpdateRankRequestDto !== "undefined" && dto_1.BulkUpdateRankRequestDto) === "function" ? _3 : Object]),
-    __metadata("design:returntype", typeof (_4 = typeof Promise !== "undefined" && Promise) === "function" ? _4 : Object)
+    __metadata("design:paramtypes", [typeof (_4 = typeof dto_1.BulkUpdateRankRequestDto !== "undefined" && dto_1.BulkUpdateRankRequestDto) === "function" ? _4 : Object]),
+    __metadata("design:returntype", typeof (_5 = typeof Promise !== "undefined" && Promise) === "function" ? _5 : Object)
 ], OrganizationController.prototype, "bulkUpdateEmployeeRank", null);
 __decorate([
     (0, common_1.Patch)('employees/bulk/status'),
@@ -6302,8 +6337,8 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 400, description: '잘못된 요청' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_5 = typeof dto_1.BulkUpdateStatusRequestDto !== "undefined" && dto_1.BulkUpdateStatusRequestDto) === "function" ? _5 : Object]),
-    __metadata("design:returntype", typeof (_6 = typeof Promise !== "undefined" && Promise) === "function" ? _6 : Object)
+    __metadata("design:paramtypes", [typeof (_6 = typeof dto_1.BulkUpdateStatusRequestDto !== "undefined" && dto_1.BulkUpdateStatusRequestDto) === "function" ? _6 : Object]),
+    __metadata("design:returntype", typeof (_7 = typeof Promise !== "undefined" && Promise) === "function" ? _7 : Object)
 ], OrganizationController.prototype, "bulkUpdateEmployeeStatus", null);
 __decorate([
     (0, common_1.Delete)('employees/:id'),
@@ -6313,7 +6348,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_7 = typeof Promise !== "undefined" && Promise) === "function" ? _7 : Object)
+    __metadata("design:returntype", typeof (_8 = typeof Promise !== "undefined" && Promise) === "function" ? _8 : Object)
 ], OrganizationController.prototype, "deleteEmployee", null);
 __decorate([
     (0, common_1.Get)('positions'),
@@ -6321,7 +6356,7 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 200, type: [dto_1.PositionResponseDto] }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_8 = typeof Promise !== "undefined" && Promise) === "function" ? _8 : Object)
+    __metadata("design:returntype", typeof (_9 = typeof Promise !== "undefined" && Promise) === "function" ? _9 : Object)
 ], OrganizationController.prototype, "getPositions", null);
 __decorate([
     (0, common_1.Post)('positions'),
@@ -6330,8 +6365,8 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 201, type: dto_1.PositionResponseDto }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_9 = typeof dto_1.CreatePositionRequestDto !== "undefined" && dto_1.CreatePositionRequestDto) === "function" ? _9 : Object]),
-    __metadata("design:returntype", typeof (_10 = typeof Promise !== "undefined" && Promise) === "function" ? _10 : Object)
+    __metadata("design:paramtypes", [typeof (_10 = typeof dto_1.CreatePositionRequestDto !== "undefined" && dto_1.CreatePositionRequestDto) === "function" ? _10 : Object]),
+    __metadata("design:returntype", typeof (_11 = typeof Promise !== "undefined" && Promise) === "function" ? _11 : Object)
 ], OrganizationController.prototype, "createPosition", null);
 __decorate([
     (0, common_1.Put)('positions/:id'),
@@ -6342,8 +6377,8 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, typeof (_11 = typeof dto_1.UpdatePositionRequestDto !== "undefined" && dto_1.UpdatePositionRequestDto) === "function" ? _11 : Object]),
-    __metadata("design:returntype", typeof (_12 = typeof Promise !== "undefined" && Promise) === "function" ? _12 : Object)
+    __metadata("design:paramtypes", [String, typeof (_12 = typeof dto_1.UpdatePositionRequestDto !== "undefined" && dto_1.UpdatePositionRequestDto) === "function" ? _12 : Object]),
+    __metadata("design:returntype", typeof (_13 = typeof Promise !== "undefined" && Promise) === "function" ? _13 : Object)
 ], OrganizationController.prototype, "updatePosition", null);
 __decorate([
     (0, common_1.Delete)('positions/:id'),
@@ -6353,7 +6388,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_13 = typeof Promise !== "undefined" && Promise) === "function" ? _13 : Object)
+    __metadata("design:returntype", typeof (_14 = typeof Promise !== "undefined" && Promise) === "function" ? _14 : Object)
 ], OrganizationController.prototype, "deletePosition", null);
 __decorate([
     (0, common_1.Get)('ranks'),
@@ -6361,7 +6396,7 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 200, type: [dto_1.RankResponseDto] }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_14 = typeof Promise !== "undefined" && Promise) === "function" ? _14 : Object)
+    __metadata("design:returntype", typeof (_15 = typeof Promise !== "undefined" && Promise) === "function" ? _15 : Object)
 ], OrganizationController.prototype, "getRanks", null);
 __decorate([
     (0, common_1.Post)('ranks'),
@@ -6370,8 +6405,8 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 201, type: dto_1.RankResponseDto }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_15 = typeof dto_1.CreateRankRequestDto !== "undefined" && dto_1.CreateRankRequestDto) === "function" ? _15 : Object]),
-    __metadata("design:returntype", typeof (_16 = typeof Promise !== "undefined" && Promise) === "function" ? _16 : Object)
+    __metadata("design:paramtypes", [typeof (_16 = typeof dto_1.CreateRankRequestDto !== "undefined" && dto_1.CreateRankRequestDto) === "function" ? _16 : Object]),
+    __metadata("design:returntype", typeof (_17 = typeof Promise !== "undefined" && Promise) === "function" ? _17 : Object)
 ], OrganizationController.prototype, "createRank", null);
 __decorate([
     (0, common_1.Put)('ranks/:id'),
@@ -6382,8 +6417,8 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, typeof (_17 = typeof dto_1.UpdateRankRequestDto !== "undefined" && dto_1.UpdateRankRequestDto) === "function" ? _17 : Object]),
-    __metadata("design:returntype", typeof (_18 = typeof Promise !== "undefined" && Promise) === "function" ? _18 : Object)
+    __metadata("design:paramtypes", [String, typeof (_18 = typeof dto_1.UpdateRankRequestDto !== "undefined" && dto_1.UpdateRankRequestDto) === "function" ? _18 : Object]),
+    __metadata("design:returntype", typeof (_19 = typeof Promise !== "undefined" && Promise) === "function" ? _19 : Object)
 ], OrganizationController.prototype, "updateRank", null);
 __decorate([
     (0, common_1.Delete)('ranks/:id'),
@@ -6393,7 +6428,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_19 = typeof Promise !== "undefined" && Promise) === "function" ? _19 : Object)
+    __metadata("design:returntype", typeof (_20 = typeof Promise !== "undefined" && Promise) === "function" ? _20 : Object)
 ], OrganizationController.prototype, "deleteRank", null);
 __decorate([
     (0, common_1.Get)('employee-assignments'),
@@ -6401,7 +6436,7 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 200, type: [dto_1.EmployeeAssignmentDetailResponseDto] }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_20 = typeof Promise !== "undefined" && Promise) === "function" ? _20 : Object)
+    __metadata("design:returntype", typeof (_21 = typeof Promise !== "undefined" && Promise) === "function" ? _21 : Object)
 ], OrganizationController.prototype, "getAllEmployeeAssignments", null);
 __decorate([
     (0, common_1.Post)('employee-assignments'),
@@ -6410,8 +6445,8 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 201, type: dto_1.EmployeeAssignmentResponseDto }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_21 = typeof dto_1.AssignEmployeeRequestDto !== "undefined" && dto_1.AssignEmployeeRequestDto) === "function" ? _21 : Object]),
-    __metadata("design:returntype", typeof (_22 = typeof Promise !== "undefined" && Promise) === "function" ? _22 : Object)
+    __metadata("design:paramtypes", [typeof (_22 = typeof dto_1.AssignEmployeeRequestDto !== "undefined" && dto_1.AssignEmployeeRequestDto) === "function" ? _22 : Object]),
+    __metadata("design:returntype", typeof (_23 = typeof Promise !== "undefined" && Promise) === "function" ? _23 : Object)
 ], OrganizationController.prototype, "assignEmployee", null);
 __decorate([
     (0, common_1.Put)('employee-assignments/:id'),
@@ -6422,8 +6457,8 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, typeof (_23 = typeof dto_1.UpdateEmployeeAssignmentRequestDto !== "undefined" && dto_1.UpdateEmployeeAssignmentRequestDto) === "function" ? _23 : Object]),
-    __metadata("design:returntype", typeof (_24 = typeof Promise !== "undefined" && Promise) === "function" ? _24 : Object)
+    __metadata("design:paramtypes", [String, typeof (_24 = typeof dto_1.UpdateEmployeeAssignmentRequestDto !== "undefined" && dto_1.UpdateEmployeeAssignmentRequestDto) === "function" ? _24 : Object]),
+    __metadata("design:returntype", typeof (_25 = typeof Promise !== "undefined" && Promise) === "function" ? _25 : Object)
 ], OrganizationController.prototype, "updateEmployeeAssignment", null);
 __decorate([
     (0, common_1.Patch)('employee-assignments/:id/manager-status'),
@@ -6435,8 +6470,8 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, typeof (_25 = typeof dto_1.UpdateManagerStatusRequestDto !== "undefined" && dto_1.UpdateManagerStatusRequestDto) === "function" ? _25 : Object]),
-    __metadata("design:returntype", typeof (_26 = typeof Promise !== "undefined" && Promise) === "function" ? _26 : Object)
+    __metadata("design:paramtypes", [String, typeof (_26 = typeof dto_1.UpdateManagerStatusRequestDto !== "undefined" && dto_1.UpdateManagerStatusRequestDto) === "function" ? _26 : Object]),
+    __metadata("design:returntype", typeof (_27 = typeof Promise !== "undefined" && Promise) === "function" ? _27 : Object)
 ], OrganizationController.prototype, "updateManagerStatus", null);
 __decorate([
     (0, common_1.Delete)('employee-assignments/:id'),
@@ -6446,7 +6481,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_27 = typeof Promise !== "undefined" && Promise) === "function" ? _27 : Object)
+    __metadata("design:returntype", typeof (_28 = typeof Promise !== "undefined" && Promise) === "function" ? _28 : Object)
 ], OrganizationController.prototype, "removeEmployeeAssignment", null);
 __decorate([
     (0, common_1.Get)('employees/:id/assignments'),
@@ -6456,7 +6491,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_28 = typeof Promise !== "undefined" && Promise) === "function" ? _28 : Object)
+    __metadata("design:returntype", typeof (_29 = typeof Promise !== "undefined" && Promise) === "function" ? _29 : Object)
 ], OrganizationController.prototype, "getEmployeeAssignments", null);
 __decorate([
     (0, common_1.Post)('employees/:id/rank-promotion'),
@@ -6467,8 +6502,8 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, typeof (_29 = typeof dto_1.PromoteEmployeeRequestDto !== "undefined" && dto_1.PromoteEmployeeRequestDto) === "function" ? _29 : Object]),
-    __metadata("design:returntype", typeof (_30 = typeof Promise !== "undefined" && Promise) === "function" ? _30 : Object)
+    __metadata("design:paramtypes", [String, typeof (_30 = typeof dto_1.PromoteEmployeeRequestDto !== "undefined" && dto_1.PromoteEmployeeRequestDto) === "function" ? _30 : Object]),
+    __metadata("design:returntype", typeof (_31 = typeof Promise !== "undefined" && Promise) === "function" ? _31 : Object)
 ], OrganizationController.prototype, "promoteEmployee", null);
 __decorate([
     (0, common_1.Get)('employees/:id/rank-history'),
@@ -6478,7 +6513,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_31 = typeof Promise !== "undefined" && Promise) === "function" ? _31 : Object)
+    __metadata("design:returntype", typeof (_32 = typeof Promise !== "undefined" && Promise) === "function" ? _32 : Object)
 ], OrganizationController.prototype, "getEmployeeRankHistory", null);
 exports.OrganizationController = OrganizationController = __decorate([
     (0, swagger_1.ApiTags)('Admin - 조직 관리'),
@@ -6787,10 +6822,53 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a, _b;
+var _a, _b, _c, _d;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SystemRoleResponseDto = void 0;
+exports.SystemRoleResponseDto = exports.SystemInfoDto = void 0;
 const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+class SystemInfoDto {
+}
+exports.SystemInfoDto = SystemInfoDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '시스템 ID' }),
+    __metadata("design:type", String)
+], SystemInfoDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '클라이언트 ID' }),
+    __metadata("design:type", String)
+], SystemInfoDto.prototype, "clientId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '시스템 이름' }),
+    __metadata("design:type", String)
+], SystemInfoDto.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '시스템 설명' }),
+    __metadata("design:type", String)
+], SystemInfoDto.prototype, "description", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '도메인' }),
+    __metadata("design:type", String)
+], SystemInfoDto.prototype, "domain", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '허용된 오리진 목록', type: [String] }),
+    __metadata("design:type", Array)
+], SystemInfoDto.prototype, "allowedOrigin", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '헬스체크 URL' }),
+    __metadata("design:type", String)
+], SystemInfoDto.prototype, "healthCheckUrl", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '활성화 상태' }),
+    __metadata("design:type", Boolean)
+], SystemInfoDto.prototype, "isActive", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '생성일시' }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], SystemInfoDto.prototype, "createdAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '수정일시' }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], SystemInfoDto.prototype, "updatedAt", void 0);
 class SystemRoleResponseDto {
 }
 exports.SystemRoleResponseDto = SystemRoleResponseDto;
@@ -6828,12 +6906,16 @@ __decorate([
 ], SystemRoleResponseDto.prototype, "isActive", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '생성일시' }),
-    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
 ], SystemRoleResponseDto.prototype, "createdAt", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '수정일시' }),
-    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+    __metadata("design:type", typeof (_d = typeof Date !== "undefined" && Date) === "function" ? _d : Object)
 ], SystemRoleResponseDto.prototype, "updatedAt", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '시스템 정보', type: SystemInfoDto }),
+    __metadata("design:type", SystemInfoDto)
+], SystemRoleResponseDto.prototype, "system", void 0);
 
 
 /***/ }),
@@ -7237,7 +7319,7 @@ let SystemApplicationService = class SystemApplicationService {
         };
     }
     시스템롤_엔티티를_DTO로_변환(systemRole) {
-        return {
+        const dto = {
             id: systemRole.id,
             systemId: systemRole.systemId,
             roleName: systemRole.roleName,
@@ -7249,6 +7331,21 @@ let SystemApplicationService = class SystemApplicationService {
             createdAt: systemRole.createdAt,
             updatedAt: systemRole.updatedAt,
         };
+        if (systemRole.system) {
+            dto.system = {
+                id: systemRole.system.id,
+                clientId: systemRole.system.clientId,
+                name: systemRole.system.name,
+                description: systemRole.system.description,
+                domain: systemRole.system.domain,
+                allowedOrigin: systemRole.system.allowedOrigin,
+                healthCheckUrl: systemRole.system.healthCheckUrl,
+                isActive: systemRole.system.isActive,
+                createdAt: systemRole.system.createdAt,
+                updatedAt: systemRole.system.updatedAt,
+            };
+        }
+        return dto;
     }
 };
 exports.SystemApplicationService = SystemApplicationService;
@@ -12965,7 +13062,6 @@ const position_module_1 = __webpack_require__(/*! ../../domain/position/position
 const rank_module_1 = __webpack_require__(/*! ../../domain/rank/rank.module */ "./src/modules/domain/rank/rank.module.ts");
 const employee_department_position_module_1 = __webpack_require__(/*! ../../domain/employee-department-position/employee-department-position.module */ "./src/modules/domain/employee-department-position/employee-department-position.module.ts");
 const employee_rank_history_module_1 = __webpack_require__(/*! ../../domain/employee-rank-history/employee-rank-history.module */ "./src/modules/domain/employee-rank-history/employee-rank-history.module.ts");
-const user_module_1 = __webpack_require__(/*! ../../domain/user/user.module */ "./src/modules/domain/user/user.module.ts");
 let MigrationModule = class MigrationModule {
 };
 exports.MigrationModule = MigrationModule;
@@ -12978,7 +13074,6 @@ exports.MigrationModule = MigrationModule = __decorate([
             rank_module_1.DomainRankModule,
             employee_department_position_module_1.DomainEmployeeDepartmentPositionModule,
             employee_rank_history_module_1.DomainEmployeeRankHistoryModule,
-            user_module_1.DomainUserModule,
         ],
         providers: [migration_service_1.MigrationService],
         exports: [migration_service_1.MigrationService],
@@ -13004,7 +13099,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a, _b, _c, _d, _e, _f, _g;
+var _a, _b, _c, _d, _e, _f;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MigrationService = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
@@ -13019,19 +13114,16 @@ const axios_1 = __webpack_require__(/*! axios */ "axios");
 const department_response_dto_1 = __webpack_require__(/*! ./dto/department-response.dto */ "./src/modules/context/migration/dto/department-response.dto.ts");
 const position_response_dto_1 = __webpack_require__(/*! ./dto/position-response.dto */ "./src/modules/context/migration/dto/position-response.dto.ts");
 const rank_response_dto_1 = __webpack_require__(/*! ./dto/rank-response.dto */ "./src/modules/context/migration/dto/rank-response.dto.ts");
-const user_service_1 = __webpack_require__(/*! ../../domain/user/user.service */ "./src/modules/domain/user/user.service.ts");
 let MigrationService = class MigrationService {
-    constructor(employeeService, departmentService, positionService, rankService, employeeDepartmentPositionService, employeeRankHistoryService, userService) {
+    constructor(employeeService, departmentService, positionService, rankService, employeeDepartmentPositionService, employeeRankHistoryService) {
         this.employeeService = employeeService;
         this.departmentService = departmentService;
         this.positionService = positionService;
         this.rankService = rankService;
         this.employeeDepartmentPositionService = employeeDepartmentPositionService;
         this.employeeRankHistoryService = employeeRankHistoryService;
-        this.userService = userService;
     }
-    async onApplicationBootstrap() {
-    }
+    async onApplicationBootstrap() { }
     async getEmployees() {
         const response = await axios_1.default.get(`${process.env.METADATA_MANAGER_URL}/api/employees?detailed=true`);
         const employees = response.data.map((employee) => new employee_response_dto_1.EmployeeResponseDto(employee));
@@ -13182,7 +13274,7 @@ let MigrationService = class MigrationService {
 exports.MigrationService = MigrationService;
 exports.MigrationService = MigrationService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof employee_service_1.DomainEmployeeService !== "undefined" && employee_service_1.DomainEmployeeService) === "function" ? _a : Object, typeof (_b = typeof department_service_1.DomainDepartmentService !== "undefined" && department_service_1.DomainDepartmentService) === "function" ? _b : Object, typeof (_c = typeof position_service_1.DomainPositionService !== "undefined" && position_service_1.DomainPositionService) === "function" ? _c : Object, typeof (_d = typeof rank_service_1.DomainRankService !== "undefined" && rank_service_1.DomainRankService) === "function" ? _d : Object, typeof (_e = typeof employee_department_position_service_1.DomainEmployeeDepartmentPositionService !== "undefined" && employee_department_position_service_1.DomainEmployeeDepartmentPositionService) === "function" ? _e : Object, typeof (_f = typeof employee_rank_history_service_1.DomainEmployeeRankHistoryService !== "undefined" && employee_rank_history_service_1.DomainEmployeeRankHistoryService) === "function" ? _f : Object, typeof (_g = typeof user_service_1.DomainUserService !== "undefined" && user_service_1.DomainUserService) === "function" ? _g : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof employee_service_1.DomainEmployeeService !== "undefined" && employee_service_1.DomainEmployeeService) === "function" ? _a : Object, typeof (_b = typeof department_service_1.DomainDepartmentService !== "undefined" && department_service_1.DomainDepartmentService) === "function" ? _b : Object, typeof (_c = typeof position_service_1.DomainPositionService !== "undefined" && position_service_1.DomainPositionService) === "function" ? _c : Object, typeof (_d = typeof rank_service_1.DomainRankService !== "undefined" && rank_service_1.DomainRankService) === "function" ? _d : Object, typeof (_e = typeof employee_department_position_service_1.DomainEmployeeDepartmentPositionService !== "undefined" && employee_department_position_service_1.DomainEmployeeDepartmentPositionService) === "function" ? _e : Object, typeof (_f = typeof employee_rank_history_service_1.DomainEmployeeRankHistoryService !== "undefined" && employee_rank_history_service_1.DomainEmployeeRankHistoryService) === "function" ? _f : Object])
 ], MigrationService);
 
 
@@ -13320,6 +13412,9 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
     }
     async 부서_ID로_부서를_조회한다(departmentId) {
         return this.부서서비스.findById(departmentId);
+    }
+    async 부서_코드로_부서를_조회한다(departmentCode) {
+        return this.부서서비스.findByCode(departmentCode);
     }
     async 모든_부서를_조회한다() {
         return this.부서서비스.findAll();
@@ -13589,12 +13684,69 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
             if (!employee) {
                 throw new common_1.NotFoundException('직원을 찾을 수 없습니다.');
             }
-            const updateData = {
-                status,
-                terminationDate: null,
-                terminationReason: null,
-            };
-            await transactionalEntityManager.update(entities_1.Employee, { id: employeeId }, updateData);
+            const metadata = employee.metadata || {};
+            const previousDepartment = metadata?.termination?.previousDepartment;
+            const previousPosition = metadata?.termination?.previousPosition;
+            const previousIsManager = metadata?.termination?.previousIsManager ?? false;
+            if (previousDepartment && previousDepartment.id) {
+                const currentAssignments = await this.직원부서직책서비스.findAllByEmployeeId(employeeId);
+                let departmentAssignment = null;
+                for (const assignment of currentAssignments) {
+                    const department = await this.부서서비스.findById(assignment.departmentId);
+                    if (department.type === department_entity_1.DepartmentType.DEPARTMENT) {
+                        departmentAssignment = assignment;
+                        break;
+                    }
+                }
+                const previousDept = await this.부서서비스.findById(previousDepartment.id);
+                if (!previousDept) {
+                    throw new common_1.NotFoundException('이전 부서를 찾을 수 없습니다.');
+                }
+                let positionToUse = null;
+                if (previousPosition && previousPosition.id) {
+                    positionToUse = await this.직책서비스.findById(previousPosition.id);
+                }
+                if (!positionToUse) {
+                    const defaultPosition = await this.직책서비스.findAll();
+                    const firstPosition = defaultPosition.length > 0 ? defaultPosition[0] : null;
+                    if (!firstPosition) {
+                        throw new common_1.NotFoundException('기본 직책을 찾을 수 없습니다.');
+                    }
+                    positionToUse = firstPosition;
+                }
+                if (departmentAssignment) {
+                    await transactionalEntityManager.update(entities_1.EmployeeDepartmentPosition, { id: departmentAssignment.id }, {
+                        departmentId: previousDepartment.id,
+                        positionId: positionToUse.id,
+                        isManager: previousIsManager,
+                    });
+                }
+                else {
+                    await transactionalEntityManager.save(entities_1.EmployeeDepartmentPosition, {
+                        employeeId,
+                        departmentId: previousDepartment.id,
+                        positionId: positionToUse.id,
+                        isManager: previousIsManager,
+                    });
+                }
+                const updatedMetadata = { ...metadata };
+                delete updatedMetadata.termination;
+                const updateData = {
+                    status,
+                    terminationDate: null,
+                    terminationReason: null,
+                    metadata: Object.keys(updatedMetadata).length > 0 ? updatedMetadata : null,
+                };
+                await transactionalEntityManager.update(entities_1.Employee, { id: employeeId }, updateData);
+            }
+            else {
+                const updateData = {
+                    status,
+                    terminationDate: null,
+                    terminationReason: null,
+                };
+                await transactionalEntityManager.update(entities_1.Employee, { id: employeeId }, updateData);
+            }
             const updatedEmployee = await transactionalEntityManager.findOne(entities_1.Employee, {
                 where: { id: employeeId },
             });
@@ -13823,15 +13975,7 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
             let employee = null;
             try {
                 employee = await this.직원을_조회한다(employeeId);
-                await this.직원서비스.updateEmployee(employeeId, {
-                    status,
-                    terminationDate: status === enums_1.EmployeeStatus.Terminated ? terminationDate : null,
-                });
-                if (status === enums_1.EmployeeStatus.Terminated) {
-                    await this.직원토큰서비스.deleteAllByEmployeeId(employeeId);
-                    await this.직원FCM토큰서비스.deleteAllByEmployeeId(employeeId);
-                    await this.직원시스템역할서비스.unassignAllRolesByEmployeeId(employeeId);
-                }
+                await this.직원재직상태를_변경한다(employeeId, status, terminationDate);
                 successIds.push(employeeId);
             }
             catch (error) {
@@ -14150,10 +14294,16 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
             }
             const currentAssignments = await this.직원부서직책서비스.findAllByEmployeeId(employeeId);
             let currentDepartment = null;
+            let currentPosition = null;
+            let currentIsManager = false;
+            let departmentAssignment = null;
             for (const assignment of currentAssignments) {
                 const department = await this.부서서비스.findById(assignment.departmentId);
                 if (department.type === department_entity_1.DepartmentType.DEPARTMENT) {
                     currentDepartment = department;
+                    departmentAssignment = assignment;
+                    currentPosition = await this.직책서비스.findById(assignment.positionId);
+                    currentIsManager = assignment.isManager;
                     break;
                 }
             }
@@ -14166,6 +14316,14 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
                             code: currentDepartment.departmentCode,
                         }
                         : null,
+                    previousPosition: currentPosition
+                        ? {
+                            id: currentPosition.id,
+                            title: currentPosition.positionTitle,
+                            code: currentPosition.positionCode,
+                        }
+                        : null,
+                    previousIsManager: currentIsManager,
                 },
             };
             await transactionalEntityManager.update(entities_1.Employee, { id: employeeId }, {
@@ -14174,23 +14332,18 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
                 terminationReason: data.terminationReason,
                 metadata,
             });
-            let departmentAssignment = null;
-            for (const assignment of currentAssignments) {
-                const department = await this.부서서비스.findById(assignment.departmentId);
-                if (department.type === department_entity_1.DepartmentType.DEPARTMENT) {
-                    departmentAssignment = assignment;
-                    break;
+            if (!currentPosition) {
+                const defaultPosition = await this.직책서비스.findAll();
+                const firstPosition = defaultPosition.length > 0 ? defaultPosition[0] : null;
+                if (!firstPosition) {
+                    throw new common_1.NotFoundException('기본 직책을 찾을 수 없습니다.');
                 }
-            }
-            const defaultPosition = await this.직책서비스.findAll();
-            const firstPosition = defaultPosition.length > 0 ? defaultPosition[0] : null;
-            if (!firstPosition) {
-                throw new common_1.NotFoundException('기본 직책을 찾을 수 없습니다.');
+                currentPosition = firstPosition;
             }
             if (departmentAssignment) {
                 await transactionalEntityManager.update(entities_1.EmployeeDepartmentPosition, { id: departmentAssignment.id }, {
                     departmentId: terminatedDepartment.id,
-                    positionId: firstPosition.id,
+                    positionId: currentPosition.id,
                     isManager: false,
                 });
             }
@@ -14198,7 +14351,7 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
                 await transactionalEntityManager.save(entities_1.EmployeeDepartmentPosition, {
                     employeeId,
                     departmentId: terminatedDepartment.id,
-                    positionId: firstPosition.id,
+                    positionId: currentPosition.id,
                     isManager: false,
                 });
             }
@@ -14882,10 +15035,32 @@ let SystemManagementContextService = SystemManagementContextService_1 = class Sy
         return this.시스템역할서비스.createSystemRole(data);
     }
     async 모든_시스템역할을_조회한다() {
-        return this.시스템역할서비스.findAllSystemRoles();
+        const systemRoles = await this.시스템역할서비스.findAllSystemRoles();
+        const uniqueSystemIds = new Set(systemRoles.map((role) => role.systemId));
+        const allSystems = await this.시스템서비스.findAllSystems();
+        const systems = allSystems.filter((system) => uniqueSystemIds.has(system.id));
+        const systemMap = new Map();
+        systems.forEach((system) => {
+            systemMap.set(system.id, system);
+        });
+        return systemRoles.map((role) => ({
+            ...role,
+            system: systemMap.get(role.systemId),
+        }));
     }
     async 시스템의_역할목록을_조회한다(systemId) {
-        return this.시스템역할서비스.findBySystemId(systemId);
+        const systemRoles = await this.시스템역할서비스.findBySystemId(systemId);
+        const uniqueSystemIds = new Set(systemRoles.map((role) => role.systemId));
+        const allSystems = await this.시스템서비스.findAllSystems();
+        const systems = allSystems.filter((system) => uniqueSystemIds.has(system.id));
+        const systemMap = new Map();
+        systems.forEach((system) => {
+            systemMap.set(system.id, system);
+        });
+        return systemRoles.map((role) => ({
+            ...role,
+            system: systemMap.get(role.systemId),
+        }));
     }
     async 시스템역할을_ID로_조회한다(systemRoleId) {
         return this.시스템역할서비스.findById(systemRoleId);
@@ -15101,7 +15276,7 @@ let DomainDepartmentRepository = class DomainDepartmentRepository extends base_r
             take: repositoryOptions?.take,
             withDeleted: repositoryOptions?.withDeleted,
         });
-        return result.filter((department) => department.departmentCode !== '관리자');
+        return result.filter((department) => department.departmentCode !== '관리자' && department.departmentCode !== '퇴사자');
     }
 };
 exports.DomainDepartmentRepository = DomainDepartmentRepository;
@@ -19178,11 +19353,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a, _b, _c, _d, _e, _f;
+var _a, _b, _c, _d, _e;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Token = void 0;
 const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
-const user_entity_1 = __webpack_require__(/*! ../user/user.entity */ "./src/modules/domain/user/user.entity.ts");
 let Token = class Token {
 };
 exports.Token = Token;
@@ -19236,15 +19410,6 @@ __decorate([
     (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", typeof (_e = typeof Date !== "undefined" && Date) === "function" ? _e : Object)
 ], Token.prototype, "updatedAt", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", String)
-], Token.prototype, "userId", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)(() => user_entity_1.User, (user) => user.tokens, { onDelete: 'CASCADE' }),
-    (0, typeorm_1.JoinColumn)({ name: 'userId' }),
-    __metadata("design:type", typeof (_f = typeof user_entity_1.User !== "undefined" && user_entity_1.User) === "function" ? _f : Object)
-], Token.prototype, "user", void 0);
 exports.Token = Token = __decorate([
     (0, typeorm_1.Entity)('tokens')
 ], Token);
@@ -19426,301 +19591,6 @@ exports.DomainTokenService = DomainTokenService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [typeof (_a = typeof token_repository_1.DomainTokenRepository !== "undefined" && token_repository_1.DomainTokenRepository) === "function" ? _a : Object, typeof (_b = typeof jwt_1.JwtService !== "undefined" && jwt_1.JwtService) === "function" ? _b : Object, typeof (_c = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _c : Object])
 ], DomainTokenService);
-
-
-/***/ }),
-
-/***/ "./src/modules/domain/user/user.entity.ts":
-/*!************************************************!*\
-  !*** ./src/modules/domain/user/user.entity.ts ***!
-  \************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b, _c, _d;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.User = void 0;
-const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
-const token_entity_1 = __webpack_require__(/*! ../token/token.entity */ "./src/modules/domain/token/token.entity.ts");
-let User = class User {
-};
-exports.User = User;
-__decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
-    __metadata("design:type", String)
-], User.prototype, "id", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ unique: true, comment: '사번' }),
-    __metadata("design:type", String)
-], User.prototype, "employeeNumber", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '이름' }),
-    __metadata("design:type", String)
-], User.prototype, "name", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ unique: true, comment: '이메일' }),
-    __metadata("design:type", String)
-], User.prototype, "email", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '비밀번호' }),
-    __metadata("design:type", String)
-], User.prototype, "password", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '전화번호', nullable: true }),
-    __metadata("design:type", String)
-], User.prototype, "phoneNumber", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '생년월일', nullable: true }),
-    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
-], User.prototype, "dateOfBirth", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '성별', nullable: true }),
-    __metadata("design:type", String)
-], User.prototype, "gender", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '입사일', nullable: true }),
-    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
-], User.prototype, "hireDate", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '재직 상태', nullable: true }),
-    __metadata("design:type", String)
-], User.prototype, "status", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '부서', nullable: true }),
-    __metadata("design:type", String)
-], User.prototype, "department", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '직위', nullable: true }),
-    __metadata("design:type", String)
-], User.prototype, "position", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '직급', nullable: true }),
-    __metadata("design:type", String)
-], User.prototype, "rank", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '초기 비밀번호 설정 여부', default: false }),
-    __metadata("design:type", Boolean)
-], User.prototype, "isInitialPasswordSet", void 0);
-__decorate([
-    (0, typeorm_1.CreateDateColumn)(),
-    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
-], User.prototype, "createdAt", void 0);
-__decorate([
-    (0, typeorm_1.UpdateDateColumn)(),
-    __metadata("design:type", typeof (_d = typeof Date !== "undefined" && Date) === "function" ? _d : Object)
-], User.prototype, "updatedAt", void 0);
-__decorate([
-    (0, typeorm_1.OneToMany)(() => token_entity_1.Token, (token) => token.user),
-    __metadata("design:type", Array)
-], User.prototype, "tokens", void 0);
-exports.User = User = __decorate([
-    (0, typeorm_1.Entity)('users')
-], User);
-
-
-/***/ }),
-
-/***/ "./src/modules/domain/user/user.module.ts":
-/*!************************************************!*\
-  !*** ./src/modules/domain/user/user.module.ts ***!
-  \************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DomainUserModule = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const user_service_1 = __webpack_require__(/*! ./user.service */ "./src/modules/domain/user/user.service.ts");
-const user_repository_1 = __webpack_require__(/*! ./user.repository */ "./src/modules/domain/user/user.repository.ts");
-const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
-const user_entity_1 = __webpack_require__(/*! ./user.entity */ "./src/modules/domain/user/user.entity.ts");
-let DomainUserModule = class DomainUserModule {
-};
-exports.DomainUserModule = DomainUserModule;
-exports.DomainUserModule = DomainUserModule = __decorate([
-    (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([user_entity_1.User])],
-        providers: [user_service_1.DomainUserService, user_repository_1.DomainUserRepository],
-        exports: [user_service_1.DomainUserService, user_repository_1.DomainUserRepository],
-    })
-], DomainUserModule);
-
-
-/***/ }),
-
-/***/ "./src/modules/domain/user/user.repository.ts":
-/*!****************************************************!*\
-  !*** ./src/modules/domain/user/user.repository.ts ***!
-  \****************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DomainUserRepository = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
-const base_repository_1 = __webpack_require__(/*! ../../../../libs/common/repositories/base.repository */ "./libs/common/repositories/base.repository.ts");
-const user_entity_1 = __webpack_require__(/*! ./user.entity */ "./src/modules/domain/user/user.entity.ts");
-const typeorm_2 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
-let DomainUserRepository = class DomainUserRepository extends base_repository_1.BaseRepository {
-    constructor(repository) {
-        super(repository);
-    }
-};
-exports.DomainUserRepository = DomainUserRepository;
-exports.DomainUserRepository = DomainUserRepository = __decorate([
-    (0, common_1.Injectable)(),
-    __param(0, (0, typeorm_2.InjectRepository)(user_entity_1.User)),
-    __metadata("design:paramtypes", [typeof (_a = typeof typeorm_1.Repository !== "undefined" && typeorm_1.Repository) === "function" ? _a : Object])
-], DomainUserRepository);
-
-
-/***/ }),
-
-/***/ "./src/modules/domain/user/user.service.ts":
-/*!*************************************************!*\
-  !*** ./src/modules/domain/user/user.service.ts ***!
-  \*************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DomainUserService = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const user_repository_1 = __webpack_require__(/*! ./user.repository */ "./src/modules/domain/user/user.repository.ts");
-const base_service_1 = __webpack_require__(/*! ../../../../libs/common/services/base.service */ "./libs/common/services/base.service.ts");
-const bcrypt = __webpack_require__(/*! @node-rs/bcrypt */ "@node-rs/bcrypt");
-let DomainUserService = class DomainUserService extends base_service_1.BaseService {
-    constructor(userRepository) {
-        super(userRepository);
-        this.userRepository = userRepository;
-    }
-    async findByEmployeeNumber(employeeNumber) {
-        const user = await this.userRepository.findOne({ where: { employeeNumber } });
-        return user;
-    }
-    async findByEmail(email) {
-        const user = await this.userRepository.findOne({ where: { email } });
-        if (!user) {
-            throw new common_1.NotFoundException('사용자를 찾을 수 없습니다.');
-        }
-        return user;
-    }
-    async checkEmployeeNumberExists(employeeNumber) {
-        const user = await this.userRepository.findOne({ where: { employeeNumber } });
-        return !!user;
-    }
-    async checkEmailExists(email) {
-        const user = await this.userRepository.findOne({ where: { email } });
-        return !!user;
-    }
-    async createUser(userData) {
-        if (userData.employeeNumber && (await this.checkEmployeeNumberExists(userData.employeeNumber))) {
-            throw new common_1.ConflictException('이미 존재하는 사번입니다.');
-        }
-        if (userData.email && (await this.checkEmailExists(userData.email))) {
-            throw new common_1.ConflictException('이미 존재하는 이메일입니다.');
-        }
-        if (userData.password) {
-            userData.password = await bcrypt.hash(userData.password, 10);
-        }
-        return await this.userRepository.save(userData);
-    }
-    async changePassword(userId, newPassword) {
-        const user = await this.findOne({ where: { id: userId } });
-        if (!user) {
-            throw new common_1.NotFoundException('사용자를 찾을 수 없습니다.');
-        }
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
-        user.password = hashedPassword;
-        user.isInitialPasswordSet = true;
-        return await this.userRepository.save(user);
-    }
-    async validatePassword(email, password) {
-        const user = await this.userRepository.findOne({ where: { email } });
-        if (!user) {
-            return null;
-        }
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        return isPasswordValid ? user : null;
-    }
-    async isInitialPasswordSet(userId) {
-        const user = await this.findOne({ where: { id: userId } });
-        return user?.isInitialPasswordSet || false;
-    }
-    async updateUserStatus(userId, status) {
-        const user = await this.findOne({ where: { id: userId } });
-        if (!user) {
-            throw new common_1.NotFoundException('사용자를 찾을 수 없습니다.');
-        }
-        user.status = status;
-        return await this.userRepository.save(user);
-    }
-    async updateUserInfo(userId, updateData) {
-        const user = await this.findOne({ where: { id: userId } });
-        if (!user) {
-            throw new common_1.NotFoundException('사용자를 찾을 수 없습니다.');
-        }
-        const { password, isInitialPasswordSet, ...safeUpdateData } = updateData;
-        Object.assign(user, safeUpdateData);
-        return await this.userRepository.save(user);
-    }
-    async findActiveUsers() {
-        return await this.userRepository.findAll({
-            where: { status: '재직중' },
-            order: { name: 'ASC' },
-        });
-    }
-    async findUsersByDepartment(department) {
-        return await this.userRepository.findAll({
-            where: { department },
-            order: { name: 'ASC' },
-        });
-    }
-};
-exports.DomainUserService = DomainUserService;
-exports.DomainUserService = DomainUserService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof user_repository_1.DomainUserRepository !== "undefined" && user_repository_1.DomainUserRepository) === "function" ? _a : Object])
-], DomainUserService);
 
 
 /***/ }),
