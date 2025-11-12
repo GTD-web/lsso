@@ -8708,7 +8708,6 @@ let OrganizationInformationApplicationController = class OrganizationInformation
         const timestamp = new Date().toISOString();
         try {
             console.log(`[${timestamp}] 조직 정보 마이그레이션 시작 - Cron 실행`);
-            await this.migrationService.migrate();
             const executionTime = ((Date.now() - startTime) / 1000).toFixed(1);
             const successMessage = `마이그레이션이 성공적으로 완료되었습니다. (실행시간: ${executionTime}초)`;
             console.log(`[${timestamp}] ${successMessage}`);
