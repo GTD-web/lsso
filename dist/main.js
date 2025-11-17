@@ -956,6 +956,13 @@ let AppController = class AppController {
         this.appService = appService;
         this.httpAdapterHost = httpAdapterHost;
     }
+    async healthCheck() {
+        return {
+            status: 'ok',
+            timestamp: new Date().toISOString(),
+            uptime: process.uptime(),
+        };
+    }
     async setInitialPassword(res, token) {
         return res.render('pages/set-initial-password', {
             token,
@@ -1081,6 +1088,12 @@ let AppController = class AppController {
     }
 };
 exports.AppController = AppController;
+__decorate([
+    (0, common_1.Get)('api/health'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], AppController.prototype, "healthCheck", null);
 __decorate([
     (0, common_1.Get)('set-initial-password'),
     __param(0, (0, common_1.Res)()),
