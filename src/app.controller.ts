@@ -10,6 +10,17 @@ import { HttpAdapterHost } from '@nestjs/core';
 @Controller()
 export class AppController {
     constructor(private readonly appService: AppService, private readonly httpAdapterHost: HttpAdapterHost) {}
+
+    // Cold start 방지용 health check 엔드포인트
+    @Get('api/health')
+    async healthCheck() {
+        return {
+            status: 'ok',
+            timestamp: new Date().toISOString(),
+            uptime: process.uptime(),
+        };
+    }
+
     @Get('set-initial-password')
     async setInitialPassword(@Res() res: Response, @Query('token') token: string) {
         return res.render('pages/set-initial-password', {
