@@ -12,7 +12,7 @@ export class AppController {
     constructor(private readonly appService: AppService, private readonly httpAdapterHost: HttpAdapterHost) {}
 
     // Cold start 방지용 health check 엔드포인트
-    @Get('api/health')
+    @Get('health')
     async healthCheck() {
         return {
             status: 'ok',
