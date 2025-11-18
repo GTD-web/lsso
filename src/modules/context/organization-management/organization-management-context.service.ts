@@ -120,7 +120,9 @@ export class OrganizationManagementContextService {
     // ==================== 전체 데이터 조회 (마이그레이션용) ====================
 
     async 모든_부서를_조회한다(): Promise<Department[]> {
-        return this.부서서비스.findAll();
+        const departments = await this.부서서비스.findAll();
+        const terminatedDepartment = await this.부서서비스.findByCode('퇴사자');
+        return [...departments, terminatedDepartment];
     }
 
     async 모든_직원을_조회한다(): Promise<Employee[]> {
@@ -1647,9 +1649,9 @@ export class OrganizationManagementContextService {
      */
     private 퇴사처리_검증을_수행한다(employee: Employee, terminationDate: Date): void {
         // 1. 이미 퇴사한 직원인지 확인
-        if (employee.status === EmployeeStatus.Terminated) {
-            throw new Error(`이미 퇴사처리된 직원입니다: ${employee.name}(${employee.employeeNumber})`);
-        }
+        // if (employee.status === EmployeeStatus.Terminated) {
+        //     throw new Error(`이미 퇴사처리된 직원입니다: ${employee.name}(${employee.employeeNumber})`);
+        // }
 
         // 2. 퇴사일이 입사일보다 늦은지 확인
         if (terminationDate <= employee.hireDate) {
