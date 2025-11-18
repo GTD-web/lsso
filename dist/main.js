@@ -8721,6 +8721,7 @@ let OrganizationInformationApplicationController = class OrganizationInformation
         const timestamp = new Date().toISOString();
         try {
             console.log(`[${timestamp}] 조직 정보 마이그레이션 시작 - Cron 실행`);
+            await this.migrationService.migrate();
             const executionTime = ((Date.now() - startTime) / 1000).toFixed(1);
             const successMessage = `마이그레이션이 성공적으로 완료되었습니다. (실행시간: ${executionTime}초)`;
             console.log(`[${timestamp}] ${successMessage}`);
@@ -14383,9 +14384,6 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
         });
     }
     퇴사처리_검증을_수행한다(employee, terminationDate) {
-        if (employee.status === enums_1.EmployeeStatus.Terminated) {
-            throw new Error(`이미 퇴사처리된 직원입니다: ${employee.name}(${employee.employeeNumber})`);
-        }
         if (terminationDate <= employee.hireDate) {
             throw new Error(`퇴사일은 입사일보다 늦어야 합니다. 입사일: ${employee.hireDate.toISOString().split('T')[0]}`);
         }
