@@ -18,7 +18,7 @@ export class FcmTokenManagementContextService {
         employeeId: string,
         fcmToken: string,
         deviceType: string,
-        deviceInfo?: any,
+        deviceInfo: string,
     ): Promise<EmployeeFcmToken> {
         // 직원 존재 확인
         const employee = await this.직원서비스.findByEmployeeId(employeeId);

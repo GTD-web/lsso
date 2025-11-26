@@ -59,8 +59,8 @@ export class EmployeeFcmTokenTokenDto {
     @ApiProperty({ description: '디바이스 타입' })
     deviceType: string;
 
-    @ApiPropertyOptional({ description: '디바이스 정보', type: FcmTokenDeviceInfoDto })
-    deviceInfo?: FcmTokenDeviceInfoDto;
+    @ApiProperty({ description: '디바이스 정보' })
+    deviceInfo: string;
 
     @ApiProperty({ description: '활성화 상태' })
     isActive: boolean;
@@ -162,8 +162,8 @@ export class AdminFcmTokenResponseDto {
     @ApiProperty({ description: '디바이스 타입' })
     deviceType: string;
 
-    @ApiPropertyOptional({ description: '디바이스 정보', type: FcmTokenDeviceInfoDto })
-    deviceInfo?: FcmTokenDeviceInfoDto;
+    @ApiProperty({ description: '디바이스 정보' })
+    deviceInfo: string;
 
     @ApiProperty({ description: '활성화 상태' })
     isActive: boolean;
