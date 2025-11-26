@@ -1450,8 +1450,8 @@ __decorate([
 ], EmployeeFcmTokenController.prototype, "remove", null);
 __decorate([
     (0, common_1.Delete)('employee/:employeeId/all'),
-    (0, swagger_1.ApiOperation)({ summary: '직원의 모든 FCM 토큰 관계 삭제' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: '모든 관계 삭제 성공' }),
+    (0, swagger_1.ApiOperation)({ summary: '직원의 모든 FCM 토큰 관계 및 고아 토큰 삭제' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: '모든 관계 및 고아 토큰 삭제 성공' }),
     (0, swagger_1.ApiParam)({ name: 'employeeId', description: '직원 ID' }),
     __param(0, (0, common_1.Param)('employeeId')),
     __metadata("design:type", Function),
@@ -2638,8 +2638,21 @@ let EmployeeFcmTokenApplicationService = class EmployeeFcmTokenApplicationServic
         return { message: '직원 FCM 토큰 관계가 성공적으로 삭제되었습니다.' };
     }
     async 직원_모든_FCM_토큰_관계_삭제(employeeId) {
+        const relations = await this.employeeFcmTokenManagementContext.직원별_FCM_토큰_관계_조회(employeeId);
+        const fcmTokenIds = relations.map((relation) => relation.fcmTokenId);
         await this.employeeFcmTokenManagementContext.직원의_모든_FCM_토큰_관계_삭제(employeeId);
-        return { message: '직원의 모든 FCM 토큰 관계가 성공적으로 삭제되었습니다.' };
+        let deletedTokensCount = 0;
+        for (const fcmTokenId of fcmTokenIds) {
+            const remainingRelationsCount = await this.employeeFcmTokenManagementContext.FCM_토큰을_가진_직원_수_조회(fcmTokenId);
+            if (remainingRelationsCount === 0) {
+                await this.domainFcmTokenService.delete(fcmTokenId);
+                deletedTokensCount++;
+            }
+        }
+        return {
+            message: '직원의 모든 FCM 토큰 관계가 성공적으로 삭제되었습니다.',
+            deletedTokensCount,
+        };
     }
     async FCM_토큰_사용일_업데이트(employeeId, fcmTokenId) {
         const relation = await this.employeeFcmTokenManagementContext.FCM_토큰_사용일_업데이트(employeeId, fcmTokenId);
