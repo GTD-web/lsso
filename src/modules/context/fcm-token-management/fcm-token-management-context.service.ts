@@ -135,4 +135,8 @@ export class FcmTokenManagementContextService {
 
         return results;
     }
+
+    async 연결되지_않은_고아_FCM토큰을_삭제한다(): Promise<number> {
+        return await this.FCM토큰서비스.deleteOrphanTokens();
+    }
 }

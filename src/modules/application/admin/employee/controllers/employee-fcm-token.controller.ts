@@ -94,10 +94,12 @@ export class EmployeeFcmTokenController {
     }
 
     @Delete('employee/:employeeId/all')
-    @ApiOperation({ summary: '직원의 모든 FCM 토큰 관계 삭제' })
-    @ApiResponse({ status: 200, description: '모든 관계 삭제 성공' })
+    @ApiOperation({ summary: '직원의 모든 FCM 토큰 관계 및 고아 토큰 삭제' })
+    @ApiResponse({ status: 200, description: '모든 관계 및 고아 토큰 삭제 성공' })
     @ApiParam({ name: 'employeeId', description: '직원 ID' })
-    async removeAllByEmployee(@Param('employeeId') employeeId: string): Promise<{ message: string }> {
+    async removeAllByEmployee(
+        @Param('employeeId') employeeId: string,
+    ): Promise<{ message: string; deletedTokensCount: number }> {
         return await this.employeeFcmTokenApplicationService.직원_모든_FCM_토큰_관계_삭제(employeeId);
     }
 

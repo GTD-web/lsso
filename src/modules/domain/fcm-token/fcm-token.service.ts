@@ -185,4 +185,9 @@ export class DomainFcmTokenService extends BaseService<FcmToken> {
     async delete(id: string): Promise<void> {
         await this.fcmTokenRepository.delete(id);
     }
+
+    // employee_fcm_tokens 테이블에 연결되지 않은 고아 토큰 삭제
+    async deleteOrphanTokens(): Promise<number> {
+        return this.fcmTokenRepository.deleteOrphanTokens();
+    }
 }

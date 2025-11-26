@@ -40,4 +40,17 @@ export class DomainFcmTokenRepository extends BaseRepository<FcmToken> {
             .andWhere('fcmToken.isActive = :isActive', { isActive: true })
             .getOne();
     }
+
+    /**
+     * employee_fcm_tokens 테이블에 연결되지 않은 고아 토큰 삭제
+     */
+    async deleteOrphanTokens(): Promise<number> {
+        const result = await this.repository
+            .createQueryBuilder('fcmToken')
+            .delete()
+            .where('id NOT IN (SELECT DISTINCT "fcmTokenId" FROM employee_fcm_tokens WHERE "fcmTokenId" IS NOT NULL)')
+            .execute();
+
+        return result.affected || 0;
+    }
 }
