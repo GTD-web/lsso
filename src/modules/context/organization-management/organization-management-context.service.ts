@@ -2052,7 +2052,7 @@ export class OrganizationManagementContextService {
         // 2. 해당 직책에 배치된 직원이 있는지 확인
         const assignedEmployees = await this.직원부서직책서비스.findByPositionId(positionId);
         if (assignedEmployees.length > 0) {
-            throw new Error('해당 직책에 배치된 직원이 있어 삭제할 수 없습니다.');
+            throw new BadRequestException('해당 직책에 배치된 직원이 있어 삭제할 수 없습니다.');
         }
 
         // 3. 직책 삭제
@@ -2118,13 +2118,13 @@ export class OrganizationManagementContextService {
         // 2. 해당 직급을 가진 직원이 있는지 확인
         const employeesWithRank = await this.직원서비스.findByRankId(rankId);
         if (employeesWithRank.length > 0) {
-            throw new Error('해당 직급을 가진 직원이 있어 삭제할 수 없습니다.');
+            throw new BadRequestException('해당 직급을 가진 직원이 있어 삭제할 수 없습니다.');
         }
 
         // 3. 해당 직급의 이력이 있는지 확인
         const rankHistories = await this.직원직급이력서비스.findByRankId(rankId);
         if (rankHistories.length > 0) {
-            throw new Error('해당 직급의 이력이 있어 삭제할 수 없습니다.');
+            throw new BadRequestException('해당 직급의 이력이 있어 삭제할 수 없습니다.');
         }
 
         // 4. 직급 삭제

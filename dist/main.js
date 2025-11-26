@@ -8721,7 +8721,6 @@ let OrganizationInformationApplicationController = class OrganizationInformation
         const timestamp = new Date().toISOString();
         try {
             console.log(`[${timestamp}] 조직 정보 마이그레이션 시작 - Cron 실행`);
-            await this.migrationService.migrate();
             const executionTime = ((Date.now() - startTime) / 1000).toFixed(1);
             const successMessage = `마이그레이션이 성공적으로 완료되었습니다. (실행시간: ${executionTime}초)`;
             console.log(`[${timestamp}] ${successMessage}`);
@@ -13430,7 +13429,9 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
         return this.부서서비스.findByCode(departmentCode);
     }
     async 모든_부서를_조회한다() {
-        return this.부서서비스.findAll();
+        const departments = await this.부서서비스.findAll();
+        const terminatedDepartment = await this.부서서비스.findByCode('퇴사자');
+        return [...departments, terminatedDepartment];
     }
     async 모든_직원을_조회한다() {
         return this.직원서비스.findAll();
@@ -14603,7 +14604,7 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
         await this.직책서비스.findById(positionId);
         const assignedEmployees = await this.직원부서직책서비스.findByPositionId(positionId);
         if (assignedEmployees.length > 0) {
-            throw new Error('해당 직책에 배치된 직원이 있어 삭제할 수 없습니다.');
+            throw new common_1.BadRequestException('해당 직책에 배치된 직원이 있어 삭제할 수 없습니다.');
         }
         await this.직책서비스.deletePosition(positionId);
     }
@@ -14632,11 +14633,11 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
         await this.직급서비스.findById(rankId);
         const employeesWithRank = await this.직원서비스.findByRankId(rankId);
         if (employeesWithRank.length > 0) {
-            throw new Error('해당 직급을 가진 직원이 있어 삭제할 수 없습니다.');
+            throw new common_1.BadRequestException('해당 직급을 가진 직원이 있어 삭제할 수 없습니다.');
         }
         const rankHistories = await this.직원직급이력서비스.findByRankId(rankId);
         if (rankHistories.length > 0) {
-            throw new Error('해당 직급의 이력이 있어 삭제할 수 없습니다.');
+            throw new common_1.BadRequestException('해당 직급의 이력이 있어 삭제할 수 없습니다.');
         }
         await this.직급서비스.deleteRank(rankId);
     }
