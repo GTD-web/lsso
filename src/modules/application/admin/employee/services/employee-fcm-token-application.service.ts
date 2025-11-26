@@ -200,26 +200,11 @@ export class EmployeeFcmTokenApplicationService {
      * 직원의 모든 FCM 토큰 관계 삭제 (고아 토큰도 함께 삭제)
      */
     async 직원_모든_FCM_토큰_관계_삭제(employeeId: string): Promise<{ message: string; deletedTokensCount: number }> {
-        // 삭제 전 직원의 FCM 토큰 목록 조회
-        const relations = await this.employeeFcmTokenManagementContext.직원별_FCM_토큰_관계_조회(employeeId);
-        const fcmTokenIds = relations.map((relation) => relation.fcmTokenId);
-
         // 관계 삭제
         await this.employeeFcmTokenManagementContext.직원의_모든_FCM_토큰_관계_삭제(employeeId);
 
-        // 고아 토큰 삭제 (다른 직원과 관계가 없는 토큰만 삭제)
-        let deletedTokensCount = 0;
-        for (const fcmTokenId of fcmTokenIds) {
-            const remainingRelationsCount = await this.employeeFcmTokenManagementContext.FCM_토큰을_가진_직원_수_조회(
-                fcmTokenId,
-            );
-
-            // 더 이상 어떤 직원과도 연결되지 않은 토큰이면 삭제
-            if (remainingRelationsCount === 0) {
-                await this.domainFcmTokenService.delete(fcmTokenId);
-                deletedTokensCount++;
-            }
-        }
+        // employee_fcm_tokens 테이블에 연결되지 않은 모든 고아 토큰 삭제
+        const deletedTokensCount = await this.domainFcmTokenService.deleteOrphanTokens();
 
         return {
             message: '직원의 모든 FCM 토큰 관계가 성공적으로 삭제되었습니다.',

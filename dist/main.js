@@ -2638,17 +2638,8 @@ let EmployeeFcmTokenApplicationService = class EmployeeFcmTokenApplicationServic
         return { message: '직원 FCM 토큰 관계가 성공적으로 삭제되었습니다.' };
     }
     async 직원_모든_FCM_토큰_관계_삭제(employeeId) {
-        const relations = await this.employeeFcmTokenManagementContext.직원별_FCM_토큰_관계_조회(employeeId);
-        const fcmTokenIds = relations.map((relation) => relation.fcmTokenId);
         await this.employeeFcmTokenManagementContext.직원의_모든_FCM_토큰_관계_삭제(employeeId);
-        let deletedTokensCount = 0;
-        for (const fcmTokenId of fcmTokenIds) {
-            const remainingRelationsCount = await this.employeeFcmTokenManagementContext.FCM_토큰을_가진_직원_수_조회(fcmTokenId);
-            if (remainingRelationsCount === 0) {
-                await this.domainFcmTokenService.delete(fcmTokenId);
-                deletedTokensCount++;
-            }
-        }
+        const deletedTokensCount = await this.domainFcmTokenService.deleteOrphanTokens();
         return {
             message: '직원의 모든 FCM 토큰 관계가 성공적으로 삭제되었습니다.',
             deletedTokensCount,
@@ -12434,6 +12425,9 @@ let FcmTokenManagementContextService = class FcmTokenManagementContextService {
         }
         return results;
     }
+    async 연결되지_않은_고아_FCM토큰을_삭제한다() {
+        return await this.FCM토큰서비스.deleteOrphanTokens();
+    }
 };
 exports.FcmTokenManagementContextService = FcmTokenManagementContextService;
 exports.FcmTokenManagementContextService = FcmTokenManagementContextService = __decorate([
@@ -17615,6 +17609,14 @@ let DomainFcmTokenRepository = class DomainFcmTokenRepository extends base_repos
             .andWhere('fcmToken.isActive = :isActive', { isActive: true })
             .getOne();
     }
+    async deleteOrphanTokens() {
+        const result = await this.repository
+            .createQueryBuilder('fcmToken')
+            .delete()
+            .where('id NOT IN (SELECT DISTINCT "fcmTokenId" FROM employee_fcm_tokens WHERE "fcmTokenId" IS NOT NULL)')
+            .execute();
+        return result.affected || 0;
+    }
 };
 exports.DomainFcmTokenRepository = DomainFcmTokenRepository;
 exports.DomainFcmTokenRepository = DomainFcmTokenRepository = __decorate([
@@ -17771,6 +17773,9 @@ let DomainFcmTokenService = class DomainFcmTokenService extends base_service_1.B
     }
     async delete(id) {
         await this.fcmTokenRepository.delete(id);
+    }
+    async deleteOrphanTokens() {
+        return this.fcmTokenRepository.deleteOrphanTokens();
     }
 };
 exports.DomainFcmTokenService = DomainFcmTokenService;
