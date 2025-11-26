@@ -13,20 +13,12 @@ export class FcmToken {
     @Column({
         type: 'varchar',
         length: 50,
-        comment: '디바이스 타입 (예: android, ios, pc, web)',
-        default: 'pc',
+        comment: '디바이스 타입 (예: lsms-prod, portal-prod)',
     })
     deviceType: string;
 
-    @Column({ type: 'json', comment: '디바이스 정보', nullable: true })
-    deviceInfo?: {
-        model?: string;
-        osVersion?: string;
-        appVersion?: string;
-        userAgent?: string;
-        platform?: string;
-        [key: string]: any;
-    };
+    @Column({ type: 'text', comment: '디바이스 정보', default: 'mobile' })
+    deviceInfo: string;
 
     @Column({ type: 'boolean', comment: '활성화 상태', default: true })
     isActive: boolean;

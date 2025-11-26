@@ -12,10 +12,18 @@ export class FcmSubscribeRequestDto extends BaseEmployeeIdentifierDto {
     fcmToken: string;
 
     @ApiProperty({
-        description: '기기 타입',
-        example: 'pc',
+        description: '디바이스 타입',
+        example: 'lsms-prod, portal-prod',
     })
     @IsString()
     @IsNotEmpty()
     deviceType: string;
+
+    @ApiProperty({
+        description: '디바이스 정보',
+        example: 'desktop, mobile',
+    })
+    @IsString()
+    @IsNotEmpty()
+    deviceInfo: string;
 }

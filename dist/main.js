@@ -1774,8 +1774,8 @@ __decorate([
     __metadata("design:type", String)
 ], EmployeeFcmTokenTokenDto.prototype, "deviceType", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: '디바이스 정보', type: FcmTokenDeviceInfoDto }),
-    __metadata("design:type", FcmTokenDeviceInfoDto)
+    (0, swagger_1.ApiProperty)({ description: '디바이스 정보' }),
+    __metadata("design:type", String)
 ], EmployeeFcmTokenTokenDto.prototype, "deviceInfo", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '활성화 상태' }),
@@ -1913,8 +1913,8 @@ __decorate([
     __metadata("design:type", String)
 ], AdminFcmTokenResponseDto.prototype, "deviceType", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: '디바이스 정보', type: FcmTokenDeviceInfoDto }),
-    __metadata("design:type", FcmTokenDeviceInfoDto)
+    (0, swagger_1.ApiProperty)({ description: '디바이스 정보' }),
+    __metadata("design:type", String)
 ], AdminFcmTokenResponseDto.prototype, "deviceInfo", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '활성화 상태' }),
@@ -8104,13 +8104,22 @@ __decorate([
 ], FcmSubscribeRequestDto.prototype, "fcmToken", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
-        description: '기기 타입',
-        example: 'pc',
+        description: '디바이스 타입',
+        example: 'lsms-prod, portal-prod',
     }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], FcmSubscribeRequestDto.prototype, "deviceType", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '디바이스 정보',
+        example: 'desktop, mobile',
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], FcmSubscribeRequestDto.prototype, "deviceInfo", void 0);
 
 
 /***/ }),
@@ -8541,12 +8550,13 @@ let FcmTokenManagementApplicationService = class FcmTokenManagementApplicationSe
         return employeeById;
     }
     async FCM토큰을_구독한다(requestDto) {
-        const { fcmToken, deviceType } = requestDto;
+        const { fcmToken, deviceType, deviceInfo } = requestDto;
         const employee = await this.getEmployeeFromIdentifier(requestDto);
         console.log('employee', employee);
-        await this.fcmTokenManagementContextService.FCM토큰을_직원에게_등록한다(employee.id, fcmToken, deviceType);
+        await this.fcmTokenManagementContextService.FCM토큰을_직원에게_등록한다(employee.id, fcmToken, deviceType, deviceInfo);
         console.log('fcmToken', fcmToken);
         console.log('deviceType', deviceType);
+        console.log('deviceInfo', deviceInfo);
         return {
             fcmToken: fcmToken,
         };
@@ -17480,14 +17490,13 @@ __decorate([
     (0, typeorm_1.Column)({
         type: 'varchar',
         length: 50,
-        comment: '디바이스 타입 (예: android, ios, pc, web)',
-        default: 'pc',
+        comment: '디바이스 타입 (예: lsms-prod, portal-prod)',
     }),
     __metadata("design:type", String)
 ], FcmToken.prototype, "deviceType", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'json', comment: '디바이스 정보', nullable: true }),
-    __metadata("design:type", Object)
+    (0, typeorm_1.Column)({ type: 'text', comment: '디바이스 정보', default: 'mobile' }),
+    __metadata("design:type", String)
 ], FcmToken.prototype, "deviceInfo", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'boolean', comment: '활성화 상태', default: true }),
@@ -17583,12 +17592,13 @@ let DomainFcmTokenRepository = class DomainFcmTokenRepository extends base_repos
             isActive: false,
         });
     }
-    async findByEmployeeAndDeviceType(employeeId, deviceType) {
+    async findByEmployeeAndDeviceType(employeeId, deviceType, deviceInfo) {
         return this.repository
             .createQueryBuilder('fcmToken')
             .innerJoin('employee_fcm_tokens', 'eft', 'eft.fcmTokenId = fcmToken.id')
             .where('eft.employeeId = :employeeId', { employeeId })
             .andWhere('fcmToken.deviceType = :deviceType', { deviceType })
+            .andWhere('fcmToken.deviceInfo = :deviceInfo', { deviceInfo })
             .andWhere('fcmToken.isActive = :isActive', { isActive: true })
             .getOne();
     }
@@ -17635,16 +17645,14 @@ let DomainFcmTokenService = class DomainFcmTokenService extends base_service_1.B
             where: { fcmToken },
         });
     }
-    async findByEmployeeAndDeviceType(employeeId, deviceType) {
-        return this.fcmTokenRepository.findByEmployeeAndDeviceType(employeeId, deviceType);
+    async findByEmployeeAndDeviceType(employeeId, deviceType, deviceInfo) {
+        return this.fcmTokenRepository.findByEmployeeAndDeviceType(employeeId, deviceType, deviceInfo);
     }
     async createOrFindByEmployeeAndDevice(employeeId, fcmToken, deviceType, deviceInfo) {
-        const existingToken = await this.findByFcmToken(fcmToken);
+        const existingToken = await this.findByEmployeeAndDeviceType(employeeId, deviceType, deviceInfo);
         if (existingToken) {
             return this.fcmTokenRepository.update(existingToken.id, {
-                deviceType,
-                deviceInfo,
-                isActive: true,
+                fcmToken,
             });
         }
         try {
@@ -17652,7 +17660,6 @@ let DomainFcmTokenService = class DomainFcmTokenService extends base_service_1.B
                 fcmToken,
                 deviceType,
                 deviceInfo,
-                isActive: true,
             });
         }
         catch (error) {

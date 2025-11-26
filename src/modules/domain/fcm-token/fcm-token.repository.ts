@@ -26,12 +26,17 @@ export class DomainFcmTokenRepository extends BaseRepository<FcmToken> {
     /**
      * 직원ID와 디바이스 타입으로 기존 FCM 토큰 조회
      */
-    async findByEmployeeAndDeviceType(employeeId: string, deviceType: string): Promise<FcmToken | null> {
+    async findByEmployeeAndDeviceType(
+        employeeId: string,
+        deviceType: string,
+        deviceInfo: string,
+    ): Promise<FcmToken | null> {
         return this.repository
             .createQueryBuilder('fcmToken')
             .innerJoin('employee_fcm_tokens', 'eft', 'eft.fcmTokenId = fcmToken.id')
             .where('eft.employeeId = :employeeId', { employeeId })
             .andWhere('fcmToken.deviceType = :deviceType', { deviceType })
+            .andWhere('fcmToken.deviceInfo = :deviceInfo', { deviceInfo })
             .andWhere('fcmToken.isActive = :isActive', { isActive: true })
             .getOne();
     }
