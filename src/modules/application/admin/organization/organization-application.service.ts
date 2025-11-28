@@ -253,7 +253,7 @@ export class OrganizationApplicationService {
     async 직원생성(createEmployeeDto: CreateEmployeeRequestDto): Promise<AdminEmployeeResponseDto> {
         // 완전한 비즈니스 로직 사이클 실행 (전처리 → 검증 → 생성 → 반환)
         const result = await this.organizationContextService.직원을_생성한다({
-            // employeeNumber: createEmployeeDto.employeeNumber,
+            employeeNumber: createEmployeeDto.employeeNumber,
             name: createEmployeeDto.name,
             email: createEmployeeDto.email,
             phoneNumber: createEmployeeDto.phoneNumber,
@@ -273,6 +273,7 @@ export class OrganizationApplicationService {
         let employee: Employee;
         // status 외 다른 정보가 있는지 확인
         const hasOtherUpdates =
+            updateEmployeeDto.employeeNumber !== undefined ||
             updateEmployeeDto.name !== undefined ||
             updateEmployeeDto.email !== undefined ||
             updateEmployeeDto.phoneNumber !== undefined ||
@@ -287,6 +288,7 @@ export class OrganizationApplicationService {
         // 1. 먼저 다른 정보(부서 등)를 수정 (부서 정보 변경이 재직상태 변경보다 먼저 와야 함)
         if (hasOtherUpdates) {
             employee = await this.organizationContextService.직원정보를_수정한다(id, {
+                employeeNumber: updateEmployeeDto.employeeNumber,
                 name: updateEmployeeDto.name,
                 email: updateEmployeeDto.email,
                 phoneNumber: updateEmployeeDto.phoneNumber,

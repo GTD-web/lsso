@@ -390,6 +390,7 @@ export class OrganizationManagementContextService {
     async 직원정보를_수정한다(
         employeeId: string,
         수정정보: {
+            employeeNumber?: string;
             name?: string;
             email?: string;
             phoneNumber?: string;
@@ -406,6 +407,7 @@ export class OrganizationManagementContextService {
     ): Promise<Employee> {
         // 1. Employee 엔티티의 기본 정보만 추출
         const employeeBasicInfo: Partial<Employee> = {
+            employeeNumber: 수정정보.employeeNumber,
             name: 수정정보.name,
             email: 수정정보.email,
             phoneNumber: 수정정보.phoneNumber,
@@ -1422,7 +1424,7 @@ export class OrganizationManagementContextService {
      * 검증 규칙 4단계에 따른 완전한 직원 생성 프로세스
      */
     async 직원을_생성한다(data: {
-        // employeeNumber?: string;
+        employeeNumber?: string;
         name: string;
         email?: string;
         englishLastName?: string;
@@ -1442,6 +1444,8 @@ export class OrganizationManagementContextService {
         rank?: Rank;
     }> {
         // 1. 전처리 (사번/이름/이메일 자동 생성)
+        // employeeNumber 자동생성은 우선 비사용으로 두고, 사용자가 입력한 사번을 우선 사용
+        // 코드는 일단 유지하고, 나중에 사용할 수 있도록
         const {
             employeeNumber,
             name,
@@ -1453,7 +1457,7 @@ export class OrganizationManagementContextService {
 
         // 2. 컨텍스트 검증 (중복, 존재 확인)
         await this.직원생성_컨텍스트_검증을_수행한다({
-            employeeNumber,
+            employeeNumber: data.employeeNumber,
             email: email,
             currentRankId: data.currentRankId,
             departmentId: data.departmentId,
@@ -1462,7 +1466,7 @@ export class OrganizationManagementContextService {
 
         // 3. 직원 생성
         const employee = await this.직원서비스.createEmployee({
-            employeeNumber: employeeNumber,
+            employeeNumber: data.employeeNumber,
             name: name,
             email: email,
             phoneNumber: data.phoneNumber,

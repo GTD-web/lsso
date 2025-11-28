@@ -4809,6 +4809,11 @@ class CreateEmployeeRequestDto {
 }
 exports.CreateEmployeeRequestDto = CreateEmployeeRequestDto;
 __decorate([
+    (0, swagger_1.ApiProperty)({ description: '사번', example: '25001' }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateEmployeeRequestDto.prototype, "employeeNumber", void 0);
+__decorate([
     (0, swagger_1.ApiProperty)({ description: '이름', example: '홍길동' }),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
@@ -4872,6 +4877,12 @@ __decorate([
 class UpdateEmployeeRequestDto {
 }
 exports.UpdateEmployeeRequestDto = UpdateEmployeeRequestDto;
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '사번', example: '25001' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], UpdateEmployeeRequestDto.prototype, "employeeNumber", void 0);
 __decorate([
     (0, swagger_1.ApiPropertyOptional)({ description: '이름', example: '홍길동' }),
     (0, class_validator_1.IsOptional)(),
@@ -5796,6 +5807,7 @@ let OrganizationApplicationService = class OrganizationApplicationService {
     }
     async 직원생성(createEmployeeDto) {
         const result = await this.organizationContextService.직원을_생성한다({
+            employeeNumber: createEmployeeDto.employeeNumber,
             name: createEmployeeDto.name,
             email: createEmployeeDto.email,
             phoneNumber: createEmployeeDto.phoneNumber,
@@ -5811,7 +5823,8 @@ let OrganizationApplicationService = class OrganizationApplicationService {
     }
     async 직원수정(id, updateEmployeeDto) {
         let employee;
-        const hasOtherUpdates = updateEmployeeDto.name !== undefined ||
+        const hasOtherUpdates = updateEmployeeDto.employeeNumber !== undefined ||
+            updateEmployeeDto.name !== undefined ||
             updateEmployeeDto.email !== undefined ||
             updateEmployeeDto.phoneNumber !== undefined ||
             updateEmployeeDto.dateOfBirth !== undefined ||
@@ -5823,6 +5836,7 @@ let OrganizationApplicationService = class OrganizationApplicationService {
             updateEmployeeDto.isManager !== undefined;
         if (hasOtherUpdates) {
             employee = await this.organizationContextService.직원정보를_수정한다(id, {
+                employeeNumber: updateEmployeeDto.employeeNumber,
                 name: updateEmployeeDto.name,
                 email: updateEmployeeDto.email,
                 phoneNumber: updateEmployeeDto.phoneNumber,
@@ -13634,6 +13648,7 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
     }
     async 직원정보를_수정한다(employeeId, 수정정보) {
         const employeeBasicInfo = {
+            employeeNumber: 수정정보.employeeNumber,
             name: 수정정보.name,
             email: 수정정보.email,
             phoneNumber: 수정정보.phoneNumber,
@@ -14272,14 +14287,14 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
         const { employeeNumber, name, email: generatedEmail, } = await this.직원생성_전처리를_수행한다(data.name, data.englishLastName, data.englishFirstName);
         const email = generatedEmail || data.email;
         await this.직원생성_컨텍스트_검증을_수행한다({
-            employeeNumber,
+            employeeNumber: data.employeeNumber,
             email: email,
             currentRankId: data.currentRankId,
             departmentId: data.departmentId,
             positionId: data.positionId,
         });
         const employee = await this.직원서비스.createEmployee({
-            employeeNumber: employeeNumber,
+            employeeNumber: data.employeeNumber,
             name: name,
             email: email,
             phoneNumber: data.phoneNumber,
