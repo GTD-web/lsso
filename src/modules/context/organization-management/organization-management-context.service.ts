@@ -1721,6 +1721,8 @@ export class OrganizationManagementContextService {
             departmentCode?: string;
             type?: any;
             parentDepartmentId?: string;
+            isActive?: boolean;
+            // isException?: boolean;
             // order?: number;
         },
     ): Promise<Department> {

@@ -6,6 +6,7 @@ import {
     DepartmentListResponseDto,
     UpdateDepartmentOrderRequestDto,
     UpdateDepartmentParentRequestDto,
+    UpdateDepartmentActiveStatusRequestDto,
     DepartmentHierarchyResponseDto,
     DepartmentWithEmployeesDto,
     DepartmentEmployeeInfoDto,
@@ -141,6 +142,16 @@ export class OrganizationApplicationService {
         // 완전한 비즈니스 로직 사이클 실행 (존재 확인 → 상위 부서 확인 → 변경)
         const updatedDepartment = await this.organizationContextService.부서를_수정한다(id, {
             parentDepartmentId: updateParentDto.newParentDepartmentId,
+        });
+        return this.부서를_응답DTO로_변환한다(updatedDepartment);
+    }
+
+    async 부서활성화상태변경(
+        id: string,
+        updateActiveStatusDto: UpdateDepartmentActiveStatusRequestDto,
+    ): Promise<DepartmentResponseDto> {
+        const updatedDepartment = await this.organizationContextService.부서를_수정한다(id, {
+            isActive: updateActiveStatusDto.isActive,
         });
         return this.부서를_응답DTO로_변환한다(updatedDepartment);
     }
@@ -444,6 +455,8 @@ export class OrganizationApplicationService {
         type: department.type,
         parentDepartmentId: department.parentDepartmentId,
         order: department.order,
+        isActive: department.isActive ?? true,
+        isException: department.isException ?? false,
         childDepartments: department.childDepartments?.map(this.부서를_응답DTO로_변환한다),
         createdAt: department.createdAt,
         updatedAt: department.updatedAt,
@@ -602,6 +615,8 @@ export class OrganizationApplicationService {
                 type: department.type,
                 parentDepartmentId: department.parentDepartmentId,
                 order: department.order,
+                isActive: department.isActive ?? true,
+                isException: department.isException ?? false,
                 employees: employees.sort((a, b) => a.name.localeCompare(b.name)),
                 childDepartments:
                     childDepartments.length > 0 ? childDepartments.sort((a, b) => a.order - b.order) : undefined,

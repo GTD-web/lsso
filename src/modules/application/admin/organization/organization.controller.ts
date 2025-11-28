@@ -9,6 +9,7 @@ import {
     DepartmentListResponseDto,
     UpdateDepartmentOrderRequestDto,
     UpdateDepartmentParentRequestDto,
+    UpdateDepartmentActiveStatusRequestDto,
     DepartmentHierarchyResponseDto,
     CreateEmployeeRequestDto,
     UpdateEmployeeRequestDto,
@@ -142,6 +143,19 @@ export class OrganizationController {
         @Body() updateParentDto: UpdateDepartmentParentRequestDto,
     ): Promise<DepartmentResponseDto> {
         return await this.organizationApplicationService.부서상위부서변경(id, updateParentDto);
+    }
+
+    @Patch('departments/:id/active-status')
+    @ApiOperation({ summary: '부서 활성화 상태 변경' })
+    @ApiParam({ name: 'id', description: '부서 ID' })
+    @ApiBody({ type: UpdateDepartmentActiveStatusRequestDto })
+    @ApiResponse({ status: 200, type: DepartmentResponseDto, description: '활성화 상태 변경 성공' })
+    @ApiResponse({ status: 404, description: '부서를 찾을 수 없음' })
+    async updateDepartmentActiveStatus(
+        @Param('id') id: string,
+        @Body() updateActiveStatusDto: UpdateDepartmentActiveStatusRequestDto,
+    ): Promise<DepartmentResponseDto> {
+        return await this.organizationApplicationService.부서활성화상태변경(id, updateActiveStatusDto);
     }
 
     // 직원 관리 API
