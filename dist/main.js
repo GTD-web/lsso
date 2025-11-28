@@ -4313,7 +4313,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var _a, _b, _c, _d, _e, _f, _g;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DepartmentHierarchyResponseDto = exports.DepartmentWithEmployeesDto = exports.DepartmentEmployeeInfoDto = exports.UpdateDepartmentParentRequestDto = exports.UpdateDepartmentOrderRequestDto = exports.DepartmentListResponseDto = exports.DepartmentResponseDto = exports.UpdateDepartmentRequestDto = exports.CreateDepartmentRequestDto = void 0;
+exports.DepartmentHierarchyResponseDto = exports.DepartmentWithEmployeesDto = exports.DepartmentEmployeeInfoDto = exports.UpdateDepartmentActiveStatusRequestDto = exports.UpdateDepartmentParentRequestDto = exports.UpdateDepartmentOrderRequestDto = exports.DepartmentListResponseDto = exports.DepartmentResponseDto = exports.UpdateDepartmentRequestDto = exports.CreateDepartmentRequestDto = void 0;
 const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
 const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
 const department_entity_1 = __webpack_require__(/*! ../../../../domain/department/department.entity */ "./src/modules/domain/department/department.entity.ts");
@@ -4416,6 +4416,14 @@ __decorate([
     __metadata("design:type", Number)
 ], DepartmentResponseDto.prototype, "order", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({ description: '활성화 상태' }),
+    __metadata("design:type", Boolean)
+], DepartmentResponseDto.prototype, "isActive", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '예외처리 여부' }),
+    __metadata("design:type", Boolean)
+], DepartmentResponseDto.prototype, "isException", void 0);
+__decorate([
     (0, swagger_1.ApiProperty)({ description: '하위 부서 목록', type: [DepartmentResponseDto], required: false }),
     __metadata("design:type", Array)
 ], DepartmentResponseDto.prototype, "childDepartments", void 0);
@@ -4450,6 +4458,14 @@ __decorate([
     (0, class_validator_1.IsUUID)(),
     __metadata("design:type", String)
 ], UpdateDepartmentParentRequestDto.prototype, "newParentDepartmentId", void 0);
+class UpdateDepartmentActiveStatusRequestDto {
+}
+exports.UpdateDepartmentActiveStatusRequestDto = UpdateDepartmentActiveStatusRequestDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '활성화 상태', example: true }),
+    (0, class_validator_1.IsBoolean)(),
+    __metadata("design:type", Boolean)
+], UpdateDepartmentActiveStatusRequestDto.prototype, "isActive", void 0);
 class DepartmentEmployeeInfoDto {
 }
 exports.DepartmentEmployeeInfoDto = DepartmentEmployeeInfoDto;
@@ -4524,6 +4540,14 @@ __decorate([
     (0, swagger_1.ApiProperty)({ description: '정렬 순서' }),
     __metadata("design:type", Number)
 ], DepartmentWithEmployeesDto.prototype, "order", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '활성화 상태' }),
+    __metadata("design:type", Boolean)
+], DepartmentWithEmployeesDto.prototype, "isActive", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '예외처리 여부' }),
+    __metadata("design:type", Boolean)
+], DepartmentWithEmployeesDto.prototype, "isException", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '직원 목록', type: [DepartmentEmployeeInfoDto] }),
     __metadata("design:type", Array)
@@ -5318,7 +5342,7 @@ __decorate([
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.EmployeeRankHistoryResponseDto = exports.PromoteEmployeeRequestDto = exports.EmployeeAssignmentDetailResponseDto = exports.EmployeeAssignmentListResponseDto = exports.EmployeeAssignmentResponseDto = exports.UpdateManagerStatusRequestDto = exports.UpdateEmployeeAssignmentRequestDto = exports.AssignEmployeeRequestDto = exports.RankResponseDto = exports.UpdateRankRequestDto = exports.CreateRankRequestDto = exports.PositionResponseDto = exports.UpdatePositionRequestDto = exports.CreatePositionRequestDto = exports.BulkUpdateResultDto = exports.BulkUpdateStatusRequestDto = exports.BulkUpdateRankRequestDto = exports.BulkUpdatePositionRequestDto = exports.BulkUpdateTeamRequestDto = exports.BulkUpdateDepartmentRequestDto = exports.EmployeeAssignmentDetailDto = exports.EmployeeDetailListResponseDto = exports.EmployeeDetailInfoDto = exports.NextEmployeeNumberResponseDto = exports.EmployeeListResponseDto = exports.AdminEmployeeResponseDto = exports.UpdateEmployeeRequestDto = exports.CreateEmployeeRequestDto = exports.DepartmentEmployeeInfoDto = exports.DepartmentWithEmployeesDto = exports.DepartmentHierarchyResponseDto = exports.UpdateDepartmentParentRequestDto = exports.UpdateDepartmentOrderRequestDto = exports.DepartmentListResponseDto = exports.DepartmentResponseDto = exports.UpdateDepartmentRequestDto = exports.CreateDepartmentRequestDto = void 0;
+exports.EmployeeRankHistoryResponseDto = exports.PromoteEmployeeRequestDto = exports.EmployeeAssignmentDetailResponseDto = exports.EmployeeAssignmentListResponseDto = exports.EmployeeAssignmentResponseDto = exports.UpdateManagerStatusRequestDto = exports.UpdateEmployeeAssignmentRequestDto = exports.AssignEmployeeRequestDto = exports.RankResponseDto = exports.UpdateRankRequestDto = exports.CreateRankRequestDto = exports.PositionResponseDto = exports.UpdatePositionRequestDto = exports.CreatePositionRequestDto = exports.BulkUpdateResultDto = exports.BulkUpdateStatusRequestDto = exports.BulkUpdateRankRequestDto = exports.BulkUpdatePositionRequestDto = exports.BulkUpdateTeamRequestDto = exports.BulkUpdateDepartmentRequestDto = exports.EmployeeAssignmentDetailDto = exports.EmployeeDetailListResponseDto = exports.EmployeeDetailInfoDto = exports.NextEmployeeNumberResponseDto = exports.EmployeeListResponseDto = exports.AdminEmployeeResponseDto = exports.UpdateEmployeeRequestDto = exports.CreateEmployeeRequestDto = exports.DepartmentEmployeeInfoDto = exports.DepartmentWithEmployeesDto = exports.DepartmentHierarchyResponseDto = exports.UpdateDepartmentActiveStatusRequestDto = exports.UpdateDepartmentParentRequestDto = exports.UpdateDepartmentOrderRequestDto = exports.DepartmentListResponseDto = exports.DepartmentResponseDto = exports.UpdateDepartmentRequestDto = exports.CreateDepartmentRequestDto = void 0;
 var department_dto_1 = __webpack_require__(/*! ./department.dto */ "./src/modules/application/admin/organization/dto/department.dto.ts");
 Object.defineProperty(exports, "CreateDepartmentRequestDto", ({ enumerable: true, get: function () { return department_dto_1.CreateDepartmentRequestDto; } }));
 Object.defineProperty(exports, "UpdateDepartmentRequestDto", ({ enumerable: true, get: function () { return department_dto_1.UpdateDepartmentRequestDto; } }));
@@ -5326,6 +5350,7 @@ Object.defineProperty(exports, "DepartmentResponseDto", ({ enumerable: true, get
 Object.defineProperty(exports, "DepartmentListResponseDto", ({ enumerable: true, get: function () { return department_dto_1.DepartmentListResponseDto; } }));
 Object.defineProperty(exports, "UpdateDepartmentOrderRequestDto", ({ enumerable: true, get: function () { return department_dto_1.UpdateDepartmentOrderRequestDto; } }));
 Object.defineProperty(exports, "UpdateDepartmentParentRequestDto", ({ enumerable: true, get: function () { return department_dto_1.UpdateDepartmentParentRequestDto; } }));
+Object.defineProperty(exports, "UpdateDepartmentActiveStatusRequestDto", ({ enumerable: true, get: function () { return department_dto_1.UpdateDepartmentActiveStatusRequestDto; } }));
 Object.defineProperty(exports, "DepartmentHierarchyResponseDto", ({ enumerable: true, get: function () { return department_dto_1.DepartmentHierarchyResponseDto; } }));
 Object.defineProperty(exports, "DepartmentWithEmployeesDto", ({ enumerable: true, get: function () { return department_dto_1.DepartmentWithEmployeesDto; } }));
 Object.defineProperty(exports, "DepartmentEmployeeInfoDto", ({ enumerable: true, get: function () { return department_dto_1.DepartmentEmployeeInfoDto; } }));
@@ -5580,6 +5605,8 @@ let OrganizationApplicationService = class OrganizationApplicationService {
             type: department.type,
             parentDepartmentId: department.parentDepartmentId,
             order: department.order,
+            isActive: department.isActive ?? true,
+            isException: department.isException ?? false,
             childDepartments: department.childDepartments?.map(this.부서를_응답DTO로_변환한다),
             createdAt: department.createdAt,
             updatedAt: department.updatedAt,
@@ -5720,6 +5747,12 @@ let OrganizationApplicationService = class OrganizationApplicationService {
     async 부서상위부서변경(id, updateParentDto) {
         const updatedDepartment = await this.organizationContextService.부서를_수정한다(id, {
             parentDepartmentId: updateParentDto.newParentDepartmentId,
+        });
+        return this.부서를_응답DTO로_변환한다(updatedDepartment);
+    }
+    async 부서활성화상태변경(id, updateActiveStatusDto) {
+        const updatedDepartment = await this.organizationContextService.부서를_수정한다(id, {
+            isActive: updateActiveStatusDto.isActive,
         });
         return this.부서를_응답DTO로_변환한다(updatedDepartment);
     }
@@ -5956,6 +5989,8 @@ let OrganizationApplicationService = class OrganizationApplicationService {
                 type: department.type,
                 parentDepartmentId: department.parentDepartmentId,
                 order: department.order,
+                isActive: department.isActive ?? true,
+                isException: department.isException ?? false,
                 employees: employees.sort((a, b) => a.name.localeCompare(b.name)),
                 childDepartments: childDepartments.length > 0 ? childDepartments.sort((a, b) => a.order - b.order) : undefined,
             };
@@ -6012,7 +6047,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, _33, _34;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OrganizationController = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
@@ -6050,6 +6085,9 @@ let OrganizationController = class OrganizationController {
     }
     async updateDepartmentParent(id, updateParentDto) {
         return await this.organizationApplicationService.부서상위부서변경(id, updateParentDto);
+    }
+    async updateDepartmentActiveStatus(id, updateActiveStatusDto) {
+        return await this.organizationApplicationService.부서활성화상태변경(id, updateActiveStatusDto);
     }
     async getEmployees(status) {
         return await this.organizationApplicationService.직원상세목록조회(status);
@@ -6244,6 +6282,19 @@ __decorate([
     __metadata("design:returntype", typeof (_p = typeof Promise !== "undefined" && Promise) === "function" ? _p : Object)
 ], OrganizationController.prototype, "updateDepartmentParent", null);
 __decorate([
+    (0, common_1.Patch)('departments/:id/active-status'),
+    (0, swagger_1.ApiOperation)({ summary: '부서 활성화 상태 변경' }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: '부서 ID' }),
+    (0, swagger_1.ApiBody)({ type: dto_1.UpdateDepartmentActiveStatusRequestDto }),
+    (0, swagger_1.ApiResponse)({ status: 200, type: dto_1.DepartmentResponseDto, description: '활성화 상태 변경 성공' }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: '부서를 찾을 수 없음' }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, typeof (_q = typeof dto_1.UpdateDepartmentActiveStatusRequestDto !== "undefined" && dto_1.UpdateDepartmentActiveStatusRequestDto) === "function" ? _q : Object]),
+    __metadata("design:returntype", typeof (_r = typeof Promise !== "undefined" && Promise) === "function" ? _r : Object)
+], OrganizationController.prototype, "updateDepartmentActiveStatus", null);
+__decorate([
     (0, common_1.Get)('employees'),
     (0, swagger_1.ApiOperation)({
         summary: '직원 상세 목록 조회',
@@ -6258,8 +6309,8 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 200, type: dto_1.EmployeeDetailListResponseDto }),
     __param(0, (0, common_1.Query)('status')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_q = typeof enums_1.EmployeeStatus !== "undefined" && enums_1.EmployeeStatus) === "function" ? _q : Object]),
-    __metadata("design:returntype", typeof (_r = typeof Promise !== "undefined" && Promise) === "function" ? _r : Object)
+    __metadata("design:paramtypes", [typeof (_s = typeof enums_1.EmployeeStatus !== "undefined" && enums_1.EmployeeStatus) === "function" ? _s : Object]),
+    __metadata("design:returntype", typeof (_t = typeof Promise !== "undefined" && Promise) === "function" ? _t : Object)
 ], OrganizationController.prototype, "getEmployees", null);
 __decorate([
     (0, common_1.Get)('employees/next-employee-number'),
@@ -6276,7 +6327,7 @@ __decorate([
     __param(0, (0, common_1.Query)('year')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", typeof (_s = typeof Promise !== "undefined" && Promise) === "function" ? _s : Object)
+    __metadata("design:returntype", typeof (_u = typeof Promise !== "undefined" && Promise) === "function" ? _u : Object)
 ], OrganizationController.prototype, "getNextEmployeeNumber", null);
 __decorate([
     (0, common_1.Get)('employees/:id'),
@@ -6286,7 +6337,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_t = typeof Promise !== "undefined" && Promise) === "function" ? _t : Object)
+    __metadata("design:returntype", typeof (_v = typeof Promise !== "undefined" && Promise) === "function" ? _v : Object)
 ], OrganizationController.prototype, "getEmployee", null);
 __decorate([
     (0, common_1.Post)('employees'),
@@ -6295,8 +6346,8 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 201, type: dto_1.AdminEmployeeResponseDto }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_u = typeof dto_1.CreateEmployeeRequestDto !== "undefined" && dto_1.CreateEmployeeRequestDto) === "function" ? _u : Object]),
-    __metadata("design:returntype", typeof (_v = typeof Promise !== "undefined" && Promise) === "function" ? _v : Object)
+    __metadata("design:paramtypes", [typeof (_w = typeof dto_1.CreateEmployeeRequestDto !== "undefined" && dto_1.CreateEmployeeRequestDto) === "function" ? _w : Object]),
+    __metadata("design:returntype", typeof (_x = typeof Promise !== "undefined" && Promise) === "function" ? _x : Object)
 ], OrganizationController.prototype, "createEmployee", null);
 __decorate([
     (0, common_1.Put)('employees/:id'),
@@ -6307,8 +6358,8 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, typeof (_w = typeof dto_1.UpdateEmployeeRequestDto !== "undefined" && dto_1.UpdateEmployeeRequestDto) === "function" ? _w : Object]),
-    __metadata("design:returntype", typeof (_x = typeof Promise !== "undefined" && Promise) === "function" ? _x : Object)
+    __metadata("design:paramtypes", [String, typeof (_y = typeof dto_1.UpdateEmployeeRequestDto !== "undefined" && dto_1.UpdateEmployeeRequestDto) === "function" ? _y : Object]),
+    __metadata("design:returntype", typeof (_z = typeof Promise !== "undefined" && Promise) === "function" ? _z : Object)
 ], OrganizationController.prototype, "updateEmployee", null);
 __decorate([
     (0, common_1.Patch)('employees/bulk/department'),
@@ -6321,8 +6372,8 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 404, description: '부서를 찾을 수 없음' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_y = typeof dto_1.BulkUpdateDepartmentRequestDto !== "undefined" && dto_1.BulkUpdateDepartmentRequestDto) === "function" ? _y : Object]),
-    __metadata("design:returntype", typeof (_z = typeof Promise !== "undefined" && Promise) === "function" ? _z : Object)
+    __metadata("design:paramtypes", [typeof (_0 = typeof dto_1.BulkUpdateDepartmentRequestDto !== "undefined" && dto_1.BulkUpdateDepartmentRequestDto) === "function" ? _0 : Object]),
+    __metadata("design:returntype", typeof (_1 = typeof Promise !== "undefined" && Promise) === "function" ? _1 : Object)
 ], OrganizationController.prototype, "bulkUpdateEmployeeDepartment", null);
 __decorate([
     (0, common_1.Patch)('employees/bulk/team'),
@@ -6336,8 +6387,8 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 404, description: '팀을 찾을 수 없음' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_0 = typeof dto_1.BulkUpdateTeamRequestDto !== "undefined" && dto_1.BulkUpdateTeamRequestDto) === "function" ? _0 : Object]),
-    __metadata("design:returntype", typeof (_1 = typeof Promise !== "undefined" && Promise) === "function" ? _1 : Object)
+    __metadata("design:paramtypes", [typeof (_2 = typeof dto_1.BulkUpdateTeamRequestDto !== "undefined" && dto_1.BulkUpdateTeamRequestDto) === "function" ? _2 : Object]),
+    __metadata("design:returntype", typeof (_3 = typeof Promise !== "undefined" && Promise) === "function" ? _3 : Object)
 ], OrganizationController.prototype, "bulkUpdateEmployeeTeam", null);
 __decorate([
     (0, common_1.Patch)('employees/bulk/position'),
@@ -6347,8 +6398,8 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 404, description: '직책을 찾을 수 없음' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_2 = typeof dto_1.BulkUpdatePositionRequestDto !== "undefined" && dto_1.BulkUpdatePositionRequestDto) === "function" ? _2 : Object]),
-    __metadata("design:returntype", typeof (_3 = typeof Promise !== "undefined" && Promise) === "function" ? _3 : Object)
+    __metadata("design:paramtypes", [typeof (_4 = typeof dto_1.BulkUpdatePositionRequestDto !== "undefined" && dto_1.BulkUpdatePositionRequestDto) === "function" ? _4 : Object]),
+    __metadata("design:returntype", typeof (_5 = typeof Promise !== "undefined" && Promise) === "function" ? _5 : Object)
 ], OrganizationController.prototype, "bulkUpdateEmployeePosition", null);
 __decorate([
     (0, common_1.Patch)('employees/bulk/rank'),
@@ -6358,8 +6409,8 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 404, description: '직급을 찾을 수 없음' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_4 = typeof dto_1.BulkUpdateRankRequestDto !== "undefined" && dto_1.BulkUpdateRankRequestDto) === "function" ? _4 : Object]),
-    __metadata("design:returntype", typeof (_5 = typeof Promise !== "undefined" && Promise) === "function" ? _5 : Object)
+    __metadata("design:paramtypes", [typeof (_6 = typeof dto_1.BulkUpdateRankRequestDto !== "undefined" && dto_1.BulkUpdateRankRequestDto) === "function" ? _6 : Object]),
+    __metadata("design:returntype", typeof (_7 = typeof Promise !== "undefined" && Promise) === "function" ? _7 : Object)
 ], OrganizationController.prototype, "bulkUpdateEmployeeRank", null);
 __decorate([
     (0, common_1.Patch)('employees/bulk/status'),
@@ -6368,8 +6419,8 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 400, description: '잘못된 요청' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_6 = typeof dto_1.BulkUpdateStatusRequestDto !== "undefined" && dto_1.BulkUpdateStatusRequestDto) === "function" ? _6 : Object]),
-    __metadata("design:returntype", typeof (_7 = typeof Promise !== "undefined" && Promise) === "function" ? _7 : Object)
+    __metadata("design:paramtypes", [typeof (_8 = typeof dto_1.BulkUpdateStatusRequestDto !== "undefined" && dto_1.BulkUpdateStatusRequestDto) === "function" ? _8 : Object]),
+    __metadata("design:returntype", typeof (_9 = typeof Promise !== "undefined" && Promise) === "function" ? _9 : Object)
 ], OrganizationController.prototype, "bulkUpdateEmployeeStatus", null);
 __decorate([
     (0, common_1.Delete)('employees/:id'),
@@ -6379,7 +6430,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_8 = typeof Promise !== "undefined" && Promise) === "function" ? _8 : Object)
+    __metadata("design:returntype", typeof (_10 = typeof Promise !== "undefined" && Promise) === "function" ? _10 : Object)
 ], OrganizationController.prototype, "deleteEmployee", null);
 __decorate([
     (0, common_1.Get)('positions'),
@@ -6387,7 +6438,7 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 200, type: [dto_1.PositionResponseDto] }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_9 = typeof Promise !== "undefined" && Promise) === "function" ? _9 : Object)
+    __metadata("design:returntype", typeof (_11 = typeof Promise !== "undefined" && Promise) === "function" ? _11 : Object)
 ], OrganizationController.prototype, "getPositions", null);
 __decorate([
     (0, common_1.Post)('positions'),
@@ -6396,8 +6447,8 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 201, type: dto_1.PositionResponseDto }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_10 = typeof dto_1.CreatePositionRequestDto !== "undefined" && dto_1.CreatePositionRequestDto) === "function" ? _10 : Object]),
-    __metadata("design:returntype", typeof (_11 = typeof Promise !== "undefined" && Promise) === "function" ? _11 : Object)
+    __metadata("design:paramtypes", [typeof (_12 = typeof dto_1.CreatePositionRequestDto !== "undefined" && dto_1.CreatePositionRequestDto) === "function" ? _12 : Object]),
+    __metadata("design:returntype", typeof (_13 = typeof Promise !== "undefined" && Promise) === "function" ? _13 : Object)
 ], OrganizationController.prototype, "createPosition", null);
 __decorate([
     (0, common_1.Put)('positions/:id'),
@@ -6408,8 +6459,8 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, typeof (_12 = typeof dto_1.UpdatePositionRequestDto !== "undefined" && dto_1.UpdatePositionRequestDto) === "function" ? _12 : Object]),
-    __metadata("design:returntype", typeof (_13 = typeof Promise !== "undefined" && Promise) === "function" ? _13 : Object)
+    __metadata("design:paramtypes", [String, typeof (_14 = typeof dto_1.UpdatePositionRequestDto !== "undefined" && dto_1.UpdatePositionRequestDto) === "function" ? _14 : Object]),
+    __metadata("design:returntype", typeof (_15 = typeof Promise !== "undefined" && Promise) === "function" ? _15 : Object)
 ], OrganizationController.prototype, "updatePosition", null);
 __decorate([
     (0, common_1.Delete)('positions/:id'),
@@ -6419,7 +6470,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_14 = typeof Promise !== "undefined" && Promise) === "function" ? _14 : Object)
+    __metadata("design:returntype", typeof (_16 = typeof Promise !== "undefined" && Promise) === "function" ? _16 : Object)
 ], OrganizationController.prototype, "deletePosition", null);
 __decorate([
     (0, common_1.Get)('ranks'),
@@ -6427,7 +6478,7 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 200, type: [dto_1.RankResponseDto] }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_15 = typeof Promise !== "undefined" && Promise) === "function" ? _15 : Object)
+    __metadata("design:returntype", typeof (_17 = typeof Promise !== "undefined" && Promise) === "function" ? _17 : Object)
 ], OrganizationController.prototype, "getRanks", null);
 __decorate([
     (0, common_1.Post)('ranks'),
@@ -6436,8 +6487,8 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 201, type: dto_1.RankResponseDto }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_16 = typeof dto_1.CreateRankRequestDto !== "undefined" && dto_1.CreateRankRequestDto) === "function" ? _16 : Object]),
-    __metadata("design:returntype", typeof (_17 = typeof Promise !== "undefined" && Promise) === "function" ? _17 : Object)
+    __metadata("design:paramtypes", [typeof (_18 = typeof dto_1.CreateRankRequestDto !== "undefined" && dto_1.CreateRankRequestDto) === "function" ? _18 : Object]),
+    __metadata("design:returntype", typeof (_19 = typeof Promise !== "undefined" && Promise) === "function" ? _19 : Object)
 ], OrganizationController.prototype, "createRank", null);
 __decorate([
     (0, common_1.Put)('ranks/:id'),
@@ -6448,8 +6499,8 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, typeof (_18 = typeof dto_1.UpdateRankRequestDto !== "undefined" && dto_1.UpdateRankRequestDto) === "function" ? _18 : Object]),
-    __metadata("design:returntype", typeof (_19 = typeof Promise !== "undefined" && Promise) === "function" ? _19 : Object)
+    __metadata("design:paramtypes", [String, typeof (_20 = typeof dto_1.UpdateRankRequestDto !== "undefined" && dto_1.UpdateRankRequestDto) === "function" ? _20 : Object]),
+    __metadata("design:returntype", typeof (_21 = typeof Promise !== "undefined" && Promise) === "function" ? _21 : Object)
 ], OrganizationController.prototype, "updateRank", null);
 __decorate([
     (0, common_1.Delete)('ranks/:id'),
@@ -6459,7 +6510,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_20 = typeof Promise !== "undefined" && Promise) === "function" ? _20 : Object)
+    __metadata("design:returntype", typeof (_22 = typeof Promise !== "undefined" && Promise) === "function" ? _22 : Object)
 ], OrganizationController.prototype, "deleteRank", null);
 __decorate([
     (0, common_1.Get)('employee-assignments'),
@@ -6467,7 +6518,7 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 200, type: [dto_1.EmployeeAssignmentDetailResponseDto] }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_21 = typeof Promise !== "undefined" && Promise) === "function" ? _21 : Object)
+    __metadata("design:returntype", typeof (_23 = typeof Promise !== "undefined" && Promise) === "function" ? _23 : Object)
 ], OrganizationController.prototype, "getAllEmployeeAssignments", null);
 __decorate([
     (0, common_1.Post)('employee-assignments'),
@@ -6476,8 +6527,8 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 201, type: dto_1.EmployeeAssignmentResponseDto }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_22 = typeof dto_1.AssignEmployeeRequestDto !== "undefined" && dto_1.AssignEmployeeRequestDto) === "function" ? _22 : Object]),
-    __metadata("design:returntype", typeof (_23 = typeof Promise !== "undefined" && Promise) === "function" ? _23 : Object)
+    __metadata("design:paramtypes", [typeof (_24 = typeof dto_1.AssignEmployeeRequestDto !== "undefined" && dto_1.AssignEmployeeRequestDto) === "function" ? _24 : Object]),
+    __metadata("design:returntype", typeof (_25 = typeof Promise !== "undefined" && Promise) === "function" ? _25 : Object)
 ], OrganizationController.prototype, "assignEmployee", null);
 __decorate([
     (0, common_1.Put)('employee-assignments/:id'),
@@ -6488,8 +6539,8 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, typeof (_24 = typeof dto_1.UpdateEmployeeAssignmentRequestDto !== "undefined" && dto_1.UpdateEmployeeAssignmentRequestDto) === "function" ? _24 : Object]),
-    __metadata("design:returntype", typeof (_25 = typeof Promise !== "undefined" && Promise) === "function" ? _25 : Object)
+    __metadata("design:paramtypes", [String, typeof (_26 = typeof dto_1.UpdateEmployeeAssignmentRequestDto !== "undefined" && dto_1.UpdateEmployeeAssignmentRequestDto) === "function" ? _26 : Object]),
+    __metadata("design:returntype", typeof (_27 = typeof Promise !== "undefined" && Promise) === "function" ? _27 : Object)
 ], OrganizationController.prototype, "updateEmployeeAssignment", null);
 __decorate([
     (0, common_1.Patch)('employee-assignments/:id/manager-status'),
@@ -6501,8 +6552,8 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, typeof (_26 = typeof dto_1.UpdateManagerStatusRequestDto !== "undefined" && dto_1.UpdateManagerStatusRequestDto) === "function" ? _26 : Object]),
-    __metadata("design:returntype", typeof (_27 = typeof Promise !== "undefined" && Promise) === "function" ? _27 : Object)
+    __metadata("design:paramtypes", [String, typeof (_28 = typeof dto_1.UpdateManagerStatusRequestDto !== "undefined" && dto_1.UpdateManagerStatusRequestDto) === "function" ? _28 : Object]),
+    __metadata("design:returntype", typeof (_29 = typeof Promise !== "undefined" && Promise) === "function" ? _29 : Object)
 ], OrganizationController.prototype, "updateManagerStatus", null);
 __decorate([
     (0, common_1.Delete)('employee-assignments/:id'),
@@ -6512,7 +6563,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_28 = typeof Promise !== "undefined" && Promise) === "function" ? _28 : Object)
+    __metadata("design:returntype", typeof (_30 = typeof Promise !== "undefined" && Promise) === "function" ? _30 : Object)
 ], OrganizationController.prototype, "removeEmployeeAssignment", null);
 __decorate([
     (0, common_1.Get)('employees/:id/assignments'),
@@ -6522,7 +6573,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_29 = typeof Promise !== "undefined" && Promise) === "function" ? _29 : Object)
+    __metadata("design:returntype", typeof (_31 = typeof Promise !== "undefined" && Promise) === "function" ? _31 : Object)
 ], OrganizationController.prototype, "getEmployeeAssignments", null);
 __decorate([
     (0, common_1.Post)('employees/:id/rank-promotion'),
@@ -6533,8 +6584,8 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, typeof (_30 = typeof dto_1.PromoteEmployeeRequestDto !== "undefined" && dto_1.PromoteEmployeeRequestDto) === "function" ? _30 : Object]),
-    __metadata("design:returntype", typeof (_31 = typeof Promise !== "undefined" && Promise) === "function" ? _31 : Object)
+    __metadata("design:paramtypes", [String, typeof (_32 = typeof dto_1.PromoteEmployeeRequestDto !== "undefined" && dto_1.PromoteEmployeeRequestDto) === "function" ? _32 : Object]),
+    __metadata("design:returntype", typeof (_33 = typeof Promise !== "undefined" && Promise) === "function" ? _33 : Object)
 ], OrganizationController.prototype, "promoteEmployee", null);
 __decorate([
     (0, common_1.Get)('employees/:id/rank-history'),
@@ -6544,7 +6595,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_32 = typeof Promise !== "undefined" && Promise) === "function" ? _32 : Object)
+    __metadata("design:returntype", typeof (_34 = typeof Promise !== "undefined" && Promise) === "function" ? _34 : Object)
 ], OrganizationController.prototype, "getEmployeeRankHistory", null);
 exports.OrganizationController = OrganizationController = __decorate([
     (0, swagger_1.ApiTags)('Admin - 조직 관리'),

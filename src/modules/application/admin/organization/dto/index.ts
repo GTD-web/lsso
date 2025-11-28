@@ -6,6 +6,7 @@ export {
     DepartmentListResponseDto,
     UpdateDepartmentOrderRequestDto,
     UpdateDepartmentParentRequestDto,
+    UpdateDepartmentActiveStatusRequestDto,
     DepartmentHierarchyResponseDto,
     DepartmentWithEmployeesDto,
     DepartmentEmployeeInfoDto,

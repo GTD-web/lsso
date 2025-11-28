@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString, IsOptional, IsEnum, IsNumber, IsUUID } from 'class-validator';
+import { IsString, IsOptional, IsEnum, IsNumber, IsUUID, IsBoolean } from 'class-validator';
 import { DepartmentType } from '../../../../domain/department/department.entity';
 
 export class CreateDepartmentRequestDto {
@@ -80,6 +80,12 @@ export class DepartmentResponseDto {
     @ApiProperty({ description: '정렬 순서' })
     order: number;
 
+    @ApiProperty({ description: '활성화 상태' })
+    isActive: boolean;
+
+    @ApiProperty({ description: '예외처리 여부' })
+    isException: boolean;
+
     @ApiProperty({ description: '하위 부서 목록', type: [DepartmentResponseDto], required: false })
     childDepartments?: DepartmentResponseDto[];
 
@@ -105,6 +111,12 @@ export class UpdateDepartmentParentRequestDto {
     @ApiProperty({ description: '새로운 상위 부서 ID', example: 'uuid' })
     @IsUUID()
     newParentDepartmentId: string;
+}
+
+export class UpdateDepartmentActiveStatusRequestDto {
+    @ApiProperty({ description: '활성화 상태', example: true })
+    @IsBoolean()
+    isActive: boolean;
 }
 
 // 부서 계층구조별 직원 정보 DTO
@@ -161,6 +173,12 @@ export class DepartmentWithEmployeesDto {
 
     @ApiProperty({ description: '정렬 순서' })
     order: number;
+
+    @ApiProperty({ description: '활성화 상태' })
+    isActive: boolean;
+
+    @ApiProperty({ description: '예외처리 여부' })
+    isException: boolean;
 
     @ApiProperty({ description: '직원 목록', type: [DepartmentEmployeeInfoDto] })
     employees: DepartmentEmployeeInfoDto[];
