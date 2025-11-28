@@ -85,7 +85,7 @@ export class SsoApplicationService {
             gender: employee.gender,
             hireDate: employee.hireDate,
             status: employee.status,
-            department: department?.departmentCode || '',
+            department: department?.departmentName || '',
             position: position?.positionTitle || '',
             rank: rank?.rankName || '',
             systemRoles: systemRolesMap,

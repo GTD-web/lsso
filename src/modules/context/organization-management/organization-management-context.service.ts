@@ -1220,7 +1220,7 @@ export class OrganizationManagementContextService {
             // 1. 부서 계층구조 조회
             this.부서_계층구조를_조회한다(rootDepartmentId, maxDepth, includeEmptyDepartments),
         ]);
-
+        console.log('departments', departments);
         // 2. 모든 부서 ID 수집 (재귀적으로)
         const allDepartmentIds = this.모든_부서_ID를_수집한다(departments);
 

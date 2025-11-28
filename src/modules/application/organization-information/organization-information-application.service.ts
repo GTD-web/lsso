@@ -222,6 +222,8 @@ export class OrganizationInformationApplicationService {
         const result: DepartmentWithEmployeesDto[] = [];
 
         for (const department of departments) {
+            // TODO: 2025-11-28 김규현 - 추가 필터링 조건 추가해서 로직 수정
+            // if (!department.isActive || department.isException) continue;
             // 해당 부서의 직원 정보 조회
             const departmentEmployeeInfo = employeesByDepartment.get(department.id) || {
                 employees: [],
@@ -319,7 +321,6 @@ export class OrganizationInformationApplicationService {
                 if (dept.type !== DepartmentType.TEAM) {
                     totalEmployees += dept.employeeCount;
                 }
-                console.log(dept.departmentName, dept.employeeCount, totalEmployees);
 
                 maxDepthCalculated = Math.max(maxDepthCalculated, dept.depth);
 

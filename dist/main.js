@@ -10750,7 +10750,6 @@ let OrganizationInformationApplicationService = class OrganizationInformationApp
                 if (dept.type !== entities_1.DepartmentType.TEAM) {
                     totalEmployees += dept.employeeCount;
                 }
-                console.log(dept.departmentName, dept.employeeCount, totalEmployees);
                 maxDepthCalculated = Math.max(maxDepthCalculated, dept.depth);
                 if (dept.childDepartments && dept.childDepartments.length > 0) {
                     calculateStats(dept.childDepartments);
@@ -11701,7 +11700,7 @@ let SsoApplicationService = class SsoApplicationService {
             gender: employee.gender,
             hireDate: employee.hireDate,
             status: employee.status,
-            department: department?.departmentCode || '',
+            department: department?.departmentName || '',
             position: position?.positionTitle || '',
             rank: rank?.rankName || '',
             systemRoles: systemRolesMap,
@@ -14163,6 +14162,7 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
         const [departments] = await Promise.all([
             this.부서_계층구조를_조회한다(rootDepartmentId, maxDepth, includeEmptyDepartments),
         ]);
+        console.log('departments', departments);
         const allDepartmentIds = this.모든_부서_ID를_수집한다(departments);
         if (allDepartmentIds.length === 0) {
             return {
@@ -15218,6 +15218,14 @@ __decorate([
     (0, typeorm_1.Column)({ comment: '정렬 순서', default: 0 }),
     __metadata("design:type", Number)
 ], Department.prototype, "order", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '활성화 상태', type: 'boolean', default: true }),
+    __metadata("design:type", Boolean)
+], Department.prototype, "isActive", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '예외처리 여부', type: 'boolean', default: false }),
+    __metadata("design:type", Boolean)
+], Department.prototype, "isException", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => Department, (department) => department.childDepartments, { nullable: true }),
     (0, typeorm_1.JoinColumn)({ name: 'parentDepartmentId' }),
