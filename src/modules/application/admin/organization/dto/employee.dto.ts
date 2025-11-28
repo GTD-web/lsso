@@ -4,6 +4,10 @@ import { Gender, EmployeeStatus } from '../../../../../../libs/common/enums';
 import { DepartmentType } from '../../../../domain/department/department.entity';
 
 export class CreateEmployeeRequestDto {
+    @ApiProperty({ description: '사번', example: '25001' })
+    @IsString()
+    employeeNumber: string;
+
     @ApiProperty({ description: '이름', example: '홍길동' })
     @IsString()
     name: string;
@@ -57,6 +61,11 @@ export class CreateEmployeeRequestDto {
 }
 
 export class UpdateEmployeeRequestDto {
+    @ApiPropertyOptional({ description: '사번', example: '25001' })
+    @IsOptional()
+    @IsString()
+    employeeNumber?: string;
+
     @ApiPropertyOptional({ description: '이름', example: '홍길동' })
     @IsOptional()
     @IsString()

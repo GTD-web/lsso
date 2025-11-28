@@ -40,6 +40,11 @@ export class HireEmployeeRequestDto {
     @IsString()
     englishLastName: string;
 
+    @ApiPropertyOptional({ description: '사번', example: '25001' })
+    @IsOptional()
+    @IsString()
+    employeeNumber?: string;
+
     @ApiProperty({
         description: '입사일 (YYYY-MM-DD)',
         example: '2025-01-01',

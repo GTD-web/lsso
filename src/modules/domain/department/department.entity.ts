@@ -44,6 +44,12 @@ export class Department {
     @Column({ comment: '정렬 순서', default: 0 })
     order: number;
 
+    @Column({ comment: '활성화 상태', type: 'boolean', default: true })
+    isActive: boolean;
+
+    @Column({ comment: '예외처리 여부', type: 'boolean', default: false })
+    isException: boolean;
+
     // 부서장 관계는 별도 이력 테이블로 관리
     // 부서 계층 구조는 유지 (조직도 표현을 위해)
     @ManyToOne(() => Department, (department) => department.childDepartments, { nullable: true })
