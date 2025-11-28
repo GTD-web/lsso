@@ -10177,6 +10177,12 @@ __decorate([
     __metadata("design:type", String)
 ], HireEmployeeRequestDto.prototype, "englishLastName", void 0);
 __decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '사번', example: '25001' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], HireEmployeeRequestDto.prototype, "employeeNumber", void 0);
+__decorate([
     (0, swagger_1.ApiProperty)({
         description: '입사일 (YYYY-MM-DD)',
         example: '2025-01-01',
@@ -10765,6 +10771,7 @@ let OrganizationInformationApplicationService = class OrganizationInformationApp
             const lowestPosition = await this.organizationContextService.가장_낮은_직책을_조회한다();
             const positionId = lowestPosition.id;
             const result = await this.organizationContextService.직원을_생성한다({
+                employeeNumber: hireEmployeeDto.employeeNumber,
                 name: hireEmployeeDto.koreanName,
                 englishLastName: hireEmployeeDto.englishLastName,
                 englishFirstName: hireEmployeeDto.englishFirstName,

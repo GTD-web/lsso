@@ -358,7 +358,7 @@ export class OrganizationInformationApplicationService {
             // Context Layer 호출 (2-4단계 검증 포함)
             // 이메일은 전처리에서 자동 생성됨
             const result = await this.organizationContextService.직원을_생성한다({
-                // employeeNumber: createDto.employeeNumber, // 선택사항 - 없으면 자동 생성
+                employeeNumber: hireEmployeeDto.employeeNumber,
                 name: hireEmployeeDto.koreanName,
                 englishLastName: hireEmployeeDto.englishLastName,
                 englishFirstName: hireEmployeeDto.englishFirstName,
