@@ -7,12 +7,11 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { typeOrmConfig } from '../libs/configs/typeorm.config';
 import { ConfigService } from '@nestjs/config';
-import databaseConfig, { JWT_CONFIG } from '../libs/configs/env.config';
+import databaseConfig, { JWT_CONFIG, PRODUCTION_DATABASE_CONFIG } from '../libs/configs/env.config';
 import { Entities } from '../libs/database/entities';
 import { SsoApplicationModule } from './modules/application/single-sign-on/sso-application.module';
 import { MigrationModule } from './modules/context/migration/migration.module';
-// import { LogsModule } from './modules/application/legacy/logs/logs.module';
-// import { SystemsModule } from './modules/application/legacy/systems/systems.module';
+
 import { OrganizationInformationApplicationModule } from './modules/application/organization-information/organization-information-application.module';
 import { FcmTokenManagementApplicationModule } from './modules/application/fcm-token-management/fcm-token-management-application.module';
 import { AdminModule } from './modules/application/admin/admin.module';
@@ -21,8 +20,9 @@ import { AdminModule } from './modules/application/admin/admin.module';
     imports: [
         ConfigModule.forRoot({
             isGlobal: true,
-            load: [databaseConfig, JWT_CONFIG],
+            load: [databaseConfig, JWT_CONFIG, PRODUCTION_DATABASE_CONFIG],
         }),
+        // 개발 DB 연결 (기본)
         TypeOrmModule.forRootAsync({
             inject: [ConfigService],
             useFactory: typeOrmConfig,
@@ -32,21 +32,12 @@ import { AdminModule } from './modules/application/admin/admin.module';
         SsoApplicationModule,
         OrganizationInformationApplicationModule,
         FcmTokenManagementApplicationModule,
-        MigrationModule,
         AdminModule,
 
-        // Legacy Modules
-        // AuthModule,
-        // UsersModule,
-        // LogsModule,
-        // SystemsModule,
-        // TokensModule,
-        // MailModule,
+        // MigrationModule,
     ],
     controllers: [AppController],
     providers: [
-        // ApiDocService,
-        // DbDocService,
         {
             provide: APP_FILTER,
             useClass: HttpExceptionFilter,

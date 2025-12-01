@@ -751,7 +751,7 @@ function setupSwagger(app, dtos) {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.FIREBASE_CONFIG = exports.APP_CONFIG = exports.WEB_PUSH_CONFIG = exports.JWT_CONFIG = exports.ENV = void 0;
+exports.FIREBASE_CONFIG = exports.APP_CONFIG = exports.WEB_PUSH_CONFIG = exports.JWT_CONFIG = exports.PRODUCTION_DATABASE_CONFIG = exports.ENV = void 0;
 const dotenv_1 = __webpack_require__(/*! dotenv */ "dotenv");
 const config_1 = __webpack_require__(/*! @nestjs/config */ "@nestjs/config");
 (0, dotenv_1.config)();
@@ -764,6 +764,17 @@ exports["default"] = (0, config_1.registerAs)('database', () => {
         password: process.env.POSTGRES_PASSWORD || '163700as',
         database: process.env.POSTGRES_DATABASE || 'postgres',
         schema: process.env.POSTGRES_SCHEMA || 'public',
+    };
+});
+exports.PRODUCTION_DATABASE_CONFIG = (0, config_1.registerAs)('productionDatabase', () => {
+    return {
+        host: process.env.PROD_POSTGRES_HOST,
+        port: parseInt(process.env.PROD_POSTGRES_PORT, 10),
+        username: process.env.PROD_POSTGRES_USER,
+        password: process.env.PROD_POSTGRES_PASSWORD,
+        database: process.env.PROD_POSTGRES_DATABASE,
+        schema: process.env.PROD_POSTGRES_SCHEMA,
+        ssl: process.env.PROD_POSTGRES_SSL,
     };
 });
 exports.JWT_CONFIG = (0, config_1.registerAs)('jwt', () => {
@@ -822,6 +833,45 @@ const jwtConfig = (configService) => ({
     },
 });
 exports.jwtConfig = jwtConfig;
+
+
+/***/ }),
+
+/***/ "./libs/configs/typeorm-production.config.ts":
+/*!***************************************************!*\
+  !*** ./libs/configs/typeorm-production.config.ts ***!
+  \***************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.typeOrmProductionConfig = void 0;
+const entities_1 = __webpack_require__(/*! ../database/entities */ "./libs/database/entities/index.ts");
+const typeOrmProductionConfig = (configService) => {
+    const isSupabase = configService.get('productionDatabase.host')?.includes('supabase.com');
+    return {
+        name: 'production',
+        type: 'postgres',
+        host: configService.get('productionDatabase.host'),
+        port: configService.get('productionDatabase.port'),
+        username: configService.get('productionDatabase.username'),
+        password: configService.get('productionDatabase.password'),
+        database: configService.get('productionDatabase.database'),
+        entities: entities_1.Entities,
+        schema: configService.get('productionDatabase.schema'),
+        synchronize: false,
+        logging: false,
+        ssl: isSupabase || configService.get('productionDatabase.ssl') === 'true',
+        extra: isSupabase
+            ? {
+                ssl: {
+                    rejectUnauthorized: false,
+                },
+            }
+            : {},
+    };
+};
+exports.typeOrmProductionConfig = typeOrmProductionConfig;
 
 
 /***/ }),
@@ -1159,7 +1209,6 @@ const config_2 = __webpack_require__(/*! @nestjs/config */ "@nestjs/config");
 const env_config_1 = __webpack_require__(/*! ../libs/configs/env.config */ "./libs/configs/env.config.ts");
 const entities_1 = __webpack_require__(/*! ../libs/database/entities */ "./libs/database/entities/index.ts");
 const sso_application_module_1 = __webpack_require__(/*! ./modules/application/single-sign-on/sso-application.module */ "./src/modules/application/single-sign-on/sso-application.module.ts");
-const migration_module_1 = __webpack_require__(/*! ./modules/context/migration/migration.module */ "./src/modules/context/migration/migration.module.ts");
 const organization_information_application_module_1 = __webpack_require__(/*! ./modules/application/organization-information/organization-information-application.module */ "./src/modules/application/organization-information/organization-information-application.module.ts");
 const fcm_token_management_application_module_1 = __webpack_require__(/*! ./modules/application/fcm-token-management/fcm-token-management-application.module */ "./src/modules/application/fcm-token-management/fcm-token-management-application.module.ts");
 const admin_module_1 = __webpack_require__(/*! ./modules/application/admin/admin.module */ "./src/modules/application/admin/admin.module.ts");
@@ -1171,7 +1220,7 @@ exports.AppModule = AppModule = __decorate([
         imports: [
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
-                load: [env_config_1.default, env_config_1.JWT_CONFIG],
+                load: [env_config_1.default, env_config_1.JWT_CONFIG, env_config_1.PRODUCTION_DATABASE_CONFIG],
             }),
             typeorm_1.TypeOrmModule.forRootAsync({
                 inject: [config_2.ConfigService],
@@ -1181,7 +1230,6 @@ exports.AppModule = AppModule = __decorate([
             sso_application_module_1.SsoApplicationModule,
             organization_information_application_module_1.OrganizationInformationApplicationModule,
             fcm_token_management_application_module_1.FcmTokenManagementApplicationModule,
-            migration_module_1.MigrationModule,
             admin_module_1.AdminModule,
         ],
         controllers: [app_controller_1.AppController],
@@ -12733,10 +12781,10 @@ exports.LogManagementContextService = LogManagementContextService = LogManagemen
 
 /***/ }),
 
-/***/ "./src/modules/context/migration/dto/department-response.dto.ts":
-/*!**********************************************************************!*\
-  !*** ./src/modules/context/migration/dto/department-response.dto.ts ***!
-  \**********************************************************************/
+/***/ "./src/modules/context/migration/migration.controller.ts":
+/*!***************************************************************!*\
+  !*** ./src/modules/context/migration/migration.controller.ts ***!
+  \***************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12749,434 +12797,144 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a, _b;
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DepartmentResponseDto = void 0;
+exports.MigrationController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-class DepartmentResponseDto {
-    constructor(department) {
-        this._id = department._id;
-        this.department_name = department.department_name;
-        this.department_code = department.department_code;
-        this.manager_id = department.manager_id;
-        this.parent_department_id = department.parent_department_id;
-        this.order = department.order;
-        this.child_departments = department.child_departments || [];
-        this.id = department.id;
-        this.created_at = department.created_at;
-        this.updated_at = department.updated_at;
-        this.__v = department.__v;
-    }
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+const migration_service_1 = __webpack_require__(/*! ./migration.service */ "./src/modules/context/migration/migration.service.ts");
+class SyncDatabaseRequestDto {
 }
-exports.DepartmentResponseDto = DepartmentResponseDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '부서 MongoDB ID', example: '67d0f1629af04fc1b2f65ad4' }),
-    __metadata("design:type", String)
-], DepartmentResponseDto.prototype, "_id", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '부서명', example: '경영지원실' }),
-    __metadata("design:type", String)
-], DepartmentResponseDto.prototype, "department_name", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '부서코드', example: '경영지원-경지' }),
-    __metadata("design:type", String)
-], DepartmentResponseDto.prototype, "department_code", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
-        description: '부서장 ID',
-        example: null,
-        nullable: true,
+        description: '동기화할 테이블 목록',
+        example: [
+            'system_roles',
+            'ranks',
+            'positions',
+            'fcm_tokens',
+            'departments',
+            'employees',
+            'employee_department_positions',
+            'employee_rank_histories',
+            'employee_tokens',
+            'employee_fcm_tokens',
+            'employee_system_roles',
+        ],
+        type: [String],
     }),
-    __metadata("design:type", String)
-], DepartmentResponseDto.prototype, "manager_id", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '상위 부서 ID',
-        example: '67d0f1189af04fc1b2f65ab7',
-        nullable: true,
-    }),
-    __metadata("design:type", String)
-], DepartmentResponseDto.prototype, "parent_department_id", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '부서 순서', example: 0 }),
-    __metadata("design:type", Number)
-], DepartmentResponseDto.prototype, "order", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '하위 부서 목록',
-        type: [DepartmentResponseDto],
-        example: [],
-    }),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsString)({ each: true }),
     __metadata("design:type", Array)
-], DepartmentResponseDto.prototype, "child_departments", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '부서 ID (별칭)', example: '67d0f1629af04fc1b2f65ad4' }),
-    __metadata("design:type", String)
-], DepartmentResponseDto.prototype, "id", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '생성일', example: '2025-03-12T02:28:50.885Z' }),
-    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
-], DepartmentResponseDto.prototype, "created_at", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '수정일', example: '2025-06-17T16:33:39.394Z' }),
-    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
-], DepartmentResponseDto.prototype, "updated_at", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: 'MongoDB 버전', example: 0 }),
-    __metadata("design:type", Number)
-], DepartmentResponseDto.prototype, "__v", void 0);
-
-
-/***/ }),
-
-/***/ "./src/modules/context/migration/dto/employee-response.dto.ts":
-/*!********************************************************************!*\
-  !*** ./src/modules/context/migration/dto/employee-response.dto.ts ***!
-  \********************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b, _c, _d;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.EmployeeResponseDto = void 0;
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-class PositionDto {
-}
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '직책 ID', example: '67d1436e91e5366c32791be3' }),
-    __metadata("design:type", String)
-], PositionDto.prototype, "_id", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '직책명', example: '직원' }),
-    __metadata("design:type", String)
-], PositionDto.prototype, "position_title", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '직책 코드', example: '직원' }),
-    __metadata("design:type", String)
-], PositionDto.prototype, "position_code", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '직책 레벨', example: 6 }),
-    __metadata("design:type", Number)
-], PositionDto.prototype, "level", void 0);
-class RankDto {
-}
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '직급 ID', example: '67d1081c9af04fc1b2f65c1d' }),
-    __metadata("design:type", String)
-], RankDto.prototype, "_id", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '직급명', example: '연구원' }),
-    __metadata("design:type", String)
-], RankDto.prototype, "rank_name", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '직급 코드', example: '연구원' }),
-    __metadata("design:type", String)
-], RankDto.prototype, "rank_code", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '직급 레벨', example: 9 }),
-    __metadata("design:type", Number)
-], RankDto.prototype, "level", void 0);
-class DepartmentDto {
-}
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '부서 ID', example: '67d0f1d19af04fc1b2f65af2' }),
-    __metadata("design:type", String)
-], DepartmentDto.prototype, "_id", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '부서명', example: 'RF파트' }),
-    __metadata("design:type", String)
-], DepartmentDto.prototype, "department_name", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '부서 코드', example: '우주-RF' }),
-    __metadata("design:type", String)
-], DepartmentDto.prototype, "department_code", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '부서 순서', example: 4 }),
-    __metadata("design:type", Number)
-], DepartmentDto.prototype, "order", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '상위 부서 ID',
-        example: '684bd41148148ddbd9068cd9',
-        nullable: true,
-    }),
-    __metadata("design:type", String)
-], DepartmentDto.prototype, "parent_department_id", void 0);
-class EmployeeResponseDto {
-    constructor(employee) {
-        this._id = employee._id;
-        this.employee_number = employee.employee_number;
-        this.name = employee.name;
-        this.email = employee.email;
-        this.phone_number = employee.phone_number;
-        this.date_of_birth = employee.date_of_birth;
-        this.gender = employee.gender;
-        this.hire_date = employee.hire_date;
-        this.manager_id = employee.manager_id;
-        this.status = employee.status;
-        this.department_history = employee.department_history || [];
-        this.position_history = employee.position_history || [];
-        this.rank_history = employee.rank_history || [];
-        this.created_at = employee.created_at;
-        this.updated_at = employee.updated_at;
-        this.__v = employee.__v;
-        this.position = employee.position;
-        this.rank = employee.rank;
-        this.department = employee.department;
+], SyncDatabaseRequestDto.prototype, "tables", void 0);
+let MigrationController = class MigrationController {
+    constructor(migrationService) {
+        this.migrationService = migrationService;
     }
-}
-exports.EmployeeResponseDto = EmployeeResponseDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '직원 ID', example: '67d116b691e5366c3279162c' }),
-    __metadata("design:type", String)
-], EmployeeResponseDto.prototype, "_id", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '사번', example: '25006' }),
-    __metadata("design:type", String)
-], EmployeeResponseDto.prototype, "employee_number", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '이름', example: '홍연창' }),
-    __metadata("design:type", String)
-], EmployeeResponseDto.prototype, "name", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '이메일', example: 'hong.yonchang@lumir.space' }),
-    __metadata("design:type", String)
-], EmployeeResponseDto.prototype, "email", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '전화번호', example: '' }),
-    __metadata("design:type", String)
-], EmployeeResponseDto.prototype, "phone_number", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '생년월일', example: '1976-10-14T00:00:00.000Z' }),
-    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
-], EmployeeResponseDto.prototype, "date_of_birth", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '성별', example: 'MALE' }),
-    __metadata("design:type", String)
-], EmployeeResponseDto.prototype, "gender", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '입사일', example: '2025-01-01T00:00:00.000Z' }),
-    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
-], EmployeeResponseDto.prototype, "hire_date", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '관리자 ID',
-        example: null,
-        nullable: true,
-    }),
-    __metadata("design:type", String)
-], EmployeeResponseDto.prototype, "manager_id", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '재직 상태', example: '재직중' }),
-    __metadata("design:type", String)
-], EmployeeResponseDto.prototype, "status", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '부서 이력',
-        type: [Object],
-        example: [],
-    }),
-    __metadata("design:type", Array)
-], EmployeeResponseDto.prototype, "department_history", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '직책 이력',
-        type: [Object],
-        example: [],
-    }),
-    __metadata("design:type", Array)
-], EmployeeResponseDto.prototype, "position_history", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '직급 이력',
-        type: [Object],
-        example: [],
-    }),
-    __metadata("design:type", Array)
-], EmployeeResponseDto.prototype, "rank_history", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '생성일', example: '2025-03-12T05:08:06.261Z' }),
-    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
-], EmployeeResponseDto.prototype, "created_at", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '수정일', example: '2025-03-12T08:59:32.380Z' }),
-    __metadata("design:type", typeof (_d = typeof Date !== "undefined" && Date) === "function" ? _d : Object)
-], EmployeeResponseDto.prototype, "updated_at", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: 'MongoDB 버전', example: 0 }),
-    __metadata("design:type", Number)
-], EmployeeResponseDto.prototype, "__v", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '현재 직책 정보',
-        type: PositionDto,
-        nullable: true,
-    }),
-    __metadata("design:type", PositionDto)
-], EmployeeResponseDto.prototype, "position", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '현재 직급 정보',
-        type: RankDto,
-        nullable: true,
-    }),
-    __metadata("design:type", RankDto)
-], EmployeeResponseDto.prototype, "rank", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '현재 부서 정보',
-        type: DepartmentDto,
-        nullable: true,
-    }),
-    __metadata("design:type", DepartmentDto)
-], EmployeeResponseDto.prototype, "department", void 0);
-
-
-/***/ }),
-
-/***/ "./src/modules/context/migration/dto/position-response.dto.ts":
-/*!********************************************************************!*\
-  !*** ./src/modules/context/migration/dto/position-response.dto.ts ***!
-  \********************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.PositionResponseDto = void 0;
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-class PositionResponseDto {
-    constructor(position) {
-        this._id = position._id;
-        this.position_title = position.position_title;
-        this.position_code = position.position_code;
-        this.level = position.level;
-        this.description = position.description;
-        this.created_at = position.created_at;
-        this.updated_at = position.updated_at;
-        this.id = position.id;
+    async syncFromProduction(dto) {
+        console.log(dto);
+        return await this.migrationService.syncFromProductionToDevDatabase(dto.tables);
     }
-}
-exports.PositionResponseDto = PositionResponseDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '직책 MongoDB ID', example: '67d106849af04fc1b2f65be1' }),
-    __metadata("design:type", String)
-], PositionResponseDto.prototype, "_id", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '직책명', example: '파트장' }),
-    __metadata("design:type", String)
-], PositionResponseDto.prototype, "position_title", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '직책 코드', example: '파트장' }),
-    __metadata("design:type", String)
-], PositionResponseDto.prototype, "position_code", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '직책 레벨', example: 5 }),
-    __metadata("design:type", Number)
-], PositionResponseDto.prototype, "level", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '직책 설명', example: '' }),
-    __metadata("design:type", String)
-], PositionResponseDto.prototype, "description", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '생성일', example: '2025-03-12T03:59:00.853Z' }),
-    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
-], PositionResponseDto.prototype, "created_at", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '수정일', example: '2025-06-27T08:08:15.994Z' }),
-    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
-], PositionResponseDto.prototype, "updated_at", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '직책 ID (별칭)', example: '67d106849af04fc1b2f65be1' }),
-    __metadata("design:type", String)
-], PositionResponseDto.prototype, "id", void 0);
-
-
-/***/ }),
-
-/***/ "./src/modules/context/migration/dto/rank-response.dto.ts":
-/*!****************************************************************!*\
-  !*** ./src/modules/context/migration/dto/rank-response.dto.ts ***!
-  \****************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.RankResponseDto = void 0;
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-class RankResponseDto {
-    constructor(rank) {
-        this._id = rank._id;
-        this.rank_name = rank.rank_name;
-        this.rank_code = rank.rank_code;
-        this.level = rank.level;
-        this.description = rank.description;
-        this.created_at = rank.created_at;
-        this.updated_at = rank.updated_at;
-        this.id = rank.id;
-    }
-}
-exports.RankResponseDto = RankResponseDto;
+exports.MigrationController = MigrationController;
 __decorate([
-    (0, swagger_1.ApiProperty)({ description: '직급 MongoDB ID', example: '67d107c49af04fc1b2f65bf9' }),
-    __metadata("design:type", String)
-], RankResponseDto.prototype, "_id", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '직급명', example: '사장' }),
-    __metadata("design:type", String)
-], RankResponseDto.prototype, "rank_name", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '직급 코드', example: '사장' }),
-    __metadata("design:type", String)
-], RankResponseDto.prototype, "rank_code", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '직급 레벨', example: 1 }),
-    __metadata("design:type", Number)
-], RankResponseDto.prototype, "level", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '직급 설명', example: '' }),
-    __metadata("design:type", String)
-], RankResponseDto.prototype, "description", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '생성일', example: '2025-03-12T04:04:20.303Z' }),
-    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
-], RankResponseDto.prototype, "created_at", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '수정일', example: '2025-06-17T08:31:54.817Z' }),
-    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
-], RankResponseDto.prototype, "updated_at", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '직급 ID (별칭)', example: '67d107c49af04fc1b2f65bf9' }),
-    __metadata("design:type", String)
-], RankResponseDto.prototype, "id", void 0);
+    (0, common_1.Post)('sync-from-production'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, swagger_1.ApiOperation)({
+        summary: '실서버에서 개발서버로 데이터 동기화',
+        description: `
+            실서버의 선택된 테이블 데이터를 개발서버로 동기화합니다.
+            
+            **동기화 순서:**
+            1. 외래키 제약조건 임시 비활성화
+            2. 실서버 데이터 조회
+            3. 개발서버 데이터 삭제 (의존성 역순)
+            4. 개발서버에 데이터 입력 (의존성 정순)
+            5. 외래키 제약조건 복원
+            
+            **사용 가능한 테이블:**
+            - system_roles: 시스템 역할
+            - ranks: 직급
+            - positions: 직책
+            - fcm_tokens: FCM 토큰
+            - departments: 부서 (계층구조 유지)
+            - employees: 직원
+            - employee_department_positions: 직원-부서-직책 관계
+            - employee_rank_histories: 직원 직급 이력
+            - employee_tokens: 직원 토큰
+            - employee_fcm_tokens: 직원-FCM토큰 관계
+            - employee_system_roles: 직원-시스템역할 관계
+            
+            **주의사항:**
+            ⚠️ 이 작업은 개발서버의 데이터를 완전히 삭제하고 실서버 데이터로 대체합니다!
+            ⚠️ 트랜잭션으로 처리되므로 실패 시 자동으로 롤백됩니다.
+        `,
+    }),
+    (0, swagger_1.ApiBody)({
+        schema: {
+            type: 'object',
+            properties: {
+                tables: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    example: [
+                        'departments',
+                        'employees',
+                        'positions',
+                        'ranks',
+                        'system_roles',
+                        'fcm_tokens',
+                        'employee_department_positions',
+                        'employee_rank_histories',
+                        'employee_tokens',
+                        'employee_fcm_tokens',
+                        'employee_system_roles',
+                    ],
+                    description: '동기화할 테이블 목록',
+                },
+            },
+        },
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: '동기화 성공',
+        schema: {
+            type: 'object',
+            properties: {
+                success: { type: 'boolean', example: true },
+                message: { type: 'string', example: '데이터베이스 동기화가 성공적으로 완료되었습니다.' },
+                syncedTables: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    example: ['departments', 'employees'],
+                },
+                errors: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    example: [],
+                },
+            },
+        },
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 500,
+        description: '동기화 실패',
+    }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [SyncDatabaseRequestDto]),
+    __metadata("design:returntype", Promise)
+], MigrationController.prototype, "syncFromProduction", null);
+exports.MigrationController = MigrationController = __decorate([
+    (0, swagger_1.ApiExcludeController)(),
+    (0, swagger_1.ApiTags)('Migration - 데이터베이스 동기화'),
+    (0, common_1.Controller)('migration'),
+    __metadata("design:paramtypes", [typeof (_a = typeof migration_service_1.MigrationService !== "undefined" && migration_service_1.MigrationService) === "function" ? _a : Object])
+], MigrationController);
 
 
 /***/ }),
@@ -13197,19 +12955,30 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MigrationModule = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
+const config_1 = __webpack_require__(/*! @nestjs/config */ "@nestjs/config");
 const migration_service_1 = __webpack_require__(/*! ./migration.service */ "./src/modules/context/migration/migration.service.ts");
+const migration_controller_1 = __webpack_require__(/*! ./migration.controller */ "./src/modules/context/migration/migration.controller.ts");
 const employee_module_1 = __webpack_require__(/*! ../../domain/employee/employee.module */ "./src/modules/domain/employee/employee.module.ts");
 const department_module_1 = __webpack_require__(/*! ../../domain/department/department.module */ "./src/modules/domain/department/department.module.ts");
 const position_module_1 = __webpack_require__(/*! ../../domain/position/position.module */ "./src/modules/domain/position/position.module.ts");
 const rank_module_1 = __webpack_require__(/*! ../../domain/rank/rank.module */ "./src/modules/domain/rank/rank.module.ts");
 const employee_department_position_module_1 = __webpack_require__(/*! ../../domain/employee-department-position/employee-department-position.module */ "./src/modules/domain/employee-department-position/employee-department-position.module.ts");
 const employee_rank_history_module_1 = __webpack_require__(/*! ../../domain/employee-rank-history/employee-rank-history.module */ "./src/modules/domain/employee-rank-history/employee-rank-history.module.ts");
+const typeorm_production_config_1 = __webpack_require__(/*! ../../../../libs/configs/typeorm-production.config */ "./libs/configs/typeorm-production.config.ts");
+const entities_1 = __webpack_require__(/*! libs/database/entities */ "./libs/database/entities/index.ts");
 let MigrationModule = class MigrationModule {
 };
 exports.MigrationModule = MigrationModule;
 exports.MigrationModule = MigrationModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            typeorm_1.TypeOrmModule.forRootAsync({
+                name: 'production',
+                inject: [config_1.ConfigService],
+                useFactory: typeorm_production_config_1.typeOrmProductionConfig,
+            }),
+            typeorm_1.TypeOrmModule.forFeature(entities_1.Entities),
             employee_module_1.DomainEmployeeModule,
             department_module_1.DomainDepartmentModule,
             position_module_1.DomainPositionModule,
@@ -13217,6 +12986,7 @@ exports.MigrationModule = MigrationModule = __decorate([
             employee_department_position_module_1.DomainEmployeeDepartmentPositionModule,
             employee_rank_history_module_1.DomainEmployeeRankHistoryModule,
         ],
+        controllers: [migration_controller_1.MigrationController],
         providers: [migration_service_1.MigrationService],
         exports: [migration_service_1.MigrationService],
     })
@@ -13241,182 +13011,242 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a, _b, _c, _d, _e, _f;
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var MigrationService_1;
+var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MigrationService = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const employee_service_1 = __webpack_require__(/*! ../../domain/employee/employee.service */ "./src/modules/domain/employee/employee.service.ts");
-const department_service_1 = __webpack_require__(/*! ../../domain/department/department.service */ "./src/modules/domain/department/department.service.ts");
-const position_service_1 = __webpack_require__(/*! ../../domain/position/position.service */ "./src/modules/domain/position/position.service.ts");
-const rank_service_1 = __webpack_require__(/*! ../../domain/rank/rank.service */ "./src/modules/domain/rank/rank.service.ts");
-const employee_department_position_service_1 = __webpack_require__(/*! ../../domain/employee-department-position/employee-department-position.service */ "./src/modules/domain/employee-department-position/employee-department-position.service.ts");
-const employee_rank_history_service_1 = __webpack_require__(/*! ../../domain/employee-rank-history/employee-rank-history.service */ "./src/modules/domain/employee-rank-history/employee-rank-history.service.ts");
-const employee_response_dto_1 = __webpack_require__(/*! ./dto/employee-response.dto */ "./src/modules/context/migration/dto/employee-response.dto.ts");
-const axios_1 = __webpack_require__(/*! axios */ "axios");
-const department_response_dto_1 = __webpack_require__(/*! ./dto/department-response.dto */ "./src/modules/context/migration/dto/department-response.dto.ts");
-const position_response_dto_1 = __webpack_require__(/*! ./dto/position-response.dto */ "./src/modules/context/migration/dto/position-response.dto.ts");
-const rank_response_dto_1 = __webpack_require__(/*! ./dto/rank-response.dto */ "./src/modules/context/migration/dto/rank-response.dto.ts");
-let MigrationService = class MigrationService {
-    constructor(employeeService, departmentService, positionService, rankService, employeeDepartmentPositionService, employeeRankHistoryService) {
-        this.employeeService = employeeService;
-        this.departmentService = departmentService;
-        this.positionService = positionService;
-        this.rankService = rankService;
-        this.employeeDepartmentPositionService = employeeDepartmentPositionService;
-        this.employeeRankHistoryService = employeeRankHistoryService;
+const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
+const typeorm_2 = __webpack_require__(/*! typeorm */ "typeorm");
+const entities_1 = __webpack_require__(/*! ../../../../libs/database/entities */ "./libs/database/entities/index.ts");
+let MigrationService = MigrationService_1 = class MigrationService {
+    constructor(dataSource, productionDataSource) {
+        this.dataSource = dataSource;
+        this.productionDataSource = productionDataSource;
+        this.logger = new common_1.Logger(MigrationService_1.name);
     }
-    async onApplicationBootstrap() { }
-    async getEmployees() {
-        const response = await axios_1.default.get(`${process.env.METADATA_MANAGER_URL}/api/employees?detailed=true`);
-        const employees = response.data.map((employee) => new employee_response_dto_1.EmployeeResponseDto(employee));
-        return employees;
-    }
-    async getDepartments() {
-        const response = await axios_1.default.get(`${process.env.METADATA_MANAGER_URL}/api/departments?hierarchy=true`);
-        const departments = response.data.map((department) => new department_response_dto_1.DepartmentResponseDto(department));
-        return departments;
-    }
-    async getPositions() {
-        const response = await axios_1.default.get(`${process.env.METADATA_MANAGER_URL}/api/positions`);
-        const positions = response.data.map((position) => new position_response_dto_1.PositionResponseDto(position));
-        return positions;
-    }
-    async getRanks() {
-        const response = await axios_1.default.get(`${process.env.METADATA_MANAGER_URL}/api/ranks`);
-        const ranks = response.data.map((rank) => new rank_response_dto_1.RankResponseDto(rank));
-        return ranks;
-    }
-    async migrate() {
-        const employees = await this.getEmployees();
-        const departments = await this.getDepartments();
-        const positions = await this.getPositions();
-        const ranks = await this.getRanks();
-        for (const rank of ranks) {
-            const existingRank = await this.rankService.findByCode(rank.rank_code);
-            if (existingRank) {
-                console.log(`${rank.rank_name} 직급은 이미 존재합니다.`);
-                continue;
-            }
-            await this.rankService.save({
-                rankName: rank.rank_name,
-                rankCode: rank.rank_code,
-                level: rank.level,
-            });
+    async syncFromProductionToDevDatabase(tables) {
+        if (!this.productionDataSource) {
+            this.logger.error('❌ 실서버 DB 연결이 활성화되지 않았습니다.');
+            return {
+                success: false,
+                message: '실서버 DB 연결이 활성화되지 않았습니다. ENABLE_PRODUCTION_DB=true를 설정하고 애플리케이션을 재시작하세요.',
+                syncedTables: [],
+                errors: ['실서버 DB 연결 없음'],
+            };
         }
-        for (const position of positions) {
-            const existingPosition = await this.positionService.findByCode(position.position_code);
-            if (existingPosition) {
-                console.log(`${position.position_title} 직책은 이미 존재합니다.`);
-                continue;
-            }
-            await this.positionService.save({
-                positionTitle: position.position_title,
-                positionCode: position.position_code,
-                hasManagementAuthority: position.level >= 5,
-                level: position.level,
-            });
-        }
-        const insertDepartments = async () => {
-            const savedDepartmentIds = new Map();
-            const saveDepartmentHierarchy = async (department, parentUuid = null) => {
+        const syncedTables = [];
+        const errors = [];
+        this.logger.log('🚀 데이터베이스 동기화 시작...');
+        this.logger.log(`동기화 대상 테이블: ${tables.join(', ')}`);
+        try {
+            await this.dataSource.transaction(async (manager) => {
                 try {
-                    const existingDepartment = await this.departmentService.findByCode(department.department_code);
-                    if (existingDepartment) {
-                        console.log(`${department.department_name} 부서는 이미 존재합니다.`);
-                    }
-                    else {
-                        const savedDepartment = await this.departmentService.save({
-                            departmentName: department.department_name,
-                            departmentCode: department.department_code,
-                            parentDepartmentId: parentUuid,
-                            order: department.order || 0,
-                        });
-                        savedDepartmentIds.set(department._id, savedDepartment.id);
-                    }
-                    console.log(`부서 저장 완료: ${department.department_name} (${department.department_code}) - Parent: ${parentUuid || 'ROOT'}`);
-                    if (department.child_departments && department.child_departments.length > 0) {
-                        for (const childDepartment of department.child_departments) {
-                            await saveDepartmentHierarchy(childDepartment, savedDepartmentIds.get(department._id));
-                        }
-                    }
+                    this.logger.log('⏳ 외래키 제약조건 비활성화 중...');
+                    await manager.query('SET session_replication_role = replica');
+                    this.logger.log('📥 실서버 데이터 조회 중...');
+                    const productionData = await this.fetchProductionDataByTables(tables);
+                    console.log(productionData.get('departments'));
+                    this.logger.log('🗑️  개발서버 데이터 삭제 중...');
+                    await this.deleteDataInReverseOrder(manager, tables);
+                    this.logger.log('💾 개발서버에 데이터 입력 중...');
+                    await this.insertDataInCorrectOrder(manager, productionData, tables);
+                    syncedTables.push(...tables);
+                    this.logger.log('✅ 외래키 제약조건 복원 중...');
+                    await manager.query('SET session_replication_role = DEFAULT');
+                    this.logger.log('✅ 데이터베이스 동기화 완료!');
                 }
                 catch (error) {
-                    console.error(`부서 저장 실패: ${department.department_name}`, error);
+                    this.logger.error('❌ 동기화 실패:', error);
+                    throw error;
                 }
-            };
-            const rootDepartments = departments;
-            for (const rootDepartment of rootDepartments) {
-                await saveDepartmentHierarchy(rootDepartment);
-            }
-            console.log(`총 ${savedDepartmentIds.size}개 부서 저장 완료`);
-            return savedDepartmentIds;
-        };
-        const departmentIdMap = await insertDepartments();
-        for (const employee of employees) {
-            let existingEmployee = await this.employeeService.findByEmployeeNumber(employee.employee_number);
-            let rank = null, position = null, department = null;
-            if (employee.rank) {
-                rank = await this.rankService.findByCode(employee.rank.rank_code);
-            }
-            if (existingEmployee) {
-                existingEmployee = await this.employeeService.update(existingEmployee.id, {
-                    status: employee.status,
-                    currentRankId: rank?.id,
-                    hireDate: employee.hire_date,
-                    dateOfBirth: employee.date_of_birth,
-                    gender: employee.gender,
-                    password: existingEmployee.password === null
-                        ? this.employeeService.hashPassword(employee.employee_number)
-                        : existingEmployee.password,
-                });
-            }
-            else {
-                existingEmployee = await this.employeeService.save({
-                    employeeNumber: employee.employee_number,
-                    name: employee.name,
-                    email: employee.email,
-                    phoneNumber: employee.phone_number || '',
-                    status: employee.status,
-                    currentRankId: rank?.id,
-                    password: this.employeeService.hashPassword(employee.employee_number),
-                    hireDate: employee.hire_date,
-                    dateOfBirth: employee.date_of_birth,
-                    gender: employee.gender,
-                });
-            }
-            if (employee.position) {
-                position = await this.positionService.findByCode(employee.position.position_code);
-            }
-            if (employee.department) {
-                department = await this.departmentService.findByCode(employee.department.department_code);
-            }
-            const savedEmployee = await this.employeeService.save(existingEmployee);
-            const existingEmployeeDepartmentPosition = await this.employeeDepartmentPositionService.findOne({
-                where: {
-                    employeeId: existingEmployee.id,
-                    departmentId: department?.id,
-                },
             });
-            if (existingEmployeeDepartmentPosition) {
-                await this.employeeDepartmentPositionService.update(existingEmployeeDepartmentPosition.id, {
-                    departmentId: department?.id,
-                    positionId: position?.id,
-                });
+            return {
+                success: true,
+                message: '데이터베이스 동기화가 성공적으로 완료되었습니다.',
+                syncedTables,
+                errors,
+            };
+        }
+        catch (error) {
+            const errorMessage = error instanceof Error ? error.message : '알 수 없는 오류';
+            this.logger.error('❌ 동기화 트랜잭션 실패:', errorMessage);
+            errors.push(errorMessage);
+            return {
+                success: false,
+                message: '데이터베이스 동기화 중 오류가 발생했습니다.',
+                syncedTables: [],
+                errors,
+            };
+        }
+    }
+    async fetchProductionDataByTables(tables) {
+        const dataMap = new Map();
+        const productionDataSource = this.productionDataSource;
+        for (const table of tables) {
+            try {
+                let data = [];
+                switch (table) {
+                    case 'system_roles':
+                        data = await productionDataSource.getRepository(entities_1.SystemRole).find();
+                        break;
+                    case 'ranks':
+                        data = await productionDataSource.getRepository(entities_1.Rank).find();
+                        break;
+                    case 'positions':
+                        data = await productionDataSource.getRepository(entities_1.Position).find();
+                        break;
+                    case 'fcm_tokens':
+                        data = await productionDataSource.getRepository(entities_1.FcmToken).find();
+                        break;
+                    case 'departments':
+                        data = await productionDataSource.getRepository(entities_1.Department).find({ order: { order: 'ASC' } });
+                        break;
+                    case 'employees':
+                        data = await productionDataSource.getRepository(entities_1.Employee).find();
+                        break;
+                    case 'employee_department_positions':
+                        data = await productionDataSource.getRepository(entities_1.EmployeeDepartmentPosition).find();
+                        break;
+                    case 'employee_rank_histories':
+                        data = await productionDataSource.getRepository(entities_1.EmployeeRankHistory).find();
+                        break;
+                    case 'employee_tokens':
+                        data = await productionDataSource.getRepository(entities_1.EmployeeToken).find();
+                        break;
+                    case 'employee_fcm_tokens':
+                        data = await productionDataSource.getRepository(entities_1.EmployeeFcmToken).find();
+                        break;
+                    case 'employee_system_roles':
+                        data = await productionDataSource.getRepository(entities_1.EmployeeSystemRole).find();
+                        break;
+                    default:
+                        this.logger.warn(`⚠️  알 수 없는 테이블: ${table}`);
+                }
+                dataMap.set(table, data);
+                this.logger.log(`  ✓ ${table}: ${data.length}개 데이터 조회`);
             }
-            if (!existingEmployeeDepartmentPosition && department && position) {
-                await this.employeeDepartmentPositionService.save({
-                    employeeId: savedEmployee.id,
-                    departmentId: department?.id,
-                    positionId: position?.id,
-                });
+            catch (error) {
+                this.logger.error(`  ✗ ${table} 조회 실패:`, error);
+                throw error;
             }
+        }
+        return dataMap;
+    }
+    async deleteDataInReverseOrder(manager, tables) {
+        const deleteOrder = [
+            'employee_system_roles',
+            'employee_fcm_tokens',
+            'employee_tokens',
+            'employee_rank_histories',
+            'employee_department_positions',
+            'employees',
+            'departments',
+            'positions',
+            'ranks',
+            'fcm_tokens',
+            'system_roles',
+        ];
+        for (const table of deleteOrder) {
+            if (tables.includes(table)) {
+                try {
+                    const result = await manager.query(`DELETE FROM "${table}"`);
+                    this.logger.log(`  ✓ ${table} 삭제 완료 (${result[1] || 0}개)`);
+                }
+                catch (error) {
+                    this.logger.error(`  ✗ ${table} 삭제 실패:`, error);
+                    throw error;
+                }
+            }
+        }
+    }
+    async insertDataInCorrectOrder(manager, dataMap, tables) {
+        const insertOrder = [
+            'system_roles',
+            'ranks',
+            'positions',
+            'fcm_tokens',
+            'departments',
+            'employees',
+            'employee_department_positions',
+            'employee_rank_histories',
+            'employee_tokens',
+            'employee_fcm_tokens',
+            'employee_system_roles',
+        ];
+        for (const table of insertOrder) {
+            if (tables.includes(table) && dataMap.has(table)) {
+                const data = dataMap.get(table) || [];
+                if (data.length === 0) {
+                    this.logger.log(`  ⊘ ${table}: 데이터 없음`);
+                    continue;
+                }
+                try {
+                    if (table === 'departments') {
+                        await this.insertDepartmentsHierarchically(manager, data);
+                    }
+                    else {
+                        await this.bulkInsertData(manager, table, data);
+                    }
+                    this.logger.log(`  ✓ ${table} 입력 완료 (${data.length}개)`);
+                }
+                catch (error) {
+                    this.logger.error(`  ✗ ${table} 입력 실패:`, error);
+                    throw error;
+                }
+            }
+        }
+    }
+    async insertDepartmentsHierarchically(manager, departments) {
+        const deptMap = new Map(departments.map((d) => [d.id, d]));
+        const inserted = new Set();
+        const insertDepartment = async (dept) => {
+            if (inserted.has(dept.id))
+                return;
+            if (dept.parentDepartmentId && deptMap.has(dept.parentDepartmentId)) {
+                const parent = deptMap.get(dept.parentDepartmentId);
+                await insertDepartment(parent);
+            }
+            await manager.getRepository(entities_1.Department).save(dept);
+            inserted.add(dept.id);
+        };
+        for (const dept of departments) {
+            await insertDepartment(dept);
+        }
+    }
+    async bulkInsertData(manager, table, data) {
+        const entityMap = {
+            system_roles: entities_1.SystemRole,
+            ranks: entities_1.Rank,
+            positions: entities_1.Position,
+            fcm_tokens: entities_1.FcmToken,
+            employees: entities_1.Employee,
+            employee_department_positions: entities_1.EmployeeDepartmentPosition,
+            employee_rank_histories: entities_1.EmployeeRankHistory,
+            employee_tokens: entities_1.EmployeeToken,
+            employee_fcm_tokens: entities_1.EmployeeFcmToken,
+            employee_system_roles: entities_1.EmployeeSystemRole,
+        };
+        const entity = entityMap[table];
+        if (!entity) {
+            throw new Error(`Unknown table: ${table}`);
+        }
+        const chunkSize = 100;
+        for (let i = 0; i < data.length; i += chunkSize) {
+            const chunk = data.slice(i, i + chunkSize);
+            await manager.getRepository(entity).save(chunk);
         }
     }
 };
 exports.MigrationService = MigrationService;
-exports.MigrationService = MigrationService = __decorate([
+exports.MigrationService = MigrationService = MigrationService_1 = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof employee_service_1.DomainEmployeeService !== "undefined" && employee_service_1.DomainEmployeeService) === "function" ? _a : Object, typeof (_b = typeof department_service_1.DomainDepartmentService !== "undefined" && department_service_1.DomainDepartmentService) === "function" ? _b : Object, typeof (_c = typeof position_service_1.DomainPositionService !== "undefined" && position_service_1.DomainPositionService) === "function" ? _c : Object, typeof (_d = typeof rank_service_1.DomainRankService !== "undefined" && rank_service_1.DomainRankService) === "function" ? _d : Object, typeof (_e = typeof employee_department_position_service_1.DomainEmployeeDepartmentPositionService !== "undefined" && employee_department_position_service_1.DomainEmployeeDepartmentPositionService) === "function" ? _e : Object, typeof (_f = typeof employee_rank_history_service_1.DomainEmployeeRankHistoryService !== "undefined" && employee_rank_history_service_1.DomainEmployeeRankHistoryService) === "function" ? _f : Object])
+    __param(0, (0, typeorm_1.InjectDataSource)()),
+    __param(1, (0, typeorm_1.InjectDataSource)('production')),
+    __metadata("design:paramtypes", [typeof (_a = typeof typeorm_2.DataSource !== "undefined" && typeorm_2.DataSource) === "function" ? _a : Object, typeof (_b = typeof typeorm_2.DataSource !== "undefined" && typeorm_2.DataSource) === "function" ? _b : Object])
 ], MigrationService);
 
 
@@ -20064,16 +19894,6 @@ module.exports = require("@nestjs/typeorm");
 /***/ ((module) => {
 
 module.exports = require("@node-rs/bcrypt");
-
-/***/ }),
-
-/***/ "axios":
-/*!************************!*\
-  !*** external "axios" ***!
-  \************************/
-/***/ ((module) => {
-
-module.exports = require("axios");
 
 /***/ }),
 
