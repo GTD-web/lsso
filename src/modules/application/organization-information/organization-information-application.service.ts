@@ -176,6 +176,7 @@ export class OrganizationInformationApplicationService {
             withEmployeeDetail = false,
             includeTerminated = false,
             includeEmptyDepartments = true,
+            includeInactiveDepartments = false,
         } = requestDto;
 
         try {
@@ -186,6 +187,7 @@ export class OrganizationInformationApplicationService {
                 withEmployeeDetail,
                 includeTerminated,
                 includeEmptyDepartments,
+                includeInactiveDepartments,
             );
 
             // 응답 DTO로 변환
@@ -469,7 +471,7 @@ export class OrganizationInformationApplicationService {
         };
     }
 
-    async 전체_조직_데이터를_조회한다(): Promise<ExportAllDataResponseDto> {
+    async 전체_조직_데이터를_조회한다(includeInactiveDepartments = false): Promise<ExportAllDataResponseDto> {
         try {
             // 모든 데이터를 병렬로 조회
             const [departments, employees, positions, ranks, employeeDepartmentPositions] = await Promise.all([
@@ -481,16 +483,18 @@ export class OrganizationInformationApplicationService {
             ]);
 
             return {
-                departments: departments.map((dept) => ({
-                    id: dept.id,
-                    departmentName: dept.departmentName,
-                    departmentCode: dept.departmentCode,
-                    type: dept.type,
-                    parentDepartmentId: dept.parentDepartmentId,
-                    order: dept.order,
-                    createdAt: dept.createdAt,
-                    updatedAt: dept.updatedAt,
-                })),
+                departments: departments
+                    .filter((dept) => (includeInactiveDepartments ? true : dept.isActive))
+                    .map((dept) => ({
+                        id: dept.id,
+                        departmentName: dept.departmentName,
+                        departmentCode: dept.departmentCode,
+                        type: dept.type,
+                        parentDepartmentId: dept.parentDepartmentId,
+                        order: dept.order,
+                        createdAt: dept.createdAt,
+                        updatedAt: dept.updatedAt,
+                    })),
                 employees: employees.map((emp) => ({
                     id: emp.id,
                     employeeNumber: emp.employeeNumber,

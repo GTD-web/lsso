@@ -52,8 +52,8 @@ export class OrganizationApplicationService {
             true, // withEmployeeDetail
             true, // includeTerminated
             true, // includeEmptyDepartments
+            true, // includeInactiveDepartments (admin은 비활성화된 부서도 포함)
         );
-        console.log(result);
         const departments = this.부서_계층구조를_직원정보와_함께_변환한다(
             result.departments,
             result.employeesByDepartment,
@@ -78,6 +78,7 @@ export class OrganizationApplicationService {
             true, // withEmployeeDetail
             true, // includeTerminated (퇴사자만 조회)
             true, // includeEmptyDepartments
+            true, // includeInactiveDepartments (admin은 비활성화된 부서도 포함)
         );
 
         const departments = this.부서_계층구조를_직원정보와_함께_변환한다(
@@ -91,7 +92,12 @@ export class OrganizationApplicationService {
 
     // 부서 관리 함수들
     async 부서목록조회(): Promise<DepartmentListResponseDto> {
-        const departments = await this.organizationContextService.부서_계층구조를_조회한다();
+        const departments = await this.organizationContextService.부서_계층구조를_조회한다(
+            undefined, // rootDepartmentId
+            undefined, // maxDepth
+            true, // includeEmptyDepartments
+            true, // includeInactiveDepartments (admin은 비활성화된 부서도 포함)
+        );
         return {
             departments: departments.map(this.부서를_응답DTO로_변환한다),
         };
@@ -150,9 +156,24 @@ export class OrganizationApplicationService {
         id: string,
         updateActiveStatusDto: UpdateDepartmentActiveStatusRequestDto,
     ): Promise<DepartmentResponseDto> {
+        // 상위 부서의 활성화 상태 변경
         const updatedDepartment = await this.organizationContextService.부서를_수정한다(id, {
             isActive: updateActiveStatusDto.isActive,
         });
+
+        // 모든 하위 부서들을 재귀적으로 조회
+        const allChildDepartments = await this.organizationContextService.부서의_모든_하위부서들을_재귀적으로_조회한다(
+            id,
+        );
+
+        // 모든 하위 부서들의 활성화 상태를 벌크로 일괄 변경
+        if (allChildDepartments.length > 0) {
+            const childDepartmentIds = allChildDepartments.map((dept) => dept.id);
+            await this.organizationContextService.여러_부서를_일괄_수정한다(childDepartmentIds, {
+                isActive: updateActiveStatusDto.isActive,
+            });
+        }
+
         return this.부서를_응답DTO로_변환한다(updatedDepartment);
     }
 

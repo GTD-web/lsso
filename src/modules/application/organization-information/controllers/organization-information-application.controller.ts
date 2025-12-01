@@ -194,6 +194,13 @@ export class OrganizationInformationApplicationController {
         type: Boolean,
         example: true,
     })
+    @ApiQuery({
+        name: 'includeInactiveDepartments',
+        description: '비활성화된 부서 포함 여부',
+        required: false,
+        type: Boolean,
+        example: false,
+    })
     @ApiResponse({
         status: 200,
         description: '부서 계층구조별 직원 정보 조회 성공',
@@ -208,6 +215,7 @@ export class OrganizationInformationApplicationController {
         @Query('withEmployeeDetail') withEmployeeDetail?: boolean,
         @Query('includeTerminated') includeTerminated?: boolean,
         @Query('includeEmptyDepartments') includeEmptyDepartments?: boolean,
+        @Query('includeInactiveDepartments') includeInactiveDepartments?: boolean,
     ): Promise<DepartmentHierarchyResponseDto> {
         // 인증된 사용자 정보 로깅 (개발용)
         console.log('부서 계층구조 조회 - 인증된 사용자:', user);
@@ -219,6 +227,8 @@ export class OrganizationInformationApplicationController {
             withEmployeeDetail: withEmployeeDetail === true || String(withEmployeeDetail) === 'true',
             includeTerminated: includeTerminated === true || String(includeTerminated) === 'true',
             includeEmptyDepartments: includeEmptyDepartments !== false && String(includeEmptyDepartments) !== 'false',
+            includeInactiveDepartments:
+                includeInactiveDepartments === true || String(includeInactiveDepartments) === 'true',
         };
 
         return this.organizationInformationApplicationService.부서_계층구조별_직원정보를_조회한다(requestDto);
@@ -409,6 +419,13 @@ export class OrganizationInformationApplicationController {
         description:
             '5개 테이블(departments, employees, positions, ranks, employee_department_positions)의 전체 데이터를 ID 값을 포함하여 그대로 조회합니다. 마이그레이션 목적으로 사용됩니다.',
     })
+    @ApiQuery({
+        name: 'includeInactiveDepartments',
+        description: '비활성화된 부서 포함 여부',
+        required: false,
+        type: Boolean,
+        example: false,
+    })
     @ApiResponse({
         status: 200,
         description: '전체 조직 데이터 조회 성공',
@@ -426,9 +443,13 @@ export class OrganizationInformationApplicationController {
             },
         },
     })
-    async exportAllOrganizationData(): Promise<ExportAllDataResponseDto> {
+    async exportAllOrganizationData(
+        @Query('includeInactiveDepartments') includeInactiveDepartments?: boolean,
+    ): Promise<ExportAllDataResponseDto> {
         console.log('[Export All Data] 전체 조직 데이터 조회 시작');
-        const result = await this.organizationInformationApplicationService.전체_조직_데이터를_조회한다();
+        const result = await this.organizationInformationApplicationService.전체_조직_데이터를_조회한다(
+            includeInactiveDepartments === true || String(includeInactiveDepartments) === 'true',
+        );
         console.log('[Export All Data] 조회 완료:', {
             departments: result.totalCounts.departments,
             employees: result.totalCounts.employees,

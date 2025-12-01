@@ -5699,8 +5699,7 @@ let OrganizationApplicationService = class OrganizationApplicationService {
         });
     }
     async 부서_계층구조별_직원정보를_조회한다() {
-        const result = await this.organizationContextService.부서_계층구조별_직원정보를_조회한다(undefined, undefined, true, true, true);
-        console.log(result);
+        const result = await this.organizationContextService.부서_계층구조별_직원정보를_조회한다(undefined, undefined, true, true, true, true);
         const departments = this.부서_계층구조를_직원정보와_함께_변환한다(result.departments, result.employeesByDepartment, result.departmentDetails);
         return { departments: departments.filter((department) => department.parentDepartmentId === null) };
     }
@@ -5709,12 +5708,12 @@ let OrganizationApplicationService = class OrganizationApplicationService {
         if (!terminatedDepartment) {
             return { departments: [] };
         }
-        const result = await this.organizationContextService.부서_계층구조별_직원정보를_조회한다(terminatedDepartment.id, undefined, true, true, true);
+        const result = await this.organizationContextService.부서_계층구조별_직원정보를_조회한다(terminatedDepartment.id, undefined, true, true, true, true);
         const departments = this.부서_계층구조를_직원정보와_함께_변환한다(result.departments, result.employeesByDepartment, result.departmentDetails);
         return { departments };
     }
     async 부서목록조회() {
-        const departments = await this.organizationContextService.부서_계층구조를_조회한다();
+        const departments = await this.organizationContextService.부서_계층구조를_조회한다(undefined, undefined, true, true);
         return {
             departments: departments.map(this.부서를_응답DTO로_변환한다),
         };
@@ -5754,6 +5753,13 @@ let OrganizationApplicationService = class OrganizationApplicationService {
         const updatedDepartment = await this.organizationContextService.부서를_수정한다(id, {
             isActive: updateActiveStatusDto.isActive,
         });
+        const allChildDepartments = await this.organizationContextService.부서의_모든_하위부서들을_재귀적으로_조회한다(id);
+        if (allChildDepartments.length > 0) {
+            const childDepartmentIds = allChildDepartments.map((dept) => dept.id);
+            await this.organizationContextService.여러_부서를_일괄_수정한다(childDepartmentIds, {
+                isActive: updateActiveStatusDto.isActive,
+            });
+        }
         return this.부서를_응답DTO로_변환한다(updatedDepartment);
     }
     async 직원목록조회() {
@@ -8784,7 +8790,7 @@ let OrganizationInformationApplicationController = class OrganizationInformation
         };
         return this.organizationInformationApplicationService.여러_직원정보를_조회한다(requestDto);
     }
-    async getDepartmentHierarchy(user, rootDepartmentId, maxDepth, withEmployeeDetail, includeTerminated, includeEmptyDepartments) {
+    async getDepartmentHierarchy(user, rootDepartmentId, maxDepth, withEmployeeDetail, includeTerminated, includeEmptyDepartments, includeInactiveDepartments) {
         console.log('부서 계층구조 조회 - 인증된 사용자:', user);
         const requestDto = {
             rootDepartmentId,
@@ -8792,6 +8798,7 @@ let OrganizationInformationApplicationController = class OrganizationInformation
             withEmployeeDetail: withEmployeeDetail === true || String(withEmployeeDetail) === 'true',
             includeTerminated: includeTerminated === true || String(includeTerminated) === 'true',
             includeEmptyDepartments: includeEmptyDepartments !== false && String(includeEmptyDepartments) !== 'false',
+            includeInactiveDepartments: includeInactiveDepartments === true || String(includeInactiveDepartments) === 'true',
         };
         return this.organizationInformationApplicationService.부서_계층구조별_직원정보를_조회한다(requestDto);
     }
@@ -8828,9 +8835,9 @@ let OrganizationInformationApplicationController = class OrganizationInformation
     async 수습기간_평가_불합격으로_직원을_퇴사처리한다(terminateEmployeeDto) {
         return await this.organizationInformationApplicationService.직원을_퇴사처리한다(terminateEmployeeDto);
     }
-    async exportAllOrganizationData() {
+    async exportAllOrganizationData(includeInactiveDepartments) {
         console.log('[Export All Data] 전체 조직 데이터 조회 시작');
-        const result = await this.organizationInformationApplicationService.전체_조직_데이터를_조회한다();
+        const result = await this.organizationInformationApplicationService.전체_조직_데이터를_조회한다(includeInactiveDepartments === true || String(includeInactiveDepartments) === 'true');
         console.log('[Export All Data] 조회 완료:', {
             departments: result.totalCounts.departments,
             employees: result.totalCounts.employees,
@@ -8976,6 +8983,13 @@ __decorate([
         type: Boolean,
         example: true,
     }),
+    (0, swagger_1.ApiQuery)({
+        name: 'includeInactiveDepartments',
+        description: '비활성화된 부서 포함 여부',
+        required: false,
+        type: Boolean,
+        example: false,
+    }),
     (0, swagger_1.ApiResponse)({
         status: 200,
         description: '부서 계층구조별 직원 정보 조회 성공',
@@ -8989,8 +9003,9 @@ __decorate([
     __param(3, (0, common_1.Query)('withEmployeeDetail')),
     __param(4, (0, common_1.Query)('includeTerminated')),
     __param(5, (0, common_1.Query)('includeEmptyDepartments')),
+    __param(6, (0, common_1.Query)('includeInactiveDepartments')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_g = typeof user_decorator_1.AuthenticatedUser !== "undefined" && user_decorator_1.AuthenticatedUser) === "function" ? _g : Object, String, Number, Boolean, Boolean, Boolean]),
+    __metadata("design:paramtypes", [typeof (_g = typeof user_decorator_1.AuthenticatedUser !== "undefined" && user_decorator_1.AuthenticatedUser) === "function" ? _g : Object, String, Number, Boolean, Boolean, Boolean, Boolean]),
     __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
 ], OrganizationInformationApplicationController.prototype, "getDepartmentHierarchy", null);
 __decorate([
@@ -9141,6 +9156,13 @@ __decorate([
         summary: '전체 조직 데이터 Export (마이그레이션용)',
         description: '5개 테이블(departments, employees, positions, ranks, employee_department_positions)의 전체 데이터를 ID 값을 포함하여 그대로 조회합니다. 마이그레이션 목적으로 사용됩니다.',
     }),
+    (0, swagger_1.ApiQuery)({
+        name: 'includeInactiveDepartments',
+        description: '비활성화된 부서 포함 여부',
+        required: false,
+        type: Boolean,
+        example: false,
+    }),
     (0, swagger_1.ApiResponse)({
         status: 200,
         description: '전체 조직 데이터 조회 성공',
@@ -9158,8 +9180,9 @@ __decorate([
             },
         },
     }),
+    __param(0, (0, common_1.Query)('includeInactiveDepartments')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Boolean]),
     __metadata("design:returntype", typeof (_p = typeof Promise !== "undefined" && Promise) === "function" ? _p : Object)
 ], OrganizationInformationApplicationController.prototype, "exportAllOrganizationData", null);
 __decorate([
@@ -9265,6 +9288,17 @@ __decorate([
     (0, class_transformer_1.Transform)(({ value }) => value === 'true' || value === true),
     __metadata("design:type", Boolean)
 ], DepartmentHierarchyRequestDto.prototype, "includeEmptyDepartments", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        description: '비활성화된 부서 포함 여부',
+        example: false,
+        default: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_transformer_1.Transform)(({ value }) => value === 'true' || value === true),
+    __metadata("design:type", Boolean)
+], DepartmentHierarchyRequestDto.prototype, "includeInactiveDepartments", void 0);
 
 
 /***/ }),
@@ -10714,9 +10748,9 @@ let OrganizationInformationApplicationService = class OrganizationInformationApp
         };
     }
     async 부서_계층구조별_직원정보를_조회한다(requestDto) {
-        const { rootDepartmentId, maxDepth, withEmployeeDetail = false, includeTerminated = false, includeEmptyDepartments = true, } = requestDto;
+        const { rootDepartmentId, maxDepth, withEmployeeDetail = false, includeTerminated = false, includeEmptyDepartments = true, includeInactiveDepartments = false, } = requestDto;
         try {
-            const result = await this.organizationContextService.부서_계층구조별_직원정보를_조회한다(rootDepartmentId, maxDepth, withEmployeeDetail, includeTerminated, includeEmptyDepartments);
+            const result = await this.organizationContextService.부서_계층구조별_직원정보를_조회한다(rootDepartmentId, maxDepth, withEmployeeDetail, includeTerminated, includeEmptyDepartments, includeInactiveDepartments);
             const departmentHierarchy = this.부서_계층구조를_응답_DTO로_변환한다(result.departments, result.employeesByDepartment, result.departmentDetails, withEmployeeDetail);
             const { totalDepartments, totalEmployees, maxDepthCalculated } = this.부서_계층구조_통계를_계산한다(departmentHierarchy);
             return {
@@ -10900,7 +10934,7 @@ let OrganizationInformationApplicationService = class OrganizationInformationApp
             message: result.message,
         };
     }
-    async 전체_조직_데이터를_조회한다() {
+    async 전체_조직_데이터를_조회한다(includeInactiveDepartments = false) {
         try {
             const [departments, employees, positions, ranks, employeeDepartmentPositions] = await Promise.all([
                 this.organizationContextService.모든_부서를_조회한다(),
@@ -10910,7 +10944,9 @@ let OrganizationInformationApplicationService = class OrganizationInformationApp
                 this.organizationContextService.모든_직원부서직책매핑을_조회한다(),
             ]);
             return {
-                departments: departments.map((dept) => ({
+                departments: departments
+                    .filter((dept) => (includeInactiveDepartments ? true : dept.isActive))
+                    .map((dept) => ({
                     id: dept.id,
                     departmentName: dept.departmentName,
                     departmentCode: dept.departmentCode,
@@ -14141,7 +14177,7 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
         }
         return resultMap;
     }
-    async 부서_계층구조를_조회한다(rootDepartmentId, maxDepth, includeEmptyDepartments = true) {
+    async 부서_계층구조를_조회한다(rootDepartmentId, maxDepth, includeEmptyDepartments = true, includeInactiveDepartments = false) {
         let rootDepartments;
         if (rootDepartmentId) {
             const rootDept = await this.부서서비스.findByIdWithParent(rootDepartmentId);
@@ -14154,27 +14190,47 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
         const departmentMap = new Map(allDepartments.map((dept) => [dept.id, dept]));
         const result = [];
         for (const rootDept of rootDepartments) {
-            const hierarchyDept = this.부서_계층구조를_구축한다(rootDept, departmentMap, 0, maxDepth, includeEmptyDepartments);
+            const hierarchyDept = this.부서_계층구조를_구축한다(rootDept, departmentMap, 0, maxDepth, includeEmptyDepartments, includeInactiveDepartments);
             if (hierarchyDept) {
                 result.push(hierarchyDept);
             }
         }
         return result;
     }
-    부서_계층구조를_구축한다(department, departmentMap, currentDepth, maxDepth, includeEmptyDepartments = true) {
+    부서_계층구조를_구축한다(department, departmentMap, currentDepth, maxDepth, includeEmptyDepartments = true, includeInactiveDepartments = false) {
+        if (!includeInactiveDepartments && department.isActive === false) {
+            return null;
+        }
         if (maxDepth !== undefined && currentDepth >= maxDepth) {
             return department;
         }
         const childDepartments = [];
         const allChildren = Array.from(departmentMap.values()).filter((dept) => dept.parentDepartmentId === department.id);
         for (const childDept of allChildren) {
-            const childHierarchy = this.부서_계층구조를_구축한다(childDept, departmentMap, currentDepth + 1, maxDepth, includeEmptyDepartments);
+            const childHierarchy = this.부서_계층구조를_구축한다(childDept, departmentMap, currentDepth + 1, maxDepth, includeEmptyDepartments, includeInactiveDepartments);
             if (childHierarchy) {
                 childDepartments.push(childHierarchy);
             }
         }
         department.childDepartments = childDepartments.sort((a, b) => a.order - b.order);
         return department;
+    }
+    async 부서의_모든_하위부서들을_재귀적으로_조회한다(departmentId) {
+        const allDepartments = await this.부서서비스.findAllDepartmentsWithChildren();
+        const departmentMap = new Map(allDepartments.map((dept) => [dept.id, dept]));
+        const childDepartments = [];
+        this.모든_하위부서를_재귀적으로_수집한다(departmentId, departmentMap, childDepartments);
+        return childDepartments;
+    }
+    모든_하위부서를_재귀적으로_수집한다(parentDepartmentId, departmentMap, result) {
+        const directChildren = Array.from(departmentMap.values()).filter((dept) => dept.parentDepartmentId === parentDepartmentId);
+        for (const child of directChildren) {
+            result.push(child);
+            this.모든_하위부서를_재귀적으로_수집한다(child.id, departmentMap, result);
+        }
+    }
+    async 여러_부서를_일괄_수정한다(departmentIds, updateData) {
+        await this.부서서비스.bulkUpdate(departmentIds, updateData);
     }
     async 부서별_직원_목록을_조회한다(departmentIds, includeTerminated = false, withDetail = false) {
         if (departmentIds.length === 0) {
@@ -14209,11 +14265,10 @@ let OrganizationManagementContextService = class OrganizationManagementContextSe
     async 전체_활성_직원정보를_조회한다(includeTerminated = false) {
         return this.직원서비스.findAllEmployees(includeTerminated);
     }
-    async 부서_계층구조별_직원정보를_조회한다(rootDepartmentId, maxDepth, withEmployeeDetail = false, includeTerminated = false, includeEmptyDepartments = true) {
+    async 부서_계층구조별_직원정보를_조회한다(rootDepartmentId, maxDepth, withEmployeeDetail = false, includeTerminated = false, includeEmptyDepartments = true, includeInactiveDepartments = false) {
         const [departments] = await Promise.all([
-            this.부서_계층구조를_조회한다(rootDepartmentId, maxDepth, includeEmptyDepartments),
+            this.부서_계층구조를_조회한다(rootDepartmentId, maxDepth, includeEmptyDepartments, includeInactiveDepartments),
         ]);
-        console.log('departments', departments);
         const allDepartmentIds = this.모든_부서_ID를_수집한다(departments);
         if (allDepartmentIds.length === 0) {
             return {
@@ -15543,6 +15598,15 @@ let DomainDepartmentService = DomainDepartmentService_1 = class DomainDepartment
             }
             for (const update of updates) {
                 await transactionalEntityManager.update(entities_1.Department, { id: update.id }, { order: update.order });
+            }
+        });
+    }
+    async bulkUpdate(departmentIds, updateData) {
+        if (departmentIds.length === 0)
+            return;
+        await this.departmentRepository.manager.transaction(async (transactionalEntityManager) => {
+            for (const id of departmentIds) {
+                await transactionalEntityManager.update(entities_1.Department, { id }, updateData);
             }
         });
     }
