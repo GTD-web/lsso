@@ -167,7 +167,7 @@ export class OrganizationApplicationService {
         );
 
         // 모든 하위 부서들의 활성화 상태를 벌크로 일괄 변경
-        if (allChildDepartments.length > 0) {
+        if (updateActiveStatusDto.isActive === false && allChildDepartments.length > 0) {
             const childDepartmentIds = allChildDepartments.map((dept) => dept.id);
             await this.organizationContextService.여러_부서를_일괄_수정한다(childDepartmentIds, {
                 isActive: updateActiveStatusDto.isActive,

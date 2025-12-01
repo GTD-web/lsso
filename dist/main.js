@@ -5763,7 +5763,7 @@ let OrganizationApplicationService = class OrganizationApplicationService {
             isActive: updateActiveStatusDto.isActive,
         });
         const allChildDepartments = await this.organizationContextService.부서의_모든_하위부서들을_재귀적으로_조회한다(id);
-        if (allChildDepartments.length > 0) {
+        if (updateActiveStatusDto.isActive === false && allChildDepartments.length > 0) {
             const childDepartmentIds = allChildDepartments.map((dept) => dept.id);
             await this.organizationContextService.여러_부서를_일괄_수정한다(childDepartmentIds, {
                 isActive: updateActiveStatusDto.isActive,

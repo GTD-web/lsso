@@ -26,6 +26,8 @@ import {
     EmployeeFcmToken,
     SystemRole,
     EmployeeSystemRole,
+    System,
+    Token,
 } from '../../../../libs/database/entities';
 
 @Injectable()
@@ -78,7 +80,6 @@ export class MigrationService {
                     // STEP 2: 실서버에서 데이터 조회
                     this.logger.log('📥 실서버 데이터 조회 중...');
                     const productionData = await this.fetchProductionDataByTables(tables);
-                    console.log(productionData.get('departments'));
                     // return;
                     // STEP 3: 개발서버 데이터 삭제 (역순)
                     this.logger.log('🗑️  개발서버 데이터 삭제 중...');
@@ -135,6 +136,12 @@ export class MigrationService {
                 let data: any[] = [];
 
                 switch (table) {
+                    case 'systems':
+                        data = await productionDataSource.getRepository(System).find();
+                        break;
+                    case 'tokens':
+                        data = await productionDataSource.getRepository(Token).find();
+                        break;
                     case 'system_roles':
                         data = await productionDataSource.getRepository(SystemRole).find();
                         break;
@@ -200,6 +207,8 @@ export class MigrationService {
             'ranks',
             'fcm_tokens',
             'system_roles',
+            'tokens',
+            'systems',
         ];
 
         for (const table of deleteOrder) {
@@ -221,6 +230,8 @@ export class MigrationService {
     private async insertDataInCorrectOrder(manager: any, dataMap: Map<string, any[]>, tables: string[]): Promise<void> {
         // 입력 순서: 의존성이 없는 것부터 (정순)
         const insertOrder = [
+            'systems',
+            'tokens',
             'system_roles',
             'ranks',
             'positions',
@@ -294,10 +305,12 @@ export class MigrationService {
      */
     private async bulkInsertData(manager: any, table: string, data: any[]): Promise<void> {
         const entityMap = {
+            systems: System,
             system_roles: SystemRole,
             ranks: Rank,
             positions: Position,
             fcm_tokens: FcmToken,
+            tokens: Token,
             employees: Employee,
             employee_department_positions: EmployeeDepartmentPosition,
             employee_rank_histories: EmployeeRankHistory,
