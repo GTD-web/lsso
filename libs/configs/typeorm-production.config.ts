@@ -8,8 +8,6 @@ import { Entities } from '../database/entities';
  * 환경변수 ENABLE_PRODUCTION_DB=true 설정 시에만 활성화됨
  */
 export const typeOrmProductionConfig = (configService: ConfigService): TypeOrmModuleOptions => {
-    const isSupabase = configService.get('productionDatabase.host')?.includes('supabase.com');
-
     return {
         name: 'production', // 연결 이름
         type: 'postgres',
@@ -22,14 +20,5 @@ export const typeOrmProductionConfig = (configService: ConfigService): TypeOrmMo
         schema: configService.get('productionDatabase.schema'),
         synchronize: false, // 실서버는 절대 synchronize 하지 않음
         logging: false, // 로깅 비활성화
-        // Supabase 또는 SSL 필요한 경우
-        ssl: isSupabase || configService.get('productionDatabase.ssl') === 'true',
-        extra: isSupabase
-            ? {
-                  ssl: {
-                      rejectUnauthorized: false,
-                  },
-              }
-            : {},
     };
 };

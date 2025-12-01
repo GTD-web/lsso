@@ -10,8 +10,7 @@ import { ConfigService } from '@nestjs/config';
 import databaseConfig, { JWT_CONFIG, PRODUCTION_DATABASE_CONFIG } from '../libs/configs/env.config';
 import { Entities } from '../libs/database/entities';
 import { SsoApplicationModule } from './modules/application/single-sign-on/sso-application.module';
-import { MigrationModule } from './modules/context/migration/migration.module';
-
+// import { MigrationModule } from './modules/context/migration/migration.module';
 import { OrganizationInformationApplicationModule } from './modules/application/organization-information/organization-information-application.module';
 import { FcmTokenManagementApplicationModule } from './modules/application/fcm-token-management/fcm-token-management-application.module';
 import { AdminModule } from './modules/application/admin/admin.module';

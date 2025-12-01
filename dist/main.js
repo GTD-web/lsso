@@ -837,45 +837,6 @@ exports.jwtConfig = jwtConfig;
 
 /***/ }),
 
-/***/ "./libs/configs/typeorm-production.config.ts":
-/*!***************************************************!*\
-  !*** ./libs/configs/typeorm-production.config.ts ***!
-  \***************************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.typeOrmProductionConfig = void 0;
-const entities_1 = __webpack_require__(/*! ../database/entities */ "./libs/database/entities/index.ts");
-const typeOrmProductionConfig = (configService) => {
-    const isSupabase = configService.get('productionDatabase.host')?.includes('supabase.com');
-    return {
-        name: 'production',
-        type: 'postgres',
-        host: configService.get('productionDatabase.host'),
-        port: configService.get('productionDatabase.port'),
-        username: configService.get('productionDatabase.username'),
-        password: configService.get('productionDatabase.password'),
-        database: configService.get('productionDatabase.database'),
-        entities: entities_1.Entities,
-        schema: configService.get('productionDatabase.schema'),
-        synchronize: false,
-        logging: false,
-        ssl: isSupabase || configService.get('productionDatabase.ssl') === 'true',
-        extra: isSupabase
-            ? {
-                ssl: {
-                    rejectUnauthorized: false,
-                },
-            }
-            : {},
-    };
-};
-exports.typeOrmProductionConfig = typeOrmProductionConfig;
-
-
-/***/ }),
-
 /***/ "./libs/configs/typeorm.config.ts":
 /*!****************************************!*\
   !*** ./libs/configs/typeorm.config.ts ***!
@@ -8800,7 +8761,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OrganizationInformationApplicationController = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
@@ -8809,11 +8770,9 @@ const organization_information_application_service_1 = __webpack_require__(/*! .
 const dto_1 = __webpack_require__(/*! ../dto */ "./src/modules/application/organization-information/dto/index.ts");
 const user_decorator_1 = __webpack_require__(/*! ../../../../../libs/common/decorators/user.decorator */ "./libs/common/decorators/user.decorator.ts");
 const public_decorator_1 = __webpack_require__(/*! ../../../../../libs/common/decorators/public.decorator */ "./libs/common/decorators/public.decorator.ts");
-const migration_service_1 = __webpack_require__(/*! ../../../context/migration/migration.service */ "./src/modules/context/migration/migration.service.ts");
 let OrganizationInformationApplicationController = class OrganizationInformationApplicationController {
-    constructor(organizationInformationApplicationService, migrationService) {
+    constructor(organizationInformationApplicationService) {
         this.organizationInformationApplicationService = organizationInformationApplicationService;
-        this.migrationService = migrationService;
     }
     async getEmployee(user, employeeId, employeeNumber, withDetail) {
         console.log('인증된 사용자:', user);
@@ -8849,33 +8808,6 @@ let OrganizationInformationApplicationController = class OrganizationInformation
             includeInactiveDepartments: includeInactiveDepartments === true || String(includeInactiveDepartments) === 'true',
         };
         return this.organizationInformationApplicationService.부서_계층구조별_직원정보를_조회한다(requestDto);
-    }
-    async executeMigrationCron() {
-        const startTime = Date.now();
-        const timestamp = new Date().toISOString();
-        try {
-            console.log(`[${timestamp}] 조직 정보 마이그레이션 시작 - Cron 실행`);
-            const executionTime = ((Date.now() - startTime) / 1000).toFixed(1);
-            const successMessage = `마이그레이션이 성공적으로 완료되었습니다. (실행시간: ${executionTime}초)`;
-            console.log(`[${timestamp}] ${successMessage}`);
-            return {
-                success: true,
-                message: successMessage,
-                timestamp,
-                executionTime: `${executionTime}초`,
-            };
-        }
-        catch (error) {
-            const executionTime = ((Date.now() - startTime) / 1000).toFixed(1);
-            const errorMessage = `마이그레이션 중 오류가 발생했습니다. (실행시간: ${executionTime}초)`;
-            console.error(`[${timestamp}] ${errorMessage}`, error);
-            return {
-                success: false,
-                message: errorMessage,
-                error: error.message || '알 수 없는 오류',
-                timestamp,
-            };
-        }
     }
     async 채용프로세스에_합격한_직원을_생성한다(hireEmployeeDto) {
         return await this.organizationInformationApplicationService.직원을_채용한다(hireEmployeeDto);
@@ -8943,8 +8875,8 @@ __decorate([
     __param(2, (0, common_1.Query)('employeeNumber')),
     __param(3, (0, common_1.Query)('withDetail')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_c = typeof user_decorator_1.AuthenticatedUser !== "undefined" && user_decorator_1.AuthenticatedUser) === "function" ? _c : Object, String, String, Boolean]),
-    __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
+    __metadata("design:paramtypes", [typeof (_b = typeof user_decorator_1.AuthenticatedUser !== "undefined" && user_decorator_1.AuthenticatedUser) === "function" ? _b : Object, String, String, Boolean]),
+    __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
 ], OrganizationInformationApplicationController.prototype, "getEmployee", null);
 __decorate([
     (0, common_1.Get)('employees'),
@@ -8986,8 +8918,8 @@ __decorate([
     __param(2, (0, common_1.Query)('withDetail')),
     __param(3, (0, common_1.Query)('includeTerminated')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_e = typeof user_decorator_1.AuthenticatedUser !== "undefined" && user_decorator_1.AuthenticatedUser) === "function" ? _e : Object, String, Boolean, Boolean]),
-    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
+    __metadata("design:paramtypes", [typeof (_d = typeof user_decorator_1.AuthenticatedUser !== "undefined" && user_decorator_1.AuthenticatedUser) === "function" ? _d : Object, String, Boolean, Boolean]),
+    __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
 ], OrganizationInformationApplicationController.prototype, "getEmployees", null);
 __decorate([
     (0, common_1.Get)('departments/hierarchy'),
@@ -9053,47 +8985,9 @@ __decorate([
     __param(5, (0, common_1.Query)('includeEmptyDepartments')),
     __param(6, (0, common_1.Query)('includeInactiveDepartments')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_g = typeof user_decorator_1.AuthenticatedUser !== "undefined" && user_decorator_1.AuthenticatedUser) === "function" ? _g : Object, String, Number, Boolean, Boolean, Boolean, Boolean]),
-    __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
+    __metadata("design:paramtypes", [typeof (_f = typeof user_decorator_1.AuthenticatedUser !== "undefined" && user_decorator_1.AuthenticatedUser) === "function" ? _f : Object, String, Number, Boolean, Boolean, Boolean, Boolean]),
+    __metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
 ], OrganizationInformationApplicationController.prototype, "getDepartmentHierarchy", null);
-__decorate([
-    (0, common_1.Get)('cron/sync'),
-    (0, public_decorator_1.Public)(),
-    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
-    (0, swagger_1.ApiOperation)({
-        summary: '조직 정보 마이그레이션 실행 (Cron)',
-        description: 'Vercel cron에서 호출되는 마이그레이션 API입니다. 매일 자정에 자동 실행됩니다.',
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '마이그레이션 실행 성공',
-        schema: {
-            type: 'object',
-            properties: {
-                success: { type: 'boolean', example: true },
-                message: { type: 'string', example: '마이그레이션이 성공적으로 완료되었습니다.' },
-                timestamp: { type: 'string', example: '2024-01-01T00:00:00.000Z' },
-                executionTime: { type: 'string', example: '2.5초' },
-            },
-        },
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 500,
-        description: '마이그레이션 실행 실패',
-        schema: {
-            type: 'object',
-            properties: {
-                success: { type: 'boolean', example: false },
-                message: { type: 'string', example: '마이그레이션 중 오류가 발생했습니다.' },
-                error: { type: 'string', example: 'Database connection failed' },
-                timestamp: { type: 'string', example: '2024-01-01T00:00:00.000Z' },
-            },
-        },
-    }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
-], OrganizationInformationApplicationController.prototype, "executeMigrationCron", null);
 __decorate([
     (0, common_1.Post)('employee/hire'),
     (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),
@@ -9136,8 +9030,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_k = typeof dto_1.HireEmployeeRequestDto !== "undefined" && dto_1.HireEmployeeRequestDto) === "function" ? _k : Object]),
-    __metadata("design:returntype", typeof (_l = typeof Promise !== "undefined" && Promise) === "function" ? _l : Object)
+    __metadata("design:paramtypes", [typeof (_h = typeof dto_1.HireEmployeeRequestDto !== "undefined" && dto_1.HireEmployeeRequestDto) === "function" ? _h : Object]),
+    __metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
 ], OrganizationInformationApplicationController.prototype, "\uCC44\uC6A9\uD504\uB85C\uC138\uC2A4\uC5D0_\uD569\uACA9\uD55C_\uC9C1\uC6D0\uC744_\uC0DD\uC131\uD55C\uB2E4", null);
 __decorate([
     (0, common_1.Post)('employee/terminate'),
@@ -9193,8 +9087,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_m = typeof dto_1.TerminateEmployeeRequestDto !== "undefined" && dto_1.TerminateEmployeeRequestDto) === "function" ? _m : Object]),
-    __metadata("design:returntype", typeof (_o = typeof Promise !== "undefined" && Promise) === "function" ? _o : Object)
+    __metadata("design:paramtypes", [typeof (_k = typeof dto_1.TerminateEmployeeRequestDto !== "undefined" && dto_1.TerminateEmployeeRequestDto) === "function" ? _k : Object]),
+    __metadata("design:returntype", typeof (_l = typeof Promise !== "undefined" && Promise) === "function" ? _l : Object)
 ], OrganizationInformationApplicationController.prototype, "\uC218\uC2B5\uAE30\uAC04_\uD3C9\uAC00_\uBD88\uD569\uACA9\uC73C\uB85C_\uC9C1\uC6D0\uC744_\uD1F4\uC0AC\uCC98\uB9AC\uD55C\uB2E4", null);
 __decorate([
     (0, common_1.Get)('export/all'),
@@ -9231,7 +9125,7 @@ __decorate([
     __param(0, (0, common_1.Query)('includeInactiveDepartments')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Boolean]),
-    __metadata("design:returntype", typeof (_p = typeof Promise !== "undefined" && Promise) === "function" ? _p : Object)
+    __metadata("design:returntype", typeof (_m = typeof Promise !== "undefined" && Promise) === "function" ? _m : Object)
 ], OrganizationInformationApplicationController.prototype, "exportAllOrganizationData", null);
 __decorate([
     (0, common_1.Get)('employees/managers'),
@@ -9249,13 +9143,13 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 404, description: '관리자 라인 정보를 조회할 수 없음' }),
     __param(0, (0, user_decorator_1.User)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_q = typeof user_decorator_1.AuthenticatedUser !== "undefined" && user_decorator_1.AuthenticatedUser) === "function" ? _q : Object]),
-    __metadata("design:returntype", typeof (_r = typeof Promise !== "undefined" && Promise) === "function" ? _r : Object)
+    __metadata("design:paramtypes", [typeof (_o = typeof user_decorator_1.AuthenticatedUser !== "undefined" && user_decorator_1.AuthenticatedUser) === "function" ? _o : Object]),
+    __metadata("design:returntype", typeof (_p = typeof Promise !== "undefined" && Promise) === "function" ? _p : Object)
 ], OrganizationInformationApplicationController.prototype, "getEmployeesManagers", null);
 exports.OrganizationInformationApplicationController = OrganizationInformationApplicationController = __decorate([
     (0, swagger_1.ApiTags)('Client - 조직 정보 API'),
     (0, common_1.Controller)('organization'),
-    __metadata("design:paramtypes", [typeof (_a = typeof organization_information_application_service_1.OrganizationInformationApplicationService !== "undefined" && organization_information_application_service_1.OrganizationInformationApplicationService) === "function" ? _a : Object, typeof (_b = typeof migration_service_1.MigrationService !== "undefined" && migration_service_1.MigrationService) === "function" ? _b : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof organization_information_application_service_1.OrganizationInformationApplicationService !== "undefined" && organization_information_application_service_1.OrganizationInformationApplicationService) === "function" ? _a : Object])
 ], OrganizationInformationApplicationController);
 
 
@@ -10630,7 +10524,6 @@ const organization_information_application_service_1 = __webpack_require__(/*! .
 const organization_information_application_controller_1 = __webpack_require__(/*! ./controllers/organization-information-application.controller */ "./src/modules/application/organization-information/controllers/organization-information-application.controller.ts");
 const organization_management_context_module_1 = __webpack_require__(/*! ../../context/organization-management/organization-management-context.module */ "./src/modules/context/organization-management/organization-management-context.module.ts");
 const authorization_context_module_1 = __webpack_require__(/*! ../../context/authorization/authorization-context.module */ "./src/modules/context/authorization/authorization-context.module.ts");
-const migration_module_1 = __webpack_require__(/*! ../../context/migration/migration.module */ "./src/modules/context/migration/migration.module.ts");
 const jwt_config_1 = __webpack_require__(/*! ../../../../libs/configs/jwt.config */ "./libs/configs/jwt.config.ts");
 let OrganizationInformationApplicationModule = class OrganizationInformationApplicationModule {
 };
@@ -10640,7 +10533,6 @@ exports.OrganizationInformationApplicationModule = OrganizationInformationApplic
         imports: [
             organization_management_context_module_1.OrganizationManagementContextModule,
             authorization_context_module_1.AuthorizationContextModule,
-            migration_module_1.MigrationModule,
             passport_1.PassportModule,
             jwt_1.JwtModule.registerAsync({
                 useFactory: jwt_config_1.jwtConfig,
@@ -12777,477 +12669,6 @@ exports.LogManagementContextService = LogManagementContextService = LogManagemen
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [typeof (_a = typeof log_service_1.DomainLogService !== "undefined" && log_service_1.DomainLogService) === "function" ? _a : Object])
 ], LogManagementContextService);
-
-
-/***/ }),
-
-/***/ "./src/modules/context/migration/migration.controller.ts":
-/*!***************************************************************!*\
-  !*** ./src/modules/context/migration/migration.controller.ts ***!
-  \***************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.MigrationController = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
-const migration_service_1 = __webpack_require__(/*! ./migration.service */ "./src/modules/context/migration/migration.service.ts");
-class SyncDatabaseRequestDto {
-}
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '동기화할 테이블 목록',
-        example: [
-            'system_roles',
-            'ranks',
-            'positions',
-            'fcm_tokens',
-            'departments',
-            'employees',
-            'employee_department_positions',
-            'employee_rank_histories',
-            'employee_tokens',
-            'employee_fcm_tokens',
-            'employee_system_roles',
-        ],
-        type: [String],
-    }),
-    (0, class_validator_1.IsArray)(),
-    (0, class_validator_1.IsString)({ each: true }),
-    __metadata("design:type", Array)
-], SyncDatabaseRequestDto.prototype, "tables", void 0);
-let MigrationController = class MigrationController {
-    constructor(migrationService) {
-        this.migrationService = migrationService;
-    }
-    async syncFromProduction(dto) {
-        console.log(dto);
-        return await this.migrationService.syncFromProductionToDevDatabase(dto.tables);
-    }
-};
-exports.MigrationController = MigrationController;
-__decorate([
-    (0, common_1.Post)('sync-from-production'),
-    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
-    (0, swagger_1.ApiOperation)({
-        summary: '실서버에서 개발서버로 데이터 동기화',
-        description: `
-            실서버의 선택된 테이블 데이터를 개발서버로 동기화합니다.
-            
-            **동기화 순서:**
-            1. 외래키 제약조건 임시 비활성화
-            2. 실서버 데이터 조회
-            3. 개발서버 데이터 삭제 (의존성 역순)
-            4. 개발서버에 데이터 입력 (의존성 정순)
-            5. 외래키 제약조건 복원
-            
-            **사용 가능한 테이블:**
-            - system_roles: 시스템 역할
-            - ranks: 직급
-            - positions: 직책
-            - fcm_tokens: FCM 토큰
-            - departments: 부서 (계층구조 유지)
-            - employees: 직원
-            - employee_department_positions: 직원-부서-직책 관계
-            - employee_rank_histories: 직원 직급 이력
-            - employee_tokens: 직원 토큰
-            - employee_fcm_tokens: 직원-FCM토큰 관계
-            - employee_system_roles: 직원-시스템역할 관계
-            
-            **주의사항:**
-            ⚠️ 이 작업은 개발서버의 데이터를 완전히 삭제하고 실서버 데이터로 대체합니다!
-            ⚠️ 트랜잭션으로 처리되므로 실패 시 자동으로 롤백됩니다.
-        `,
-    }),
-    (0, swagger_1.ApiBody)({
-        schema: {
-            type: 'object',
-            properties: {
-                tables: {
-                    type: 'array',
-                    items: { type: 'string' },
-                    example: [
-                        'departments',
-                        'employees',
-                        'positions',
-                        'ranks',
-                        'system_roles',
-                        'fcm_tokens',
-                        'employee_department_positions',
-                        'employee_rank_histories',
-                        'employee_tokens',
-                        'employee_fcm_tokens',
-                        'employee_system_roles',
-                    ],
-                    description: '동기화할 테이블 목록',
-                },
-            },
-        },
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '동기화 성공',
-        schema: {
-            type: 'object',
-            properties: {
-                success: { type: 'boolean', example: true },
-                message: { type: 'string', example: '데이터베이스 동기화가 성공적으로 완료되었습니다.' },
-                syncedTables: {
-                    type: 'array',
-                    items: { type: 'string' },
-                    example: ['departments', 'employees'],
-                },
-                errors: {
-                    type: 'array',
-                    items: { type: 'string' },
-                    example: [],
-                },
-            },
-        },
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 500,
-        description: '동기화 실패',
-    }),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [SyncDatabaseRequestDto]),
-    __metadata("design:returntype", Promise)
-], MigrationController.prototype, "syncFromProduction", null);
-exports.MigrationController = MigrationController = __decorate([
-    (0, swagger_1.ApiExcludeController)(),
-    (0, swagger_1.ApiTags)('Migration - 데이터베이스 동기화'),
-    (0, common_1.Controller)('migration'),
-    __metadata("design:paramtypes", [typeof (_a = typeof migration_service_1.MigrationService !== "undefined" && migration_service_1.MigrationService) === "function" ? _a : Object])
-], MigrationController);
-
-
-/***/ }),
-
-/***/ "./src/modules/context/migration/migration.module.ts":
-/*!***********************************************************!*\
-  !*** ./src/modules/context/migration/migration.module.ts ***!
-  \***********************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.MigrationModule = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
-const config_1 = __webpack_require__(/*! @nestjs/config */ "@nestjs/config");
-const migration_service_1 = __webpack_require__(/*! ./migration.service */ "./src/modules/context/migration/migration.service.ts");
-const migration_controller_1 = __webpack_require__(/*! ./migration.controller */ "./src/modules/context/migration/migration.controller.ts");
-const employee_module_1 = __webpack_require__(/*! ../../domain/employee/employee.module */ "./src/modules/domain/employee/employee.module.ts");
-const department_module_1 = __webpack_require__(/*! ../../domain/department/department.module */ "./src/modules/domain/department/department.module.ts");
-const position_module_1 = __webpack_require__(/*! ../../domain/position/position.module */ "./src/modules/domain/position/position.module.ts");
-const rank_module_1 = __webpack_require__(/*! ../../domain/rank/rank.module */ "./src/modules/domain/rank/rank.module.ts");
-const employee_department_position_module_1 = __webpack_require__(/*! ../../domain/employee-department-position/employee-department-position.module */ "./src/modules/domain/employee-department-position/employee-department-position.module.ts");
-const employee_rank_history_module_1 = __webpack_require__(/*! ../../domain/employee-rank-history/employee-rank-history.module */ "./src/modules/domain/employee-rank-history/employee-rank-history.module.ts");
-const typeorm_production_config_1 = __webpack_require__(/*! ../../../../libs/configs/typeorm-production.config */ "./libs/configs/typeorm-production.config.ts");
-const entities_1 = __webpack_require__(/*! libs/database/entities */ "./libs/database/entities/index.ts");
-let MigrationModule = class MigrationModule {
-};
-exports.MigrationModule = MigrationModule;
-exports.MigrationModule = MigrationModule = __decorate([
-    (0, common_1.Module)({
-        imports: [
-            typeorm_1.TypeOrmModule.forRootAsync({
-                name: 'production',
-                inject: [config_1.ConfigService],
-                useFactory: typeorm_production_config_1.typeOrmProductionConfig,
-            }),
-            typeorm_1.TypeOrmModule.forFeature(entities_1.Entities),
-            employee_module_1.DomainEmployeeModule,
-            department_module_1.DomainDepartmentModule,
-            position_module_1.DomainPositionModule,
-            rank_module_1.DomainRankModule,
-            employee_department_position_module_1.DomainEmployeeDepartmentPositionModule,
-            employee_rank_history_module_1.DomainEmployeeRankHistoryModule,
-        ],
-        controllers: [migration_controller_1.MigrationController],
-        providers: [migration_service_1.MigrationService],
-        exports: [migration_service_1.MigrationService],
-    })
-], MigrationModule);
-
-
-/***/ }),
-
-/***/ "./src/modules/context/migration/migration.service.ts":
-/*!************************************************************!*\
-  !*** ./src/modules/context/migration/migration.service.ts ***!
-  \************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var MigrationService_1;
-var _a, _b;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.MigrationService = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
-const typeorm_2 = __webpack_require__(/*! typeorm */ "typeorm");
-const entities_1 = __webpack_require__(/*! ../../../../libs/database/entities */ "./libs/database/entities/index.ts");
-let MigrationService = MigrationService_1 = class MigrationService {
-    constructor(dataSource, productionDataSource) {
-        this.dataSource = dataSource;
-        this.productionDataSource = productionDataSource;
-        this.logger = new common_1.Logger(MigrationService_1.name);
-    }
-    async syncFromProductionToDevDatabase(tables) {
-        if (!this.productionDataSource) {
-            this.logger.error('❌ 실서버 DB 연결이 활성화되지 않았습니다.');
-            return {
-                success: false,
-                message: '실서버 DB 연결이 활성화되지 않았습니다. ENABLE_PRODUCTION_DB=true를 설정하고 애플리케이션을 재시작하세요.',
-                syncedTables: [],
-                errors: ['실서버 DB 연결 없음'],
-            };
-        }
-        const syncedTables = [];
-        const errors = [];
-        this.logger.log('🚀 데이터베이스 동기화 시작...');
-        this.logger.log(`동기화 대상 테이블: ${tables.join(', ')}`);
-        try {
-            await this.dataSource.transaction(async (manager) => {
-                try {
-                    this.logger.log('⏳ 외래키 제약조건 비활성화 중...');
-                    await manager.query('SET session_replication_role = replica');
-                    this.logger.log('📥 실서버 데이터 조회 중...');
-                    const productionData = await this.fetchProductionDataByTables(tables);
-                    console.log(productionData.get('departments'));
-                    this.logger.log('🗑️  개발서버 데이터 삭제 중...');
-                    await this.deleteDataInReverseOrder(manager, tables);
-                    this.logger.log('💾 개발서버에 데이터 입력 중...');
-                    await this.insertDataInCorrectOrder(manager, productionData, tables);
-                    syncedTables.push(...tables);
-                    this.logger.log('✅ 외래키 제약조건 복원 중...');
-                    await manager.query('SET session_replication_role = DEFAULT');
-                    this.logger.log('✅ 데이터베이스 동기화 완료!');
-                }
-                catch (error) {
-                    this.logger.error('❌ 동기화 실패:', error);
-                    throw error;
-                }
-            });
-            return {
-                success: true,
-                message: '데이터베이스 동기화가 성공적으로 완료되었습니다.',
-                syncedTables,
-                errors,
-            };
-        }
-        catch (error) {
-            const errorMessage = error instanceof Error ? error.message : '알 수 없는 오류';
-            this.logger.error('❌ 동기화 트랜잭션 실패:', errorMessage);
-            errors.push(errorMessage);
-            return {
-                success: false,
-                message: '데이터베이스 동기화 중 오류가 발생했습니다.',
-                syncedTables: [],
-                errors,
-            };
-        }
-    }
-    async fetchProductionDataByTables(tables) {
-        const dataMap = new Map();
-        const productionDataSource = this.productionDataSource;
-        for (const table of tables) {
-            try {
-                let data = [];
-                switch (table) {
-                    case 'system_roles':
-                        data = await productionDataSource.getRepository(entities_1.SystemRole).find();
-                        break;
-                    case 'ranks':
-                        data = await productionDataSource.getRepository(entities_1.Rank).find();
-                        break;
-                    case 'positions':
-                        data = await productionDataSource.getRepository(entities_1.Position).find();
-                        break;
-                    case 'fcm_tokens':
-                        data = await productionDataSource.getRepository(entities_1.FcmToken).find();
-                        break;
-                    case 'departments':
-                        data = await productionDataSource.getRepository(entities_1.Department).find({ order: { order: 'ASC' } });
-                        break;
-                    case 'employees':
-                        data = await productionDataSource.getRepository(entities_1.Employee).find();
-                        break;
-                    case 'employee_department_positions':
-                        data = await productionDataSource.getRepository(entities_1.EmployeeDepartmentPosition).find();
-                        break;
-                    case 'employee_rank_histories':
-                        data = await productionDataSource.getRepository(entities_1.EmployeeRankHistory).find();
-                        break;
-                    case 'employee_tokens':
-                        data = await productionDataSource.getRepository(entities_1.EmployeeToken).find();
-                        break;
-                    case 'employee_fcm_tokens':
-                        data = await productionDataSource.getRepository(entities_1.EmployeeFcmToken).find();
-                        break;
-                    case 'employee_system_roles':
-                        data = await productionDataSource.getRepository(entities_1.EmployeeSystemRole).find();
-                        break;
-                    default:
-                        this.logger.warn(`⚠️  알 수 없는 테이블: ${table}`);
-                }
-                dataMap.set(table, data);
-                this.logger.log(`  ✓ ${table}: ${data.length}개 데이터 조회`);
-            }
-            catch (error) {
-                this.logger.error(`  ✗ ${table} 조회 실패:`, error);
-                throw error;
-            }
-        }
-        return dataMap;
-    }
-    async deleteDataInReverseOrder(manager, tables) {
-        const deleteOrder = [
-            'employee_system_roles',
-            'employee_fcm_tokens',
-            'employee_tokens',
-            'employee_rank_histories',
-            'employee_department_positions',
-            'employees',
-            'departments',
-            'positions',
-            'ranks',
-            'fcm_tokens',
-            'system_roles',
-        ];
-        for (const table of deleteOrder) {
-            if (tables.includes(table)) {
-                try {
-                    const result = await manager.query(`DELETE FROM "${table}"`);
-                    this.logger.log(`  ✓ ${table} 삭제 완료 (${result[1] || 0}개)`);
-                }
-                catch (error) {
-                    this.logger.error(`  ✗ ${table} 삭제 실패:`, error);
-                    throw error;
-                }
-            }
-        }
-    }
-    async insertDataInCorrectOrder(manager, dataMap, tables) {
-        const insertOrder = [
-            'system_roles',
-            'ranks',
-            'positions',
-            'fcm_tokens',
-            'departments',
-            'employees',
-            'employee_department_positions',
-            'employee_rank_histories',
-            'employee_tokens',
-            'employee_fcm_tokens',
-            'employee_system_roles',
-        ];
-        for (const table of insertOrder) {
-            if (tables.includes(table) && dataMap.has(table)) {
-                const data = dataMap.get(table) || [];
-                if (data.length === 0) {
-                    this.logger.log(`  ⊘ ${table}: 데이터 없음`);
-                    continue;
-                }
-                try {
-                    if (table === 'departments') {
-                        await this.insertDepartmentsHierarchically(manager, data);
-                    }
-                    else {
-                        await this.bulkInsertData(manager, table, data);
-                    }
-                    this.logger.log(`  ✓ ${table} 입력 완료 (${data.length}개)`);
-                }
-                catch (error) {
-                    this.logger.error(`  ✗ ${table} 입력 실패:`, error);
-                    throw error;
-                }
-            }
-        }
-    }
-    async insertDepartmentsHierarchically(manager, departments) {
-        const deptMap = new Map(departments.map((d) => [d.id, d]));
-        const inserted = new Set();
-        const insertDepartment = async (dept) => {
-            if (inserted.has(dept.id))
-                return;
-            if (dept.parentDepartmentId && deptMap.has(dept.parentDepartmentId)) {
-                const parent = deptMap.get(dept.parentDepartmentId);
-                await insertDepartment(parent);
-            }
-            await manager.getRepository(entities_1.Department).save(dept);
-            inserted.add(dept.id);
-        };
-        for (const dept of departments) {
-            await insertDepartment(dept);
-        }
-    }
-    async bulkInsertData(manager, table, data) {
-        const entityMap = {
-            system_roles: entities_1.SystemRole,
-            ranks: entities_1.Rank,
-            positions: entities_1.Position,
-            fcm_tokens: entities_1.FcmToken,
-            employees: entities_1.Employee,
-            employee_department_positions: entities_1.EmployeeDepartmentPosition,
-            employee_rank_histories: entities_1.EmployeeRankHistory,
-            employee_tokens: entities_1.EmployeeToken,
-            employee_fcm_tokens: entities_1.EmployeeFcmToken,
-            employee_system_roles: entities_1.EmployeeSystemRole,
-        };
-        const entity = entityMap[table];
-        if (!entity) {
-            throw new Error(`Unknown table: ${table}`);
-        }
-        const chunkSize = 100;
-        for (let i = 0; i < data.length; i += chunkSize) {
-            const chunk = data.slice(i, i + chunkSize);
-            await manager.getRepository(entity).save(chunk);
-        }
-    }
-};
-exports.MigrationService = MigrationService;
-exports.MigrationService = MigrationService = MigrationService_1 = __decorate([
-    (0, common_1.Injectable)(),
-    __param(0, (0, typeorm_1.InjectDataSource)()),
-    __param(1, (0, typeorm_1.InjectDataSource)('production')),
-    __metadata("design:paramtypes", [typeof (_a = typeof typeorm_2.DataSource !== "undefined" && typeorm_2.DataSource) === "function" ? _a : Object, typeof (_b = typeof typeorm_2.DataSource !== "undefined" && typeorm_2.DataSource) === "function" ? _b : Object])
-], MigrationService);
 
 
 /***/ }),

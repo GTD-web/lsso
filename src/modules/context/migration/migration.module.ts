@@ -3,12 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
 import { MigrationService } from './migration.service';
 import { MigrationController } from './migration.controller';
-import { DomainEmployeeModule } from '../../domain/employee/employee.module';
-import { DomainDepartmentModule } from '../../domain/department/department.module';
-import { DomainPositionModule } from '../../domain/position/position.module';
-import { DomainRankModule } from '../../domain/rank/rank.module';
-import { DomainEmployeeDepartmentPositionModule } from '../../domain/employee-department-position/employee-department-position.module';
-import { DomainEmployeeRankHistoryModule } from '../../domain/employee-rank-history/employee-rank-history.module';
+
 import { typeOrmProductionConfig } from '../../../../libs/configs/typeorm-production.config';
 import { Entities } from 'libs/database/entities';
 
@@ -22,12 +17,6 @@ import { Entities } from 'libs/database/entities';
             useFactory: typeOrmProductionConfig,
         }),
         TypeOrmModule.forFeature(Entities),
-        DomainEmployeeModule,
-        DomainDepartmentModule,
-        DomainPositionModule,
-        DomainRankModule,
-        DomainEmployeeDepartmentPositionModule,
-        DomainEmployeeRankHistoryModule,
     ],
     controllers: [MigrationController],
     providers: [MigrationService],
