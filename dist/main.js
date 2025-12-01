@@ -10768,6 +10768,8 @@ let OrganizationInformationApplicationService = class OrganizationInformationApp
     부서_계층구조를_응답_DTO로_변환한다(departments, employeesByDepartment, departmentDetails, withEmployeeDetail = false, currentDepth = 0) {
         const result = [];
         for (const department of departments) {
+            if (!department.isActive || department.isException)
+                continue;
             const departmentEmployeeInfo = employeesByDepartment.get(department.id) || {
                 employees: [],
                 departmentPositions: new Map(),
@@ -10945,7 +10947,11 @@ let OrganizationInformationApplicationService = class OrganizationInformationApp
             ]);
             return {
                 departments: departments
-                    .filter((dept) => (includeInactiveDepartments ? true : dept.isActive))
+                    .filter((dept) => {
+                    if (dept.isException)
+                        return false;
+                    return includeInactiveDepartments ? true : dept.isActive;
+                })
                     .map((dept) => ({
                     id: dept.id,
                     departmentName: dept.departmentName,
@@ -15440,7 +15446,7 @@ let DomainDepartmentRepository = class DomainDepartmentRepository extends base_r
             take: repositoryOptions?.take,
             withDeleted: repositoryOptions?.withDeleted,
         });
-        return result.filter((department) => department.departmentCode !== '관리자' && department.departmentCode !== '퇴사자');
+        return result.filter((department) => department.isException === false);
     }
 };
 exports.DomainDepartmentRepository = DomainDepartmentRepository;
