@@ -16,6 +16,19 @@ export default registerAs('database', () => {
     };
 });
 
+// 실서버 DB 설정
+export const PRODUCTION_DATABASE_CONFIG = registerAs('productionDatabase', () => {
+    return {
+        host: process.env.PROD_POSTGRES_HOST,
+        port: parseInt(process.env.PROD_POSTGRES_PORT, 10),
+        username: process.env.PROD_POSTGRES_USER,
+        password: process.env.PROD_POSTGRES_PASSWORD,
+        database: process.env.PROD_POSTGRES_DATABASE,
+        schema: process.env.PROD_POSTGRES_SCHEMA,
+        ssl: process.env.PROD_POSTGRES_SSL,
+    };
+});
+
 export const JWT_CONFIG = registerAs('jwt', () => {
     return {
         secret: process.env.GLOBAL_SECRET,

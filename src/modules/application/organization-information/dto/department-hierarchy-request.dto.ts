@@ -48,4 +48,14 @@ export class DepartmentHierarchyRequestDto {
     @IsBoolean()
     @Transform(({ value }) => value === 'true' || value === true)
     includeEmptyDepartments?: boolean;
+
+    @ApiPropertyOptional({
+        description: '비활성화된 부서 포함 여부',
+        example: false,
+        default: false,
+    })
+    @IsOptional()
+    @IsBoolean()
+    @Transform(({ value }) => value === 'true' || value === true)
+    includeInactiveDepartments?: boolean;
 }

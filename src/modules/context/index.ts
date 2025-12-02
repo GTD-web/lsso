@@ -2,7 +2,6 @@ export { OrganizationManagementContextModule } from './organization-management/o
 export { AuthorizationContextModule } from './authorization/authorization-context.module';
 export { EmployeeManagementContextModule } from './employee-management/employee-management-context.module';
 export { SystemManagementContextModule } from './system-management/system-management-context.module';
-export { MigrationModule } from './migration/migration.module';
 export { FcmTokenManagementContextModule } from './fcm-token-management/fcm-token-management-context.module';
 
 export { OrganizationManagementContextService } from './organization-management/organization-management-context.service';

@@ -1,4 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger, Optional } from '@nestjs/common';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 import { DomainEmployeeService } from '../../domain/employee/employee.service';
 import { DomainDepartmentService } from '../../domain/department/department.service';
@@ -12,205 +14,321 @@ import { DepartmentResponseDto } from './dto/department-response.dto';
 import { PositionResponseDto } from './dto/position-response.dto';
 import { RankResponseDto } from './dto/rank-response.dto';
 import { EmployeeStatus, Gender } from '../../../../libs/common/enums';
+import {
+    Employee,
+    Department,
+    Position,
+    Rank,
+    EmployeeDepartmentPosition,
+    EmployeeRankHistory,
+    EmployeeToken,
+    FcmToken,
+    EmployeeFcmToken,
+    SystemRole,
+    EmployeeSystemRole,
+    System,
+    Token,
+} from '../../../../libs/database/entities';
 
 @Injectable()
 export class MigrationService {
+    private readonly logger = new Logger(MigrationService.name);
+
     constructor(
-        private readonly employeeService: DomainEmployeeService,
-        private readonly departmentService: DomainDepartmentService,
-        private readonly positionService: DomainPositionService,
-        private readonly rankService: DomainRankService,
-        private readonly employeeDepartmentPositionService: DomainEmployeeDepartmentPositionService,
-        private readonly employeeRankHistoryService: DomainEmployeeRankHistoryService,
+        @InjectDataSource() private readonly dataSource: DataSource,
+        @InjectDataSource('production') private readonly productionDataSource: DataSource,
     ) {}
 
-    async onApplicationBootstrap() {}
+    // ==================== 데이터베이스 동기화 ====================
 
-    async getEmployees(): Promise<EmployeeResponseDto[]> {
-        const response = await axios.get(`${process.env.METADATA_MANAGER_URL}/api/employees?detailed=true`);
-        const employees: EmployeeResponseDto[] = response.data.map((employee) => new EmployeeResponseDto(employee));
-        return employees;
-    }
-
-    async getDepartments(): Promise<DepartmentResponseDto[]> {
-        const response = await axios.get(`${process.env.METADATA_MANAGER_URL}/api/departments?hierarchy=true`);
-        const departments: DepartmentResponseDto[] = response.data.map(
-            (department) => new DepartmentResponseDto(department),
-        );
-        return departments;
-    }
-
-    async getPositions(): Promise<PositionResponseDto[]> {
-        const response = await axios.get(`${process.env.METADATA_MANAGER_URL}/api/positions`);
-        const positions: PositionResponseDto[] = response.data.map((position) => new PositionResponseDto(position));
-        return positions;
-    }
-
-    async getRanks(): Promise<RankResponseDto[]> {
-        const response = await axios.get(`${process.env.METADATA_MANAGER_URL}/api/ranks`);
-        const ranks: RankResponseDto[] = response.data.map((rank) => new RankResponseDto(rank));
-        return ranks;
-    }
-
-    async migrate(): Promise<void> {
-        const employees: EmployeeResponseDto[] = await this.getEmployees();
-        const departments: DepartmentResponseDto[] = await this.getDepartments();
-        const positions: PositionResponseDto[] = await this.getPositions();
-        const ranks: RankResponseDto[] = await this.getRanks();
-        // 기본 정보들 입력 후
-        for (const rank of ranks) {
-            const existingRank = await this.rankService.findByCode(rank.rank_code);
-            if (existingRank) {
-                console.log(`${rank.rank_name} 직급은 이미 존재합니다.`);
-                continue;
-            }
-            await this.rankService.save({
-                rankName: rank.rank_name,
-                rankCode: rank.rank_code,
-                level: rank.level,
-            });
-        }
-
-        for (const position of positions) {
-            const existingPosition = await this.positionService.findByCode(position.position_code);
-            if (existingPosition) {
-                console.log(`${position.position_title} 직책은 이미 존재합니다.`);
-                continue;
-            }
-            await this.positionService.save({
-                positionTitle: position.position_title,
-                positionCode: position.position_code,
-                hasManagementAuthority: position.level >= 5,
-                level: position.level,
-            });
-        }
-
-        const insertDepartments = async () => {
-            // 저장된 부서 ID를 추적하기 위한 Map (MongoDB ID -> TypeORM UUID)
-            const savedDepartmentIds = new Map<string, string>();
-
-            // DFS(깊이우선탐색)로 부서 계층구조를 순회하며 저장
-            const saveDepartmentHierarchy = async (
-                department: any,
-                parentUuid: string | null = null,
-            ): Promise<void> => {
-                try {
-                    const existingDepartment = await this.departmentService.findByCode(department.department_code);
-                    if (existingDepartment) {
-                        console.log(`${department.department_name} 부서는 이미 존재합니다.`);
-                    } else {
-                        const savedDepartment = await this.departmentService.save({
-                            departmentName: department.department_name,
-                            departmentCode: department.department_code,
-                            parentDepartmentId: parentUuid,
-                            order: department.order || 0,
-                        });
-                        savedDepartmentIds.set(department._id, savedDepartment.id);
-                    }
-                    // 현재 부서 저장
-
-                    // MongoDB ID -> TypeORM UUID 매핑 저장
-
-                    console.log(
-                        `부서 저장 완료: ${department.department_name} (${department.department_code}) - Parent: ${
-                            parentUuid || 'ROOT'
-                        }`,
-                    );
-
-                    // 하위 부서들을 재귀적으로 저장
-                    if (department.child_departments && department.child_departments.length > 0) {
-                        for (const childDepartment of department.child_departments) {
-                            await saveDepartmentHierarchy(childDepartment, savedDepartmentIds.get(department._id));
-                        }
-                    }
-                } catch (error) {
-                    console.error(`부서 저장 실패: ${department.department_name}`, error);
-                }
+    /**
+     * 실서버에서 개발서버로 데이터 동기화
+     * @param tables 동기화할 테이블 목록 (예: ['employees', 'departments'])
+     */
+    async syncFromProductionToDevDatabase(tables: string[]): Promise<{
+        success: boolean;
+        message: string;
+        syncedTables: string[];
+        errors: string[];
+    }> {
+        // 실서버 DB 연결 확인
+        if (!this.productionDataSource) {
+            this.logger.error('❌ 실서버 DB 연결이 활성화되지 않았습니다.');
+            return {
+                success: false,
+                message:
+                    '실서버 DB 연결이 활성화되지 않았습니다. ENABLE_PRODUCTION_DB=true를 설정하고 애플리케이션을 재시작하세요.',
+                syncedTables: [],
+                errors: ['실서버 DB 연결 없음'],
             };
+        }
 
-            // 최상위 부서들부터 시작 (parent_department_id가 null인 부서들)
-            const rootDepartments = departments;
+        const syncedTables: string[] = [];
+        const errors: string[] = [];
 
-            for (const rootDepartment of rootDepartments) {
-                await saveDepartmentHierarchy(rootDepartment);
+        this.logger.log('🚀 데이터베이스 동기화 시작...');
+        this.logger.log(`동기화 대상 테이블: ${tables.join(', ')}`);
+
+        try {
+            // 트랜잭션으로 전체 작업 수행
+            await this.dataSource.transaction(async (manager) => {
+                try {
+                    // STEP 1: 외래키 제약조건 임시 비활성화
+                    this.logger.log('⏳ 외래키 제약조건 비활성화 중...');
+                    await manager.query('SET session_replication_role = replica');
+
+                    // STEP 2: 실서버에서 데이터 조회
+                    this.logger.log('📥 실서버 데이터 조회 중...');
+                    const productionData = await this.fetchProductionDataByTables(tables);
+                    // return;
+                    // STEP 3: 개발서버 데이터 삭제 (역순)
+                    this.logger.log('🗑️  개발서버 데이터 삭제 중...');
+                    await this.deleteDataInReverseOrder(manager, tables);
+
+                    // STEP 4: 개발서버에 데이터 입력 (정순)
+                    this.logger.log('💾 개발서버에 데이터 입력 중...');
+                    await this.insertDataInCorrectOrder(manager, productionData, tables);
+
+                    syncedTables.push(...tables);
+
+                    // // STEP 5: 외래키 제약조건 복원
+                    this.logger.log('✅ 외래키 제약조건 복원 중...');
+                    await manager.query('SET session_replication_role = DEFAULT');
+
+                    this.logger.log('✅ 데이터베이스 동기화 완료!');
+                } catch (error) {
+                    this.logger.error('❌ 동기화 실패:', error);
+                    throw error; // 트랜잭션 롤백
+                }
+            });
+
+            return {
+                success: true,
+                message: '데이터베이스 동기화가 성공적으로 완료되었습니다.',
+                syncedTables,
+                errors,
+            };
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : '알 수 없는 오류';
+            this.logger.error('❌ 동기화 트랜잭션 실패:', errorMessage);
+            errors.push(errorMessage);
+
+            return {
+                success: false,
+                message: '데이터베이스 동기화 중 오류가 발생했습니다.',
+                syncedTables: [],
+                errors,
+            };
+        }
+    }
+
+    /**
+     * 실서버에서 데이터 조회
+     */
+    private async fetchProductionDataByTables(tables: string[]): Promise<Map<string, any[]>> {
+        const dataMap = new Map<string, any[]>();
+
+        // 실서버 DB 연결 사용 (이미 위에서 null 체크함)
+        const productionDataSource = this.productionDataSource!;
+
+        for (const table of tables) {
+            try {
+                let data: any[] = [];
+
+                switch (table) {
+                    case 'systems':
+                        data = await productionDataSource.getRepository(System).find();
+                        break;
+                    case 'tokens':
+                        data = await productionDataSource.getRepository(Token).find();
+                        break;
+                    case 'system_roles':
+                        data = await productionDataSource.getRepository(SystemRole).find();
+                        break;
+                    case 'ranks':
+                        data = await productionDataSource.getRepository(Rank).find();
+                        break;
+                    case 'positions':
+                        data = await productionDataSource.getRepository(Position).find();
+                        break;
+                    case 'fcm_tokens':
+                        data = await productionDataSource.getRepository(FcmToken).find();
+                        break;
+                    case 'departments':
+                        data = await productionDataSource.getRepository(Department).find({ order: { order: 'ASC' } });
+                        break;
+                    case 'employees':
+                        data = await productionDataSource.getRepository(Employee).find();
+                        break;
+                    case 'employee_department_positions':
+                        data = await productionDataSource.getRepository(EmployeeDepartmentPosition).find();
+                        break;
+                    case 'employee_rank_histories':
+                        data = await productionDataSource.getRepository(EmployeeRankHistory).find();
+                        break;
+                    case 'employee_tokens':
+                        data = await productionDataSource.getRepository(EmployeeToken).find();
+                        break;
+                    case 'employee_fcm_tokens':
+                        data = await productionDataSource.getRepository(EmployeeFcmToken).find();
+                        break;
+                    case 'employee_system_roles':
+                        data = await productionDataSource.getRepository(EmployeeSystemRole).find();
+                        break;
+                    default:
+                        this.logger.warn(`⚠️  알 수 없는 테이블: ${table}`);
+                }
+
+                dataMap.set(table, data);
+                this.logger.log(`  ✓ ${table}: ${data.length}개 데이터 조회`);
+            } catch (error) {
+                this.logger.error(`  ✗ ${table} 조회 실패:`, error);
+                throw error;
+            }
+        }
+
+        return dataMap;
+    }
+
+    /**
+     * 개발서버 데이터 삭제 (의존성 역순)
+     */
+    private async deleteDataInReverseOrder(manager: any, tables: string[]): Promise<void> {
+        // 삭제 순서: 의존성이 있는 것부터 (역순)
+        const deleteOrder = [
+            'employee_system_roles',
+            'employee_fcm_tokens',
+            'employee_tokens',
+            'employee_rank_histories',
+            'employee_department_positions',
+            'employees',
+            'departments',
+            'positions',
+            'ranks',
+            'fcm_tokens',
+            'system_roles',
+            'tokens',
+            'systems',
+        ];
+
+        for (const table of deleteOrder) {
+            if (tables.includes(table)) {
+                try {
+                    const result = await manager.query(`DELETE FROM "${table}"`);
+                    this.logger.log(`  ✓ ${table} 삭제 완료 (${result[1] || 0}개)`);
+                } catch (error) {
+                    this.logger.error(`  ✗ ${table} 삭제 실패:`, error);
+                    throw error;
+                }
+            }
+        }
+    }
+
+    /**
+     * 개발서버에 데이터 입력 (의존성 정순)
+     */
+    private async insertDataInCorrectOrder(manager: any, dataMap: Map<string, any[]>, tables: string[]): Promise<void> {
+        // 입력 순서: 의존성이 없는 것부터 (정순)
+        const insertOrder = [
+            'systems',
+            'tokens',
+            'system_roles',
+            'ranks',
+            'positions',
+            'fcm_tokens',
+            'departments',
+            'employees',
+            'employee_department_positions',
+            'employee_rank_histories',
+            'employee_tokens',
+            'employee_fcm_tokens',
+            'employee_system_roles',
+        ];
+
+        for (const table of insertOrder) {
+            if (tables.includes(table) && dataMap.has(table)) {
+                const data = dataMap.get(table) || [];
+
+                if (data.length === 0) {
+                    this.logger.log(`  ⊘ ${table}: 데이터 없음`);
+                    continue;
+                }
+
+                try {
+                    // 특별 처리가 필요한 테이블
+                    if (table === 'departments') {
+                        await this.insertDepartmentsHierarchically(manager, data);
+                    } else {
+                        await this.bulkInsertData(manager, table, data);
+                    }
+
+                    this.logger.log(`  ✓ ${table} 입력 완료 (${data.length}개)`);
+                } catch (error) {
+                    this.logger.error(`  ✗ ${table} 입력 실패:`, error);
+                    throw error;
+                }
+            }
+        }
+    }
+
+    /**
+     * 부서 계층구조를 고려하여 입력
+     */
+    private async insertDepartmentsHierarchically(manager: any, departments: Department[]): Promise<void> {
+        // 부서를 Map으로 변환
+        const deptMap = new Map(departments.map((d) => [d.id, d]));
+        const inserted = new Set<string>();
+
+        // 재귀적으로 부서 삽입 (상위 부서부터)
+        const insertDepartment = async (dept: Department): Promise<void> => {
+            if (inserted.has(dept.id)) return;
+
+            // 상위 부서가 있으면 먼저 삽입
+            if (dept.parentDepartmentId && deptMap.has(dept.parentDepartmentId)) {
+                const parent = deptMap.get(dept.parentDepartmentId)!;
+                await insertDepartment(parent);
             }
 
-            console.log(`총 ${savedDepartmentIds.size}개 부서 저장 완료`);
-            return savedDepartmentIds;
+            // 현재 부서 삽입
+            await manager.getRepository(Department).save(dept);
+            inserted.add(dept.id);
         };
 
-        // 부서 저장 실행
-        const departmentIdMap = await insertDepartments();
+        // 모든 부서 삽입
+        for (const dept of departments) {
+            await insertDepartment(dept);
+        }
+    }
 
-        for (const employee of employees) {
-            let existingEmployee = await this.employeeService.findByEmployeeNumber(employee.employee_number);
+    /**
+     * 벌크 데이터 입력
+     */
+    private async bulkInsertData(manager: any, table: string, data: any[]): Promise<void> {
+        const entityMap = {
+            systems: System,
+            system_roles: SystemRole,
+            ranks: Rank,
+            positions: Position,
+            fcm_tokens: FcmToken,
+            tokens: Token,
+            employees: Employee,
+            employee_department_positions: EmployeeDepartmentPosition,
+            employee_rank_histories: EmployeeRankHistory,
+            employee_tokens: EmployeeToken,
+            employee_fcm_tokens: EmployeeFcmToken,
+            employee_system_roles: EmployeeSystemRole,
+        };
 
-            let rank = null,
-                position = null,
-                department = null;
+        const entity = entityMap[table];
+        if (!entity) {
+            throw new Error(`Unknown table: ${table}`);
+        }
 
-            if (employee.rank) {
-                rank = await this.rankService.findByCode(employee.rank.rank_code);
-            }
-
-            if (existingEmployee) {
-                existingEmployee = await this.employeeService.update(existingEmployee.id, {
-                    status: employee.status as EmployeeStatus,
-                    currentRankId: rank?.id,
-                    hireDate: employee.hire_date,
-                    dateOfBirth: employee.date_of_birth,
-                    gender: employee.gender as Gender,
-                    password:
-                        existingEmployee.password === null
-                            ? this.employeeService.hashPassword(employee.employee_number)
-                            : existingEmployee.password,
-                });
-            } else {
-                existingEmployee = await this.employeeService.save({
-                    employeeNumber: employee.employee_number,
-                    name: employee.name,
-                    email: employee.email,
-                    phoneNumber: employee.phone_number || '',
-                    status: employee.status as EmployeeStatus,
-                    currentRankId: rank?.id,
-                    password: this.employeeService.hashPassword(employee.employee_number),
-                    hireDate: employee.hire_date,
-                    dateOfBirth: employee.date_of_birth,
-                    gender: employee.gender as Gender,
-                });
-            }
-
-            if (employee.position) {
-                position = await this.positionService.findByCode(employee.position.position_code);
-            }
-
-            if (employee.department) {
-                department = await this.departmentService.findByCode(employee.department.department_code);
-            }
-
-            const savedEmployee = await this.employeeService.save(existingEmployee);
-
-            const existingEmployeeDepartmentPosition = await this.employeeDepartmentPositionService.findOne({
-                where: {
-                    employeeId: existingEmployee.id,
-                    departmentId: department?.id,
-                },
-            });
-
-            if (existingEmployeeDepartmentPosition) {
-                await this.employeeDepartmentPositionService.update(existingEmployeeDepartmentPosition.id, {
-                    departmentId: department?.id,
-                    positionId: position?.id,
-                });
-            }
-
-            if (!existingEmployeeDepartmentPosition && department && position) {
-                await this.employeeDepartmentPositionService.save({
-                    employeeId: savedEmployee.id,
-                    departmentId: department?.id,
-                    positionId: position?.id,
-                });
-            }
+        // 청크 단위로 나눠서 입력 (성능 최적화)
+        const chunkSize = 100;
+        for (let i = 0; i < data.length; i += chunkSize) {
+            const chunk = data.slice(i, i + chunkSize);
+            await manager.getRepository(entity).save(chunk);
         }
     }
 }

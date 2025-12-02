@@ -176,6 +176,7 @@ export class OrganizationInformationApplicationService {
             withEmployeeDetail = false,
             includeTerminated = false,
             includeEmptyDepartments = true,
+            includeInactiveDepartments = false,
         } = requestDto;
 
         try {
@@ -186,6 +187,7 @@ export class OrganizationInformationApplicationService {
                 withEmployeeDetail,
                 includeTerminated,
                 includeEmptyDepartments,
+                includeInactiveDepartments,
             );
 
             // 응답 DTO로 변환
@@ -222,8 +224,7 @@ export class OrganizationInformationApplicationService {
         const result: DepartmentWithEmployeesDto[] = [];
 
         for (const department of departments) {
-            // TODO: 2025-11-28 김규현 - 추가 필터링 조건 추가해서 로직 수정
-            // if (!department.isActive || department.isException) continue;
+            if (!department.isActive || department.isException) continue;
             // 해당 부서의 직원 정보 조회
             const departmentEmployeeInfo = employeesByDepartment.get(department.id) || {
                 employees: [],
@@ -469,7 +470,7 @@ export class OrganizationInformationApplicationService {
         };
     }
 
-    async 전체_조직_데이터를_조회한다(): Promise<ExportAllDataResponseDto> {
+    async 전체_조직_데이터를_조회한다(includeInactiveDepartments = false): Promise<ExportAllDataResponseDto> {
         try {
             // 모든 데이터를 병렬로 조회
             const [departments, employees, positions, ranks, employeeDepartmentPositions] = await Promise.all([
@@ -481,16 +482,21 @@ export class OrganizationInformationApplicationService {
             ]);
 
             return {
-                departments: departments.map((dept) => ({
-                    id: dept.id,
-                    departmentName: dept.departmentName,
-                    departmentCode: dept.departmentCode,
-                    type: dept.type,
-                    parentDepartmentId: dept.parentDepartmentId,
-                    order: dept.order,
-                    createdAt: dept.createdAt,
-                    updatedAt: dept.updatedAt,
-                })),
+                departments: departments
+                    .filter((dept) => {
+                        if (dept.isException) return false;
+                        return includeInactiveDepartments ? true : dept.isActive;
+                    })
+                    .map((dept) => ({
+                        id: dept.id,
+                        departmentName: dept.departmentName,
+                        departmentCode: dept.departmentCode,
+                        type: dept.type,
+                        parentDepartmentId: dept.parentDepartmentId,
+                        order: dept.order,
+                        createdAt: dept.createdAt,
+                        updatedAt: dept.updatedAt,
+                    })),
                 employees: employees.map((emp) => ({
                     id: emp.id,
                     employeeNumber: emp.employeeNumber,

@@ -37,7 +37,6 @@ import { MigrationService } from '../../../context/migration/migration.service';
 export class OrganizationInformationApplicationController {
     constructor(
         private readonly organizationInformationApplicationService: OrganizationInformationApplicationService,
-        private readonly migrationService: MigrationService,
     ) {}
 
     @Get('employee')
@@ -194,6 +193,13 @@ export class OrganizationInformationApplicationController {
         type: Boolean,
         example: true,
     })
+    @ApiQuery({
+        name: 'includeInactiveDepartments',
+        description: '비활성화된 부서 포함 여부',
+        required: false,
+        type: Boolean,
+        example: false,
+    })
     @ApiResponse({
         status: 200,
         description: '부서 계층구조별 직원 정보 조회 성공',
@@ -208,6 +214,7 @@ export class OrganizationInformationApplicationController {
         @Query('withEmployeeDetail') withEmployeeDetail?: boolean,
         @Query('includeTerminated') includeTerminated?: boolean,
         @Query('includeEmptyDepartments') includeEmptyDepartments?: boolean,
+        @Query('includeInactiveDepartments') includeInactiveDepartments?: boolean,
     ): Promise<DepartmentHierarchyResponseDto> {
         // 인증된 사용자 정보 로깅 (개발용)
         console.log('부서 계층구조 조회 - 인증된 사용자:', user);
@@ -219,84 +226,11 @@ export class OrganizationInformationApplicationController {
             withEmployeeDetail: withEmployeeDetail === true || String(withEmployeeDetail) === 'true',
             includeTerminated: includeTerminated === true || String(includeTerminated) === 'true',
             includeEmptyDepartments: includeEmptyDepartments !== false && String(includeEmptyDepartments) !== 'false',
+            includeInactiveDepartments:
+                includeInactiveDepartments === true || String(includeInactiveDepartments) === 'true',
         };
 
         return this.organizationInformationApplicationService.부서_계층구조별_직원정보를_조회한다(requestDto);
-    }
-
-    @Get('cron/sync')
-    @Public()
-    @HttpCode(HttpStatus.OK)
-    @ApiOperation({
-        summary: '조직 정보 마이그레이션 실행 (Cron)',
-        description: 'Vercel cron에서 호출되는 마이그레이션 API입니다. 매일 자정에 자동 실행됩니다.',
-    })
-    @ApiResponse({
-        status: 200,
-        description: '마이그레이션 실행 성공',
-        schema: {
-            type: 'object',
-            properties: {
-                success: { type: 'boolean', example: true },
-                message: { type: 'string', example: '마이그레이션이 성공적으로 완료되었습니다.' },
-                timestamp: { type: 'string', example: '2024-01-01T00:00:00.000Z' },
-                executionTime: { type: 'string', example: '2.5초' },
-            },
-        },
-    })
-    @ApiResponse({
-        status: 500,
-        description: '마이그레이션 실행 실패',
-        schema: {
-            type: 'object',
-            properties: {
-                success: { type: 'boolean', example: false },
-                message: { type: 'string', example: '마이그레이션 중 오류가 발생했습니다.' },
-                error: { type: 'string', example: 'Database connection failed' },
-                timestamp: { type: 'string', example: '2024-01-01T00:00:00.000Z' },
-            },
-        },
-    })
-    async executeMigrationCron(): Promise<{
-        success: boolean;
-        message: string;
-        timestamp: string;
-        executionTime?: string;
-        error?: string;
-    }> {
-        const startTime = Date.now();
-        const timestamp = new Date().toISOString();
-
-        try {
-            console.log(`[${timestamp}] 조직 정보 마이그레이션 시작 - Cron 실행`);
-
-            // 마이그레이션 실행
-            // await this.migrationService.migrate();
-
-            const executionTime = ((Date.now() - startTime) / 1000).toFixed(1);
-            const successMessage = `마이그레이션이 성공적으로 완료되었습니다. (실행시간: ${executionTime}초)`;
-
-            console.log(`[${timestamp}] ${successMessage}`);
-
-            return {
-                success: true,
-                message: successMessage,
-                timestamp,
-                executionTime: `${executionTime}초`,
-            };
-        } catch (error) {
-            const executionTime = ((Date.now() - startTime) / 1000).toFixed(1);
-            const errorMessage = `마이그레이션 중 오류가 발생했습니다. (실행시간: ${executionTime}초)`;
-
-            console.error(`[${timestamp}] ${errorMessage}`, error);
-
-            return {
-                success: false,
-                message: errorMessage,
-                error: error.message || '알 수 없는 오류',
-                timestamp,
-            };
-        }
     }
 
     @Post('employee/hire')
@@ -409,6 +343,13 @@ export class OrganizationInformationApplicationController {
         description:
             '5개 테이블(departments, employees, positions, ranks, employee_department_positions)의 전체 데이터를 ID 값을 포함하여 그대로 조회합니다. 마이그레이션 목적으로 사용됩니다.',
     })
+    @ApiQuery({
+        name: 'includeInactiveDepartments',
+        description: '비활성화된 부서 포함 여부',
+        required: false,
+        type: Boolean,
+        example: false,
+    })
     @ApiResponse({
         status: 200,
         description: '전체 조직 데이터 조회 성공',
@@ -426,9 +367,13 @@ export class OrganizationInformationApplicationController {
             },
         },
     })
-    async exportAllOrganizationData(): Promise<ExportAllDataResponseDto> {
+    async exportAllOrganizationData(
+        @Query('includeInactiveDepartments') includeInactiveDepartments?: boolean,
+    ): Promise<ExportAllDataResponseDto> {
         console.log('[Export All Data] 전체 조직 데이터 조회 시작');
-        const result = await this.organizationInformationApplicationService.전체_조직_데이터를_조회한다();
+        const result = await this.organizationInformationApplicationService.전체_조직_데이터를_조회한다(
+            includeInactiveDepartments === true || String(includeInactiveDepartments) === 'true',
+        );
         console.log('[Export All Data] 조회 완료:', {
             departments: result.totalCounts.departments,
             employees: result.totalCounts.employees,

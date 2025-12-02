@@ -1075,6 +1075,7 @@ export class OrganizationManagementContextService {
         rootDepartmentId?: string,
         maxDepth?: number,
         includeEmptyDepartments = true,
+        includeInactiveDepartments = false,
     ): Promise<Department[]> {
         // 최상위 부서부터 시작하거나 지정된 부서부터 시작
         let rootDepartments: Department[];
@@ -1099,6 +1100,7 @@ export class OrganizationManagementContextService {
                 0,
                 maxDepth,
                 includeEmptyDepartments,
+                includeInactiveDepartments,
             );
             if (hierarchyDept) {
                 result.push(hierarchyDept);
@@ -1114,7 +1116,13 @@ export class OrganizationManagementContextService {
         currentDepth: number,
         maxDepth?: number,
         includeEmptyDepartments = true,
+        includeInactiveDepartments = false,
     ): Department | null {
+        // 비활성화된 부서 필터링 (includeInactiveDepartments가 false일 때)
+        if (!includeInactiveDepartments && department.isActive === false) {
+            return null;
+        }
+
         // 최대 깊이 체크
         if (maxDepth !== undefined && currentDepth >= maxDepth) {
             return department;
@@ -1133,6 +1141,7 @@ export class OrganizationManagementContextService {
                 currentDepth + 1,
                 maxDepth,
                 includeEmptyDepartments,
+                includeInactiveDepartments,
             );
             if (childHierarchy) {
                 childDepartments.push(childHierarchy);
@@ -1143,6 +1152,53 @@ export class OrganizationManagementContextService {
         department.childDepartments = childDepartments.sort((a, b) => a.order - b.order);
 
         return department;
+    }
+
+    /**
+     * 특정 부서의 모든 하위 부서를 재귀적으로 조회합니다
+     * @param departmentId 조회할 부서 ID
+     * @returns 모든 하위 부서 배열 (모든 깊이의 하위 부서 포함)
+     */
+    async 부서의_모든_하위부서들을_재귀적으로_조회한다(departmentId: string): Promise<Department[]> {
+        // 전체 부서 목록 조회
+        const allDepartments = await this.부서서비스.findAllDepartmentsWithChildren();
+        const departmentMap = new Map(allDepartments.map((dept) => [dept.id, dept]));
+
+        // 재귀적으로 하위 부서 수집
+        const childDepartments: Department[] = [];
+        this.모든_하위부서를_재귀적으로_수집한다(departmentId, departmentMap, childDepartments);
+
+        return childDepartments;
+    }
+
+    /**
+     * 재귀적으로 하위 부서를 수집하는 헬퍼 메서드
+     */
+    private 모든_하위부서를_재귀적으로_수집한다(
+        parentDepartmentId: string,
+        departmentMap: Map<string, Department>,
+        result: Department[],
+    ): void {
+        // 현재 부서의 직접 하위 부서들 찾기
+        const directChildren = Array.from(departmentMap.values()).filter(
+            (dept) => dept.parentDepartmentId === parentDepartmentId,
+        );
+
+        for (const child of directChildren) {
+            // 결과 배열에 추가
+            result.push(child);
+            // 재귀적으로 하위 부서의 하위 부서도 수집
+            this.모든_하위부서를_재귀적으로_수집한다(child.id, departmentMap, result);
+        }
+    }
+
+    /**
+     * 여러 부서를 일괄로 수정합니다
+     * @param departmentIds 수정할 부서 ID 배열
+     * @param updateData 수정할 데이터
+     */
+    async 여러_부서를_일괄_수정한다(departmentIds: string[], updateData: Partial<Department>): Promise<void> {
+        await this.부서서비스.bulkUpdate(departmentIds, updateData);
     }
 
     async 부서별_직원_목록을_조회한다(
@@ -1210,6 +1266,7 @@ export class OrganizationManagementContextService {
         withEmployeeDetail = false,
         includeTerminated = false,
         includeEmptyDepartments = true,
+        includeInactiveDepartments = false,
     ): Promise<{
         departments: Department[];
         employeesByDepartment: Map<string, { employees: Employee[]; departmentPositions: Map<string, any> }>;
@@ -1218,9 +1275,13 @@ export class OrganizationManagementContextService {
         // 🚀 성능 최적화: 모든 데이터를 병렬로 조회
         const [departments] = await Promise.all([
             // 1. 부서 계층구조 조회
-            this.부서_계층구조를_조회한다(rootDepartmentId, maxDepth, includeEmptyDepartments),
+            this.부서_계층구조를_조회한다(
+                rootDepartmentId,
+                maxDepth,
+                includeEmptyDepartments,
+                includeInactiveDepartments,
+            ),
         ]);
-        console.log('departments', departments);
         // 2. 모든 부서 ID 수집 (재귀적으로)
         const allDepartmentIds = this.모든_부서_ID를_수집한다(departments);
 

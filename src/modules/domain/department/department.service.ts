@@ -188,6 +188,19 @@ export class DomainDepartmentService extends BaseService<Department> {
     }
 
     /**
+     * 여러 부서의 필드를 일괄 업데이트
+     */
+    async bulkUpdate(departmentIds: string[], updateData: Partial<Department>): Promise<void> {
+        if (departmentIds.length === 0) return;
+
+        await this.departmentRepository.manager.transaction(async (transactionalEntityManager) => {
+            for (const id of departmentIds) {
+                await transactionalEntityManager.update(Department, { id }, updateData);
+            }
+        });
+    }
+
+    /**
      * 같은 부모를 가진 부서들의 개수 조회
      */
     async countByParentDepartmentId(parentDepartmentId: string | null): Promise<number> {
