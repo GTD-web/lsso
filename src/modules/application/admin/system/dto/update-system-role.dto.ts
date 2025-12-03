@@ -36,4 +36,9 @@ export class UpdateSystemRoleDto {
     @IsOptional()
     @IsBoolean()
     isActive?: boolean;
+
+    @ApiPropertyOptional({ description: '기본 역할 여부 (직원 생성 시 자동 할당)', example: false })
+    @IsOptional()
+    @IsBoolean()
+    isDefault?: boolean;
 }
