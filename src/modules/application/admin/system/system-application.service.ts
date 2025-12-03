@@ -176,6 +176,7 @@ export class SystemApplicationService {
                 description: createDto.description,
                 permissions: createDto.permissions,
                 sortOrder: createDto.sortOrder,
+                isDefault: createDto.isDefault,
             });
             return this.시스템롤_엔티티를_DTO로_변환(savedRole);
         } catch (error) {
@@ -195,6 +196,7 @@ export class SystemApplicationService {
                 permissions: updateDto.permissions,
                 sortOrder: updateDto.sortOrder,
                 isActive: updateDto.isActive,
+                isDefault: updateDto.isDefault,
             });
             return this.시스템롤_엔티티를_DTO로_변환(updatedRole);
         } catch (error) {
@@ -238,6 +240,17 @@ export class SystemApplicationService {
         };
     }
 
+    async 기본역할목록조회(): Promise<SystemRoleResponseDto[]> {
+        try {
+            const defaultRoles = await this.시스템관리컨텍스트서비스.모든_기본역할을_조회한다();
+            return defaultRoles.map((role) => this.시스템롤_엔티티를_DTO로_변환(role));
+        } catch (error) {
+            throw new NotFoundException('기본 역할 목록 조회에 실패했습니다.');
+        }
+    }
+
+    // ==================== 헬퍼 메서드 ====================
+
     private 시스템롤_엔티티를_DTO로_변환(systemRole: any): SystemRoleResponseDto {
         const dto: any = {
             id: systemRole.id,
@@ -248,6 +261,7 @@ export class SystemApplicationService {
             permissions: systemRole.permissions,
             sortOrder: systemRole.sortOrder,
             isActive: systemRole.isActive,
+            isDefault: systemRole.isDefault,
             createdAt: systemRole.createdAt,
             updatedAt: systemRole.updatedAt,
         };

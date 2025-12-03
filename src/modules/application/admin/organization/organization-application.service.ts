@@ -34,6 +34,7 @@ import {
     EmployeeAssignmentDetailDto,
 } from './dto';
 import { OrganizationManagementContextService } from 'src/modules/context/organization-management/organization-management-context.service';
+import { SystemManagementContextService } from 'src/modules/context/system-management/system-management-context.service';
 import { Department, DepartmentType } from 'src/modules/domain/department/department.entity';
 import { Employee } from 'src/modules/domain/employee/employee.entity';
 import { Position } from 'src/modules/domain/position/position.entity';
@@ -42,7 +43,10 @@ import { EmployeeStatus } from 'libs/common/enums';
 
 @Injectable()
 export class OrganizationApplicationService {
-    constructor(private readonly organizationContextService: OrganizationManagementContextService) {}
+    constructor(
+        private readonly organizationContextService: OrganizationManagementContextService,
+        private readonly systemManagementContextService: SystemManagementContextService,
+    ) {}
 
     // 부서 계층구조별 직원 정보 조회
     async 부서_계층구조별_직원정보를_조회한다(): Promise<DepartmentHierarchyResponseDto> {
@@ -297,6 +301,14 @@ export class OrganizationApplicationService {
             positionId: createEmployeeDto.positionId,
             isManager: createEmployeeDto.isManager,
         });
+
+        // 직원 생성 후 기본 역할 자동 할당
+        try {
+            await this.systemManagementContextService.직원에게_기본역할들을_할당한다(result.employee.id);
+        } catch (error) {
+            // 기본 역할 할당 실패는 직원 생성을 롤백하지 않음 (로그만 기록)
+            console.error('직원 생성 후 기본 역할 할당 실패:', error);
+        }
 
         return this.직원을_응답DTO로_변환한다(result.employee);
     }

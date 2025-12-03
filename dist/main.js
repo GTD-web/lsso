@@ -5598,15 +5598,17 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a;
+var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OrganizationApplicationService = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const organization_management_context_service_1 = __webpack_require__(/*! src/modules/context/organization-management/organization-management-context.service */ "./src/modules/context/organization-management/organization-management-context.service.ts");
+const system_management_context_service_1 = __webpack_require__(/*! src/modules/context/system-management/system-management-context.service */ "./src/modules/context/system-management/system-management-context.service.ts");
 const department_entity_1 = __webpack_require__(/*! src/modules/domain/department/department.entity */ "./src/modules/domain/department/department.entity.ts");
 let OrganizationApplicationService = class OrganizationApplicationService {
-    constructor(organizationContextService) {
+    constructor(organizationContextService, systemManagementContextService) {
         this.organizationContextService = organizationContextService;
+        this.systemManagementContextService = systemManagementContextService;
         this.부서를_응답DTO로_변환한다 = (department) => ({
             id: department.id,
             departmentName: department.departmentName,
@@ -5867,6 +5869,12 @@ let OrganizationApplicationService = class OrganizationApplicationService {
             positionId: createEmployeeDto.positionId,
             isManager: createEmployeeDto.isManager,
         });
+        try {
+            await this.systemManagementContextService.직원에게_기본역할들을_할당한다(result.employee.id);
+        }
+        catch (error) {
+            console.error('직원 생성 후 기본 역할 할당 실패:', error);
+        }
         return this.직원을_응답DTO로_변환한다(result.employee);
     }
     async 직원수정(id, updateEmployeeDto) {
@@ -6037,7 +6045,7 @@ let OrganizationApplicationService = class OrganizationApplicationService {
 exports.OrganizationApplicationService = OrganizationApplicationService;
 exports.OrganizationApplicationService = OrganizationApplicationService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof organization_management_context_service_1.OrganizationManagementContextService !== "undefined" && organization_management_context_service_1.OrganizationManagementContextService) === "function" ? _a : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof organization_management_context_service_1.OrganizationManagementContextService !== "undefined" && organization_management_context_service_1.OrganizationManagementContextService) === "function" ? _a : Object, typeof (_b = typeof system_management_context_service_1.SystemManagementContextService !== "undefined" && system_management_context_service_1.SystemManagementContextService) === "function" ? _b : Object])
 ], OrganizationApplicationService);
 
 
@@ -6640,6 +6648,7 @@ const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const organization_controller_1 = __webpack_require__(/*! ./organization.controller */ "./src/modules/application/admin/organization/organization.controller.ts");
 const organization_application_service_1 = __webpack_require__(/*! ./organization-application.service */ "./src/modules/application/admin/organization/organization-application.service.ts");
 const organization_management_context_module_1 = __webpack_require__(/*! ../../../context/organization-management/organization-management-context.module */ "./src/modules/context/organization-management/organization-management-context.module.ts");
+const system_management_context_module_1 = __webpack_require__(/*! ../../../context/system-management/system-management-context.module */ "./src/modules/context/system-management/system-management-context.module.ts");
 let OrganizationModule = class OrganizationModule {
 };
 exports.OrganizationModule = OrganizationModule;
@@ -6647,6 +6656,7 @@ exports.OrganizationModule = OrganizationModule = __decorate([
     (0, common_1.Module)({
         imports: [
             organization_management_context_module_1.OrganizationManagementContextModule,
+            system_management_context_module_1.SystemManagementContextModule,
         ],
         controllers: [organization_controller_1.OrganizationController],
         providers: [organization_application_service_1.OrganizationApplicationService],
@@ -6724,6 +6734,12 @@ __decorate([
     (0, class_validator_1.IsBoolean)(),
     __metadata("design:type", Boolean)
 ], CreateSystemRoleDto.prototype, "isActive", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '기본 역할 여부 (직원 생성 시 자동 할당)', example: false }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsBoolean)(),
+    __metadata("design:type", Boolean)
+], CreateSystemRoleDto.prototype, "isDefault", void 0);
 
 
 /***/ }),
@@ -7002,6 +7018,10 @@ __decorate([
     __metadata("design:type", Boolean)
 ], SystemRoleResponseDto.prototype, "isActive", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({ description: '기본 역할 여부 (직원 생성 시 자동 할당)' }),
+    __metadata("design:type", Boolean)
+], SystemRoleResponseDto.prototype, "isDefault", void 0);
+__decorate([
     (0, swagger_1.ApiProperty)({ description: '생성일시' }),
     __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
 ], SystemRoleResponseDto.prototype, "createdAt", void 0);
@@ -7081,6 +7101,12 @@ __decorate([
     (0, class_validator_1.IsBoolean)(),
     __metadata("design:type", Boolean)
 ], UpdateSystemRoleDto.prototype, "isActive", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: '기본 역할 여부 (직원 생성 시 자동 할당)', example: false }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsBoolean)(),
+    __metadata("design:type", Boolean)
+], UpdateSystemRoleDto.prototype, "isDefault", void 0);
 
 
 /***/ }),
@@ -7356,6 +7382,7 @@ let SystemApplicationService = class SystemApplicationService {
                 description: createDto.description,
                 permissions: createDto.permissions,
                 sortOrder: createDto.sortOrder,
+                isDefault: createDto.isDefault,
             });
             return this.시스템롤_엔티티를_DTO로_변환(savedRole);
         }
@@ -7375,6 +7402,7 @@ let SystemApplicationService = class SystemApplicationService {
                 permissions: updateDto.permissions,
                 sortOrder: updateDto.sortOrder,
                 isActive: updateDto.isActive,
+                isDefault: updateDto.isDefault,
             });
             return this.시스템롤_엔티티를_DTO로_변환(updatedRole);
         }
@@ -7415,6 +7443,15 @@ let SystemApplicationService = class SystemApplicationService {
             updatedAt: system.updatedAt,
         };
     }
+    async 기본역할목록조회() {
+        try {
+            const defaultRoles = await this.시스템관리컨텍스트서비스.모든_기본역할을_조회한다();
+            return defaultRoles.map((role) => this.시스템롤_엔티티를_DTO로_변환(role));
+        }
+        catch (error) {
+            throw new common_1.NotFoundException('기본 역할 목록 조회에 실패했습니다.');
+        }
+    }
     시스템롤_엔티티를_DTO로_변환(systemRole) {
         const dto = {
             id: systemRole.id,
@@ -7425,6 +7462,7 @@ let SystemApplicationService = class SystemApplicationService {
             permissions: systemRole.permissions,
             sortOrder: systemRole.sortOrder,
             isActive: systemRole.isActive,
+            isDefault: systemRole.isDefault,
             createdAt: systemRole.createdAt,
             updatedAt: systemRole.updatedAt,
         };
@@ -7484,7 +7522,10 @@ let SystemRoleController = class SystemRoleController {
     constructor(systemApplicationService) {
         this.systemApplicationService = systemApplicationService;
     }
-    async getSystemRoles(systemId) {
+    async getSystemRoles(systemId, defaultOnly) {
+        if (defaultOnly === 'true') {
+            return await this.systemApplicationService.기본역할목록조회();
+        }
         return await this.systemApplicationService.시스템롤목록조회(systemId);
     }
     async getSystemRole(id) {
@@ -7506,9 +7547,11 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: '시스템 역할 목록 조회' }),
     (0, swagger_1.ApiResponse)({ status: 200, type: [dto_1.SystemRoleResponseDto] }),
     (0, swagger_1.ApiQuery)({ name: 'systemId', required: false, description: '시스템 ID (특정 시스템의 역할만 조회)' }),
+    (0, swagger_1.ApiQuery)({ name: 'defaultOnly', required: false, description: '기본 역할만 조회 (true/false)' }),
     __param(0, (0, common_1.Query)('systemId')),
+    __param(1, (0, common_1.Query)('defaultOnly')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", typeof (_b = typeof Promise !== "undefined" && Promise) === "function" ? _b : Object)
 ], SystemRoleController.prototype, "getSystemRoles", null);
 __decorate([
@@ -14517,6 +14560,23 @@ let SystemManagementContextService = SystemManagementContextService_1 = class Sy
         const systemRoles = employeeSystemRoles.map((esr) => esr.systemRole).filter(Boolean);
         return systemRoles;
     }
+    async 모든_기본역할을_조회한다() {
+        return this.시스템역할서비스.findDefaultRoles();
+    }
+    async 시스템의_기본역할을_조회한다(systemId) {
+        return this.시스템역할서비스.findDefaultRolesBySystemId(systemId);
+    }
+    async 직원에게_기본역할들을_할당한다(employeeId) {
+        const defaultRoles = await this.모든_기본역할을_조회한다();
+        if (defaultRoles.length === 0) {
+            this.logger.log('할당할 기본 역할이 없습니다.');
+            return;
+        }
+        for (const role of defaultRoles) {
+            await this.역할_할당_시도(employeeId, role.id);
+        }
+        this.logger.log(`직원 ${employeeId}에게 ${defaultRoles.length}개의 기본 역할을 할당했습니다.`);
+    }
 };
 exports.SystemManagementContextService = SystemManagementContextService;
 exports.SystemManagementContextService = SystemManagementContextService = SystemManagementContextService_1 = __decorate([
@@ -18024,6 +18084,36 @@ const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
 const system_entity_1 = __webpack_require__(/*! ../system/system.entity */ "./src/modules/domain/system/system.entity.ts");
 const employee_system_role_entity_1 = __webpack_require__(/*! ../employee-system-role/employee-system-role.entity */ "./src/modules/domain/employee-system-role/employee-system-role.entity.ts");
 let SystemRole = class SystemRole {
+    역할이름을설정한다(roleName) {
+        this.roleName = roleName;
+    }
+    역할코드를설정한다(roleCode) {
+        this.roleCode = roleCode;
+    }
+    역할설명을설정한다(description) {
+        this.description = description;
+    }
+    권한목록을설정한다(permissions) {
+        this.permissions = permissions;
+    }
+    정렬순서를설정한다(sortOrder) {
+        this.sortOrder = sortOrder;
+    }
+    활성상태를설정한다(isActive) {
+        this.isActive = isActive;
+    }
+    기본역할로설정한다() {
+        this.isDefault = true;
+    }
+    기본역할설정을해제한다() {
+        this.isDefault = false;
+    }
+    기본역할여부를설정한다(isDefault) {
+        this.isDefault = isDefault;
+    }
+    비활성화한다() {
+        this.isActive = false;
+    }
 };
 exports.SystemRole = SystemRole;
 __decorate([
@@ -18067,6 +18157,10 @@ __decorate([
     (0, typeorm_1.Column)({ default: true, comment: '활성화 상태' }),
     __metadata("design:type", Boolean)
 ], SystemRole.prototype, "isActive", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: false, comment: '기본 역할 여부 (직원 생성 시 자동 할당)' }),
+    __metadata("design:type", Boolean)
+], SystemRole.prototype, "isDefault", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)(() => employee_system_role_entity_1.EmployeeSystemRole, (esr) => esr.systemRole),
     __metadata("design:type", Array)
@@ -18223,6 +18317,7 @@ let DomainSystemRoleService = class DomainSystemRoleService extends base_service
             permissions: data.permissions || [],
             sortOrder: data.sortOrder || 0,
             isActive: true,
+            isDefault: data.isDefault || false,
         });
     }
     async updateSystemRole(id, data) {
@@ -18245,6 +18340,18 @@ let DomainSystemRoleService = class DomainSystemRoleService extends base_service
             throw new common_1.NotFoundException('시스템 역할을 찾을 수 없습니다.');
         }
         await this.systemRoleRepository.update(id, { isActive: false });
+    }
+    async findDefaultRoles() {
+        return this.systemRoleRepository.findAll({
+            where: { isDefault: true, isActive: true },
+            order: { sortOrder: 'ASC', roleName: 'ASC' },
+        });
+    }
+    async findDefaultRolesBySystemId(systemId) {
+        return this.systemRoleRepository.findAll({
+            where: { systemId, isDefault: true, isActive: true },
+            order: { sortOrder: 'ASC', roleName: 'ASC' },
+        });
     }
 };
 exports.DomainSystemRoleService = DomainSystemRoleService;

@@ -57,6 +57,9 @@ export class SystemRoleResponseDto {
     @ApiProperty({ description: '활성화 상태' })
     isActive: boolean;
 
+    @ApiProperty({ description: '기본 역할 여부 (직원 생성 시 자동 할당)' })
+    isDefault: boolean;
+
     @ApiProperty({ description: '생성일시' })
     createdAt: Date;
 

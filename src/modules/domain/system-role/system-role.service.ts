@@ -57,6 +57,7 @@ export class DomainSystemRoleService extends BaseService<SystemRole> {
         description?: string;
         permissions?: string[];
         sortOrder?: number;
+        isDefault?: boolean;
     }): Promise<SystemRole> {
         // 동일한 시스템에서 역할 코드 중복 확인
         const existing = await this.findBySystemIdAndRoleCode(data.systemId, data.roleCode);
@@ -72,6 +73,7 @@ export class DomainSystemRoleService extends BaseService<SystemRole> {
             permissions: data.permissions || [],
             sortOrder: data.sortOrder || 0,
             isActive: true,
+            isDefault: data.isDefault || false,
         });
     }
 
@@ -88,6 +90,7 @@ export class DomainSystemRoleService extends BaseService<SystemRole> {
             permissions?: string[];
             sortOrder?: number;
             isActive?: boolean;
+            isDefault?: boolean;
         },
     ): Promise<SystemRole> {
         const systemRole = await this.systemRoleRepository.findOne({ where: { id } });
@@ -118,5 +121,25 @@ export class DomainSystemRoleService extends BaseService<SystemRole> {
         }
 
         await this.systemRoleRepository.update(id, { isActive: false });
+    }
+
+    /**
+     * 모든 기본 역할을 조회합니다
+     */
+    async findDefaultRoles(): Promise<SystemRole[]> {
+        return this.systemRoleRepository.findAll({
+            where: { isDefault: true, isActive: true },
+            order: { sortOrder: 'ASC', roleName: 'ASC' },
+        });
+    }
+
+    /**
+     * 특정 시스템의 기본 역할을 조회합니다
+     */
+    async findDefaultRolesBySystemId(systemId: string): Promise<SystemRole[]> {
+        return this.systemRoleRepository.findAll({
+            where: { systemId, isDefault: true, isActive: true },
+            order: { sortOrder: 'ASC', roleName: 'ASC' },
+        });
     }
 }

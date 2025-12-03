@@ -14,7 +14,16 @@ export class SystemRoleController {
     @ApiOperation({ summary: '시스템 역할 목록 조회' })
     @ApiResponse({ status: 200, type: [SystemRoleResponseDto] })
     @ApiQuery({ name: 'systemId', required: false, description: '시스템 ID (특정 시스템의 역할만 조회)' })
-    async getSystemRoles(@Query('systemId') systemId?: string): Promise<SystemRoleResponseDto[]> {
+    @ApiQuery({ name: 'defaultOnly', required: false, description: '기본 역할만 조회 (true/false)' })
+    async getSystemRoles(
+        @Query('systemId') systemId?: string,
+        @Query('defaultOnly') defaultOnly?: string,
+    ): Promise<SystemRoleResponseDto[]> {
+        // 기본 역할만 조회하는 경우
+        if (defaultOnly === 'true') {
+            return await this.systemApplicationService.기본역할목록조회();
+        }
+
         return await this.systemApplicationService.시스템롤목록조회(systemId);
     }
 

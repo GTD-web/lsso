@@ -234,6 +234,7 @@ export class SystemManagementContextService {
         description?: string;
         permissions?: string[];
         sortOrder?: number;
+        isDefault?: boolean;
     }): Promise<SystemRole> {
         return this.시스템역할서비스.createSystemRole(data);
     }
@@ -297,6 +298,7 @@ export class SystemManagementContextService {
             permissions?: string[];
             sortOrder?: number;
             isActive?: boolean;
+            isDefault?: boolean;
         },
     ): Promise<SystemRole> {
         return this.시스템역할서비스.updateSystemRole(systemRoleId, data);
@@ -369,4 +371,42 @@ export class SystemManagementContextService {
     //     const systemRoles = await this.직원이_시스템에서_가진_역할목록을_조회한다(employeeId, systemId);
     //     return systemRoles.some((role) => role.permissions.includes(permission));
     // }
+
+    // ================================
+    // 기본 역할 관리
+    // ================================
+
+    /**
+     * 모든 기본 역할을 조회한다
+     */
+    async 모든_기본역할을_조회한다(): Promise<SystemRole[]> {
+        return this.시스템역할서비스.findDefaultRoles();
+    }
+
+    /**
+     * 특정 시스템의 기본 역할을 조회한다
+     */
+    async 시스템의_기본역할을_조회한다(systemId: string): Promise<SystemRole[]> {
+        return this.시스템역할서비스.findDefaultRolesBySystemId(systemId);
+    }
+
+    /**
+     * 직원에게 기본 역할들을 할당한다
+     */
+    async 직원에게_기본역할들을_할당한다(employeeId: string): Promise<void> {
+        // 모든 기본 역할 조회
+        const defaultRoles = await this.모든_기본역할을_조회한다();
+
+        if (defaultRoles.length === 0) {
+            this.logger.log('할당할 기본 역할이 없습니다.');
+            return;
+        }
+
+        // 각 기본 역할을 직원에게 할당
+        for (const role of defaultRoles) {
+            await this.역할_할당_시도(employeeId, role.id);
+        }
+
+        this.logger.log(`직원 ${employeeId}에게 ${defaultRoles.length}개의 기본 역할을 할당했습니다.`);
+    }
 }
