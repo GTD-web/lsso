@@ -1,13 +1,12 @@
 import { Injectable, NotFoundException, Logger } from '@nestjs/common';
+import { QueryRunner } from 'typeorm';
 import { DomainDepartmentRepository } from './department.repository';
 import { BaseService } from '../../../../libs/common/services/base.service';
-import { Department } from '../../../../libs/database/entities';
+import { Department, DepartmentType } from '../../../../libs/database/entities';
 import { In } from 'typeorm';
 
 @Injectable()
 export class DomainDepartmentService extends BaseService<Department> {
-    private readonly logger = new Logger(DomainDepartmentService.name);
-
     constructor(private readonly departmentRepository: DomainDepartmentRepository) {
         super(departmentRepository);
     }
@@ -219,7 +218,130 @@ export class DomainDepartmentService extends BaseService<Department> {
      * 같은 부모를 가진 부서들의 다음 순서 번호를 조회
      */
     async getNextOrderForParent(parentDepartmentId: string | null): Promise<number> {
-        const count = await this.countByParentDepartmentId(parentDepartmentId);
-        return count;
+        const queryBuilder = this.departmentRepository.createQueryBuilder('department');
+
+        if (parentDepartmentId === null) {
+            queryBuilder.where('department.parentDepartmentId IS NULL');
+        } else {
+            queryBuilder.where('department.parentDepartmentId = :parentDepartmentId', { parentDepartmentId });
+        }
+
+        // 최대 order 조회 후 +1 (없으면 0부터 시작)
+        const result = await queryBuilder.select('MAX(department.order)', 'maxOrder').getRawOne();
+        const maxOrder = result?.maxOrder ?? -1;
+        return maxOrder + 1;
+    }
+
+    // ==================== 아키텍처 규칙 적용 메서드 (Setter 활용) ====================
+
+    /**
+     * 부서를생성한다
+     */
+    async 부서를생성한다(
+        params: {
+            departmentName: string;
+            departmentCode: string;
+            type: DepartmentType;
+            parentDepartmentId?: string;
+            order?: number;
+            isActive?: boolean;
+            isException?: boolean;
+        },
+        queryRunner?: QueryRunner,
+    ): Promise<Department> {
+        const department = new Department();
+
+        department.부서명을설정한다(params.departmentName);
+        department.부서코드를설정한다(params.departmentCode);
+        department.유형을설정한다(params.type);
+
+        if (params.parentDepartmentId !== undefined) {
+            department.상위부서를설정한다(params.parentDepartmentId);
+        }
+
+        if (params.order !== undefined) {
+            department.정렬순서를설정한다(params.order);
+        }
+
+        if (params.isActive !== undefined) {
+            if (params.isActive) {
+                department.활성화한다();
+            } else {
+                department.비활성화한다();
+            }
+        }
+
+        if (params.isException !== undefined) {
+            department.예외처리를설정한다(params.isException);
+        }
+
+        return await this.save(department, { queryRunner });
+    }
+
+    /**
+     * 부서를수정한다
+     */
+    async 부서를수정한다(
+        department: Department,
+        params: {
+            departmentName?: string;
+            departmentCode?: string;
+            type?: DepartmentType;
+            parentDepartmentId?: string;
+            order?: number;
+            isActive?: boolean;
+            isException?: boolean;
+        },
+        queryRunner?: QueryRunner,
+    ): Promise<Department> {
+        if (params.departmentName !== undefined) {
+            department.부서명을설정한다(params.departmentName);
+        }
+
+        if (params.departmentCode !== undefined) {
+            department.부서코드를설정한다(params.departmentCode);
+        }
+
+        if (params.type !== undefined) {
+            department.유형을설정한다(params.type);
+        }
+
+        if (params.parentDepartmentId !== undefined) {
+            department.상위부서를설정한다(params.parentDepartmentId);
+        }
+
+        if (params.order !== undefined) {
+            department.정렬순서를설정한다(params.order);
+        }
+
+        if (params.isActive !== undefined) {
+            if (params.isActive) {
+                department.활성화한다();
+            } else {
+                department.비활성화한다();
+            }
+        }
+
+        if (params.isException !== undefined) {
+            department.예외처리를설정한다(params.isException);
+        }
+
+        return await this.save(department, { queryRunner });
+    }
+
+    /**
+     * 부서를삭제한다
+     */
+    async 부서를삭제한다(department: Department, queryRunner?: QueryRunner): Promise<Department> {
+        department.소프트삭제한다();
+        return await this.save(department, { queryRunner });
+    }
+
+    /**
+     * 부서삭제를복구한다
+     */
+    async 부서삭제를복구한다(department: Department, queryRunner?: QueryRunner): Promise<Department> {
+        department.삭제를복구한다();
+        return await this.save(department, { queryRunner });
     }
 }

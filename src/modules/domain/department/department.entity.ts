@@ -50,6 +50,13 @@ export class Department {
     @Column({ comment: '예외처리 여부', type: 'boolean', default: false })
     isException: boolean;
 
+    // Soft Delete 필드
+    @Column({ comment: '삭제 여부', default: false })
+    isDeleted: boolean;
+
+    @Column({ comment: '삭제일', type: 'timestamp', nullable: true })
+    deletedAt?: Date;
+
     // 부서장 관계는 별도 이력 테이블로 관리
     // 부서 계층 구조는 유지 (조직도 표현을 위해)
     @ManyToOne(() => Department, (department) => department.childDepartments, { nullable: true })
@@ -64,4 +71,79 @@ export class Department {
 
     @UpdateDateColumn({ comment: '수정일' })
     updatedAt: Date;
+
+    // ==================== Setter 메서드 ====================
+
+    /**
+     * 부서명을 설정한다
+     */
+    부서명을설정한다(departmentName: string): void {
+        this.departmentName = departmentName;
+    }
+
+    /**
+     * 부서코드를 설정한다
+     */
+    부서코드를설정한다(departmentCode: string): void {
+        this.departmentCode = departmentCode;
+    }
+
+    /**
+     * 유형을설정한다
+     */
+    유형을설정한다(type: DepartmentType): void {
+        this.type = type;
+    }
+
+    /**
+     * 상위부서를설정한다
+     */
+    상위부서를설정한다(parentDepartmentId?: string): void {
+        this.parentDepartmentId = parentDepartmentId;
+    }
+
+    /**
+     * 정렬순서를설정한다
+     */
+    정렬순서를설정한다(order: number): void {
+        this.order = order;
+    }
+
+    /**
+     * 활성화한다
+     */
+    활성화한다(): void {
+        this.isActive = true;
+    }
+
+    /**
+     * 비활성화한다
+     */
+    비활성화한다(): void {
+        this.isActive = false;
+    }
+
+    /**
+     * 예외처리를설정한다
+     */
+    예외처리를설정한다(isException: boolean): void {
+        this.isException = isException;
+    }
+
+    /**
+     * 소프트삭제한다
+     */
+    소프트삭제한다(): void {
+        this.isDeleted = true;
+        this.deletedAt = new Date();
+        this.isActive = false;
+    }
+
+    /**
+     * 삭제를복구한다
+     */
+    삭제를복구한다(): void {
+        this.isDeleted = false;
+        this.deletedAt = null;
+    }
 }
